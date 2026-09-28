@@ -2,6 +2,7 @@
   "name": "tala-js",
   "version": "0.1.0",
   "description": "JavaScript migration of the TALA layout engine",
+  "license": "MPL-2.0",
   "scripts": {
     "test": "bun test"
   },

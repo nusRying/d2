@@ -14,7 +14,7 @@ export function elkToTalaGraph(elkGraph) {
   const graph = new Graph(elkGraph.id);
   graph.elkData = structuredClone(elkGraph);
 
-  const endpoints = new Map();
+  const endpoints = graph.endpoints;
   const seenEdgeIds = new Set();
   const seenNodeIds = new Set();
 
@@ -61,7 +61,7 @@ export function elkToTalaGraph(elkGraph) {
       if (typeof port.id !== 'string' || port.id === '') {
         throw new Error(`Invalid ELK port: missing id on node "${node.id}"`);
       }
-      registerEndpoint(port.id, { kind: "port", node, port });
+      registerEndpoint(port.id, { kind: "port", node, port: structuredClone(port) });
     }
 
     if (parent) {
@@ -102,6 +102,13 @@ export function elkToTalaGraph(elkGraph) {
 
       const sourceEndpointId = sources[0];
       const targetEndpointId = targets[0];
+
+      if (typeof sourceEndpointId !== 'string') {
+        throw new Error(`Invalid ELK edge "${edge.id}": source endpoint must be a string`);
+      }
+      if (typeof targetEndpointId !== 'string') {
+        throw new Error(`Invalid ELK edge "${edge.id}": target endpoint must be a string`);
+      }
 
       const sourceEndpoint = endpoints.get(sourceEndpointId);
       if (!sourceEndpoint) {

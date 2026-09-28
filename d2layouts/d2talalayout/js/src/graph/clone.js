@@ -33,6 +33,14 @@ export function cloneGraph(graph) {
     cloneNode(root, null);
   }
 
+  for (const [id, endpoint] of graph.endpoints.entries()) {
+    if (endpoint.kind === "node") {
+      newGraph.endpoints.set(id, { kind: "node", node: newGraph.nodes.get(endpoint.node.id) });
+    } else {
+      newGraph.endpoints.set(id, { kind: "port", node: newGraph.nodes.get(endpoint.node.id), port: structuredClone(endpoint.port) });
+    }
+  }
+
   for (const edge of graph.edges.values()) {
     const fromNode = newGraph.nodes.get(edge.from.id);
     const toNode = newGraph.nodes.get(edge.to.id);
