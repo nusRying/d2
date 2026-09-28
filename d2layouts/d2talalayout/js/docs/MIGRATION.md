@@ -20,5 +20,6 @@ The first slice establishes the foundational JavaScript graph structures and the
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
-- **Go math/rand (Slice 02):** The JavaScript port includes a strict parity reproduction of Go 1.27.0's `math/rand` (specifically `int31`, `int63`, `float64`, and LFSR permutations). 
-This port is distributed under the original BSD-style license used by the Go Authors. The `THIRD_PARTY_NOTICES.txt` file at the repository root contains the full copyright notice, conditions, and attribution for this port. Any modifications to this ported component must preserve the original behavior and comply with the included BSD-style license terms.
+- **Go math/rand (Slice 02):** The Slice 02 implementation reproduces the portions of Go `math/rand` needed by the current TALA code path: underlying `rngSource` state progression, `Uint64`, `Int63`, `Int63n` and `Float64` behavior. 
+
+The overall TALA JS project lives in the MPL-2.0 D2 repository. Portions of `go-math-rand.js` are derived from Go standard-library source. Those derived portions retain the Go Authors copyright and BSD attribution. `THIRD_PARTY_NOTICES.txt` records this provenance explicitly. Any modifications to this ported component must preserve the original behavior and comply with the included BSD-style license terms.

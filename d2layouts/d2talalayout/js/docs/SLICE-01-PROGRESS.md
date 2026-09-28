@@ -91,7 +91,7 @@ Results:
 
 ## Current limitations
 - No actual layout algorithms are implemented yet.
-- Deterministic RNG parity is deferred to a future slice.
+- At Slice 01 completion deterministic RNG parity was intentionally deferred to Slice 02. Slice 02 subsequently implemented and verified this layer.
 
 ## Result
 The ELK graph adapter safely converts an ELK input to our internal TALA JS graph representation and back, while safely cloning non-mutating input and preserving unknown metadata/layout options. It now correctly implements strong endpoint validation, Graph-scoped endpoint indexing, robust clone isolation, and Go TALA structural paradigms. The third commit preserves all history.
@@ -99,3 +99,7 @@ The ELK graph adapter safely converts an ELK input to our internal TALA JS graph
 ## Commit information
 - Branch: `tala-js/slice-01-foundation`
 - Remote: `origin` (GitHub `nusRying/d2`)
+- Commits:
+  - `762f1796e5c35fd906b9a33c07cc68711cfb637b` — initial ELK graph foundation
+  - `b6d1a4ddc778851d0d8a7dcb678bbf3d5346cf29` — connectivity and validation review correction
+  - `ea126810a0d70badd0802cb40cd061aacc2ee182` — endpoint persistence/final hardening
