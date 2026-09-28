@@ -1,7 +1,7 @@
 # ADR 003: Deterministic Go RNG Parity
 
 ## Status
-Implemented — technical review passed; Slice 02 documentation closure pending
+Accepted
 
 ## Reference
 - **D2 base:** `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`
