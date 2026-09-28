@@ -7,17 +7,40 @@ export function elkToTalaGraph(elkGraph) {
     throw new Error("Invalid ELK graph: must be an object");
   }
 
-  if (!elkGraph.id) {
+  if (typeof elkGraph.id !== 'string') {
     throw new Error("Invalid ELK graph: missing id");
   }
 
   const graph = new Graph(elkGraph.id);
   graph.elkData = structuredClone(elkGraph);
 
+  const endpoints = new Map();
+  const seenEdgeIds = new Set();
+  const seenNodeIds = new Set();
+
+  function registerEndpoint(id, entity) {
+    if (endpoints.has(id)) {
+      throw new Error(`Invalid ELK graph: duplicate endpoint id "${id}"`);
+    }
+    endpoints.set(id, entity);
+  }
+
+  function validateArray(arr, name, context) {
+    if (arr !== undefined && !Array.isArray(arr)) {
+      throw new Error(`Invalid ELK graph: ${name} must be an array on ${context}`);
+    }
+    return arr || [];
+  }
+
   function visitNode(elkNode, parent) {
-    if (!elkNode.id) {
+    if (typeof elkNode.id !== 'string' || elkNode.id === '') {
       throw new Error("Invalid ELK node: missing id");
     }
+
+    if (seenNodeIds.has(elkNode.id)) {
+      throw new Error(`Invalid ELK graph: duplicate node id "${elkNode.id}"`);
+    }
+    seenNodeIds.add(elkNode.id);
 
     const node = new Node({
       id: elkNode.id,
@@ -31,44 +54,85 @@ export function elkToTalaGraph(elkGraph) {
     node.elkData = structuredClone(elkNode);
     graph.nodes.set(node.id, node);
 
+    registerEndpoint(node.id, { kind: "node", node });
+
+    const ports = validateArray(elkNode.ports, "ports", `node "${node.id}"`);
+    for (const port of ports) {
+      if (typeof port.id !== 'string' || port.id === '') {
+        throw new Error(`Invalid ELK port: missing id on node "${node.id}"`);
+      }
+      registerEndpoint(port.id, { kind: "port", node, port });
+    }
+
     if (parent) {
       parent.children.push(node);
     } else {
       graph.rootNodes.push(node);
     }
 
-    for (const child of elkNode.children ?? []) {
+    const children = validateArray(elkNode.children, "children", `node "${node.id}"`);
+    for (const child of children) {
       visitNode(child, node);
     }
 
     return node;
   }
 
-  for (const child of elkGraph.children ?? []) {
+  const children = validateArray(elkGraph.children, "children", "root graph");
+  for (const child of children) {
     visitNode(child, null);
   }
 
   function collectEdges(elkNode) {
-    for (const edge of elkNode.edges ?? []) {
-      if (!edge.id) throw new Error("Invalid ELK edge: missing id");
-      if (!edge.sources || edge.sources.length === 0) throw new Error("Invalid ELK edge: missing sources");
-      if (!edge.targets || edge.targets.length === 0) throw new Error("Invalid ELK edge: missing targets");
+    const edges = validateArray(elkNode.edges, "edges", elkNode.id ? `node "${elkNode.id}"` : "root graph");
+    for (const edge of edges) {
+      if (typeof edge.id !== 'string' || edge.id === '') throw new Error("Invalid ELK edge: missing id");
+      if (seenEdgeIds.has(edge.id)) throw new Error(`Invalid ELK graph: duplicate edge id "${edge.id}"`);
+      seenEdgeIds.add(edge.id);
+
+      const sources = validateArray(edge.sources, "sources", `edge "${edge.id}"`);
+      const targets = validateArray(edge.targets, "targets", `edge "${edge.id}"`);
+      
+      if (sources.length !== 1) {
+        throw new Error(`ELK hyperedges are not supported yet: edge "${edge.id}" has ${sources.length} sources`);
+      }
+      if (targets.length !== 1) {
+        throw new Error(`ELK hyperedges are not supported yet: edge "${edge.id}" has ${targets.length} targets`);
+      }
+
+      const sourceEndpointId = sources[0];
+      const targetEndpointId = targets[0];
+
+      const sourceEndpoint = endpoints.get(sourceEndpointId);
+      if (!sourceEndpoint) {
+        throw new Error(`Invalid ELK edge "${edge.id}": source endpoint "${sourceEndpointId}" does not exist`);
+      }
+
+      const targetEndpoint = endpoints.get(targetEndpointId);
+      if (!targetEndpoint) {
+        throw new Error(`Invalid ELK edge "${edge.id}": target endpoint "${targetEndpointId}" does not exist`);
+      }
+
+      const fromNode = sourceEndpoint.node;
+      const toNode = targetEndpoint.node;
 
       const newEdge = new Edge({
         id: edge.id,
-        source: edge.sources[0],
-        target: edge.targets[0]
+        from: fromNode,
+        to: toNode,
+        sourceEndpointId,
+        targetEndpointId
       });
       newEdge.elkData = structuredClone(edge);
       graph.edges.set(newEdge.id, newEdge);
 
-      const sourceNode = graph.nodes.get(newEdge.source);
-      const targetNode = graph.nodes.get(newEdge.target);
-
-      if (sourceNode) sourceNode.outEdges.push(newEdge.id);
-      if (targetNode) targetNode.inEdges.push(newEdge.id);
+      fromNode.edges.push(newEdge);
+      if (fromNode !== toNode) {
+        toNode.edges.push(newEdge);
+      }
     }
-    for (const child of elkNode.children ?? []) {
+    const children = validateArray(elkNode.children, "children", elkNode.id ? `node "${elkNode.id}"` : "root graph");
+    for (const child of children) {
       collectEdges(child);
     }
   }

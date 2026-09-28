@@ -56,19 +56,30 @@ Results:
 ## Problems encountered
 - A minor pathing typo when initially creating the test fixtures.
 - Incorrect use of `&&` in the test command string, which is not valid syntax in the host's version of PowerShell.
+- **Repository Setup Incident**: In the initial commit, `d2` was inadvertently flattened and pushed as a regular directory into the parent `Test Task` git repository instead of committing it to the actual `d2` repository itself.
+- **Review Findings**: The initial Slice 01 implementation lacked several strict structural constraints matching Go TALA:
+  - ELK empty-string root IDs (`{ id: "" }`) were being rejected due to truthiness checks.
+  - Edges were using string-based lookups (`edge.source` -> string) instead of direct `Node` object references.
+  - ELK graph ingestion allowed invalid structural configurations (hyperedges, duplicate IDs, missing endpoint destinations, invalid array types).
 
 ## Resolutions
 - Corrected the fixture path and recreated the file.
 - Used `;` instead of `&&` for sequencing commands in PowerShell.
+- **Repository Correction**: Restored the `.git` directory inside `d2`, switched the parent repository to its `master` branch to remove the flattened tracked files, and created the `tala-js/slice-01-foundation` branch directly inside the `d2` repository.
+- **Review Corrections**:
+  - Implemented `ADR-002-INTERNAL-GRAPH-CONNECTIVITY.md` transitioning the `Edge` class to store direct `Node` references (`from`, `to`), and updating the adapter to construct an index for resolving `node` and `port` endpoints upon ingestion.
+  - Updated graph ingestion logic to gracefully handle `id: ""` for the root node while strictly rejecting `""` for internal nodes and ports.
+  - Added strict duplication checks (using `Set`s) and array structural validations.
+  - Explicitly fail on hyperedges (`sources.length !== 1`).
+  - Implemented unit tests for all updated constraints.
 
 ## Current limitations
 - No actual layout algorithms are implemented yet.
 - Deterministic RNG parity is deferred to a future slice.
 
 ## Result
-The ELK graph adapter safely converts an ELK input to our internal TALA JS graph representation and back, while safely cloning non-mutating input and preserving unknown metadata/layout options.
+The ELK graph adapter safely converts an ELK input to our internal TALA JS graph representation and back, while safely cloning non-mutating input and preserving unknown metadata/layout options. It now correctly implements strong endpoint validation and Go TALA structural paradigms.
 
 ## Commit information
 - Branch: `tala-js/slice-01-foundation`
-- SHA: Pending initial commit
-- Remote: `origin` (GitHub `Test-Task`)
+- Remote: `origin` (GitHub `nusRying/d2`)

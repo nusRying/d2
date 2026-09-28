@@ -8,8 +8,7 @@ export class Node {
     this.parent = parent;
 
     this.children = [];
-    this.inEdges = [];
-    this.outEdges = [];
+    this.edges = [];
 
     // Preserve original ELK data for non-mutation and metadata preservation
     this.elkData = null;

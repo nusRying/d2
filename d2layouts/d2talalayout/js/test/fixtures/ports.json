@@ -1,0 +1,19 @@
+{
+  "id": "root",
+  "children": [
+    {
+      "id": "table",
+      "ports": [{ "id": "table.column.src" }]
+    },
+    {
+      "id": "b"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "sources": ["table.column.src"],
+      "targets": ["b"]
+    }
+  ]
+}

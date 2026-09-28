@@ -34,22 +34,24 @@ export function cloneGraph(graph) {
   }
 
   for (const edge of graph.edges.values()) {
+    const fromNode = newGraph.nodes.get(edge.from.id);
+    const toNode = newGraph.nodes.get(edge.to.id);
+
     const newEdge = new Edge({
       id: edge.id,
-      source: edge.source,
-      target: edge.target
+      from: fromNode,
+      to: toNode,
+      sourceEndpointId: edge.sourceEndpointId,
+      targetEndpointId: edge.targetEndpointId
     });
     newEdge.elkData = structuredClone(edge.elkData);
     newEdge.route = structuredClone(edge.route);
     newGraph.edges.set(newEdge.id, newEdge);
-  }
 
-  // Restore edge linkages
-  for (const edge of newGraph.edges.values()) {
-    const sourceNode = newGraph.nodes.get(edge.source);
-    const targetNode = newGraph.nodes.get(edge.target);
-    if (sourceNode) sourceNode.outEdges.push(edge.id);
-    if (targetNode) targetNode.inEdges.push(edge.id);
+    fromNode.edges.push(newEdge);
+    if (fromNode !== toNode) {
+      toNode.edges.push(newEdge);
+    }
   }
 
   return newGraph;
