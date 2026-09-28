@@ -1,0 +1,12 @@
+{
+  "name": "tala-js",
+  "version": "0.1.0",
+  "description": "JavaScript migration of the TALA layout engine",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "bun-types": "^1.1.0"
+  }
+}

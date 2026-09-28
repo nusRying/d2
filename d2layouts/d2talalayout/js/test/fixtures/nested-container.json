@@ -1,0 +1,41 @@
+{
+  "id": "root",
+  "children": [
+    {
+      "id": "container",
+      "width": 300,
+      "height": 200,
+      "children": [
+        {
+          "id": "a",
+          "width": 100,
+          "height": 50
+        },
+        {
+          "id": "b",
+          "width": 100,
+          "height": 50
+        }
+      ],
+      "edges": [
+        {
+          "id": "e_inner",
+          "sources": ["a"],
+          "targets": ["b"]
+        }
+      ]
+    },
+    {
+      "id": "c",
+      "width": 100,
+      "height": 50
+    }
+  ],
+  "edges": [
+    {
+      "id": "e_outer",
+      "sources": ["container"],
+      "targets": ["c"]
+    }
+  ]
+}
