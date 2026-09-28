@@ -6,13 +6,23 @@ import (
 	"math"
 	"math/rand"
 	"os"
+	"runtime"
 )
 
 type Fixture struct {
-	Seeds       []SeedRun       `json:"seeds"`
-	Int63nTests []Int63nRun     `json:"int63nTests"`
-	MixedRun    *MixedRunResult `json:"mixedRun"`
+	Metadata       Metadata        `json:"metadata"`
+	Seeds          []SeedRun       `json:"seeds"`
+	Int63nTests    []Int63nRun     `json:"int63nTests"`
+	MixedRun       *MixedRunResult `json:"mixedRun"`
+	RejectionProof RejectionProof  `json:"rejectionProof"`
 }
+
+type Metadata struct {
+	RuntimeGoVersion string `json:"runtimeGoVersion"`
+	ReferenceApi     string `json:"referenceApi"`
+	D2BaseCommit     string `json:"d2BaseCommit"`
+}
+
 
 type SeedRun struct {
 	Seed        string   `json:"seed"`
@@ -32,10 +42,38 @@ type MixedRunResult struct {
 	Types  []string `json:"types"`
 }
 
+type RejectionProof struct {
+	Seed        string `json:"seed"`
+	Bound       string `json:"bound"`
+	Value       string `json:"value"`
+	SourceDraws int    `json:"sourceDraws"`
+	NextValue   string `json:"nextValue"`
+}
+
+type countingSource struct {
+	src   rand.Source
+	draws int
+}
+
+func (c *countingSource) Int63() int64 {
+	c.draws++
+	return c.src.Int63()
+}
+
+func (c *countingSource) Seed(seed int64) {
+	c.src.Seed(seed)
+}
+
 func main() {
 	seeds := []int64{0, 1, -1, 42, 2147483647, 2147483648, -2147483648, 9223372036854775807, -9223372036854775808}
 
-	fixture := Fixture{}
+	fixture := Fixture{
+		Metadata: Metadata{
+			RuntimeGoVersion: runtime.Version(),
+			ReferenceApi:     "math/rand.New(rand.NewSource(seed))",
+			D2BaseCommit:     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+		},
+	}
 
 	for _, s := range seeds {
 		rng := rand.New(rand.NewSource(s))
@@ -99,9 +137,32 @@ func main() {
 
 	fixture.MixedRun = &mixedRun
 
+	cSource := &countingSource{src: rand.NewSource(1)}
+	cRng := rand.New(cSource)
+	cBound := int64(4611686018427387905)
+	cValue := cRng.Int63n(cBound)
+	draws := cSource.draws
+	cNext := cRng.Int63()
+	
+	fixture.RejectionProof = RejectionProof{
+		Seed:        "1",
+		Bound:       fmt.Sprintf("%d", cBound),
+		Value:       fmt.Sprintf("%d", cValue),
+		SourceDraws: draws,
+		NextValue:   fmt.Sprintf("%d", cNext),
+	}
+
 	data, err := json.MarshalIndent(fixture, "", "  ")
 	if err != nil {
 		panic(err)
 	}
-	os.Stdout.Write(data)
+	
+	if len(os.Args) > 1 {
+		err = os.WriteFile(os.Args[1], data, 0644)
+		if err != nil {
+			panic(err)
+		}
+	} else {
+		os.Stdout.Write(data)
+	}
 }

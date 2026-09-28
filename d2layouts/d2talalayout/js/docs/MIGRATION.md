@@ -17,3 +17,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 ## Migration strategy
 Instead of translating the whole engine in one step, we use an incremental, parity-focused slice approach. 
 The first slice establishes the foundational JavaScript graph structures and the ELK-to-internal conversion boundary, without any actual layout algorithms. Subsequent slices will port subsystems one at a time (e.g., deterministic RNG, geometry, hierarchy, placement, routing), using the existing Go engine as a specification and comparing outputs using automated round-trip tests and fixtures to ensure exact parity.
+
+## Third-Party Provenance and Licensing
+The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
+- **Go math/rand (Slice 02):** The JavaScript port includes a strict parity reproduction of Go 1.27.0's `math/rand` (specifically `int31`, `int63`, `float64`, and LFSR permutations). 
+This port is distributed under the original BSD-style license used by the Go Authors. The `THIRD_PARTY_NOTICES.txt` file at the repository root contains the full copyright notice, conditions, and attribution for this port. Any modifications to this ported component must preserve the original behavior and comply with the included BSD-style license terms.

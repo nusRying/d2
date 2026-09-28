@@ -1,6 +1,12 @@
 // Deterministic random number generator mimicking Go's math/rand behavior (go1.27.0).
 // Reproduces the exact Mitchell & Reeds LFSR algorithm and Rejection Sampling logic
 // used by `rand.New(rand.NewSource(seed))`.
+//
+// Portions of this file are translated and derived from Go standard library `math/rand`:
+// - Tag: go1.27.0
+// - Source files: src/math/rand/rng.go, src/math/rand/rand.go
+// - Copyright 2009 The Go Authors. All rights reserved.
+// - License: BSD-style license (see THIRD_PARTY_NOTICES.txt)
 
 const rngLen = 607;
 const rngTap = 273;
@@ -179,10 +185,23 @@ function seedrand(x) {
 
 export class GoRand {
 	constructor(seed) {
-		if (typeof seed !== "bigint" && typeof seed !== "number") {
+		const minInt64 = -(1n << 63n);
+		const maxInt64 = (1n << 63n) - 1n;
+
+		if (typeof seed === "number") {
+			if (!Number.isSafeInteger(seed)) {
+				throw new Error("GoRand seed number is not a safe integer");
+			}
+			seed = BigInt(seed);
+		} else if (typeof seed !== "bigint") {
 			throw new Error("GoRand seed must be a BigInt or Number");
 		}
-		this.seedValue = BigInt(seed);
+		
+		if (seed < minInt64 || seed > maxInt64) {
+			throw new Error("GoRand seed is out of int64 bounds");
+		}
+
+		this.seedValue = seed;
 		this.tap = 0;
 		this.feed = 0;
 		this.vec = new Array(rngLen).fill(0n);
@@ -238,11 +257,18 @@ export class GoRand {
 	}
 
 	Int63n(n) {
-		if (typeof n !== "bigint" && typeof n !== "number") {
+		const maxInt64 = (1n << 63n) - 1n;
+
+		if (typeof n === "number") {
+			if (!Number.isSafeInteger(n)) {
+				throw new Error("Int63n argument number is not a safe integer");
+			}
+			n = BigInt(n);
+		} else if (typeof n !== "bigint") {
 			throw new Error("Int63n argument must be a BigInt or Number");
 		}
-		n = BigInt(n);
-		if (n <= 0n) {
+
+		if (n <= 0n || n > maxInt64) {
 			throw new Error("invalid argument to Int63n");
 		}
 

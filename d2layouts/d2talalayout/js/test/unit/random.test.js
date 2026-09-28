@@ -18,11 +18,22 @@ test("GoRand constructor validation", () => {
 	expect(() => new GoRand(null)).toThrow();
 	expect(() => new GoRand()).toThrow();
 	
+	// Unsafe numbers
+	expect(() => new GoRand(Number.MAX_SAFE_INTEGER + 1)).toThrow();
+	expect(() => new GoRand(1.5)).toThrow();
+	expect(() => new GoRand(NaN)).toThrow();
+	expect(() => new GoRand(Infinity)).toThrow();
+
+	// Out of bounds bigints
+	expect(() => new GoRand(9223372036854775808n)).toThrow();
+	expect(() => new GoRand(-9223372036854775809n)).toThrow();
+
 	// Should not throw
-	const rng1 = new GoRand(0n);
-	const rng2 = new GoRand(123456789);
-	expect(rng1.Int63()).toBeTypeOf("bigint");
-	expect(rng2.Int63()).toBeTypeOf("bigint");
+	expect(() => new GoRand(0)).not.toThrow();
+	expect(() => new GoRand(42)).not.toThrow();
+	expect(() => new GoRand(42n)).not.toThrow();
+	expect(() => new GoRand(9223372036854775807n)).not.toThrow();
+	expect(() => new GoRand(-9223372036854775808n)).not.toThrow();
 });
 
 test("GoRand Int63 parity", () => {
@@ -66,6 +77,23 @@ test("GoRand Int63n parity", () => {
 	}
 });
 
+test("GoRand Int63n bounds validation", () => {
+	const rng = new GoRand(42n);
+
+	// Invalid BigInt values
+	expect(() => rng.Int63n(0n)).toThrow();
+	expect(() => rng.Int63n(-1n)).toThrow();
+	expect(() => rng.Int63n(9223372036854775808n)).toThrow();
+
+	// Invalid Number values
+	expect(() => rng.Int63n(0)).toThrow();
+	expect(() => rng.Int63n(-1)).toThrow();
+	expect(() => rng.Int63n(1.5)).toThrow();
+	expect(() => rng.Int63n(NaN)).toThrow();
+	expect(() => rng.Int63n(Infinity)).toThrow();
+	expect(() => rng.Int63n(Number.MAX_SAFE_INTEGER + 1)).toThrow();
+});
+
 test("GoRand mixed type progression", () => {
 	const run = fixtures.mixedRun;
 	const seed = BigInt(run.seed);
@@ -92,13 +120,41 @@ test("GoRand mixed type progression", () => {
 });
 
 test("GoRand independence of multiple instances", () => {
-	const rng1 = new GoRand(42n);
-	const rng2 = new GoRand(42n);
+	const general = new GoRand(42n);
+	const hierarchy = new GoRand(42n);
 	
-	rng1.Int63();
-	rng1.Int63();
+	// Prove identical consumption gives identical values
+	expect(general.Int63()).toBe(hierarchy.Int63());
+	expect(general.Float64()).toBe(hierarchy.Float64());
 	
-	rng2.Int63();
+	// Advance one stream extra
+	general.Int63();
 	
-	expect(rng1.Int63()).not.toBe(rng2.Int63());
+	// Prove the other stream's next value is still the expected Go sequence value (different from the first stream's current value)
+	expect(general.Int63()).not.toBe(hierarchy.Int63());
+});
+
+test("GoRand Int63n rejection sampling proof", () => {
+	const run = fixtures.rejectionProof;
+	const seed = BigInt(run.seed);
+	const bound = BigInt(run.bound);
+	const expectedDraws = run.sourceDraws;
+	
+	let drawCount = 0;
+	
+	const rng = new GoRand(seed);
+	// Overwrite Int63 locally on this instance to count draws
+	const originalInt63 = rng.Int63.bind(rng);
+	rng.Int63 = function() {
+		drawCount++;
+		return originalInt63();
+	};
+
+	const actual = rng.Int63n(bound);
+	
+	expect(actual).toBe(BigInt(run.value));
+	expect(drawCount).toBe(expectedDraws);
+
+	// Ensure subsequent state matches
+	expect(rng.Int63()).toBe(BigInt(run.nextValue));
 });
