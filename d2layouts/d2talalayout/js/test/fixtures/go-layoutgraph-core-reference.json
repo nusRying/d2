@@ -5,6 +5,10 @@
     "runtimeGoVersion": "go1.27.0"
   },
   "cases": {
+    "AddEdgeExactObject": {
+      "CountAfterDistinct": 2,
+      "CountAfterDuplicate": 1
+    },
     "Clone": {
       "E7FromID": "17",
       "E7PointerDiff": true,
@@ -33,6 +37,10 @@
       "N8EdgesCount": 1,
       "N9EdgesCount": 0
     },
+    "DisconnectLoop": {
+      "BEdgesCount": 0,
+      "GraphEdgesCount": 0
+    },
     "Edges": {
       "E1From": "8",
       "E1To": "9",
@@ -52,6 +60,7 @@
     },
     "NewGraphDefaults": {
       "CellSize": 0,
+      "ContainerMapLength": 0,
       "IsRootHierarchy": false
     },
     "NodeHierarchy": {

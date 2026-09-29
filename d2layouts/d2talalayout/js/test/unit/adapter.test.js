@@ -26,6 +26,11 @@ describe("ELK Adapter", () => {
     expect(a.Container).toBe(null);
     expect(a.Edges.length).toBe(1);
 
+    // Verify node.elkData populated during ingestion
+    expect(a.elkData).toBeDefined();
+    expect(a.elkData.id).toBe("a");
+    expect(a.elkData.width).toBe(100);
+
     const findEdge = (id) => graph.Edges.find(e => e.D2ID === id);
     const e1 = findEdge("e1");
     expect(e1.From).toBe(a);
@@ -105,6 +110,59 @@ describe("ELK Adapter", () => {
     expect(a.Edges[0].D2ID).toBe("e1");
   });
 
+  it("untouched multi-section ELK roundtrip preserves existing routes without mutation", () => {
+    const input = {
+      id: "root",
+      children: [
+        { id: "node1", width: 50, height: 50 },
+        { id: "node2", width: 50, height: 50 },
+      ],
+      edges: [
+        {
+          id: "edge1",
+          sources: ["node1"],
+          targets: ["node2"],
+          sections: [
+            {
+              id: "s1",
+              startPoint: { x: 10, y: 20 },
+              bendPoints: [{ x: 30, y: 40 }],
+              endPoint: { x: 50, y: 60 },
+              customSectionMetadata: "preserve-1",
+            },
+            {
+              id: "s2",
+              startPoint: { x: 50, y: 60 },
+              endPoint: { x: 70, y: 80 },
+              customSectionMetadata: "preserve-2",
+            },
+          ],
+        },
+      ],
+    };
+
+    // Run without route mutation: input -> elkToTalaGraph() -> talaToElkGraph() -> output
+    const graph = elkToTalaGraph(input);
+    const output = talaToElkGraph(graph);
+
+    expect(output.edges[0].sections).toEqual(input.edges[0].sections);
+  });
+
+  it("explicit port endpoint assertions on ports.json", () => {
+    const graph = elkToTalaGraph(portsFixture);
+    const table = graph.nodesByExternalId.get("table");
+    const edge = graph.edgesByExternalId.get("e1");
+
+    const portEndpoint = graph.endpoints.get("table.column.src");
+
+    expect(portEndpoint.kind).toBe("port");
+    expect(portEndpoint.node).toBe(table);
+    expect(portEndpoint.port.customPortMetadata).toBe("preserve-me");
+
+    expect(edge.sourceEndpointId).toBe("table.column.src");
+    expect(edge.targetEndpointId).toBe("b");
+  });
+
   it("should update geometry and edge routes during round-trip", () => {
     const graph = elkToTalaGraph(metadataPreservation);
     
@@ -143,7 +201,7 @@ describe("ELK Adapter", () => {
     expect(outE1.layoutOptions["elk.edgeRouting"]).toBe("ORTHOGONAL");
   });
 
-  it("should isolate references during cloneGraph", () => {
+  it("should isolate references during cloneGraph including port endpoints and elkData", () => {
     const originalInput = JSON.parse(JSON.stringify(portsFixture));
     const graph = elkToTalaGraph(originalInput);
     const clonedGraph = cloneGraph(graph);
@@ -153,6 +211,11 @@ describe("ELK Adapter", () => {
     const clonedTable = findNode(clonedGraph, "table");
     
     expect(table).not.toBe(clonedTable);
+    
+    // Node elkData isolation
+    expect(table.elkData).toBeDefined();
+    expect(clonedTable.elkData).toEqual(table.elkData);
+    expect(clonedTable.elkData).not.toBe(table.elkData);
     
     const findEdge = (g, id) => g.Edges.find(e => e.D2ID === id);
     const e1 = findEdge(graph, "e1");
@@ -165,7 +228,21 @@ describe("ELK Adapter", () => {
     expect(clonedTable.Edges.includes(clonedE1)).toBe(true);
     expect(clonedTable.Edges.includes(e1)).toBe(false);
 
-    // Endpoint isolation check
+    // Port endpoint clone-isolation assertions
+    const originalPortEndpoint = graph.endpoints.get("table.column.src");
+    const clonedPortEndpoint = clonedGraph.endpoints.get("table.column.src");
+
+    expect(clonedPortEndpoint).not.toBe(originalPortEndpoint);
+    expect(clonedPortEndpoint.node).toBe(clonedTable);
+    expect(clonedPortEndpoint.node).not.toBe(table);
+    expect(clonedPortEndpoint.port).not.toBe(originalPortEndpoint.port);
+    expect(clonedPortEndpoint.port.customPortMetadata).toBe("preserve-me");
+
+    // Mutating clone port payload must not mutate original payload
+    clonedPortEndpoint.port.customPortMetadata = "mutated-clone";
+    expect(originalPortEndpoint.port.customPortMetadata).toBe("preserve-me");
+
+    // Endpoint isolation check for node endpoint
     const ep = clonedGraph.endpoints.get("table");
     expect(ep.node).toBe(clonedTable);
     expect(ep.node).not.toBe(table);

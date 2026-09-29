@@ -37,14 +37,18 @@ export class Edge {
 
   reconnect(newEndpoint, isTo) {
     if (isTo) {
-      this.To.removeEdge(this);
+      if (this.To) this.To.removeEdge(this);
       newEndpoint.addEdge(this);
       this.To = newEndpoint;
     } else {
-      this.From.removeEdge(this);
+      if (this.From) this.From.removeEdge(this);
       newEndpoint.addEdge(this);
       this.From = newEndpoint;
     }
+  }
+
+  Reconnect(newEndpoint, isTo) {
+    this.reconnect(newEndpoint, isTo);
   }
 
   sourcePort() {

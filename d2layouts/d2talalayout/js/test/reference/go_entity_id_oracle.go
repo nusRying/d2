@@ -76,10 +76,16 @@ type TestCase struct {
 	Input []string `json:"input"`
 }
 
+type ComparisonCase struct {
+	A      string `json:"a"`
+	B      string `json:"b"`
+	Result int    `json:"result"`
+}
+
 type Output struct {
 	HashOracle      map[string]uint32 `json:"hash_oracle"`
 	AllocatedOracle map[string]string `json:"allocated_oracle"`
-	CompareOracle   map[string]int    `json:"compare_oracle,omitempty"`
+	Comparisons     []ComparisonCase  `json:"comparisons,omitempty"`
 }
 
 type RootOutput struct {
@@ -112,7 +118,6 @@ func main() {
 		out := Output{
 			HashOracle:      make(map[string]uint32),
 			AllocatedOracle: make(map[string]string),
-			CompareOracle:   make(map[string]int),
 		}
 
 		identities := make([]d2EntityIdentity, len(tc.Input))
@@ -132,14 +137,17 @@ func main() {
 
 		if len(tc.Input) == 2 {
 			a, b := tc.Input[0], tc.Input[1]
-			key := fmt.Sprintf("%q|<|%q", a, b)
+			res := 0
 			if a < b {
-				out.CompareOracle[key] = -1
+				res = -1
 			} else if a > b {
-				out.CompareOracle[key] = 1
-			} else {
-				out.CompareOracle[key] = 0
+				res = 1
 			}
+			out.Comparisons = append(out.Comparisons, ComparisonCase{
+				A:      a,
+				B:      b,
+				Result: res,
+			})
 		}
 
 		outData.Cases[tc.Name] = out

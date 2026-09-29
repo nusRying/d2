@@ -14,9 +14,13 @@
         "bls2q7BifE": "4294967296",
         "lKWF05zzXT": "4294967297"
       },
-      "compare_oracle": {
-        "\"lKWF05zzXT\"|\u003c|\"bls2q7BifE\"": 1
-      }
+      "comparisons": [
+        {
+          "a": "lKWF05zzXT",
+          "b": "bls2q7BifE",
+          "result": 1
+        }
+      ]
     },
     "collision_mock_reversed": {
       "hash_oracle": {
@@ -27,9 +31,13 @@
         "bls2q7BifE": "4294967296",
         "lKWF05zzXT": "4294967297"
       },
-      "compare_oracle": {
-        "\"bls2q7BifE\"|\u003c|\"lKWF05zzXT\"": -1
-      }
+      "comparisons": [
+        {
+          "a": "bls2q7BifE",
+          "b": "lKWF05zzXT",
+          "result": -1
+        }
+      ]
     },
     "complex_unicode": {
       "hash_oracle": {
@@ -94,9 +102,13 @@
         "": "4071403929",
         "𐀀": "364204981"
       },
-      "compare_oracle": {
-        "\"\\ue000\"|\u003c|\"𐀀\"": -1
-      }
+      "comparisons": [
+        {
+          "a": "",
+          "b": "𐀀",
+          "result": -1
+        }
+      ]
     },
     "utf8_ordering_reversed": {
       "hash_oracle": {
@@ -107,9 +119,13 @@
         "": "4071403929",
         "𐀀": "364204981"
       },
-      "compare_oracle": {
-        "\"𐀀\"|\u003c|\"\\ue000\"": 1
-      }
+      "comparisons": [
+        {
+          "a": "𐀀",
+          "b": "",
+          "result": 1
+        }
+      ]
     },
     "zero_hash": {
       "hash_oracle": {},

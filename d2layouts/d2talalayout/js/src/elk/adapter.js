@@ -100,6 +100,7 @@ export function elkToTalaGraph(elkGraph) {
   function visitNode(elkNode, containerNode, absX, absY) {
     const node = new Node(nodeIDs.get(elkNode), elkNode.width ?? 0, elkNode.height ?? 0);
     node.D2ID = elkNode.id;
+    node.elkData = structuredClone(elkNode);
     
     // Convert relative ELK coordinates to absolute TopLeft
     const x = absX + (elkNode.x ?? 0);

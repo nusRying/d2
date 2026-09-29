@@ -48,6 +48,7 @@ export function cloneGraph(source) {
     node.IsInvisible = srcNode.IsInvisible;
     node.setShape(srcNode.shapeType());
     node.setNumColumns(srcNode.numColumns());
+    node.elkData = structuredClone(srcNode.elkData);
 
     nodesByID.set(srcNode.ID, node);
     nodesBySource.set(srcNode, node);
@@ -68,7 +69,20 @@ export function cloneGraph(source) {
 
   // 2. Copy Edges
   const edgesByID = new Map();
+  const edgesBySource = new Map();
   for (const edge of source.Edges) {
+    if (edge === null || edge === undefined) {
+      throw new Error("cannot clone a nil edge");
+    }
+    if (edgesBySource.has(edge)) {
+      throw new Error(`cannot clone duplicate edge record ${edge.ID}`);
+    }
+    if (edge.ID !== 0n) {
+      if (edgesByID.has(edge.ID)) {
+        throw new Error(`cannot clone duplicate edge ID ${edge.ID}`);
+      }
+    }
+
     const from = resolveNode(edge.From);
     const to = resolveNode(edge.To);
     
@@ -97,7 +111,10 @@ export function cloneGraph(source) {
       clonedEdge.Points.push(pt.copy());
     }
 
-    edgesByID.set(edge.ID, clonedEdge);
+    edgesBySource.set(edge, clonedEdge);
+    if (edge.ID !== 0n) {
+      edgesByID.set(edge.ID, clonedEdge);
+    }
     cloned.Edges.push(clonedEdge);
 
     clonedEdge.From.addEdge(clonedEdge);
@@ -109,37 +126,39 @@ export function cloneGraph(source) {
   // 3. Copy Containers using RDFS from null (matches Go's copyContainers traversal).
   // Containers not reachable from Containers[null] are intentionally not propagated,
   // preserving parity with Go's containerRDFSOrderContext behavior.
-  function containerRDFSOrder(root) {
-    const order = [];
-    const rootChildren = [...(source.Containers.get(root) || [])].reverse();
-    for (const child of rootChildren) {
-      if (child.isContainer) {
-        order.push(...containerRDFSOrder(child));
-        order.push(child);
+  if (source.Containers.size > 0) {
+    function containerRDFSOrder(root) {
+      const order = [];
+      const rootChildren = [...(source.Containers.get(root) || [])].reverse();
+      for (const child of rootChildren) {
+        if (child.isContainer) {
+          order.push(...containerRDFSOrder(child));
+          order.push(child);
+        }
       }
+      return order;
     }
-    return order;
-  }
 
-  const rdfsOrder = containerRDFSOrder(null);
-  if (source.Containers.size !== rdfsOrder.length + 1) {
-    throw new Error("unreachable containers exist in source");
-  }
-  rdfsOrder.push(null); // null appended last, like Go appends nil
-
-  cloned.Containers = new Map();
-  for (const srcContainer of rdfsOrder) {
-    const container = srcContainer ? resolveNode(srcContainer) : null;
-    const srcChildren = source.Containers.get(srcContainer) || [];
-    const clonedChildren = [];
-    for (const child of srcChildren) {
-      const clonedChild = resolveNode(child);
-      clonedChild.Container = container;
-      clonedChildren.push(clonedChild);
+    const rdfsOrder = containerRDFSOrder(null);
+    if (source.Containers.size !== rdfsOrder.length + 1) {
+      throw new Error("unreachable containers exist in source");
     }
-    cloned.Containers.set(container, clonedChildren);
-    if (container !== null) {
-      container.isContainer = true;
+    rdfsOrder.push(null); // null appended last, like Go appends nil
+
+    cloned.Containers = new Map();
+    for (const srcContainer of rdfsOrder) {
+      const container = srcContainer ? resolveNode(srcContainer) : null;
+      const srcChildren = source.Containers.get(srcContainer) || [];
+      const clonedChildren = [];
+      for (const child of srcChildren) {
+        const clonedChild = resolveNode(child);
+        clonedChild.Container = container;
+        clonedChildren.push(clonedChild);
+      }
+      cloned.Containers.set(container, clonedChildren);
+      if (container !== null) {
+        container.isContainer = true;
+      }
     }
   }
 
@@ -172,13 +191,13 @@ export function cloneGraph(source) {
     cloned.nodesByExternalId.set(k, resolveNode(v));
   }
   for (const [k, v] of source.edgesByExternalId.entries()) {
-    cloned.edgesByExternalId.set(k, edgesByID.get(v.ID));
+    cloned.edgesByExternalId.set(k, edgesBySource.get(v));
   }
   for (const [k, v] of source.nodesByEntityId.entries()) {
     cloned.nodesByEntityId.set(k, resolveNode(v));
   }
   for (const [k, v] of source.edgesByEntityId.entries()) {
-    cloned.edgesByEntityId.set(k, edgesByID.get(v.ID));
+    cloned.edgesByEntityId.set(k, edgesBySource.get(v));
   }
 
   for (const [k, v] of source.endpoints.entries()) {

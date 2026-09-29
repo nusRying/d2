@@ -64,7 +64,14 @@ export class Graph {
   }
 
   AddEdge(edge) {
+    if (this.Edges.includes(edge)) {
+      return;
+    }
     this.Edges.push(edge);
+  }
+
+  addEdge(edge) {
+    this.AddEdge(edge);
   }
 
   connect(from, to) {
@@ -77,11 +84,15 @@ export class Graph {
     return edge;
   }
 
+  Connect(from, to) {
+    return this.connect(from, to);
+  }
+
   disconnect(edge) {
     if (!edge) return;
     
     if (edge.From) edge.From.removeEdge(edge);
-    if (edge.To && !edge.isLoop()) edge.To.removeEdge(edge);
+    if (edge.To) edge.To.removeEdge(edge);
 
     const idx = this.Edges.indexOf(edge);
     if (idx !== -1) {
@@ -89,28 +100,29 @@ export class Graph {
     }
   }
 
+  Disconnect(edge) {
+    this.disconnect(edge);
+  }
+
   direction(container) {
     return this.Directions.has(container) ? this.Directions.get(container) : Orientation.NONE;
   }
 
+  Direction(container) {
+    return this.direction(container);
+  }
+
   computeCellSize() {
-    let minWidth = Number.POSITIVE_INFINITY;
-    let minHeight = Number.POSITIVE_INFINITY;
-    let maxWidth = 0;
-    let maxHeight = 0;
+    let minHeight = Infinity;
+    let minWidth = Infinity;
+    let maxHeight = -Infinity;
+    let maxWidth = -Infinity;
 
-    let hasNodes = false;
-    for (const n of this.Nodes) {
-      hasNodes = true;
-      if (n.Width < minWidth) minWidth = n.Width;
-      if (n.Height < minHeight) minHeight = n.Height;
-      if (n.Width > maxWidth) maxWidth = n.Width;
-      if (n.Height > maxHeight) maxHeight = n.Height;
-    }
-
-    if (!hasNodes) {
-      this.CellSize = 10;
-      return;
+    for (const node of this.Nodes) {
+      minWidth = Math.min(minWidth, node.Width);
+      minHeight = Math.min(minHeight, node.Height);
+      maxWidth = Math.max(maxWidth, node.Width);
+      maxHeight = Math.max(maxHeight, node.Height);
     }
 
     const minLength = Math.min(minWidth, minHeight);
@@ -122,9 +134,11 @@ export class Graph {
       this.CellSize = Math.ceil((3 * minLength) / 2);
     }
     
-    if (this.CellSize < 10) {
-      this.CellSize = 10;
-    }
+    this.CellSize = Math.max(this.CellSize, 10);
+  }
+
+  ComputeCellSize() {
+    this.computeCellSize();
   }
 }
 

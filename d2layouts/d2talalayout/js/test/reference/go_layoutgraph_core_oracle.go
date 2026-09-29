@@ -29,8 +29,9 @@ func main() {
 	// 1. NewGraph defaults
 	g1 := layoutgraph.NewGraph()
 	outData.Cases["NewGraphDefaults"] = map[string]interface{}{
-		"IsRootHierarchy": g1.IsRootHierarchy,
-		"CellSize":        g1.CellSize,
+		"IsRootHierarchy":    g1.IsRootHierarchy,
+		"CellSize":           g1.CellSize,
+		"ContainerMapLength": len(g1.Containers),
 	}
 
 	// 2. AddNodeUnchecked, AddNodeToContainer, AddNewNodeToContainer
@@ -114,6 +115,34 @@ func main() {
 		"GraphEdgesCount": len(g3.Edges),
 		"N8EdgesCount": len(n8.Edges),
 		"N9EdgesCount": len(n9.Edges),
+	}
+
+	// 4b. AddEdge exact object behavior
+	gAddEdge := layoutgraph.NewGraph()
+	edgeObj1 := &layoutgraph.Edge{ID: 100}
+	edgeObj2 := &layoutgraph.Edge{ID: 100} // distinct object with identical fields
+	gAddEdge.AddEdge(edgeObj1)
+	gAddEdge.AddEdge(edgeObj1) // same Edge object added twice
+	countAfterDuplicate := len(gAddEdge.Edges)
+	gAddEdge.AddEdge(edgeObj2) // different Edge object
+	countAfterDistinct := len(gAddEdge.Edges)
+	outData.Cases["AddEdgeExactObject"] = map[string]interface{}{
+		"CountAfterDuplicate": countAfterDuplicate,
+		"CountAfterDistinct":  countAfterDistinct,
+	}
+
+	// 4c. Disconnect loop semantics with Reconnect
+	gLoop := layoutgraph.NewGraph()
+	nodeA := &layoutgraph.Node{ID: 50}
+	nodeB := &layoutgraph.Node{ID: 51}
+	gLoop.AddNodeUnchecked(nodeA)
+	gLoop.AddNodeUnchecked(nodeB)
+	eLoop := gLoop.Connect(nodeA, nodeB)
+	eLoop.Reconnect(nodeB, false) // Reconnect From to nodeB => B -> B
+	gLoop.Disconnect(eLoop)
+	outData.Cases["DisconnectLoop"] = map[string]interface{}{
+		"BEdgesCount":     len(nodeB.Edges),
+		"GraphEdgesCount": len(gLoop.Edges),
 	}
 
 	g7 := layoutgraph.NewGraph()

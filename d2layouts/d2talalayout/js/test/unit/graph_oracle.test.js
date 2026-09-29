@@ -17,6 +17,7 @@ describe("LayoutGraph Go Parity", () => {
     const g = new Graph();
     expect(g.IsRootHierarchy).toBe(cases.NewGraphDefaults.IsRootHierarchy);
     expect(g.CellSize).toBe(cases.NewGraphDefaults.CellSize);
+    expect(g.Containers.size).toBe(cases.NewGraphDefaults.ContainerMapLength);
   });
 
   it("NodeHierarchy", () => {
@@ -136,6 +137,35 @@ describe("LayoutGraph Go Parity", () => {
     expect(n8.Edges.length).toBe(cases.Disconnect.N8EdgesCount);
     expect(n9.Edges.length).toBe(cases.Disconnect.N9EdgesCount);
     expect(g.Edges.length).toBe(cases.Disconnect.GraphEdgesCount);
+  });
+
+  it("AddEdgeExactObject", () => {
+    const g = new Graph();
+    const edge1 = new Edge(null, null);
+    edge1.ID = 100n;
+    const edge2 = new Edge(null, null);
+    edge2.ID = 100n; // distinct object with identical fields
+
+    g.AddEdge(edge1);
+    g.AddEdge(edge1); // duplicate object
+    expect(g.Edges.length).toBe(cases.AddEdgeExactObject.CountAfterDuplicate);
+
+    g.AddEdge(edge2); // different object
+    expect(g.Edges.length).toBe(cases.AddEdgeExactObject.CountAfterDistinct);
+  });
+
+  it("DisconnectLoop", () => {
+    const g = new Graph();
+    const nodeA = new Node(50n);
+    const nodeB = new Node(51n);
+    g.addNodeUnchecked(nodeA);
+    g.addNodeUnchecked(nodeB);
+    const eLoop = g.connect(nodeA, nodeB);
+    eLoop.Reconnect(nodeB, false); // Reconnect From to nodeB => B -> B
+    g.Disconnect(eLoop);
+
+    expect(nodeB.Edges.length).toBe(cases.DisconnectLoop.BEdgesCount);
+    expect(g.Edges.length).toBe(cases.DisconnectLoop.GraphEdgesCount);
   });
 
   it("Directions", () => {
