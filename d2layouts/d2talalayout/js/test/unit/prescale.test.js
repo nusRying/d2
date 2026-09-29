@@ -5,8 +5,20 @@ import { Label } from "../../src/graph/label.js";
 import { Point } from "../../src/geometry/point.js";
 import { prescale, Prescale, talaFontSizes } from "../../src/placement/prescale.js";
 import { elkToTalaGraph, talaToElkGraph } from "../../src/elk/adapter.js";
+import { cloneGraph } from "../../src/graph/clone.js";
 
 describe("Prescale Focused Unit Tests", () => {
+  it("should fail when prescale is passed null or undefined matching Go unhandled nil pointer", () => {
+    expect(() => prescale(null)).toThrow();
+    expect(() => prescale(undefined)).toThrow();
+  });
+
+  it("should succeed as a no-op on a valid empty Graph", () => {
+    const g = new Graph();
+    expect(() => prescale(g)).not.toThrow();
+    expect(g.Nodes.length).toBe(0);
+  });
+
   it("should provide an immutable font scale from talaFontSizes()", () => {
     const a = talaFontSizes();
     expect(a).toEqual([13, 14, 16, 20, 24, 28, 32]);
@@ -109,45 +121,159 @@ describe("Prescale Focused Unit Tests", () => {
 
   it("should preserve topology invariants and only mutate allowed node fields", () => {
     const g = new Graph();
-    const nA = new Node(1, 80, 80);
+    const container = new Node(100n, 300, 300);
+    g.Nodes.push(container);
+    g.Containers.set(container, []);
+
+    const nA = new Node(1n, 80, 80);
     nA.D2ID = "nodeA";
     nA.TopLeft = new Point(10, 15);
+    nA.FixedTopLeft = new Point(10, 15);
+    nA.DesiredWidth = 80;
+    nA.DesiredHeight = 80;
     nA.FontSize = 16;
-    nA.Label = new Label("lbl", 30, 10);
+    nA.Label = new Label("lblA", 30, 10);
+    nA.Container = container;
 
-    const nB = new Node(2, 100, 100);
+    const nB = new Node(2n, 100, 100);
     nB.D2ID = "nodeB";
     nB.TopLeft = new Point(200, 200);
 
-    g.Nodes.push(nA, nB);
-    const edge1 = g.connect(nA, nB);
-    const edge2 = g.connect(nA, nB);
+    const nC = new Node(3n, 80, 80);
+    nC.D2ID = "nodeC";
+    nC.TopLeft = new Point(50, 50);
+    nC.FontSize = 16;
+    nC.Label = new Label("lblC", 30, 10);
+
+    g.Nodes.push(nA, nB, nC);
+    g.Containers.get(container).push(nA);
+    g.connect(nA, nB);
+    g.connect(nA, nB);
+    g.connect(nC, nB);
+    g.connect(nC, nB);
+    nA.addNear(nB);
 
     const initialNodes = [...g.Nodes];
     const initialEdges = [...g.Edges];
+    const initialContainers = g.Containers;
+    const initialClusters = g.Clusters;
+    const initialSequences = g.Sequences;
+    const initialTrees = g.Trees;
     const nAEdges = [...nA.Edges];
     const nBEdges = [...nB.Edges];
+    const nCEdges = [...nC.Edges];
+    const nANears = new Set(nA.Nears);
+    const nBNears = new Set(nB.Nears);
+
+    const nAID = nA.ID;
+    const nAD2ID = nA.D2ID;
+    const nATopLeft = nA.TopLeft;
+    const nAFixedTopLeft = nA.FixedTopLeft;
+    const nADesiredWidth = nA.DesiredWidth;
+    const nADesiredHeight = nA.DesiredHeight;
+    const nAContainer = nA.Container;
+    const nACluster = nA.Cluster;
+    const nASequence = nA.Sequence;
+
+    const nCID = nC.ID;
+    const nCD2ID = nC.D2ID;
+    const nCTopLeft = nC.TopLeft;
+    const nCFixedTopLeft = nC.FixedTopLeft;
+    const nCDesiredWidth = nC.DesiredWidth;
+    const nCDesiredHeight = nC.DesiredHeight;
+    const nCContainer = nC.Container;
+    const nCCluster = nC.Cluster;
+    const nCSequence = nC.Sequence;
 
     prescale(g);
 
     // Graph and edge topology identities remain unchanged
     expect(g.Nodes).toEqual(initialNodes);
     expect(g.Edges).toEqual(initialEdges);
+    expect(g.Containers).toBe(initialContainers);
+    expect(g.Clusters).toBe(initialClusters);
+    expect(g.Sequences).toBe(initialSequences);
+    expect(g.Trees).toBe(initialTrees);
+
+    // Node edges and nears unchanged
     expect(nA.Edges).toEqual(nAEdges);
     expect(nB.Edges).toEqual(nBEdges);
+    expect(nC.Edges).toEqual(nCEdges);
+    expect(nA.Nears).toEqual(nANears);
+    expect(nB.Nears).toEqual(nBNears);
 
-    // Positions and identifiers preserved
-    expect(nA.TopLeft.X).toBe(10);
-    expect(nA.TopLeft.Y).toBe(15);
-    expect(nA.D2ID).toBe("nodeA");
-    expect(nA.ID).toBe(1);
+    // Structural fields strictly preserved
+    expect(nA.ID).toBe(nAID);
+    expect(nA.D2ID).toBe(nAD2ID);
+    expect(nA.TopLeft).toBe(nATopLeft);
+    expect(nA.FixedTopLeft).toBe(nAFixedTopLeft);
+    expect(nA.DesiredWidth).toBe(nADesiredWidth);
+    expect(nA.DesiredHeight).toBe(nADesiredHeight);
+    expect(nA.Container).toBe(nAContainer);
+    expect(nA.Cluster).toBe(nACluster);
+    expect(nA.Sequence).toBe(nASequence);
 
-    // Only allowed fields mutated
-    expect(nA.Width).toBe(120);
-    expect(nA.Height).toBe(120);
-    expect(nA.FontSize).toBe(24);
-    expect(nA.Label.Width).toBe(45);
-    expect(nA.Label.Height).toBe(15);
+    expect(nC.ID).toBe(nCID);
+    expect(nC.D2ID).toBe(nCD2ID);
+    expect(nC.TopLeft).toBe(nCTopLeft);
+    expect(nC.FixedTopLeft).toBe(nCFixedTopLeft);
+    expect(nC.DesiredWidth).toBe(nCDesiredWidth);
+    expect(nC.DesiredHeight).toBe(nCDesiredHeight);
+    expect(nC.Container).toBe(nCContainer);
+    expect(nC.Cluster).toBe(nCCluster);
+    expect(nC.Sequence).toBe(nCSequence);
+
+    // nA skipped edge scaling due to FixedTopLeft/DesiredWidth
+    expect(nA.Width).toBe(80);
+    expect(nA.Height).toBe(80);
+    expect(nA.FontSize).toBe(16);
+    expect(nA.Label.Width).toBe(30);
+    expect(nA.Label.Height).toBe(10);
+
+    // nC scaled only its allowed fields
+    expect(nC.Width).toBe(120);
+    expect(nC.Height).toBe(120);
+    expect(nC.FontSize).toBe(24);
+    expect(nC.Label.Width).toBe(45);
+    expect(nC.Label.Height).toBe(15);
+  });
+
+  it("should integrate cloneGraph and prescale without mutating source", () => {
+    const source = new Graph();
+    const nA = new Node(1n, 80, 80);
+    nA.FontSize = 16;
+    const label = new Label("source-lbl", 30, 10);
+    label.FixPosition();
+    nA.Label = label;
+
+    const nB = new Node(2n, 100, 100);
+    source.Nodes.push(nA, nB);
+    source.connect(nA, nB);
+    source.connect(nA, nB);
+
+    const workspace = cloneGraph(source);
+    const wsNodeA = workspace.Nodes.find((n) => n.ID === 1n);
+
+    expect(wsNodeA.Label instanceof Label).toBe(true);
+    expect(wsNodeA.Label).not.toBe(label);
+
+    prescale(workspace);
+
+    // Workspace scaled
+    expect(wsNodeA.Width).toBe(120);
+    expect(wsNodeA.Height).toBe(120);
+    expect(wsNodeA.FontSize).toBe(24);
+    expect(wsNodeA.Label instanceof Label).toBe(true);
+    expect(wsNodeA.Label.Width).toBe(45);
+    expect(wsNodeA.Label.Height).toBe(15);
+
+    // Source completely untouched
+    expect(nA.Width).toBe(80);
+    expect(nA.Height).toBe(80);
+    expect(nA.FontSize).toBe(16);
+    expect(label.Width).toBe(30);
+    expect(label.Height).toBe(10);
+    expect(label.PositionFixed()).toBe(true);
   });
 
   it("should be deterministic regardless of node iteration order in Graph.Nodes", () => {

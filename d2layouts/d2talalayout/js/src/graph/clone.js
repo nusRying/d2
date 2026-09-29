@@ -6,6 +6,15 @@ import { Cluster } from "./cluster.js";
 import { Sequence } from "./sequence.js";
 import { Tree } from "./tree.js";
 import { EdgeAbduction } from "./edge-abduction.js";
+import { Label } from "./label.js";
+
+function copyLabelRecord(source) {
+  if (source == null) return null;
+  const cloned = new Label(source.Text, source.Width, source.Height);
+  cloned.Position = copyValue(source.Position);
+  // Note: positionFixed is intentionally NOT copied, matching Go copyLabelRecord semantics
+  return cloned;
+}
 
 // copyValue clones an embedded value if present, specifically geo primitives
 function copyValue(val) {
@@ -48,7 +57,7 @@ export function cloneGraph(source) {
     node.DesiredHeight = srcNode.DesiredHeight;
     node.Graph = cloned;
     node.FontSize = srcNode.FontSize;
-    node.Label = copyValue(srcNode.Label);
+    node.Label = copyLabelRecord(srcNode.Label);
     node.Icon = copyValue(srcNode.Icon);
     node.ForceHierarchy = srcNode.ForceHierarchy;
     node.Is3D = srcNode.Is3D;
@@ -123,9 +132,9 @@ export function cloneGraph(source) {
     clonedEdge.MinHeight = sourceEdge.MinHeight;
     clonedEdge.SourceArrowhead = sourceEdge.SourceArrowhead;
     clonedEdge.TargetArrowhead = sourceEdge.TargetArrowhead;
-    clonedEdge.SourceArrowheadLabel = copyValue(sourceEdge.SourceArrowheadLabel);
-    clonedEdge.TargetArrowheadLabel = copyValue(sourceEdge.TargetArrowheadLabel);
-    clonedEdge.Label = copyValue(sourceEdge.Label);
+    clonedEdge.SourceArrowheadLabel = copyLabelRecord(sourceEdge.SourceArrowheadLabel);
+    clonedEdge.TargetArrowheadLabel = copyLabelRecord(sourceEdge.TargetArrowheadLabel);
+    clonedEdge.Label = copyLabelRecord(sourceEdge.Label);
     clonedEdge.LabelPercentage = sourceEdge.LabelPercentage;
     clonedEdge.FromTableColumnIndex = sourceEdge.FromTableColumnIndex;
     clonedEdge.ToTableColumnIndex = sourceEdge.ToTableColumnIndex;

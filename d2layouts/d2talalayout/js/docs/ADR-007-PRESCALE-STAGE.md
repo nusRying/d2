@@ -90,17 +90,22 @@ Each condition is evaluated independently without combining null semantics.
   `node.Label.Height = Math.ceil(node.Label.Height * bestRatio)`
 
 ### 9. Self-Loop and Zero-Dimension Semantics
-- When all edges on a node are self-loops, `edgeCounts` is empty (`sidesForEdges === 0`). In Go, `float64(0)/0` produces `NaN`, which truncates to integer `0` in `int(math.Ceil(NaN))`. JS maps `sidesForEdges === 0` to `0` to prevent propagating `NaN`, resulting in `minLength = (0 + 1) * 40 = 40.0`. Small nodes (e.g. 20x20) expand to 40x40 with font scaling matching the Go oracle.
+- When all edges on a node are self-loops, `edgeCounts` is empty and `sidesForEdges` is `0.0`. In Go, `float64(0)/0` produces `NaN`; on amd64, converting `math.Ceil(NaN)` to `int` produces an implementation-dependent negative integer value, after which `max(maxEdgesToAdjacent, convertedCeil)` evaluates to `0` because `maxEdgesToAdjacent` is `0`. The final observed semantic outcome in Go is `edgesPerSide = 0`, bypassing the `edgesPerSide == 1` early-return check and setting `minLength = (0 + 1) * 40.0 = 40.0`. To reliably reproduce this final Go oracle result without depending on host-specific NaN integer conversion semantics, JS explicitly maps `sidesForEdges === 0` to `0`. A small node (e.g. 20×20) with only self-loops scales to 40×40 with font scaling to 32 and label scaling to 20×20.
 - When `Width = 0` or `Height = 0`, ratio division produces `Infinity`. Distance checks against `Infinity` evaluate to false (`Infinity < Infinity` is false), so `FontSize` and `Label` remain unscaled while geometry expands to `minLength`, matching Go.
 
-### 10. Mutation Boundary and Non-Mutation of Topology
-`Prescale` mutates only:
+### 10. Label Cloning Semantics
+- In Go `copyLabelRecord(source *Label) *Label`, `Text`, `Position`, `Width`, and `Height` are copied into a newly allocated `*Label`.
+- The unexported `positionFixed` flag is intentionally not copied and resets to `false` in the cloned record.
+- In JS `clone.js`, `copyLabelRecord(source)` clones labels as `instanceof Label`, preserving public properties while leaving `_positionFixed` reset to `false`.
+
+### 11. Mutation Boundary and Non-Mutation of Topology
+`Prescale` operates directly on `graph.Nodes` (throwing on null/undefined graph input) and mutates only:
 - `node.Width`
 - `node.Height`
 - `node.FontSize`
 - `node.Label.Width`
 - `node.Label.Height`
-All other graph topology (nodes, edges, containers, groups, trees, coordinates, nears, IDs) remains strictly unmutated.
+All other graph topology (nodes, edges, containers, groups, trees, coordinates, nears, IDs) remains strictly unmutated. A valid empty graph (`new Graph()`) succeeds as a no-op.
 
 ## Consequences
 - The JavaScript engine now possesses its first executable layout stage matching Go reference behavior.

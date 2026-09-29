@@ -8,7 +8,6 @@ export function talaFontSizes() {
 }
 
 export function prescale(graph) {
-  if (!graph || !graph.Nodes) return;
   for (const node of graph.Nodes) {
     if (node.AspectRatio1()) {
       const size = Math.max(node.Width, node.Height);
@@ -55,8 +54,11 @@ function scaleBasedOnEdges(node) {
     sidesForEdges = edgeCounts.size;
   }
 
-  // When sidesForEdges is 0 (all edges are self-loops), in Go float64(0)/0 is NaN,
-  // and int(math.Ceil(NaN)) evaluates to 0 on amd64. In JS 0 / 0 is NaN, so we map to 0 explicitly.
+  // When all edges on a node are self-loops, edgeCounts is empty and sidesForEdges is 0.
+  // In the reference Go implementation, float64(0)/0 is NaN; casting math.Ceil(NaN) to int produces
+  // an implementation-dependent negative integer value on amd64, after which max(maxEdgesToAdjacent, convertedCeil)
+  // evaluates to 0 (since maxEdgesToAdjacent is 0). To reproduce this observed final semantic result
+  // without relying on host-specific NaN integer conversion semantics, JS explicitly sets ceilEdges to 0 when sidesForEdges is 0.
   const ceilEdges = sidesForEdges === 0 ? 0 : Math.ceil(totalEdges / sidesForEdges);
   const edgesPerSide = Math.max(maxEdgesToAdjacent, ceilEdges);
 

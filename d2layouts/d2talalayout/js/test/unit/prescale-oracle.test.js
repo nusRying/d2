@@ -9,6 +9,14 @@ import referenceFixture from "../fixtures/go-prescale-reference.json";
 
 describe("Prescale Go Parity Oracle Tests", () => {
   it("should match metadata and constants from Go reference", () => {
+    expect(typeof referenceFixture.metadata.runtimeGoVersion).toBe("string");
+    expect(referenceFixture.metadata.runtimeGoVersion.length).toBeGreaterThan(0);
+    expect(typeof referenceFixture.metadata.runtimeGOOS).toBe("string");
+    expect(referenceFixture.metadata.runtimeGOOS.length).toBeGreaterThan(0);
+    expect(typeof referenceFixture.metadata.runtimeGOARCH).toBe("string");
+    expect(referenceFixture.metadata.runtimeGOARCH.length).toBeGreaterThan(0);
+    expect(referenceFixture.metadata.d2BaseCommit).toBe("01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579");
+    expect(referenceFixture.metadata.referencePackage).toBe("github.com/d2lang/d2/d2layouts/d2talalayout/internal/placement");
     expect(SideEdgeSpacing).toBe(referenceFixture.metadata.sideEdgeSpacing);
     expect(talaFontSizes()).toEqual(referenceFixture.metadata.adapterFontSizes);
   });

@@ -8,6 +8,7 @@ import { Cluster, ClusterArrangement } from "../../src/graph/cluster.js";
 import { Tree } from "../../src/graph/tree.js";
 import { EdgeAbduction } from "../../src/graph/edge-abduction.js";
 import { Orientation } from "../../src/geometry/orientation.js";
+import { Label } from "../../src/graph/label.js";
 
 function findNode(graph, id) {
   for (const n of graph.Nodes) {
@@ -397,5 +398,84 @@ describe("Group Clone Unit Tests", () => {
     g.Sequences.set(vessel, seq);
 
     expect(() => cloneGraph(g)).toThrow("node 999 is not included in the graph");
+  });
+
+  it("should clone Node.Label preserving Label instance, public fields, and resetting positionFixed", () => {
+    const g = new Graph();
+    const node = new Node(1n, 100, 50);
+    const label = new Label("test-label", 60, 20);
+    label.Position = "Top";
+    label.FixPosition();
+    expect(label.PositionFixed()).toBe(true);
+    node.Label = label;
+    g.addNodeUnchecked(node);
+
+    const clonedGraph = cloneGraph(g);
+    const clonedNode = clonedGraph.Nodes[0];
+
+    expect(node.Label instanceof Label).toBe(true);
+    expect(clonedNode.Label instanceof Label).toBe(true);
+    expect(clonedNode.Label).not.toBe(node.Label);
+    expect(clonedNode.Label.Text).toBe("test-label");
+    expect(clonedNode.Label.Position).toBe("Top");
+    expect(clonedNode.Label.Width).toBe(60);
+    expect(clonedNode.Label.Height).toBe(20);
+    expect(typeof clonedNode.Label.PositionFixed).toBe("function");
+    expect(typeof clonedNode.Label.FixPosition).toBe("function");
+
+    // Position was copied, but positionFixed is reset to false matching Go copyLabelRecord
+    expect(clonedNode.Label.PositionFixed()).toBe(false);
+  });
+
+  it("should clone Edge labels preserving Label instances, public fields, and resetting positionFixed", () => {
+    const g = new Graph();
+    const n1 = new Node(1n, 80, 80);
+    const n2 = new Node(2n, 80, 80);
+    g.addNodeUnchecked(n1);
+    g.addNodeUnchecked(n2);
+    const edge = g.connect(n1, n2);
+
+    const mainLabel = new Label("edge-label", 40, 15);
+    mainLabel.Position = "Center";
+    mainLabel.FixPosition();
+
+    const srcLabel = new Label("src-label", 25, 10);
+    srcLabel.Position = "Start";
+    srcLabel.FixPosition();
+
+    const tgtLabel = new Label("tgt-label", 30, 12);
+    tgtLabel.Position = "End";
+    tgtLabel.FixPosition();
+
+    edge.Label = mainLabel;
+    edge.SourceArrowheadLabel = srcLabel;
+    edge.TargetArrowheadLabel = tgtLabel;
+
+    const clonedGraph = cloneGraph(g);
+    const clonedEdge = clonedGraph.Edges[0];
+
+    expect(clonedEdge.Label instanceof Label).toBe(true);
+    expect(clonedEdge.Label).not.toBe(edge.Label);
+    expect(clonedEdge.Label.Text).toBe("edge-label");
+    expect(clonedEdge.Label.Position).toBe("Center");
+    expect(clonedEdge.Label.Width).toBe(40);
+    expect(clonedEdge.Label.Height).toBe(15);
+    expect(clonedEdge.Label.PositionFixed()).toBe(false);
+
+    expect(clonedEdge.SourceArrowheadLabel instanceof Label).toBe(true);
+    expect(clonedEdge.SourceArrowheadLabel).not.toBe(edge.SourceArrowheadLabel);
+    expect(clonedEdge.SourceArrowheadLabel.Text).toBe("src-label");
+    expect(clonedEdge.SourceArrowheadLabel.Position).toBe("Start");
+    expect(clonedEdge.SourceArrowheadLabel.Width).toBe(25);
+    expect(clonedEdge.SourceArrowheadLabel.Height).toBe(10);
+    expect(clonedEdge.SourceArrowheadLabel.PositionFixed()).toBe(false);
+
+    expect(clonedEdge.TargetArrowheadLabel instanceof Label).toBe(true);
+    expect(clonedEdge.TargetArrowheadLabel).not.toBe(edge.TargetArrowheadLabel);
+    expect(clonedEdge.TargetArrowheadLabel.Text).toBe("tgt-label");
+    expect(clonedEdge.TargetArrowheadLabel.Position).toBe("End");
+    expect(clonedEdge.TargetArrowheadLabel.Width).toBe(30);
+    expect(clonedEdge.TargetArrowheadLabel.Height).toBe(12);
+    expect(clonedEdge.TargetArrowheadLabel.PositionFixed()).toBe(false);
   });
 });

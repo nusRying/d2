@@ -115,11 +115,12 @@ Conditions are evaluated independently without collapsing null semantics.
 
 ## Self-Loop Oracle Findings
 - In Go, when all edges are self-loops, `edgeCounts` is empty and `sidesForEdges = 0.0`.
-- In Go, `math.Ceil(0.0 / 0.0)` produces `NaN`, which converts to `0` in `int(math.Ceil(NaN))`.
-- Consequently, `edgesPerSide = 0`, which avoids the `edgesPerSide == 1` early return.
+- In Go, `math.Ceil(0.0 / 0.0)` produces `NaN`. In Go's amd64 runtime, the floating-point to integer conversion `int(math.Ceil(NaN))` produces an implementation-defined integer conversion result (minimum integer/negative value).
+- Because `maxEdgesToAdjacent == 0`, `max(maxEdgesToAdjacent, convertedCeil)` produces `0`.
+- Therefore, the final observed `edgesPerSide = 0`, avoiding the `edgesPerSide == 1` early return.
 - `minLength = (0 + 1) * 40.0 = 40.0`.
 - A small node (e.g. 20x20) with only self-loops scales to 40x40, with `fontSize = 32` and label scaling to 20x20.
-- In JavaScript, `0 / 0` is `NaN` and `Math.max(0, NaN)` is `NaN`. To reproduce Go's exact behavior, JS explicitly maps `sidesForEdges === 0` to `0`, ensuring exact parity without `NaN` propagation.
+- In JavaScript, `0 / 0` is `NaN` and `Math.max(0, NaN)` is `NaN`. To match the observed Go runtime outcome without relying on architecture-specific NaN-cast quirks, JS explicitly maps `sidesForEdges === 0` to `0`.
 
 ## Zero-Dimension Oracle Findings
 - When `Width = 0` or `Height = 0`, ratio division yields `Infinity`.
@@ -127,6 +128,17 @@ Conditions are evaluated independently without collapsing null semantics.
 - The font search loop never updates `fontSize` or `bestRatio`.
 - `node.Width` and `node.Height` expand to `minLength`, while `FontSize` and `Label` remain unchanged.
 - JavaScript IEEE-754 arithmetic reproduces this behavior identically.
+
+## Dedicated Label Cloning Semantics
+- In Go (`clone.go`), `copyLabelRecord` copies `Text`, `Position`, `Width`, and `Height`.
+- The private Go field `positionFixed` is unexported and deliberately omitted from `copyLabelRecord`, so cloned labels always reset `positionFixed` to `false`.
+- JavaScript `src/graph/clone.js` uses a dedicated `copyLabelRecord(source)` helper for `Node.Label`, `Edge.Label`, `Edge.SourceArrowheadLabel`, and `Edge.TargetArrowheadLabel`.
+- This ensures cloned labels remain `instanceof Label`, preserve their public properties, and have `_positionFixed` reset to `false` matching Go.
+
+## Input Validation Semantics
+- `prescale(graph)` operates directly on `graph.Nodes` matching Go's `Prescale(graph *layoutgraph.Graph)`.
+- Null or undefined graph input throws a natural JavaScript exception rather than silently early-returning.
+- Valid empty graphs (`new Graph()` with `Nodes.length === 0`) succeed safely as no-ops.
 
 ## ELK Integration Smoke Test
 - Ingested ELK graph with 2 nodes and 3 parallel edges via `elkToTalaGraph`.
@@ -136,13 +148,13 @@ Conditions are evaluated independently without collapsing null semantics.
 
 ## Go Oracle Fixture SHA256
 - Fixture path: `test/fixtures/go-prescale-reference.json`
-- SHA256: `a8c00d92004032ac6fdac974c984ccdd8e0bc6155ca8587f34348b3ee2bb10e2`
+- SHA256: `be0d77400186e811a988db2416fe1b9d92ab45750a47f492dc71a78ec375de76`
 
 ## Fixture Reproducibility
 Generated twice consecutively with `C:\Program Files\Go\bin\go.exe`:
-- Run A SHA256: `a8c00d92004032ac6fdac974c984ccdd8e0bc6155ca8587f34348b3ee2bb10e2`
-- Run B SHA256: `a8c00d92004032ac6fdac974c984ccdd8e0bc6155ca8587f34348b3ee2bb10e2`
-Identical hashes verify deterministic reproducibility.
+- Run A SHA256: `be0d77400186e811a988db2416fe1b9d92ab45750a47f492dc71a78ec375de76`
+- Run B SHA256: `be0d77400186e811a988db2416fe1b9d92ab45750a47f492dc71a78ec375de76`
+Identical hashes verify deterministic reproducibility. Includes `runtimeGOOS` and `runtimeGOARCH` metadata fields.
 
 ## Full Regression
 Authoritative test run:
@@ -150,11 +162,11 @@ Authoritative test run:
 bun test
 ```
 Result:
-- 149 pass
+- 154 pass
 - 0 fail
-- 8273 expect() calls
+- 8357 expect() calls
 - 13 test files
-- Runtime: 592.00ms
+- Runtime: ~166ms
 
 ## Math.random Audit
 - `Math.random` occurrences in `js/src`: **0**
@@ -168,9 +180,11 @@ Benchmarked via Bun runtime:
 - 10,000 `prescale` calls with parallel edges, font scaling, and label resizing: 31.76 ms (~3.18 μs/call).
 
 ## Problems Encountered and Review Findings
-1. **Self-loop edge counting**: In Go, when only self-loops exist, `sidesForEdges = 0`, causing `0/0 = NaN`, which Go converts to `0` when casting to `int`. JavaScript would propagate `NaN` if not handled, causing arithmetic breakdown. Mapped `sidesForEdges === 0` to `0` in JS to achieve exact Go parity.
-2. **AspectRatio1 vs FixedTopLeft ordering**: Verified that `node.AspectRatio1()` executes before `scaleBasedOnEdges()`, ensuring fixed-position circles and real squares are squared even when edge-density scaling is skipped.
-3. **Strict < comparison in large node check**: Verified that `minLength < Math.min(width, height)` uses strict inequality, so exact boundary equality does not early-return.
+1. **Self-loop edge counting**: On amd64 Go runtime, `int(math.Ceil(NaN))` produces a negative integer, and `max(0, convertedCeil)` yields `0`. JavaScript explicitly maps `sidesForEdges === 0` to `0` to produce this exact semantic outcome cleanly.
+2. **Label prototype preservation**: Replaced generic `structuredClone` with `copyLabelRecord` in `clone.js` to preserve `instanceof Label` and reset `positionFixed` to `false` matching Go `copyLabelRecord`.
+3. **Strict input semantics**: Removed permissive null check from `prescale(graph)`, allowing invalid null input to throw while preserving empty graph no-op behavior.
+4. **AspectRatio1 vs FixedTopLeft ordering**: Verified that `node.AspectRatio1()` executes before `scaleBasedOnEdges()`, ensuring fixed-position circles and real squares are squared even when edge-density scaling is skipped.
+5. **Strict < comparison in large node check**: Verified that `minLength < Math.min(width, height)` uses strict inequality, so exact boundary equality does not early-return.
 
 ## Limitations
 - Placement preparation (`Prepare`), loop offset computation, and label positioning belong to subsequent placement slices.
@@ -178,10 +192,11 @@ Benchmarked via Bun runtime:
 - Top-level `layout()` entry point and rollback orchestration belong to the engine integration slice.
 
 ## Result
-Deterministic, browser-safe implementation of the `Prescale` stage in JavaScript with 100% Go oracle parity across all 29 verification cases.
+Deterministic, browser-safe implementation of the `Prescale` stage in JavaScript with 100% Go oracle parity across all 29 verification cases, dedicated Label cloning, strict topology non-mutation guarantees, and full metadata verification.
 
 ## Commit History on `tala-js/slice-06-prescale`
 - `d9fe2c611` docs(tala-js): close approved Slice 05
 - `f48a09d3a` feat(tala-js): port Prescale stage
 - `6b97a61d5` test(tala-js): add Go Prescale parity oracle
 - `59a3e3b8a` docs(tala-js): document Slice 06 Prescale
+- `774c9262d` test(tala-js): strengthen Slice 06 regression suite
