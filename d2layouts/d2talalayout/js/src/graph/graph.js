@@ -9,7 +9,6 @@ export class Graph {
     this.Edges = [];
 
     this.Containers = new Map();
-    this.Containers.set(null, []);
     this.Directions = new Map();
     this.CellSize = 0;
     this.IsRootHierarchy = false;
@@ -27,6 +26,9 @@ export class Graph {
 
     this.endpoints = new Map();
     this.nodesByExternalId = new Map();
+    this.edgesByExternalId = new Map();
+    this.nodesByEntityId = new Map();
+    this.edgesByEntityId = new Map();
   }
 
   addNodeUnchecked(node) {
@@ -62,9 +64,7 @@ export class Graph {
   }
 
   AddEdge(edge) {
-    if (!this.Edges.includes(edge)) {
-      this.Edges.push(edge);
-    }
+    this.Edges.push(edge);
   }
 
   connect(from, to) {
@@ -101,7 +101,6 @@ export class Graph {
 
     let hasNodes = false;
     for (const n of this.Nodes) {
-      if (n.isContainer) continue;
       hasNodes = true;
       if (n.Width < minWidth) minWidth = n.Width;
       if (n.Height < minHeight) minHeight = n.Height;

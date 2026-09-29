@@ -31,6 +31,7 @@ export class Node {
     this.Cluster = null;
     this.Sequence = null;
     this.Hierarchy = null;
+    this.elkData = null;
 
     this.FontSize = null;
     this.Label = null;
@@ -57,9 +58,7 @@ export class Node {
   }
 
   addEdge(edge) {
-    if (!this.Edges.includes(edge)) {
-      this.Edges.push(edge);
-    }
+    this.Edges.push(edge);
   }
 
   removeEdge(edge) {
@@ -103,13 +102,13 @@ export class Node {
   }
 
   level() {
-    let l = 0;
-    let n = this;
-    while (n.Container) {
-      l++;
-      n = n.Container;
+    if (this === null || this === undefined) {
+      return 0;
     }
-    return l;
+    if (this.Container === null || this.Container === undefined) {
+      return 1;
+    }
+    return 1 + this.Container.level();
   }
 
   isDescendantOf(node) {
@@ -129,7 +128,7 @@ export class Node {
 
   connectionTo(node) {
     for (const edge of this.Edges) {
-      if (edge.From === node || edge.To === node) {
+      if (this.adjacent(edge) === node) {
         return edge;
       }
     }

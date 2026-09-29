@@ -1,7 +1,7 @@
 import { test, expect } from "bun:test";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { d2FNV32, allocateD2EntityIDs, firstD2SpillEntityID } from "../../src/graph/entity-id.js";
+import { d2FNV32, allocateD2EntityIDs, firstD2SpillEntityID, compareGoStringsUTF8 } from "../../src/graph/entity-id.js";
 
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -28,6 +28,15 @@ test("EntityID allocation parity with Go oracle", () => {
     for (const [id, expectedId] of Object.entries(oracleData.allocated_oracle)) {
       // expectedId in oracle is a number, but because it could be large we should compare as BigInt
       expect(allocated.get(id)).toBe(BigInt(expectedId));
+    }
+    
+    // 3. Verify UTF-8 Comparison
+    if (oracleData.compare_oracle) {
+      for (const [key, expectedCompare] of Object.entries(oracleData.compare_oracle)) {
+        // key is formatted as 'a|<|b'
+        const [a, b] = key.split('"|<|"').map(s => s.replace(/^"/, '').replace(/"$/, ''));
+        expect(compareGoStringsUTF8(a, b)).toBe(expectedCompare);
+      }
     }
   }
 });

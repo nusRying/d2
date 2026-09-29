@@ -88,6 +88,11 @@ export function cloneGraph(source) {
     clonedEdge.IsInvisible = edge.IsInvisible;
     clonedEdge.Style = copyValue(edge.Style);
     
+    clonedEdge.sourceEndpointId = edge.sourceEndpointId;
+    clonedEdge.targetEndpointId = edge.targetEndpointId;
+    clonedEdge.route = structuredClone(edge.route);
+    clonedEdge.elkData = structuredClone(edge.elkData);
+    
     for (const pt of edge.Points) {
       clonedEdge.Points.push(pt.copy());
     }
@@ -117,6 +122,9 @@ export function cloneGraph(source) {
   }
 
   const rdfsOrder = containerRDFSOrder(null);
+  if (source.Containers.size !== rdfsOrder.length + 1) {
+    throw new Error("unreachable containers exist in source");
+  }
   rdfsOrder.push(null); // null appended last, like Go appends nil
 
   cloned.Containers = new Map();
@@ -163,10 +171,29 @@ export function cloneGraph(source) {
   for (const [k, v] of source.nodesByExternalId.entries()) {
     cloned.nodesByExternalId.set(k, resolveNode(v));
   }
+  for (const [k, v] of source.edgesByExternalId.entries()) {
+    cloned.edgesByExternalId.set(k, edgesByID.get(v.ID));
+  }
+  for (const [k, v] of source.nodesByEntityId.entries()) {
+    cloned.nodesByEntityId.set(k, resolveNode(v));
+  }
+  for (const [k, v] of source.edgesByEntityId.entries()) {
+    cloned.edgesByEntityId.set(k, edgesByID.get(v.ID));
+  }
 
   for (const [k, v] of source.endpoints.entries()) {
-    // For now we assume v is a node, port logic isn't fully separated
-    cloned.endpoints.set(k, resolveNode(v));
+    if (v.kind === "node") {
+      cloned.endpoints.set(k, {
+        kind: "node",
+        node: resolveNode(v.node)
+      });
+    } else if (v.kind === "port") {
+      cloned.endpoints.set(k, {
+        kind: "port",
+        node: resolveNode(v.node),
+        port: structuredClone(v.port)
+      });
+    }
   }
 
   return cloned;

@@ -23,7 +23,7 @@ export function elkToTalaGraph(elkGraph) {
 
   const seenEdgeIds = new Set();
   const seenNodeIds = new Set();
-  const endpoints = new Map();
+  const endpoints = graph.endpoints;
 
   const nodeIdentities = [];
   const edgeIdentities = [];
@@ -108,6 +108,8 @@ export function elkToTalaGraph(elkGraph) {
 
     elkToNode.set(elkNode.id, node);
     graph.addNewNodeToContainer(containerNode, node);
+    graph.nodesByExternalId.set(node.D2ID, node);
+    graph.nodesByEntityId.set(node.ID, node);
 
     registerEndpoint(node.D2ID, { kind: "node", node });
     
@@ -156,18 +158,13 @@ export function elkToTalaGraph(elkGraph) {
     const edge = graph.connect(sourceEndpoint.node, targetEndpoint.node);
     edge.ID = edgeIDs.get(elkEdge);
     edge.D2ID = elkEdge.id;
-    // Map elk edge sections to Points if present
-    if (elkEdge.sections) {
-      for (const section of elkEdge.sections) {
-        if (section.startPoint) edge.Points.push(new Point(section.startPoint.x, section.startPoint.y));
-        if (section.bendPoints) {
-          for (const bp of section.bendPoints) {
-            edge.Points.push(new Point(bp.x, bp.y));
-          }
-        }
-        if (section.endPoint) edge.Points.push(new Point(section.endPoint.x, section.endPoint.y));
-      }
-    }
+    edge.sourceEndpointId = sourceEndpointId;
+    edge.targetEndpointId = targetEndpointId;
+    edge.elkData = structuredClone(elkEdge);
+    edge.route = structuredClone(elkEdge.sections ?? []);
+    
+    graph.edgesByExternalId.set(edge.D2ID, edge);
+    graph.edgesByEntityId.set(edge.ID, edge);
   }
 
   return graph;
@@ -176,14 +173,10 @@ export function elkToTalaGraph(elkGraph) {
 export function talaToElkGraph(graph) {
   const output = structuredClone(graph.elkData);
   
-  // We need a fast lookup by D2ID
-  const d2idToNode = new Map();
-  for (const node of graph.Nodes) {
-    d2idToNode.set(node.D2ID, node);
-  }
+  // We need a fast lookup by D2ID, use graph indexes
 
   function reconstructNode(elkRef, absX, absY) {
-    const node = d2idToNode.get(elkRef.id);
+    const node = graph.nodesByExternalId.get(elkRef.id);
     if (node) {
       elkRef.width = node.Width;
       elkRef.height = node.Height;
@@ -208,30 +201,12 @@ export function talaToElkGraph(graph) {
     }
   }
 
-  // Quick lookup for edges
-  const d2idToEdge = new Map();
-  for (const edge of graph.Edges) {
-    d2idToEdge.set(edge.D2ID, edge);
-  }
-
   function updateEdges(elkNode) {
     if (elkNode.edges) {
       for (const elkEdge of elkNode.edges) {
-        const edge = d2idToEdge.get(elkEdge.id);
-        if (edge && edge.Points && edge.Points.length > 0) {
-          // Naive conversion back to sections for ELK compatibility tests
-          const section = {
-            id: elkEdge.id + "_s0",
-            startPoint: { x: edge.Points[0].X, y: edge.Points[0].Y },
-            endPoint: { x: edge.Points[edge.Points.length - 1].X, y: edge.Points[edge.Points.length - 1].Y }
-          };
-          if (edge.Points.length > 2) {
-            section.bendPoints = [];
-            for (let i = 1; i < edge.Points.length - 1; i++) {
-              section.bendPoints.push({ x: edge.Points[i].X, y: edge.Points[i].Y });
-            }
-          }
-          elkEdge.sections = [section];
+        const edge = graph.edgesByExternalId.get(elkEdge.id);
+        if (edge && edge.route && edge.route.length > 0) {
+          elkEdge.sections = structuredClone(edge.route);
         }
       }
     }

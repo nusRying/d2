@@ -5,6 +5,11 @@ export class Edge {
     this.ID = 0n;
     this.D2ID = null;
 
+    this.sourceEndpointId = null;
+    this.targetEndpointId = null;
+    this.route = [];
+    this.elkData = null;
+
     this.From = from;
     this.To = to;
     this.Points = []; // array of geo.Point
@@ -32,13 +37,13 @@ export class Edge {
 
   reconnect(newEndpoint, isTo) {
     if (isTo) {
-      if (this.To) this.To.removeEdge(this);
+      this.To.removeEdge(this);
+      newEndpoint.addEdge(this);
       this.To = newEndpoint;
-      if (this.To && !this.isLoop()) this.To.addEdge(this);
     } else {
-      if (this.From) this.From.removeEdge(this);
+      this.From.removeEdge(this);
+      newEndpoint.addEdge(this);
       this.From = newEndpoint;
-      if (this.From) this.From.addEdge(this);
     }
   }
 

@@ -1,4 +1,4 @@
-﻿import { describe, it, expect } from "bun:test";
+import { describe, it, expect } from "bun:test";
 import * as fs from "fs";
 import * as path from "path";
 import { Graph } from "../../src/graph/graph.js";
@@ -51,6 +51,20 @@ describe("LayoutGraph Go Parity", () => {
     expect(n3.Container !== null && Number(n3.Container.ID) === 1).toBe(cases.NodeHierarchy.N3Container);
   });
 
+  it("NodeLevel", () => {
+    const g = new Graph();
+    const n19 = new Node(19n);
+    const n20 = new Node(20n);
+    const n21 = new Node(21n);
+    g.addNodeUnchecked(n19);
+    g.addNewNodeToContainer(n19, n20);
+    g.addNewNodeToContainer(n20, n21);
+
+    expect(n19.level()).toBe(cases.NodeLevel.TopLevel);
+    expect(n20.level()).toBe(cases.NodeLevel.Child);
+    expect(n21.level()).toBe(cases.NodeLevel.Grandchild);
+  });
+
   it("Nears", () => {
     // Go oracle: n4(4), n5(5), n6(6), n7(ID=2); n4.AddNear(n6), n4.AddNear(n5), n4.AddNear(n7)
     // orderedNears sorts by ID => [n7(2), n5(5), n6(6)]
@@ -69,7 +83,7 @@ describe("LayoutGraph Go Parity", () => {
     expect(n5.Nears.has(n4)).toBe(cases.Nears.N5HasN4);
 
     const ordered = n4.orderedNears();
-    expect(ordered.map(n => Number(n.ID))).toEqual(cases.Nears.OrderedIDs);
+    expect(ordered.map(n => String(n.ID))).toEqual(cases.Nears.OrderedIDs);
   });
 
   it("Edges", () => {
@@ -82,10 +96,31 @@ describe("LayoutGraph Go Parity", () => {
     const e1 = g.connect(n8, n9);
     g.connect(n8, n8);
 
-    expect(Number(e1.From.ID)).toBe(cases.Edges.E1From);
-    expect(Number(e1.To.ID)).toBe(cases.Edges.E1To);
+    expect(String(e1.From.ID)).toBe(cases.Edges.E1From);
+    expect(String(e1.To.ID)).toBe(cases.Edges.E1To);
     expect(n8.Edges.length).toBe(cases.Edges.N8EdgesCount);
     expect(n9.Edges.length).toBe(cases.Edges.N9EdgesCount);
+  });
+
+  it("ConnectionTo", () => {
+    const g = new Graph();
+    const n22 = new Node(22n);
+    const n23 = new Node(23n);
+    const n24 = new Node(24n);
+    const n25 = new Node(25n);
+    g.addNodeUnchecked(n22);
+    g.addNodeUnchecked(n23);
+    g.addNodeUnchecked(n24);
+    g.addNodeUnchecked(n25);
+
+    g.connect(n22, n23);
+    g.connect(n22, n24);
+    g.connect(n22, n22);
+
+    expect(n22.connectionTo(n23) !== null).toBe(cases.ConnectionTo.HasEToB);
+    expect(n22.connectionTo(n24) !== null).toBe(cases.ConnectionTo.HasEToC);
+    expect(n22.connectionTo(n22) !== null).toBe(cases.ConnectionTo.HasEToA);
+    expect(n22.connectionTo(n25) !== null).toBe(cases.ConnectionTo.HasEToD);
   });
 
   it("Disconnect", () => {
@@ -125,13 +160,13 @@ describe("LayoutGraph Go Parity", () => {
   it("ComputeCellSize", () => {
     const g = new Graph();
     const n13 = new Node(13n);
-    n13.Width = 10;
-    n13.Height = 20;
+    n13.Width = 1000;
+    n13.Height = 2000;
     const n14 = new Node(14n);
     n14.Width = 15;
     n14.Height = 25;
     g.addNodeUnchecked(n13);
-    g.addNodeUnchecked(n14);
+    g.addNewNodeToContainer(n13, n14); // matches oracle: g4.AddNewNodeToContainer(n13, n14)
     g.computeCellSize();
 
     expect(g.CellSize).toBe(cases.ComputeCellSize);
@@ -152,24 +187,25 @@ describe("LayoutGraph Go Parity", () => {
 
   it("Reconnect", () => {
     const g = new Graph();
-    const n13 = new Node(13n);
-    const n14 = new Node(14n);
+    const n8 = new Node(8n);
+    const n9 = new Node(9n);
     const n15 = new Node(15n);
     const n16 = new Node(16n);
-    g.addNodeUnchecked(n13);
-    g.addNodeUnchecked(n14);
+    g.addNodeUnchecked(n8);
+    g.addNodeUnchecked(n9);
     g.addNodeUnchecked(n15);
     g.addNodeUnchecked(n16);
-    const e6 = g.connect(n13, n14);
+    const e6 = g.connect(n8, n9);
+    g.connect(n8, n8);
 
     e6.reconnect(n15, false);
     e6.reconnect(n16, true);
 
-    expect(Number(e6.From.ID)).toBe(cases.Reconnect.E6FromID);
-    expect(Number(e6.To.ID)).toBe(cases.Reconnect.E6ToID);
-    expect(n13.Edges.length).toBe(cases.Reconnect.N13EdgesCount);
+    expect(String(e6.From.ID)).toBe(cases.Reconnect.E6FromID);
+    expect(String(e6.To.ID)).toBe(cases.Reconnect.E6ToID);
+    expect(n8.Edges.length).toBe(cases.Reconnect.N8EdgesCount);
     expect(n15.Edges.length).toBe(cases.Reconnect.N15EdgesCount);
-    expect(n14.Edges.length).toBe(cases.Reconnect.N14EdgesCount);
+    expect(n9.Edges.length).toBe(cases.Reconnect.N9EdgesCount);
     expect(n16.Edges.length).toBe(cases.Reconnect.N16EdgesCount);
   });
 
@@ -203,10 +239,10 @@ describe("LayoutGraph Go Parity", () => {
     expect(cN17.TopLeft.X).toBe(cases.Clone.N17TopLeftX);
     expect(cN17.isContainer).toBe(cases.Clone.N17IsContainer);          // false
     expect(cN18.Container === null).toBe(!cases.Clone.N18HasContainer);  // null===true <=> !false
-    expect(cN18.Container ? Number(cN18.Container.ID) : 0).toBe(cases.Clone.N18ContainerID); // 0
+    expect(cN18.Container ? String(cN18.Container.ID) : "0").toBe(cases.Clone.N18ContainerID); // "0"
     expect(cN17.Nears.size).toBe(cases.Clone.N17NearsCount);
-    expect(Number(cE7.From.ID)).toBe(cases.Clone.E7FromID);
-    expect(Number(cE7.To.ID)).toBe(cases.Clone.E7ToID);
+    expect(String(cE7.From.ID)).toBe(cases.Clone.E7FromID);
+    expect(String(cE7.To.ID)).toBe(cases.Clone.E7ToID);
     expect(cE7.Points[0].X).toBe(cases.Clone.E7Points0X);
   });
 });

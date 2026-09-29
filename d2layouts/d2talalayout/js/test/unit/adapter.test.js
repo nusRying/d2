@@ -88,6 +88,15 @@ describe("ELK Adapter", () => {
     expect(() => elkToTalaGraph({ id: "r", children: [{id: "a"}, {id: "b"}], edges: [{id: "e1", sources: ["a"], targets: [null]}]})).toThrow("target endpoint must be a string");
   });
 
+  it("should reject unknown endpoints", () => {
+    expect(() => elkToTalaGraph({ id: "r", children: [{id: "a"}], edges: [{id: "e1", sources: ["unknown"], targets: ["a"]}]})).toThrow("does not exist");
+  });
+
+  it("should reject hyperedges", () => {
+    expect(() => elkToTalaGraph({ id: "r", children: [{id: "a"}, {id: "b"}], edges: [{id: "e1", sources: ["a", "b"], targets: ["a"]}]})).toThrow("hyperedges are not supported");
+    expect(() => elkToTalaGraph({ id: "r", children: [{id: "a"}, {id: "b"}], edges: [{id: "e1", sources: ["a"], targets: ["a", "b"]}]})).toThrow("hyperedges are not supported");
+  });
+
   it("should avoid inserting duplicate self-loops in edges array", () => {
     const graph = elkToTalaGraph({ id: "r", children: [{id: "a"}], edges: [{id: "e1", sources: ["a"], targets: ["a"]}] });
     const findNode = (id) => graph.Nodes.find(n => n.D2ID === id);
@@ -109,25 +118,29 @@ describe("ELK Adapter", () => {
     
     const findEdge = (id) => graph.Edges.find(e => e.D2ID === id);
     const e1 = findEdge("e1");
-    // Points array in Edge
-    import("../../src/geometry/point.js").then(({ Point }) => {
-      e1.Points = [new Point(0, 0), new Point(100, 100)];
+    
+    // Test multi-section route assignment
+    e1.route = [
+      { startPoint: {x:0, y:0}, endPoint: {x: 50, y: 50}, bendPoints: [{x: 25, y: 25}] },
+      { startPoint: {x:50, y:50}, endPoint: {x: 100, y: 100} }
+    ];
 
-      const output = talaToElkGraph(graph);
-      
-      const outN = output.children.find(c => c.id === "a");
-      // Since it's child of root, relative === absolute
-      expect(outN.x).toBe(500);
-      expect(outN.y).toBe(500);
-      expect(outN.width).toBe(1000);
-      
-      const outE1 = output.edges.find(e => e.id === "e1");
-      expect(outE1.sections).toBeDefined();
-      expect(outE1.sections[0].endPoint.x).toBe(100);
-      
-      // Ensure that patching routes didn't destruct other edge metadata
-      expect(outE1.layoutOptions["elk.edgeRouting"]).toBe("ORTHOGONAL");
-    });
+    const output = talaToElkGraph(graph);
+    
+    const outN = output.children.find(c => c.id === "a");
+    // Since it's child of root, relative === absolute
+    expect(outN.x).toBe(500);
+    expect(outN.y).toBe(500);
+    expect(outN.width).toBe(1000);
+    
+    const outE1 = output.edges.find(e => e.id === "e1");
+    expect(outE1.sections).toBeDefined();
+    expect(outE1.sections.length).toBe(2);
+    expect(outE1.sections[0].bendPoints[0].x).toBe(25);
+    expect(outE1.sections[1].endPoint.x).toBe(100);
+    
+    // Ensure that patching routes didn't destruct other edge metadata
+    expect(outE1.layoutOptions["elk.edgeRouting"]).toBe("ORTHOGONAL");
   });
 
   it("should isolate references during cloneGraph", () => {
@@ -151,5 +164,10 @@ describe("ELK Adapter", () => {
     
     expect(clonedTable.Edges.includes(clonedE1)).toBe(true);
     expect(clonedTable.Edges.includes(e1)).toBe(false);
+
+    // Endpoint isolation check
+    const ep = clonedGraph.endpoints.get("table");
+    expect(ep.node).toBe(clonedTable);
+    expect(ep.node).not.toBe(table);
   });
 });

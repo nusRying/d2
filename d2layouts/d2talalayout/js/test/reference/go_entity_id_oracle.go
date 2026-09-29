@@ -79,6 +79,7 @@ type TestCase struct {
 type Output struct {
 	HashOracle      map[string]uint32 `json:"hash_oracle"`
 	AllocatedOracle map[string]string `json:"allocated_oracle"`
+	CompareOracle   map[string]int    `json:"compare_oracle,omitempty"`
 }
 
 type RootOutput struct {
@@ -94,6 +95,8 @@ func main() {
 		{Name: "collision_mock", Input: []string{"lKWF05zzXT", "bls2q7BifE"}},
 		{Name: "collision_mock_reversed", Input: []string{"bls2q7BifE", "lKWF05zzXT"}},
 		{Name: "many_nodes", Input: []string{"n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10"}},
+		{Name: "utf8_ordering", Input: []string{"\uE000", "\U00010000"}},
+		{Name: "utf8_ordering_reversed", Input: []string{"\U00010000", "\uE000"}},
 	}
 
 	outData := RootOutput{
@@ -109,6 +112,7 @@ func main() {
 		out := Output{
 			HashOracle:      make(map[string]uint32),
 			AllocatedOracle: make(map[string]string),
+			CompareOracle:   make(map[string]int),
 		}
 
 		identities := make([]d2EntityIdentity, len(tc.Input))
@@ -126,6 +130,18 @@ func main() {
 			out.AllocatedOracle[k] = strconv.FormatInt(int64(v), 10)
 		}
 
+		if len(tc.Input) == 2 {
+			a, b := tc.Input[0], tc.Input[1]
+			key := fmt.Sprintf("%q|<|%q", a, b)
+			if a < b {
+				out.CompareOracle[key] = -1
+			} else if a > b {
+				out.CompareOracle[key] = 1
+			} else {
+				out.CompareOracle[key] = 0
+			}
+		}
+
 		outData.Cases[tc.Name] = out
 	}
 
@@ -133,11 +149,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	err = os.MkdirAll("../fixtures", 0755)
-	if err != nil {
-		panic(err)
+
+	outFile := "../fixtures/go-entity-id-reference.json"
+	if len(os.Args) > 1 {
+		outFile = os.Args[1]
 	}
-	err = os.WriteFile("../fixtures/go-entity-id-reference.json", b, 0644)
+
+	err = os.WriteFile(outFile, b, 0644)
 	if err != nil {
 		panic(err)
 	}
