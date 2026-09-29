@@ -4,7 +4,7 @@
 2026-09-29
 
 ## Status
-Implemented — awaiting Slice 04 review
+Accepted
 
 ## Context
 TALA (the DAG placement and routing algorithm) operates on an internal graph representation rather than raw D2 AST or ELK JSON. 
