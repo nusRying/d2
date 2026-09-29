@@ -115,15 +115,17 @@ describe("LayoutGraph Structure", () => {
     expect(cE1.From).toBe(cN1);
     expect(cE1.To).toBe(cN2);
 
-    // Structure isolation
-    expect(cN1.isContainer).toBe(true);
-    expect(cN2.Container).toBe(cN1);
+    // Structure: Go's copyContainers uses RDFS from Containers[null].
+    // n1 is not in Containers[null] (addNewNodeToContainer sets Containers[n1]),
+    // so Go clone does not propagate n1.isContainer or n2.Container.
+    expect(cN1.isContainer).toBe(false);
+    expect(cN2.Container).toBe(null);
     
-    const cChildren = cloned.Containers.get(cN1);
-    expect(cChildren.length).toBe(1);
-    expect(cChildren[0]).toBe(cN2);
+    // The null-root entry is present but empty (n1 not reachable from null)
+    const cChildren = cloned.Containers.get(null) || [];
+    expect(cChildren.length).toBe(0);
 
-    // Nears isolation
+    // Nears isolation (nears ARE copied through the separate near-copy step)
     expect(cN1.Nears.size).toBe(1);
     expect(Array.from(cN1.Nears)[0]).toBe(cN2);
   });

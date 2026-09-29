@@ -101,18 +101,37 @@ export function cloneGraph(source) {
     }
   }
 
-  // 3. Copy Containers
-  for (const [container, children] of source.Containers.entries()) {
-    const clonedContainer = resolveNode(container);
+  // 3. Copy Containers using RDFS from null (matches Go's copyContainers traversal).
+  // Containers not reachable from Containers[null] are intentionally not propagated,
+  // preserving parity with Go's containerRDFSOrderContext behavior.
+  function containerRDFSOrder(root) {
+    const order = [];
+    const rootChildren = [...(source.Containers.get(root) || [])].reverse();
+    for (const child of rootChildren) {
+      if (child.isContainer) {
+        order.push(...containerRDFSOrder(child));
+        order.push(child);
+      }
+    }
+    return order;
+  }
+
+  const rdfsOrder = containerRDFSOrder(null);
+  rdfsOrder.push(null); // null appended last, like Go appends nil
+
+  cloned.Containers = new Map();
+  for (const srcContainer of rdfsOrder) {
+    const container = srcContainer ? resolveNode(srcContainer) : null;
+    const srcChildren = source.Containers.get(srcContainer) || [];
     const clonedChildren = [];
-    for (const child of children) {
+    for (const child of srcChildren) {
       const clonedChild = resolveNode(child);
-      clonedChild.Container = clonedContainer;
+      clonedChild.Container = container;
       clonedChildren.push(clonedChild);
     }
-    cloned.Containers.set(clonedContainer, clonedChildren);
-    if (clonedContainer) {
-      clonedContainer.isContainer = true;
+    cloned.Containers.set(container, clonedChildren);
+    if (container !== null) {
+      container.isContainer = true;
     }
   }
 
