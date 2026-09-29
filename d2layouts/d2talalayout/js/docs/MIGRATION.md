@@ -21,7 +21,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 04 — complete
 * Slice 05 — complete
 * Slice 06 — complete
-* Slice 07 — sequence geometry primitives — implemented, under review
+* Slice 07 — complete
+* Slice 08 — WorkGuard and cancellation accounting — current
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

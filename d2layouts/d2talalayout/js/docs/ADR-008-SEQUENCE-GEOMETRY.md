@@ -4,7 +4,7 @@
 2026-09-29
 
 ## Status
-Implemented — awaiting Slice 07 review
+Accepted
 
 ## Context
 In TALA's layout engine, sequence grouping is a multi-phase subsystem. Prior to executing full sequence identification, candidate abduction, and vessel installation (`grouping.AddSequences`), the layoutgraph requires deterministic geometry, layout, and query primitives on `Sequence` records.
