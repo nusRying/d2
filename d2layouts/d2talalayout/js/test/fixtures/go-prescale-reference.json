@@ -1,0 +1,273 @@
+{
+  "metadata": {
+    "adapterFontSizes": [
+      13,
+      14,
+      16,
+      20,
+      24,
+      28,
+      32
+    ],
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/placement",
+    "runtimeGoVersion": "go1.27.0",
+    "sideEdgeSpacing": 40
+  },
+  "cases": {
+    "AspectRatio1EdgeGrowth": {
+      "id": "1",
+      "width": 160,
+      "height": 160,
+      "fontSize": 32,
+      "label": null
+    },
+    "CircleNoEdges": {
+      "id": "1",
+      "width": 60,
+      "height": 60,
+      "fontSize": 16,
+      "label": null
+    },
+    "ClassSkip": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "DesiredHeightSkip": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "DesiredWidthSkip": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "ExactMinLengthEquality": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 16,
+      "label": {
+        "width": 40,
+        "height": 20
+      }
+    },
+    "ExactSupportedFontRatio": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 24,
+      "label": null
+    },
+    "FiveDistinctNeighbors": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": null,
+      "label": null
+    },
+    "FixedCircleDenseEdges": {
+      "id": "1",
+      "width": 60,
+      "height": 60,
+      "fontSize": null,
+      "label": null
+    },
+    "FontOvershootCorrection": {
+      "id": "1",
+      "width": 129,
+      "height": 129,
+      "fontSize": 24,
+      "label": {
+        "width": 60,
+        "height": 30
+      }
+    },
+    "FontSizeNullLabelPresent": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": null,
+      "label": {
+        "width": 40,
+        "height": 20
+      }
+    },
+    "FontSizePresentLabelNull": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 24,
+      "label": null
+    },
+    "FractionalLabelRounding": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 24,
+      "label": {
+        "width": 16,
+        "height": 8
+      }
+    },
+    "GenericNoEdges": {
+      "id": "1",
+      "width": 100,
+      "height": 60,
+      "fontSize": 16,
+      "label": {
+        "width": 50,
+        "height": 20
+      }
+    },
+    "Idempotence": {
+      "firstPass": {
+        "id": "1",
+        "width": 120,
+        "height": 120,
+        "fontSize": 24,
+        "label": {
+          "width": 45,
+          "height": 15
+        }
+      },
+      "secondPass": {
+        "id": "1",
+        "width": 120,
+        "height": 120,
+        "fontSize": 24,
+        "label": {
+          "width": 45,
+          "height": 15
+        }
+      }
+    },
+    "LargeNodeEarlyReturn": {
+      "id": "1",
+      "width": 121,
+      "height": 121,
+      "fontSize": 16,
+      "label": {
+        "width": 40,
+        "height": 20
+      }
+    },
+    "MixedParallelGlobalDensity": {
+      "id": "1",
+      "width": 160,
+      "height": 160,
+      "fontSize": null,
+      "label": null
+    },
+    "MultipleSelfLoopsOnly": {
+      "id": "1",
+      "width": 40,
+      "height": 40,
+      "fontSize": 32,
+      "label": {
+        "width": 20,
+        "height": 20
+      }
+    },
+    "NearestTieFontCase": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 16,
+      "label": null
+    },
+    "OneAxisOnlyGrowth": {
+      "id": "1",
+      "width": 200,
+      "height": 120,
+      "fontSize": 16,
+      "label": null
+    },
+    "RealSquareNoEdges": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "SelfLoopPlusNormalEdge": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 24,
+      "label": {
+        "width": 45,
+        "height": 15
+      }
+    },
+    "SingleNormalEdge": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": 16,
+      "label": {
+        "width": 30,
+        "height": 10
+      }
+    },
+    "SingleSelfLoopOnly": {
+      "id": "1",
+      "width": 40,
+      "height": 40,
+      "fontSize": 32,
+      "label": {
+        "width": 20,
+        "height": 20
+      }
+    },
+    "SquareAspectRatioCheck": {
+      "id": "1",
+      "width": 40,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "TableSkip": {
+      "id": "1",
+      "width": 80,
+      "height": 80,
+      "fontSize": null,
+      "label": null
+    },
+    "ThreeParallelEdges": {
+      "id": "1",
+      "width": 160,
+      "height": 160,
+      "fontSize": 32,
+      "label": null
+    },
+    "TwoParallelEdges": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 24,
+      "label": {
+        "width": 45,
+        "height": 15
+      }
+    },
+    "ZeroDimension": {
+      "id": "1",
+      "width": 120,
+      "height": 120,
+      "fontSize": 16,
+      "label": {
+        "width": 10,
+        "height": 10
+      }
+    }
+  }
+}
