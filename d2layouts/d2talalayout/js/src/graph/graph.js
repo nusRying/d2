@@ -1,4 +1,4 @@
-import { Node } from './node.js';
+import { Node, sortNodesByID } from './node.js';
 import { Edge } from './edge.js';
 import { Orientation } from '../geometry/orientation.js';
 
@@ -46,7 +46,7 @@ export class Graph {
     }
     children.push(node);
 
-    if (container !== null) {
+    if (container !== null && container !== undefined) {
       container.isContainer = true;
     }
   }
@@ -139,6 +139,108 @@ export class Graph {
 
   ComputeCellSize() {
     this.computeCellSize();
+  }
+
+  isSequenceVessel(node) {
+    return this.Sequences.has(node);
+  }
+
+  IsSequenceVessel(node) {
+    return this.isSequenceVessel(node);
+  }
+
+  isTreeSentinel(node) {
+    return this.Trees.has(node);
+  }
+
+  IsTreeSentinel(node) {
+    return this.isTreeSentinel(node);
+  }
+
+  clusterOrder() {
+    const nodes = Array.from(this.Clusters.keys());
+    return sortNodesByID(nodes);
+  }
+
+  ClusterOrder() {
+    return this.clusterOrder();
+  }
+
+  treeOrder() {
+    const nodes = Array.from(this.Trees.keys());
+    return sortNodesByID(nodes);
+  }
+
+  TreeOrder() {
+    return this.treeOrder();
+  }
+
+  sequenceOrder() {
+    const nodes = Array.from(this.Sequences.keys());
+    return sortNodesByID(nodes);
+  }
+
+  SequenceOrder() {
+    return this.sequenceOrder();
+  }
+
+  containerRDFSOrder(root = null) {
+    const order = [];
+
+    if (root !== null && (!root || !root.isContainer)) {
+      return order;
+    }
+
+    const children = this.Containers.get(root) || [];
+    for (let i = children.length - 1; i >= 0; i--) {
+      const child = children[i];
+
+      if (child.isContainer) {
+        order.push(...this.containerRDFSOrder(child));
+        order.push(child);
+        continue;
+      }
+
+      if (child.isClusterVessel) {
+        const cluster = this.Clusters.get(child);
+        if (cluster && cluster.Nodes) {
+          for (let j = cluster.Nodes.length - 1; j >= 0; j--) {
+            const cNode = cluster.Nodes[j];
+            if (cNode.isContainer) {
+              order.push(...this.containerRDFSOrder(cNode));
+              order.push(cNode);
+            }
+          }
+        }
+        continue;
+      }
+    }
+
+    return order;
+  }
+
+  ContainerRDFSOrder(root = null) {
+    return this.containerRDFSOrder(root);
+  }
+
+  clusterRDFSOrder() {
+    const order = [];
+    const dfsContainerOrder = [...this.containerRDFSOrder(null), null];
+    for (const container of dfsContainerOrder) {
+      const children = this.Containers.get(container);
+      if (children) {
+        for (const child of children) {
+          if (child.isClusterVessel) {
+            order.push(child);
+          }
+        }
+      }
+    }
+    return order;
+  }
+
+  ClusterRDFSOrder() {
+    return this.clusterRDFSOrder();
   }
 }
 
