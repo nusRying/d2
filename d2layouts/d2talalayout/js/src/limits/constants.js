@@ -12,9 +12,17 @@ export const MAX_ENGINE_EDGES = 50_000;
 
 // MaxEngineRoutePoints bounds aggregate route storage throughout the engine.
 export const MAX_ENGINE_ROUTE_POINTS = 1_000_000;
+export const MAX_ROUTE_POINTS = MAX_ENGINE_ROUTE_POINTS;
 
 // MaxEngineTreeDepth bounds recursive topology throughout the engine.
 export const MAX_ENGINE_TREE_DEPTH = 256;
+export const MAX_TOPOLOGY_DEPTH = MAX_ENGINE_TREE_DEPTH;
+
+// MaxTopologyReferences bounds visited runtime references during preflight validation.
+export const MAX_TOPOLOGY_REFERENCES = 1_000_000;
+
+// MaxPreflightWork bounds work units spent during preflight validation.
+export const MAX_PREFLIGHT_WORK = 8_000_000n;
 
 // MaxGraphSize is the maximum supported width or height at a pipeline stage boundary.
 export const MAX_GRAPH_SIZE = 30_000;

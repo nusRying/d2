@@ -31,6 +31,10 @@ export class Edge {
     this.Style = null;
   }
 
+  entityID() {
+    return this.ID;
+  }
+
   isLoop() {
     return this.From === this.To;
   }

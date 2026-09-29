@@ -14,6 +14,7 @@ export * from "./graph/herd-assignment.js";
 export * from "./graph/neighbor-requirements.js";
 export * from "./graph/graph-state.js";
 export * from "./graph/group-geometry.js";
+export * from "./graph/topology-preflight.js";
 export * from "./shape/index.js";
 export * from "./geometry/index.js";
 export * from "./placementcost/index.js";

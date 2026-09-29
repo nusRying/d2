@@ -87,6 +87,10 @@ export class Node {
   get Height() { return this.Box.Height; }
   set Height(v) { this.Box.Height = v; }
 
+  entityID() {
+    return this.ID;
+  }
+
   box() {
     return this.Box;
   }
@@ -252,6 +256,10 @@ export class Node {
   }
 
   OwningContainer() {
+    return this.owningContainer();
+  }
+
+  container() {
     return this.owningContainer();
   }
 
