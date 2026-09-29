@@ -1,0 +1,202 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "goSliceSpareCapacitySafety": true,
+    "jsArrayCapacityRepresentable": false,
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "constants": {
+    "MaxEngineEdges": 50000,
+    "MaxEngineNodes": 10000,
+    "MaxEngineTreeDepth": 256,
+    "MaxRoutePoints": 1000000,
+    "MaxTopologyReferences": 1000000
+  },
+  "scenarios": {
+    "canceled_context": {
+      "error": "AddSequences: context canceled",
+      "success": false
+    },
+    "cluster_ancestry_cycle": {
+      "error": "TALA engine ancestry parent cycle detected at node 1",
+      "success": false
+    },
+    "cluster_ancestry_depth_exceeded": {
+      "error": "TALA engine ancestry parent depth exceeds limit 256",
+      "success": false
+    },
+    "cluster_vessel_missing_record": {
+      "error": "TALA engine cluster vessel 1 has no cluster record",
+      "success": false
+    },
+    "container_parent_cycle": {
+      "error": "TALA engine container parent cycle detected at node 1",
+      "success": false
+    },
+    "container_parent_depth_exceeded": {
+      "error": "TALA engine container parent depth exceeds limit 256",
+      "success": false
+    },
+    "descendant_depth_exceeded": {
+      "error": "TALA engine descendant depth exceeds limit 256",
+      "success": false
+    },
+    "direct_container_descendant_cycle": {
+      "error": "TALA engine descendant cycle detected at node 1",
+      "success": false
+    },
+    "edge_missing_endpoint": {
+      "error": "graph edge 42 has unplaced or missing endpoints",
+      "success": false
+    },
+    "effective_container_cycle": {
+      "error": "TALA engine effective container parent cycle detected at node 1",
+      "success": false
+    },
+    "effective_container_depth_exceeded": {
+      "error": "TALA engine effective container parent depth exceeds limit 256",
+      "success": false
+    },
+    "inconsistent_child_parent": {
+      "error": "TALA engine tree child has an inconsistent parent",
+      "success": false
+    },
+    "nil_cluster_record": {
+      "error": "TALA engine topology contains nil cluster record",
+      "success": false
+    },
+    "nil_container_child": {
+      "error": "TALA engine topology contains nil container child",
+      "success": false
+    },
+    "nil_context_valid_graph": {
+      "error": "TALA AddSequences requires a context",
+      "success": false
+    },
+    "nil_graph": {
+      "error": "TALA engine requires a graph",
+      "success": false
+    },
+    "nil_graph_edge_entry": {
+      "error": "graph edge at index 0 is nil",
+      "success": false
+    },
+    "nil_graph_nil_context_error_ordering": {
+      "error": "TALA engine requires a graph",
+      "success": false
+    },
+    "nil_graph_node_entry": {
+      "error": "graph node at index 0 is nil",
+      "success": false
+    },
+    "nil_route_point": {
+      "error": "TALA engine topology contains nil edge route point",
+      "success": false
+    },
+    "nil_sequence_record": {
+      "error": "TALA engine topology contains nil sequence record",
+      "success": false
+    },
+    "node_to_tree_alias_does_not_match_node": {
+      "error": "TALA engine node-to-tree alias does not match the tree node",
+      "success": false
+    },
+    "node_to_tree_alias_outside_installed_forest": {
+      "error": "TALA engine node-to-tree alias references a tree outside the installed forest",
+      "success": false
+    },
+    "node_to_tree_aliases_do_not_cover_installed_forest": {
+      "error": "TALA engine node-to-tree aliases do not cover the installed forest",
+      "success": false
+    },
+    "placement_wrapper_occurrence_mismatch": {
+      "error": "TALA engine tree root has an inconsistent placement parent",
+      "success": false
+    },
+    "rdfs_canonical_fixture": {
+      "order": [
+        19,
+        15,
+        13,
+        16,
+        14,
+        12,
+        11,
+        9,
+        5,
+        3,
+        6,
+        4,
+        2,
+        1
+      ],
+      "used": 20
+    },
+    "rdfs_guarded_accounting": {
+      "belowLimitError": true,
+      "belowLimitErrorMsg": "TALA one_below work exceeds limit 6",
+      "exactLimitSuccess": true,
+      "order": [
+        5,
+        2,
+        1
+      ],
+      "requiredUnits": 7
+    },
+    "root_also_has_installed_parent": {
+      "error": "TALA engine tree root also has an installed parent",
+      "success": false
+    },
+    "same_node_owned_by_multiple_trees": {
+      "error": "TALA engine node 1 is owned by multiple trees",
+      "success": false
+    },
+    "same_tree_repeated_as_root": {
+      "error": "TALA engine tree is listed as more than one root",
+      "success": false
+    },
+    "same_tree_repeated_beneath_same_parent": {
+      "error": "TALA engine tree is repeated under one parent",
+      "success": false
+    },
+    "sequence_ancestry_cycle": {
+      "error": "TALA engine ancestry parent cycle detected at node 1",
+      "success": false
+    },
+    "sequence_ancestry_depth_exceeded": {
+      "error": "TALA engine ancestry parent depth exceeds limit 256",
+      "success": false
+    },
+    "sequence_descendant_cycle": {
+      "error": "TALA engine descendant cycle detected at node 1",
+      "success": false
+    },
+    "tree_child_cycle": {
+      "error": "TALA engine tree child cycle detected",
+      "success": false
+    },
+    "tree_depth_exceeded": {
+      "error": "TALA engine tree depth exceeds limit 256",
+      "success": false
+    },
+    "tree_parent_cycle": {
+      "error": "TALA engine tree parent cycle detected",
+      "success": false
+    },
+    "tree_shared_by_multiple_parents": {
+      "error": "TALA engine tree child has an inconsistent parent",
+      "success": false
+    },
+    "valid_empty_graph": {
+      "error": null,
+      "success": true
+    },
+    "valid_nil_tree_root_key": {
+      "error": null,
+      "success": true
+    }
+  }
+}
