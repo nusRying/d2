@@ -162,3 +162,32 @@ export function intersectionPoint(u0, u1, v0, v1) {
 
   return intersection;
 }
+
+export function getMedianPoint(ps) {
+  if (!ps || ps.length === 0) return new Point(0, 0); // Unspecified by Go but safe
+  
+  const xs = [];
+  const ys = [];
+
+  for (const p of ps) {
+    xs.push(p.X);
+    ys.push(p.Y);
+  }
+
+  xs.sort((a, b) => a - b);
+  ys.sort((a, b) => a - b);
+
+  const middleIndex = Math.floor(xs.length / 2);
+
+  let medianX = xs[middleIndex];
+  let medianY = ys[middleIndex];
+
+  if (xs.length % 2 === 0) {
+    medianX += xs[middleIndex - 1];
+    medianX /= 2;
+    medianY += ys[middleIndex - 1];
+    medianY /= 2;
+  }
+
+  return new Point(medianX, medianY);
+}

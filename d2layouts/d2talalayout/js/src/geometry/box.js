@@ -8,9 +8,8 @@ export class Box {
   }
 
   copy() {
-    if (!this.TopLeft) {
-      return new Box(null, this.Width, this.Height); // Though Go expects TopLeft != nil mostly.
-    }
+    // Valid production Boxes in TALA always have a non-null TopLeft.
+    // We assume TopLeft is a valid Point and copy its storage.
     return new Box(this.TopLeft.copy(), this.Width, this.Height);
   }
 

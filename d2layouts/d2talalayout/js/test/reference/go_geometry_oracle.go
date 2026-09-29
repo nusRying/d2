@@ -85,6 +85,71 @@ func toPointObj(p *geo.Point) *PointObj {
 	return &PointObj{X: encodeFloat64(p.X), Y: encodeFloat64(p.Y)}
 }
 
+func testTruncateDecimals() []map[string]interface{} {
+	inputs := []float64{
+		math.Copysign(0, -1), // -0
+		-0.0001,
+		-0.0009,
+		-0.001,
+		-1.2349,
+		0,
+		0.0001,
+		0.0009,
+		0.001,
+		1.2349,
+	}
+	res := []map[string]interface{}{}
+	for _, v := range inputs {
+		res = append(res, map[string]interface{}{
+			"input":  encodeFloat64(v),
+			"output": encodeFloat64(geo.TruncateDecimals(v)),
+		})
+	}
+	return res
+}
+
+func testGoRound() []map[string]interface{} {
+	inputs := []float64{0, math.Copysign(0, -1), 0.1, -0.1, 0.49, -0.49, 0.5, -0.5, 1.5, -1.5, 2.5, -2.5}
+	res := []map[string]interface{}{}
+	for _, v := range inputs {
+		res = append(res, map[string]interface{}{
+			"input":  encodeFloat64(v),
+			"output": encodeFloat64(math.Round(v)),
+		})
+	}
+	return res
+}
+
+func testMedian() []map[string]interface{} {
+	res := []map[string]interface{}{}
+	
+	// Case 1: 1 point
+	pts1 := geo.Points{geo.NewPoint(1, 1)}
+	res = append(res, map[string]interface{}{"name": "1 point", "output": toPointObj(pts1.GetMedian())})
+
+	// Case 2: odd number of points
+	pts2 := geo.Points{geo.NewPoint(0, 0), geo.NewPoint(10, 20), geo.NewPoint(5, 4)}
+	res = append(res, map[string]interface{}{"name": "odd number", "output": toPointObj(pts2.GetMedian())})
+
+	// Case 3: even number of points
+	pts3 := geo.Points{geo.NewPoint(0, 0), geo.NewPoint(10, 20), geo.NewPoint(5, 4), geo.NewPoint(2, 2)}
+	res = append(res, map[string]interface{}{"name": "even number", "output": toPointObj(pts3.GetMedian())})
+
+	// Case 4: negative coordinates
+	pts4 := geo.Points{geo.NewPoint(-5, -5), geo.NewPoint(-10, -20), geo.NewPoint(-1, -4)}
+	res = append(res, map[string]interface{}{"name": "negative coords", "output": toPointObj(pts4.GetMedian())})
+
+	// Case 5: duplicate values
+	pts5 := geo.Points{geo.NewPoint(5, 4), geo.NewPoint(10, 20), geo.NewPoint(5, 4)}
+	res = append(res, map[string]interface{}{"name": "duplicates", "output": toPointObj(pts5.GetMedian())})
+
+	// Case 6: unsorted input (already covered by others, but explicit)
+	pts6 := geo.Points{geo.NewPoint(100, 10), geo.NewPoint(1, 100), geo.NewPoint(50, 50)}
+	res = append(res, map[string]interface{}{"name": "unsorted", "output": toPointObj(pts6.GetMedian())})
+
+	return res
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Missing output file")
@@ -200,8 +265,16 @@ func main() {
 
 	// Output
 	out := map[string]interface{}{
+		"metadata": map[string]string{
+			"runtimeGoVersion": "go1.27.0",
+			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+			"referencePackage": "github.com/d2lang/d2/lib/geo",
+		},
 		"random":  res,
 		"special": specialRes,
+		"truncateDecimals": testTruncateDecimals(),
+		"goRound": testGoRound(),
+		"median": testMedian(),
 	}
 
 	bytes, err := json.MarshalIndent(out, "", "  ")

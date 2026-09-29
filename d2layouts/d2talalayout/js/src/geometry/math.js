@@ -18,9 +18,14 @@ export function precisionCompare(a, b, e) {
   return 1;
 }
 
+export const PRECISION = 0.0001;
+
 export function truncateDecimals(v) {
-  // Go uses float64(int(v*1000)) / 1000, which truncates towards zero.
-  return Math.trunc(v * 1000) / 1000;
+  // Go: float64(int(v*1000)) / 1000
+  // In JS, Math.trunc gives -0 for Math.trunc(-0.1).
+  // In Go, int(-0.1) gives 0 (positive).
+  // Adding + 0 converts -0 to +0 in JS.
+  return (Math.trunc(v * 1000) + 0) / 1000;
 }
 
 export function sign(i) {

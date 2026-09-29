@@ -1,4 +1,207 @@
 {
+  "goRound": [
+    {
+      "input": {
+        "bits": "0000000000000000",
+        "value": 0
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "kind": "negZero"
+      },
+      "output": {
+        "kind": "negZero"
+      }
+    },
+    {
+      "input": {
+        "bits": "3fb999999999999a",
+        "value": 0.1
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "bfb999999999999a",
+        "value": -0.1
+      },
+      "output": {
+        "kind": "negZero"
+      }
+    },
+    {
+      "input": {
+        "bits": "3fdf5c28f5c28f5c",
+        "value": 0.49
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "bfdf5c28f5c28f5c",
+        "value": -0.49
+      },
+      "output": {
+        "kind": "negZero"
+      }
+    },
+    {
+      "input": {
+        "bits": "3fe0000000000000",
+        "value": 0.5
+      },
+      "output": {
+        "bits": "3ff0000000000000",
+        "value": 1
+      }
+    },
+    {
+      "input": {
+        "bits": "bfe0000000000000",
+        "value": -0.5
+      },
+      "output": {
+        "bits": "bff0000000000000",
+        "value": -1
+      }
+    },
+    {
+      "input": {
+        "bits": "3ff8000000000000",
+        "value": 1.5
+      },
+      "output": {
+        "bits": "4000000000000000",
+        "value": 2
+      }
+    },
+    {
+      "input": {
+        "bits": "bff8000000000000",
+        "value": -1.5
+      },
+      "output": {
+        "bits": "c000000000000000",
+        "value": -2
+      }
+    },
+    {
+      "input": {
+        "bits": "4004000000000000",
+        "value": 2.5
+      },
+      "output": {
+        "bits": "4008000000000000",
+        "value": 3
+      }
+    },
+    {
+      "input": {
+        "bits": "c004000000000000",
+        "value": -2.5
+      },
+      "output": {
+        "bits": "c008000000000000",
+        "value": -3
+      }
+    }
+  ],
+  "median": [
+    {
+      "name": "1 point",
+      "output": {
+        "x": {
+          "bits": "3ff0000000000000",
+          "value": 1
+        },
+        "y": {
+          "bits": "3ff0000000000000",
+          "value": 1
+        }
+      }
+    },
+    {
+      "name": "odd number",
+      "output": {
+        "x": {
+          "bits": "4014000000000000",
+          "value": 5
+        },
+        "y": {
+          "bits": "4010000000000000",
+          "value": 4
+        }
+      }
+    },
+    {
+      "name": "even number",
+      "output": {
+        "x": {
+          "bits": "400c000000000000",
+          "value": 3.5
+        },
+        "y": {
+          "bits": "4008000000000000",
+          "value": 3
+        }
+      }
+    },
+    {
+      "name": "negative coords",
+      "output": {
+        "x": {
+          "bits": "c014000000000000",
+          "value": -5
+        },
+        "y": {
+          "bits": "c014000000000000",
+          "value": -5
+        }
+      }
+    },
+    {
+      "name": "duplicates",
+      "output": {
+        "x": {
+          "bits": "4014000000000000",
+          "value": 5
+        },
+        "y": {
+          "bits": "4010000000000000",
+          "value": 4
+        }
+      }
+    },
+    {
+      "name": "unsorted",
+      "output": {
+        "x": {
+          "bits": "4049000000000000",
+          "value": 50
+        },
+        "y": {
+          "bits": "4049000000000000",
+          "value": 50
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/lib/geo",
+    "runtimeGoVersion": "go1.27.0"
+  },
   "random": {
     "cases": [
       {
@@ -16590,5 +16793,106 @@
         "value": 0.3333333432674408
       }
     ]
-  }
+  },
+  "truncateDecimals": [
+    {
+      "input": {
+        "kind": "negZero"
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "bf1a36e2eb1c432d",
+        "value": -0.0001
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "bf4d7dbf487fcb92",
+        "value": -0.0009
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "bf50624dd2f1a9fc",
+        "value": -0.001
+      },
+      "output": {
+        "bits": "bf50624dd2f1a9fc",
+        "value": -0.001
+      }
+    },
+    {
+      "input": {
+        "bits": "bff3c226809d4952",
+        "value": -1.2349
+      },
+      "output": {
+        "bits": "bff3be76c8b43958",
+        "value": -1.234
+      }
+    },
+    {
+      "input": {
+        "bits": "0000000000000000",
+        "value": 0
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "3f1a36e2eb1c432d",
+        "value": 0.0001
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "3f4d7dbf487fcb92",
+        "value": 0.0009
+      },
+      "output": {
+        "bits": "0000000000000000",
+        "value": 0
+      }
+    },
+    {
+      "input": {
+        "bits": "3f50624dd2f1a9fc",
+        "value": 0.001
+      },
+      "output": {
+        "bits": "3f50624dd2f1a9fc",
+        "value": 0.001
+      }
+    },
+    {
+      "input": {
+        "bits": "3ff3c226809d4952",
+        "value": 1.2349
+      },
+      "output": {
+        "bits": "3ff3be76c8b43958",
+        "value": 1.234
+      }
+    }
+  ]
 }
