@@ -166,7 +166,7 @@ Result:
 - 0 fail
 - 8357 expect() calls
 - 13 test files
-- Runtime: ~166ms
+- 179.00ms
 
 ## Math.random Audit
 - `Math.random` occurrences in `js/src`: **0**
@@ -186,6 +186,16 @@ Benchmarked via Bun runtime:
 4. **AspectRatio1 vs FixedTopLeft ordering**: Verified that `node.AspectRatio1()` executes before `scaleBasedOnEdges()`, ensuring fixed-position circles and real squares are squared even when edge-density scaling is skipped.
 5. **Strict < comparison in large node check**: Verified that `minLength < Math.min(width, height)` uses strict inequality, so exact boundary equality does not early-return.
 
+## Review Corrections Resolution
+The following review corrections were implemented and verified in commit `d8546ff73`:
+- **Label prototype preservation through cloneGraph**: Implemented dedicated `copyLabelRecord(source)` in `src/graph/clone.js` for `Node.Label`, `Edge.Label`, `Edge.SourceArrowheadLabel`, and `Edge.TargetArrowheadLabel` so cloned labels remain `instanceof Label` with independent `Text`, `Position`, `Width`, and `Height` state.
+- **positionFixed reset parity**: Verified and enforced that `positionFixed` is reset to `false` on cloned labels, matching Go's omission of the unexported `positionFixed` field in `copyLabelRecord`.
+- **Strict null Prescale behavior**: Removed permissive `!graph` check from `prescale(graph)`, allowing null/undefined graph arguments to throw naturally while maintaining no-op behavior for valid empty graphs (`new Graph()`).
+- **GOOS/GOARCH oracle evidence**: Extended `go_prescale_oracle.go` metadata with `runtimeGOOS` (`windows`) and `runtimeGOARCH` (`amd64`), regenerated fixture twice with verified identical SHA256 (`be0d77400186e811a988db2416fe1b9d92ab45750a47f492dc71a78ec375de76`), and asserted these fields in tests.
+- **Corrected self-loop explanation**: Documented that amd64 Go runtime conversion `int(math.Ceil(NaN))` yields an implementation-defined negative integer which `max(0, convertedCeil)` resolves to `0`, rather than claiming a language-level NaN-to-zero cast.
+- **Expanded topology non-mutation test**: Added explicit checks asserting immutability of `Containers`, `Clusters`, `Sequences`, `Trees`, `Node.Edges`, `Node.Nears`, `FixedTopLeft`, `DesiredWidth`, `DesiredHeight`, and other topological properties.
+- **Clone -> Prescale integration test**: Added engine-workflow integration test running `prescale(cloneGraph(source))` and verifying that workspace nodes scale while source graph instances and labels remain untouched.
+
 ## Limitations
 - Placement preparation (`Prepare`), loop offset computation, and label positioning belong to subsequent placement slices.
 - Sequence grouping (`AddSequences`), tree preprocessing, and cluster optimization are out of scope.
@@ -195,8 +205,9 @@ Benchmarked via Bun runtime:
 Deterministic, browser-safe implementation of the `Prescale` stage in JavaScript with 100% Go oracle parity across all 29 verification cases, dedicated Label cloning, strict topology non-mutation guarantees, and full metadata verification.
 
 ## Commit History on `tala-js/slice-06-prescale`
-- `d9fe2c611` docs(tala-js): close approved Slice 05
-- `f48a09d3a` feat(tala-js): port Prescale stage
-- `6b97a61d5` test(tala-js): add Go Prescale parity oracle
+- `d8546ff73` fix(tala-js): address Slice 06 review corrections
+- `774c9262d` docs(tala-js): record final docs commit SHA
 - `59a3e3b8a` docs(tala-js): document Slice 06 Prescale
-- `774c9262d` test(tala-js): strengthen Slice 06 regression suite
+- `6b97a61d5` test(tala-js): add Go Prescale parity oracle
+- `f48a09d3a` feat(tala-js): port Prescale stage
+- `d9fe2c611` docs(tala-js): close approved Slice 05
