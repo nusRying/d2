@@ -6,6 +6,7 @@ import { EdgeAbduction } from "../../src/graph/edge-abduction.js";
 import { Sequence } from "../../src/graph/sequence.js";
 import { Cluster, ClusterArrangement, flipArrangement } from "../../src/graph/cluster.js";
 import { Tree, newTree, NewTree } from "../../src/graph/tree.js";
+import { Orientation } from "../../src/geometry/orientation.js";
 
 describe("Group Model Unit Tests", () => {
   describe("EdgeAbduction", () => {
@@ -63,12 +64,12 @@ describe("Group Model Unit Tests", () => {
       expect(seq.isActive()).toBe(false);
     });
 
-    it("should return first and last nodes safely", () => {
+    it("should fail on empty sequence first and last matching Go panic behavior", () => {
       const emptySeq = new Sequence();
-      expect(emptySeq.first()).toBeNull();
-      expect(emptySeq.First()).toBeNull();
-      expect(emptySeq.last()).toBeNull();
-      expect(emptySeq.Last()).toBeNull();
+      expect(() => emptySeq.first()).toThrow("cannot get first node of empty sequence");
+      expect(() => emptySeq.First()).toThrow("cannot get first node of empty sequence");
+      expect(() => emptySeq.last()).toThrow("cannot get last node of empty sequence");
+      expect(() => emptySeq.Last()).toThrow("cannot get last node of empty sequence");
 
       const n1 = new Node(1n);
       const n2 = new Node(2n);
@@ -83,9 +84,26 @@ describe("Group Model Unit Tests", () => {
   });
 
   describe("Cluster", () => {
+    it("should initialize zero-value fields matching Go", () => {
+      const zero = new Cluster();
+      expect(zero.Arrangement).toBe('');
+      expect(zero.DesiredArrangement).toBe('');
+      expect(zero.Padding).toBe(0);
+      expect(zero.FixedSize).toBe(false);
+      expect(zero.Nodes).toEqual([]);
+      expect(zero.EdgeAbductions).toEqual([]);
+      expect(zero.Vessel).toBeNull();
+      expect(zero.Container).toBeNull();
+
+      // flip on "" returns Row
+      zero.flip();
+      expect(zero.Arrangement).toBe(ClusterArrangement.Row);
+    });
+
     it("should flip arrangement matching Go semantics", () => {
       expect(flipArrangement(ClusterArrangement.Row)).toBe(ClusterArrangement.Column);
       expect(flipArrangement(ClusterArrangement.Column)).toBe(ClusterArrangement.Row);
+      expect(flipArrangement("")).toBe(ClusterArrangement.Row);
       expect(flipArrangement("InvalidOrUnknown")).toBe(ClusterArrangement.Row);
 
       const cluster = new Cluster({ Arrangement: ClusterArrangement.Row });
@@ -118,7 +136,7 @@ describe("Group Model Unit Tests", () => {
   });
 
   describe("Tree", () => {
-    it("should initialize tree node and empty children", () => {
+    it("should initialize tree node and default orientation to TopLeft", () => {
       const n = new Node(30n);
       const t1 = newTree(n);
       const t2 = NewTree(n);
@@ -127,17 +145,25 @@ describe("Group Model Unit Tests", () => {
       expect(t1.Parent).toBeNull();
       expect(t1.Children).toEqual([]);
       expect(t1.SentinelEdge).toBeNull();
+      expect(t1.Orientation).toBe(Orientation.TopLeft);
 
       expect(t2.Node).toBe(n);
       expect(t2.Children).toEqual([]);
+      expect(t2.Orientation).toBe(Orientation.TopLeft);
+    });
+
+    it("should fail when resolving sentinel on nil SentinelEdge matching Go panic behavior", () => {
+      const tree = new Tree(new Node(100n));
+      expect(() => tree.sentinelNode()).toThrow("tree has nil SentinelEdge");
+      expect(() => tree.SentinelNode()).toThrow("tree has nil SentinelEdge");
+      expect(() => tree.isSentinelEdgeSource()).toThrow("tree has nil SentinelEdge");
+      expect(() => tree.IsSentinelEdgeSource()).toThrow("tree has nil SentinelEdge");
     });
 
     it("should resolve sentinelNode strictly based on endpoint equality", () => {
       const nRoot = new Node(100n);
       const nSentinel = new Node(101n);
       const tree = new Tree(nRoot);
-
-      expect(tree.sentinelNode()).toBeNull();
 
       // Edge from nRoot to nSentinel
       const edgeFwd = new Edge(nRoot, nSentinel);

@@ -1,5 +1,6 @@
 import { describe, it, expect } from "bun:test";
 import { Node } from "../../src/graph/node.js";
+import { Edge } from "../../src/graph/edge.js";
 import { Graph } from "../../src/graph/graph.js";
 import { cloneGraph } from "../../src/graph/clone.js";
 import { Sequence } from "../../src/graph/sequence.js";
@@ -15,8 +16,18 @@ function findNode(graph, id) {
   for (const v of graph.Clusters.keys()) {
     if (v.ID === id) return v;
   }
+  for (const c of graph.Clusters.values()) {
+    for (const m of (c.Nodes || [])) {
+      if (m && m.ID === id) return m;
+    }
+  }
   for (const v of graph.Sequences.keys()) {
     if (v.ID === id) return v;
+  }
+  for (const s of graph.Sequences.values()) {
+    for (const m of (s.Nodes || [])) {
+      if (m && m.ID === id) return m;
+    }
   }
   for (const s of graph.Trees.keys()) {
     if (s.ID === id) return s;
@@ -77,9 +88,18 @@ describe("Group Clone Unit Tests", () => {
 
     const clonedStep1 = findNode(cloned, 3n);
     const clonedStep2 = findNode(cloned, 4n);
-    expect(clonedSeq.Nodes).toEqual([clonedStep1, clonedStep2]);
+    expect(clonedStep1).not.toBeNull();
+    expect(clonedStep2).not.toBeNull();
+    expect(clonedSeq.Nodes.length).toBe(2);
+    expect(clonedSeq.Nodes[0]).toBe(clonedStep1);
+    expect(clonedSeq.Nodes[1]).toBe(clonedStep2);
     expect(clonedStep1.Sequence).toBe(clonedSeq);
     expect(clonedStep2.Sequence).toBe(clonedSeq);
+
+    // Active members are filtered from cloned.Nodes, vessel remains
+    expect(cloned.Nodes.includes(clonedVessel)).toBe(true);
+    expect(cloned.Nodes.includes(clonedStep1)).toBe(false);
+    expect(cloned.Nodes.includes(clonedStep2)).toBe(false);
 
     // Abduction rebinding
     expect(clonedSeq.EdgeAbductions.length).toBe(1);
@@ -123,7 +143,14 @@ describe("Group Clone Unit Tests", () => {
     expect(clonedInactVessel.Graph).toBeNull();
 
     const clonedInactSeq = cloned.Sequences.get(clonedInactVessel);
+    expect(clonedInactSeq.Graph).toBe(cloned);
     expect(clonedInactSeq.isActive()).toBe(false);
+
+    // Inactive members remain in cloned.Nodes
+    const clonedS1 = findNode(cloned, 11n);
+    const clonedS2 = findNode(cloned, 12n);
+    expect(cloned.Nodes.includes(clonedS1)).toBe(true);
+    expect(cloned.Nodes.includes(clonedS2)).toBe(true);
   });
 
   it("should clone active Cluster, rebind members and preserve isClusterVessel", () => {
@@ -164,8 +191,15 @@ describe("Group Clone Unit Tests", () => {
 
     const clonedM1 = findNode(cloned, 21n);
     const clonedM2 = findNode(cloned, 22n);
+    expect(clonedM1).not.toBeNull();
+    expect(clonedM2).not.toBeNull();
     expect(clonedM1.Cluster).toBe(clonedCluster);
     expect(clonedM2.Cluster).toBe(clonedCluster);
+
+    // Active members are filtered from cloned.Nodes, vessel remains
+    expect(cloned.Nodes.includes(clonedVessel)).toBe(true);
+    expect(cloned.Nodes.includes(clonedM1)).toBe(false);
+    expect(cloned.Nodes.includes(clonedM2)).toBe(false);
   });
 
   it("should clone Tree topology and rebind NodeToTree completely", () => {
@@ -218,5 +252,150 @@ describe("Group Clone Unit Tests", () => {
     // NodeToTree
     expect(cloned.NodeToTree.get(clonedRootNode)).toBe(clonedRootTree);
     expect(cloned.NodeToTree.get(clonedChildNode)).toBe(clonedChildTree);
+  });
+
+  it("should successfully clone hierarchy with cluster-member container", () => {
+    const g = new Graph();
+    const rootCont = new Node(1n, 200, 200);
+    g.addNewNodeToContainer(null, rootCont);
+    const normCont = new Node(2n, 150, 150);
+    g.addNewNodeToContainer(rootCont, normCont);
+    const cVessel = new Node(3n, 100, 100);
+    cVessel.setClusterVessel(true);
+    g.addNewNodeToContainer(normCont, cVessel);
+    const cMemCont = new Node(4n, 80, 80);
+    g.addNodeUnchecked(cMemCont);
+    const leafNode = new Node(5n, 30, 30);
+    g.addNewNodeToContainer(cMemCont, leafNode);
+    const cl = new Cluster({
+      Vessel: cVessel,
+      Nodes: [cMemCont],
+      Graph: g,
+      Container: normCont,
+    });
+    g.Clusters.set(cVessel, cl);
+    cMemCont.Cluster = cl;
+
+    const cloned = cloneGraph(g);
+    expect(cloned).toBeDefined();
+    expect(cloned.Containers.size).toBe(4);
+
+    const clonedCMemCont = findNode(cloned, 4n);
+    expect(clonedCMemCont.isContainer).toBe(true);
+    expect(cloned.Containers.has(clonedCMemCont)).toBe(true);
+    const clonedChildren = cloned.Containers.get(clonedCMemCont);
+    expect(clonedChildren.length).toBe(1);
+    expect(clonedChildren[0].ID).toBe(5n);
+  });
+
+  it("should clone Tree whose SentinelEdge is absent from Graph.Edges", () => {
+    const g = new Graph();
+    const tNode = new Node(1n, 40, 40);
+    const sNode = new Node(2n, 40, 40);
+    g.addNodeUnchecked(tNode);
+    g.addNodeUnchecked(sNode);
+    const detachedEdge = new Edge(sNode, tNode);
+    const tRecord = new Tree(tNode);
+    tRecord.SentinelEdge = detachedEdge;
+    tRecord.Orientation = Orientation.Right;
+    g.Trees.set(sNode, [tRecord]);
+
+    const cloned = cloneGraph(g);
+    expect(cloned.Edges.length).toBe(0);
+
+    const clonedSentinel = findNode(cloned, 2n);
+    const clonedTrees = cloned.Trees.get(clonedSentinel);
+    expect(clonedTrees.length).toBe(1);
+    const clonedTree = clonedTrees[0];
+    expect(clonedTree.SentinelEdge).not.toBe(detachedEdge);
+    expect(clonedTree.SentinelEdge.From).toBe(clonedSentinel);
+    expect(clonedTree.SentinelEdge.To).toBe(findNode(cloned, 1n));
+    expect(clonedTree.Orientation).toBe(Orientation.Right);
+  });
+
+  it("should reject auxiliary node ID collision when distinct Node record reuses an ID", () => {
+    const g = new Graph();
+    const declaredNode = new Node(10n, 50, 50);
+    g.addNodeUnchecked(declaredNode);
+
+    // Another distinct Node object with the same ID 10n used as a cluster vessel
+    const distinctNodeSameID = new Node(10n, 100, 100);
+    g.Clusters.set(distinctNodeSameID, new Cluster({ Vessel: distinctNodeSameID }));
+
+    expect(() => cloneGraph(g)).toThrow("distinct node record reuses ID 10");
+  });
+
+  it("should enforce Cluster clone validations", () => {
+    // 1. Vessel mismatch
+    const g1 = new Graph();
+    const v1 = new Node(1n);
+    const v2 = new Node(2n);
+    g1.addNodeUnchecked(v1);
+    g1.addNodeUnchecked(v2);
+    g1.Clusters.set(v1, new Cluster({ Vessel: v2 }));
+    expect(() => cloneGraph(g1)).toThrow("because its record vessel differs");
+
+    // 2. Container cannot be vessel itself
+    const g2 = new Graph();
+    const vSelf = new Node(3n);
+    g2.addNodeUnchecked(vSelf);
+    g2.Clusters.set(vSelf, new Cluster({ Vessel: vSelf, Container: vSelf }));
+    expect(() => cloneGraph(g2)).toThrow("because it cannot contain itself");
+  });
+
+  it("should enforce Sequence clone validations", () => {
+    // 1. Vessel mismatch
+    const g1 = new Graph();
+    const v1 = new Node(1n);
+    const v2 = new Node(2n);
+    g1.addNodeUnchecked(v1);
+    g1.addNodeUnchecked(v2);
+    g1.Sequences.set(v1, new Sequence({ Vessel: v2, Nodes: [new Node(3n), new Node(4n)] }));
+    expect(() => cloneGraph(g1)).toThrow("because its record vessel differs");
+
+    // 2. Container cannot be vessel itself
+    const g2 = new Graph();
+    const vSelf = new Node(5n);
+    g2.addNodeUnchecked(vSelf);
+    g2.Sequences.set(vSelf, new Sequence({ Vessel: vSelf, Container: vSelf, Nodes: [new Node(6n), new Node(7n)] }));
+    expect(() => cloneGraph(g2)).toThrow("because it cannot contain itself");
+
+    // 3. Fewer than 2 steps
+    const g3 = new Graph();
+    const vSeq = new Node(8n);
+    const step = new Node(9n);
+    g3.addNodeUnchecked(vSeq);
+    g3.addNodeUnchecked(step);
+    g3.Sequences.set(vSeq, new Sequence({ Vessel: vSeq, Nodes: [step] }));
+    expect(() => cloneGraph(g3)).toThrow("want at least 2");
+  });
+
+  it("should fail when EdgeAbduction references unincluded foreign node", () => {
+    const g = new Graph();
+    const vessel = new Node(1n);
+    const s1 = new Node(2n);
+    const s2 = new Node(3n);
+    g.addNodeUnchecked(vessel);
+    g.addNodeUnchecked(s1);
+    g.addNodeUnchecked(s2);
+    const edge = g.connect(s1, s2);
+
+    const foreignNode = new Node(999n);
+    const badAbduction = new EdgeAbduction({
+      Edge: edge,
+      OriginallyFrom: foreignNode, // unincluded!
+      OriginallyTo: s2,
+      CurrentFrom: vessel,
+      CurrentTo: s2,
+    });
+
+    const seq = new Sequence({
+      Vessel: vessel,
+      Nodes: [s1, s2],
+      EdgeAbductions: [badAbduction],
+    });
+    g.Sequences.set(vessel, seq);
+
+    expect(() => cloneGraph(g)).toThrow("node 999 is not included in the graph");
   });
 });

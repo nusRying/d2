@@ -9,14 +9,43 @@
       "clonedAbductionCurrFrom": "1",
       "clonedAbductionEdgeID": "0",
       "clonedAbductionOrigFrom": "2",
+      "clonedActSeqActive": true,
       "clonedClusterActive": true,
       "clonedClusterArrangement": "Column",
       "clonedClusterVesselFlag": true,
+      "clonedInactCVesselGraphNil": true,
+      "clonedInactClusterActive": false,
+      "clonedInactClusterGraphIsG": true,
       "clonedNodeToTreeMatches": true,
+      "clonedNodesIDs": [
+        "1",
+        "41",
+        "42",
+        "5",
+        "6",
+        "50",
+        "7",
+        "8"
+      ],
       "clonedSeqActive": false,
+      "clonedSeqGraphIsG": true,
       "clonedSeqVesselGraphNil": true,
       "clonedTreeOrientation": "Top",
       "clonedTreeRootNodeID": "7"
+    },
+    "CloneValidationRejections": {
+      "shortSequenceRejected": true,
+      "unincludedNodeRejected": true,
+      "vesselMismatchRejected": true
+    },
+    "ClusterMemberContainerClone": {
+      "cloneSucceeded": true,
+      "containerRDFSOrder": [
+        "4",
+        "2",
+        "1"
+      ],
+      "containersCount": 4
     },
     "ClusterSemantics": {
       "activeIsActive": true,
@@ -24,7 +53,20 @@
       "flip2": "Column",
       "flip3": "Row",
       "inactiveIsActive": false,
-      "isClusterVessel": true
+      "isClusterVessel": true,
+      "zeroArrangement": "",
+      "zeroDesiredArrangement": "",
+      "zeroFixedSize": false,
+      "zeroFlip": "Row",
+      "zeroPadding": 0
+    },
+    "DetachedTreeSentinelClone": {
+      "cloneSucceeded": true,
+      "distinctSentinelEdge": true,
+      "graphEdgesCount": 0,
+      "sentinelFromID": "2",
+      "sentinelOrientation": "Right",
+      "sentinelToID": "1"
     },
     "IsDescendantOf": {
       "cMemberDescOfChild": true,
@@ -69,6 +111,8 @@
       "activeFirstID": "2",
       "activeIsActive": true,
       "activeLastID": "3",
+      "emptyFirstPanics": true,
+      "emptyLastPanics": true,
       "inactiveIsActive": false,
       "isSequenceVesselAct": true,
       "isSequenceVesselMem": false
@@ -95,7 +139,9 @@
       ]
     },
     "TreeSentinelNode": {
+      "defaultOrientation": "TopLeft",
       "fwdSentinel": "2",
+      "nilSentinelNodePanics": true,
       "revSentinel": "2"
     },
     "WalkRDFSPrecedence": {

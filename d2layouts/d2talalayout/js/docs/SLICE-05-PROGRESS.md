@@ -4,6 +4,8 @@
 Port the missing layoutgraph topology/group records and traversal semantics required by the first preprocessing stages.
 Establish faithful JavaScript support for `Sequence`, `Cluster`, `Tree`, `EdgeAbduction`, active group membership, owning-container resolution, stable group ordering, container/cluster reverse-DFS ordering, group-aware node traversal, shape-kind predicates, and group-aware clone isolation and rebinding without yet implementing placement or grouping discovery algorithms.
 
+Slice 05 covers the topology-foundation behavior exercised by its Go oracle and regression suite.
+
 ## Approved Slice 04 Base
 - Approved Commit: `5ab6807af54a28cebbc2ee6317c8588f51c43188`
 
@@ -14,15 +16,15 @@ Establish faithful JavaScript support for `Sequence`, `Cluster`, `Tree`, `EdgeAb
 - Runtime Version: `go1.27.0` (at `C:\Program Files\Go\bin\go.exe`)
 
 ## Go Files Studied
-- `internal/layoutgraph/sequence.go`: Sequence struct, `IsActive()`, `First()`, `Last()`.
-- `internal/layoutgraph/cluster.go`: Cluster struct, `ClusterArrangement` ("Row", "Column"), `Flip()`, `IsActive()`.
-- `internal/layoutgraph/tree.go`: Tree struct, `NewTree()`, `isSentinelEdgeSource()`, `SentinelNode()`.
+- `internal/layoutgraph/sequence.go`: Sequence struct, `first()`, `last()`, `First()`, `Last()`, `isActive()`.
+- `internal/layoutgraph/cluster.go`: Cluster struct, zero-value fields, `ClusterArrangement` ("Row", "Column"), `Flip()`, `isActive()`.
+- `internal/layoutgraph/tree.go`: Tree struct, `NewTree()`, default `geo.TopLeft` orientation, `isSentinelEdgeSource()`, `sentinelNode()`.
 - `internal/layoutgraph/layout.go`: `EdgeAbduction`, `ClusterRDFSOrder()`, `ClusterOrder()`, `TreeOrder()`, `SequenceOrder()`, `isDescendantOf()`.
 - `internal/layoutgraph/graph.go`: `Containers`, `Clusters`, `Trees`, `NodeToTree`, `Sequences`, `isSequence()`, `isTreeSentinel()`, `containerRDFSOrder()`.
 - `internal/layoutgraph/node.go`: `SetShape()`, `ShapeType()`, `AddNear()`, `Level()`, `rdfsWalk()`, `container()`, `isClusterVessel`.
 - `internal/layoutgraph/structure_api.go`: `IsSequenceStep()`, `SameShape()`, `IsTable()`, `IsClass()`, `OwningContainer()`, `WalkRDFS()`.
-- `internal/layoutgraph/placement_access.go`: `IsClass()`.
-- `internal/layoutgraph/clone.go`: `copyClusters()`, `copySequences()`, `copyTrees()`, `copyAuxiliaryNodeRecord()`, `copyEdgeAbductions()`.
+- `internal/layoutgraph/placement_access.go`: `IsClass()`, `SentinelNode()`.
+- `internal/layoutgraph/clone.go`: `copyClusters()`, `copySequences()`, `copyTrees()`, `copyAuxiliaryNodeRecord()`, `resolveNode()`, `copyEdgeAbductions()`, active group node filtering.
 - `internal/layoutgraph/hierarchy_access.go`: `IsTable()`, `SetClusterVessel()`.
 - `internal/nodeshape/shape.go`: `nodeshape.New()`, `Kind` enum, recognized shape constants.
 - `lib/shape/shape.go`: Canonical D2 shape types, `AspectRatio1()`.
@@ -53,21 +55,22 @@ Slice 05 implements solely the data models, ordering, predicates, and cloning ne
 Implemented in `src/graph/sequence.js`:
 - Fields: `Vessel`, `Nodes`, `Graph`, `EdgeAbductions`, `Container`.
 - `isActive() / IsActive()`: evaluates `this.Vessel != null && this.Vessel.Graph != null`.
-- `first() / First()` and `last() / Last()`: safely queries sequence endpoints.
+- `first() / First()` and `last() / Last()`: queries sequence endpoints; throws deterministic error on empty sequence matching Go panic behavior.
 
 ## Cluster Model
 Implemented in `src/graph/cluster.js`:
 - Fields: `Vessel`, `Nodes`, `Arrangement`, `DesiredArrangement`, `Graph`, `EdgeAbductions`, `Padding`, `FixedSize`, `Container`.
+- Zero-value defaults: `Arrangement = ""`, `DesiredArrangement = ""`, `Padding = 0`, `FixedSize = false`.
 - `ClusterArrangement`: frozen object containing `Row: "Row"`, `Column: "Column"`.
-- `flipArrangement()` / `flip()`: flips `Row -> Column` and any other value to `Row`.
+- `flipArrangement()` / `flip()`: flips `Row -> Column` and any other value (including `""`) to `Row`, matching Go `ClusterArrangement.Flip()`.
 - `isActive() / IsActive()`: evaluates `this.Vessel != null && this.Vessel.Graph != null`.
 
 ## Tree Model
 Implemented in `src/graph/tree.js`:
 - Fields: `Node`, `Parent`, `Children`, `SentinelEdge`, `Orientation`.
-- `newTree(node) / NewTree(node)`: initializes tree with node and empty children array.
-- `isSentinelEdgeSource()`: checks `SentinelEdge.From === this.Node`.
-- `sentinelNode() / SentinelNode()`: returns `SentinelEdge.To` if node is source, else `SentinelEdge.From`. Direction is strictly based on endpoint pointers, never inferred from edge arrowheads.
+- `newTree(node) / NewTree(node)`: initializes tree with node, empty children array, and default `Orientation: Orientation.TopLeft` (matching Go zero value `geo.TopLeft = 0`).
+- `isSentinelEdgeSource()`: checks `SentinelEdge.From === this.Node`. Throws if `SentinelEdge` is nil.
+- `sentinelNode() / SentinelNode()`: returns `SentinelEdge.To` if node is source, else `SentinelEdge.From`. Throws if `SentinelEdge` is nil. Direction is strictly based on endpoint pointers, never inferred from edge arrowheads.
 
 ## EdgeAbduction Model
 Implemented in `src/graph/edge-abduction.js`:
@@ -85,7 +88,7 @@ Implemented minimal semantic layer on `Node` in `src/graph/node.js`:
 - `sameShape(other)`: compares shape kinds (`""` and `"Square"` evaluate to the same kind `Square`).
 
 ## Active/Inactive Semantics
-Active group status requires `Vessel.Graph !== null`. Inactive (remembered) groups have `Vessel.Graph === null`. Group queries check active status before applying group semantics.
+Active group status requires `Vessel.Graph !== null`. Inactive (remembered) groups have `Vessel.Graph === null`. Group queries check active status before applying group semantics. Cloned inactive group records preserve `clonedCluster.Graph === clonedGraph` and `clonedSeq.Graph === clonedGraph` while `clonedVessel.Graph === null`.
 
 ## Owning-Container Semantics
 `node.owningContainer() / OwningContainer()`:
@@ -102,7 +105,7 @@ Active group status requires `Vessel.Graph !== null`. Inactive (remembered) grou
 - `node.isDescendantOf(maybeAncestor)`:
   - Same node -> true; null descendant -> false.
   - Recurses through `Container`, else `Cluster.Vessel`, else `Sequence.Vessel`.
-  - Upstream Go behavior follows `Cluster` and `Sequence` vessel pointers regardless of active state; JS matches this exactly.
+  - Upstream Go behavior follows `Cluster` and `Sequence` vessel pointers regardless of active state; JS matches this.
   - Covers null ancestor once root is reached.
 
 ## Stable Group Ordering
@@ -134,12 +137,15 @@ Each takes the keys of its corresponding Map, returns a new array, and sorts num
 - Current node visited last.
 
 ## Clone Changes
-`cloneGraph(source)` updated in `src/graph/clone.js`:
+`cloneGraph(source)` in `src/graph/clone.js`:
 - Clones and rebinds `Clusters`, `Sequences`, `Trees` (`NodeToTree`), and `EdgeAbductions`.
-- Rebinds member pointers: `member.Cluster = clonedCluster`, `member.Sequence = clonedSequence`.
-- Rebinds auxiliary nodes (vessels and tree nodes) and preserves `isClusterVessel` flag.
-- Preserves active vs inactive state: inactive sequence/cluster vessels retain `Graph === null`.
-- Rebinds `EdgeAbduction` fields (`Edge`, `OriginallyFrom`, `OriginallyTo`, `CurrentFrom`, `CurrentTo`).
+- Strict node admission: `resolveNode()` strictly resolves previously admitted nodes; arbitrary unadmitted nodes fail clone.
+- Distinct auxiliary ID collisions rejected via `nodeRecordsByID` tracking.
+- Structural clone validations: rejects short sequences (< 2 steps), vessel mismatches, and self-contained vessels.
+- Detached Tree sentinel edges outside `Graph.Edges` are cloned independently without being inserted into `cloned.Edges`.
+- Group-aware container traversal: enters containers that are members of cluster vessels.
+- Filters active cluster members and active sequence steps from top-level `cloned.Nodes`, preserving their vessels. Inactive members remain in `cloned.Nodes`.
+- Preserves active vs inactive state: inactive sequence/cluster vessels retain `vessel.Graph === null` while group records point to `cloned`.
 
 ## Shape Go Oracle
 - Source: `test/reference/go_shape_semantics_oracle.go`
@@ -151,20 +157,25 @@ Each takes the keys of its corresponding Map, returns a new array, and sorts num
 - Source: `test/reference/go_topology_foundation_oracle.go`
 - Fixture: `test/fixtures/go-topology-foundation-reference.json`
 - Generated using `C:\Program Files\Go\bin\go.exe`.
-- SHA256: `4cec1bac2dad2d14d1f1a8784d66a3ca8a37e6ece152bbbef0b1b308a65934bb`
+- SHA256: `a60d023a92026a64459e48456d39f5d33392a1570fb413030e684ed1041c44c8`
 
 ## Fixture Reproducibility
 Generated both fixtures twice consecutively using Go:
 - Shape fixture SHA256 run 1 & 2: `de1855ebf2eb0dc6088e7bbb6c2ca55a0fb3d89fb41e0e18689d2eb661cb6376` (identical).
-- Topology fixture SHA256 run 1 & 2: `4cec1bac2dad2d14d1f1a8784d66a3ca8a37e6ece152bbbef0b1b308a65934bb` (identical).
+- Topology fixture SHA256 run 1 & 2: `a60d023a92026a64459e48456d39f5d33392a1570fb413030e684ed1041c44c8` (identical).
 
 ## Full Regression
-Run with `bun test`:
-- 98 passed, 0 failed.
-- 8013 expect() calls.
+Authoritative final run:
+```powershell
+cd d2layouts\d2talalayout\js
+bun test
+```
+Result:
+- 109 passed, 0 failed.
+- 8096 expect() calls.
 - 11 test files.
-- Runtime: ~155ms.
-All Slice 01-04 tests remained 100% green.
+- Runtime: 231.00ms.
+All Slice 01-05 tests pass.
 
 ## Math.random Audit
 Audited `js/src`: 0 occurrences of `Math.random`.
@@ -173,17 +184,28 @@ Audited `js/src`: 0 occurrences of `Math.random`.
 Audited `js/src`: 0 dependencies on Node built-ins (`fs`, `path`, `Buffer`, `process`, `crypto`).
 
 ## Performance Sanity
-Measurements on small graphs:
-- 100,000 `clusterOrder` operations: ~103ms (~1.03 μs/op).
-- 100,000 `owningContainer` queries: ~3.1ms (~31 ns/query).
-- 10,000 `containerRDFSOrder` traversals: ~5.2ms (~0.52 μs/traversal).
-- 1,000 group-aware `cloneGraph` calls: ~74ms (~74 μs/clone).
+Measurements on small graphs via `bun -e`:
+- 100,000 `clusterOrder` operations: 19.69 ms (~0.20 μs/op).
+- 100,000 `owningContainer` queries: 1.16 ms (~11.6 ns/query).
+- 10,000 `containerRDFSOrder` traversals: 1.12 ms (~0.11 μs/traversal).
+- 1,000 group-aware `cloneGraph` calls: 21.53 ms (~21.5 μs/clone).
 
-## Problems Encountered and Resolved
-1. **Lowercase shape strings vs Go `SetShape`**: Probing revealed Go's `nodeshape.New` strictly matches canonical PascalCase strings (`Callout`, `Circle`, etc.) and `""`. Lowercase strings return `ok=false` in Go and preserve existing shape. Handled with exact Go parity.
-2. **Go `NewGraph` uninitialized `NodeToTree`**: In Go, `NewGraph()` leaves `NodeToTree` nil until created during tree operations. Initialized `g.NodeToTree = make(...)` in oracle to avoid nil map panic.
-3. **ClusterArrangement `Flip()`**: In Go, `Flip()` is a value receiver method on `ClusterArrangement` returning the flipped arrangement. Implemented `flipArrangement` and `Cluster.flip()`.
-4. **Clone test node lookup**: In `group-clone.test.js`, initially tried looking up cloned nodes in `nodesByEntityId` which was not populated on plain un-adapted graphs. Resolved with explicit ID finder.
+## Problems Encountered and Review-Discovered Discrepancies
+During initial implementation and subsequent code review, the following issues were identified and resolved:
+1. **Tree zero-value orientation**: `NewTree(node)` in Go assigns `Orientation` to `geo.TopLeft` (0) via zero-allocation struct, rather than `geo.NONE` (8). Corrected in JS `Tree`.
+2. **Sequence empty endpoint behavior**: Go `first()` and `last()` panic when `len(s.Nodes) == 0`. JS initially returned `null`; updated to throw deterministic errors.
+3. **Cluster zero values**: In Go, zero-value `Cluster` has `Arrangement = ""`, `DesiredArrangement = ""`, and `Padding = 0`. Corrected JS defaults and verified `flipArrangement("") === "Row"`.
+4. **Group record Graph vs vessel Graph distinction**: Go `copyClusters` and `copySequences` always assign `Graph: state.clone` to the cloned group record. Active state is controlled exclusively by `vessel.Graph != nil`. Updated JS to assign `cloned` graph to inactive cluster and sequence records.
+5. **Active member filtering from cloned Graph.Nodes**: Pinned Go filters out active cluster members and active sequence steps from `state.clone.Nodes` while retaining vessels. Inactive members remain in `Nodes`. Ported this filtering.
+6. **Group-aware container clone traversal**: `copyContainers()` uses group-aware container RDFS order that traverses into cluster members that are containers. Updated `clone.js` to utilize group-aware traversal.
+7. **Strict resolve-vs-copy distinction**: Replaced permissive auxiliary fallback in `resolveNode()` with strict lookup of admitted records, throwing if unadmitted nodes are referenced.
+8. **Auxiliary ID collision behavior**: Tracked `nodeRecordsByID` to ensure distinct source Node instances reusing an `EntityID` are rejected.
+9. **Detached tree sentinel edge cloning**: Go supports tree sentinel edges outside `Graph.Edges`. Updated `clone.js` to clone absent sentinel edges specifically without inserting them into `cloned.Edges`.
+10. **Structural clone validation**: Added validation checks rejecting sequence with < 2 steps, vessel mismatches, and containers referencing themselves.
+
+## Review-Risk Notes
+- Preprocessing algorithms in Slice 06 (`AddSequences`, `AddClusters`, `PreprocessTrees`) mutate group memberships and rely on `cloneGraph` preserving inactive remembered states. The regression test suite now directly covers these states.
+- Shape predicates (`aspectRatio1`, `sameShape`, `isTable`, etc.) are minimal wrappers around `Node._shapeType`. Full polygon geometry and port indices remain deferred to the node shape / routing slice.
 
 ## Licensing / Provenance
 All code translated directly from pinned D2/TALA source (`github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph`) under Mozilla Public License 2.0.
@@ -194,4 +216,12 @@ All code translated directly from pinned D2/TALA source (`github.com/d2lang/d2/d
 - WorkGuard and transactional rollback not ported (belongs in algorithm slices).
 
 ## Result
-Complete, deterministic, browser-safe preprocessing topology foundation in JavaScript matching Go TALA reference.
+Deterministic, browser-safe preprocessing topology foundation in JavaScript matching the behavior exercised by the Go TALA reference oracles and test suite.
+
+## Commit History on `tala-js/slice-05-topology-foundation`
+- `ebf007b40` docs(tala-js): close approved Slice 04
+- `254761e25` feat(tala-js): add preprocessing topology records
+- `c80c0e4ac` feat(tala-js): add group traversal and shape semantics
+- `1dad84aba` test(tala-js): add Go topology foundation oracles
+- `3aa9b2822` docs(tala-js): document Slice 05 topology foundation
+- (new correction commit) fix(tala-js): finalize Slice 05 topology parity

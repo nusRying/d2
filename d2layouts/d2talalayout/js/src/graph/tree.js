@@ -10,21 +10,24 @@ export class Tree {
   Parent = null;
   Children = [];
   SentinelEdge = null;
-  Orientation = Orientation.NONE;
+  Orientation = Orientation.TopLeft;
 
   constructor(node = null) {
     this.Node = node;
     this.Parent = null;
     this.Children = [];
     this.SentinelEdge = null;
-    this.Orientation = Orientation.NONE;
+    this.Orientation = Orientation.TopLeft;
   }
 
   /**
    * isSentinelEdgeSource returns true when the tree's node is the source of SentinelEdge.
    */
   isSentinelEdgeSource() {
-    return this.SentinelEdge != null && this.SentinelEdge.From === this.Node;
+    if (this.SentinelEdge == null) {
+      throw new Error("tree has nil SentinelEdge");
+    }
+    return this.SentinelEdge.From === this.Node;
   }
 
   IsSentinelEdgeSource() {
@@ -38,7 +41,7 @@ export class Tree {
    */
   sentinelNode() {
     if (this.SentinelEdge == null) {
-      return null;
+      throw new Error("tree has nil SentinelEdge");
     }
     if (this.isSentinelEdgeSource()) {
       return this.SentinelEdge.To;

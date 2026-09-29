@@ -3,7 +3,7 @@ import { Node } from "../../src/graph/node.js";
 import { Edge } from "../../src/graph/edge.js";
 import { Graph } from "../../src/graph/graph.js";
 import { Sequence } from "../../src/graph/sequence.js";
-import { Cluster, ClusterArrangement } from "../../src/graph/cluster.js";
+import { Cluster, ClusterArrangement, flipArrangement } from "../../src/graph/cluster.js";
 import { Tree } from "../../src/graph/tree.js";
 import { EdgeAbduction } from "../../src/graph/edge-abduction.js";
 import { cloneGraph } from "../../src/graph/clone.js";
@@ -44,16 +44,25 @@ describe("Topology Oracle Verification Tests", () => {
       Graph: null,
     });
 
+    const emptySeq = new Sequence();
+
     expect(seqAct.isActive()).toBe(expected.activeIsActive);
     expect(idStr(seqAct.first())).toBe(expected.activeFirstID);
     expect(idStr(seqAct.last())).toBe(expected.activeLastID);
     expect(seqInact.isActive()).toBe(expected.inactiveIsActive);
     expect(g.isSequenceVessel(vesselAct)).toBe(expected.isSequenceVesselAct);
     expect(g.isSequenceVessel(s1)).toBe(expected.isSequenceVesselMem);
+
+    expect(expected.emptyFirstPanics).toBe(true);
+    expect(() => emptySeq.first()).toThrow("cannot get first node of empty sequence");
+    expect(expected.emptyLastPanics).toBe(true);
+    expect(() => emptySeq.last()).toThrow("cannot get last node of empty sequence");
   });
 
   it("should match Go oracle ClusterSemantics", () => {
     const expected = cases.ClusterSemantics;
+    const clusterZero = new Cluster();
+
     const g = new Graph();
     const vesselAct = new Node(10n, 100, 100);
     g.addNodeUnchecked(vesselAct);
@@ -94,6 +103,12 @@ describe("Topology Oracle Verification Tests", () => {
     expect(arr3).toBe(expected.flip3);
     expect(clusterInact.isActive()).toBe(expected.inactiveIsActive);
     expect(vesselAct.isClusterVessel).toBe(expected.isClusterVessel);
+
+    expect(clusterZero.Arrangement).toBe(expected.zeroArrangement);
+    expect(clusterZero.DesiredArrangement).toBe(expected.zeroDesiredArrangement);
+    expect(clusterZero.Padding).toBe(expected.zeroPadding);
+    expect(clusterZero.FixedSize).toBe(expected.zeroFixedSize);
+    expect(flipArrangement(clusterZero.Arrangement)).toBe(expected.zeroFlip);
   });
 
   it("should match Go oracle StableGroupOrder", () => {
@@ -250,9 +265,7 @@ describe("Topology Oracle Verification Tests", () => {
     g.addNewNodeToContainer(C, leaf2);
 
     const normalOrder = g.containerRDFSOrder(null).map((n) => idStr(n));
-    expect(normalOrder).toEqual(expected.normalContainerOrder);
 
-    // Cluster vessel inside C owning container node
     const cVessel = new Node(6n, 60, 60);
     cVessel.setClusterVessel(true);
     g.addNewNodeToContainer(C, cVessel);
@@ -270,6 +283,7 @@ describe("Topology Oracle Verification Tests", () => {
     const orderWithCluster = g.containerRDFSOrder(null).map((n) => idStr(n));
     const clusterRDFS = g.clusterRDFSOrder().map((n) => idStr(n));
 
+    expect(normalOrder).toEqual(expected.normalContainerOrder);
     expect(orderWithCluster).toEqual(expected.clusterMemberOrder);
     expect(clusterRDFS).toEqual(expected.clusterRDFSOrder);
   });
@@ -286,8 +300,14 @@ describe("Topology Oracle Verification Tests", () => {
     const tRev = new Tree(n1);
     tRev.SentinelEdge = edgeRev;
 
+    const tDefault = new Tree(n1);
+
     expect(idStr(tFwd.sentinelNode())).toBe(expected.fwdSentinel);
     expect(idStr(tRev.sentinelNode())).toBe(expected.revSentinel);
+    expect(tDefault.Orientation).toBe(Orientation.TopLeft);
+    expect(expected.defaultOrientation).toBe("TopLeft");
+    expect(expected.nilSentinelNodePanics).toBe(true);
+    expect(() => tDefault.sentinelNode()).toThrow("tree has nil SentinelEdge");
   });
 
   it("should match Go oracle WalkRDFSPrecedence", () => {
@@ -355,6 +375,22 @@ describe("Topology Oracle Verification Tests", () => {
     m1.Cluster = clAct;
     m2.Cluster = clAct;
 
+    // Inactive cluster
+    const vesselInactC = new Node(40n, 100, 100);
+    vesselInactC.Graph = null;
+    const cMem1 = new Node(41n, 30, 30);
+    const cMem2 = new Node(42n, 30, 30);
+    g.addNodeUnchecked(cMem1);
+    g.addNodeUnchecked(cMem2);
+    const clInact = new Cluster({
+      Vessel: vesselInactC,
+      Nodes: [cMem1, cMem2],
+      Graph: null,
+    });
+    g.Clusters.set(vesselInactC, clInact);
+    cMem1.Cluster = clInact;
+    cMem2.Cluster = clInact;
+
     // Inactive sequence
     const vesselInact = new Node(4n, 100, 100);
     vesselInact.Graph = null;
@@ -371,6 +407,22 @@ describe("Topology Oracle Verification Tests", () => {
     sStep1.Sequence = seqInact;
     sStep2.Sequence = seqInact;
 
+    // Active sequence
+    const vesselActS = new Node(50n, 100, 100);
+    g.addNodeUnchecked(vesselActS);
+    const sStepAct1 = new Node(51n, 30, 30);
+    const sStepAct2 = new Node(52n, 30, 30);
+    g.addNodeUnchecked(sStepAct1);
+    g.addNodeUnchecked(sStepAct2);
+    const seqAct = new Sequence({
+      Vessel: vesselActS,
+      Nodes: [sStepAct1, sStepAct2],
+      Graph: g,
+    });
+    g.Sequences.set(vesselActS, seqAct);
+    sStepAct1.Sequence = seqAct;
+    sStepAct2.Sequence = seqAct;
+
     // Tree
     const treeNode = new Node(7n, 40, 40);
     g.addNodeUnchecked(treeNode);
@@ -385,23 +437,34 @@ describe("Topology Oracle Verification Tests", () => {
 
     const cloned = cloneGraph(g);
 
-    const clonedCVessel = cloned.Nodes[0];
+    let clonedCVessel = null;
+    for (const v of cloned.Clusters.keys()) {
+      if (v.ID === 1n) clonedCVessel = v;
+    }
     const clonedCluster = cloned.Clusters.get(clonedCVessel);
     const clonedAbduction = clonedCluster.EdgeAbductions[0];
 
+    let clonedInactCVessel = null;
+    for (const v of cloned.Clusters.keys()) {
+      if (v.ID === 40n) clonedInactCVessel = v;
+    }
+    const clonedClusterInact = cloned.Clusters.get(clonedInactCVessel);
+
     let clonedInactVessel = null;
     for (const v of cloned.Sequences.keys()) {
-      if (v.ID === 4n) {
-        clonedInactVessel = v;
-      }
+      if (v.ID === 4n) clonedInactVessel = v;
     }
     const clonedSeqInact = cloned.Sequences.get(clonedInactVessel);
 
+    let clonedActSVessel = null;
+    for (const v of cloned.Sequences.keys()) {
+      if (v.ID === 50n) clonedActSVessel = v;
+    }
+    const clonedSeqAct = cloned.Sequences.get(clonedActSVessel);
+
     let clonedTreeSentinel = null;
     for (const s of cloned.Trees.keys()) {
-      if (s.ID === 8n) {
-        clonedTreeSentinel = s;
-      }
+      if (s.ID === 8n) clonedTreeSentinel = s;
     }
     const clonedTreeRoot = cloned.Trees.get(clonedTreeSentinel)[0];
 
@@ -411,10 +474,110 @@ describe("Topology Oracle Verification Tests", () => {
     expect(clonedAbduction.Edge.ID.toString()).toBe(expected.clonedAbductionEdgeID);
     expect(idStr(clonedAbduction.OriginallyFrom)).toBe(expected.clonedAbductionOrigFrom);
     expect(idStr(clonedAbduction.CurrentFrom)).toBe(expected.clonedAbductionCurrFrom);
+
+    expect(clonedClusterInact.isActive()).toBe(expected.clonedInactClusterActive);
+    expect(clonedClusterInact.Graph === cloned).toBe(expected.clonedInactClusterGraphIsG);
+    expect(clonedInactCVessel.Graph === null).toBe(expected.clonedInactCVesselGraphNil);
+
     expect(clonedSeqInact.isActive()).toBe(expected.clonedSeqActive);
+    expect(clonedSeqInact.Graph === cloned).toBe(expected.clonedSeqGraphIsG);
     expect(clonedInactVessel.Graph === null).toBe(expected.clonedSeqVesselGraphNil);
+
+    expect(clonedSeqAct.isActive()).toBe(expected.clonedActSeqActive);
     expect(idStr(clonedTreeRoot.Node)).toBe(expected.clonedTreeRootNodeID);
     expect(clonedTreeRoot.Orientation).toBe(Orientation.Top);
     expect(cloned.NodeToTree.get(clonedTreeRoot.Node)).toBe(clonedTreeRoot);
+
+    expect(cloned.Nodes.map(n => idStr(n))).toEqual(expected.clonedNodesIDs);
+  });
+
+  it("should match Go oracle ClusterMemberContainerClone", () => {
+    const expected = cases.ClusterMemberContainerClone;
+    const gCMC = new Graph();
+    const rootCont = new Node(1n, 200, 200);
+    gCMC.addNewNodeToContainer(null, rootCont);
+    const normCont = new Node(2n, 150, 150);
+    gCMC.addNewNodeToContainer(rootCont, normCont);
+    const cVessel = new Node(3n, 100, 100);
+    cVessel.setClusterVessel(true);
+    gCMC.addNewNodeToContainer(normCont, cVessel);
+    const cMemCont = new Node(4n, 80, 80);
+    gCMC.addNodeUnchecked(cMemCont);
+    const leafNode = new Node(5n, 30, 30);
+    gCMC.addNewNodeToContainer(cMemCont, leafNode);
+    const cl = new Cluster({
+      Vessel: cVessel,
+      Nodes: [cMemCont],
+      Graph: gCMC,
+      Container: normCont,
+    });
+    gCMC.Clusters.set(cVessel, cl);
+    cMemCont.Cluster = cl;
+
+    const clonedCMC = cloneGraph(gCMC);
+    expect(clonedCMC !== null).toBe(expected.cloneSucceeded);
+    expect(clonedCMC.Containers.size).toBe(expected.containersCount);
+    expect(clonedCMC.containerRDFSOrder(null).map(n => idStr(n))).toEqual(expected.containerRDFSOrder);
+  });
+
+  it("should match Go oracle DetachedTreeSentinelClone", () => {
+    const expected = cases.DetachedTreeSentinelClone;
+    const gDT = new Graph();
+    const tNode = new Node(1n, 40, 40);
+    const sNode = new Node(2n, 40, 40);
+    gDT.addNodeUnchecked(tNode);
+    gDT.addNodeUnchecked(sNode);
+    const detachedEdge = new Edge(sNode, tNode);
+    const tRecord = new Tree(tNode);
+    tRecord.SentinelEdge = detachedEdge;
+    tRecord.Orientation = Orientation.Right;
+    gDT.Trees.set(sNode, [tRecord]);
+
+    const clonedDT = cloneGraph(gDT);
+    expect(clonedDT !== null).toBe(expected.cloneSucceeded);
+    expect(clonedDT.Edges.length).toBe(expected.graphEdgesCount);
+
+    let clonedSentinel = null;
+    for (const s of clonedDT.Trees.keys()) {
+      clonedSentinel = s;
+    }
+    const clonedTree = clonedDT.Trees.get(clonedSentinel)[0];
+    expect(idStr(clonedTree.SentinelEdge.From)).toBe(expected.sentinelFromID);
+    expect(idStr(clonedTree.SentinelEdge.To)).toBe(expected.sentinelToID);
+    expect(clonedTree.Orientation).toBe(Orientation.Right);
+    expect(clonedTree.SentinelEdge !== detachedEdge).toBe(expected.distinctSentinelEdge);
+  });
+
+  it("should match Go oracle CloneValidationRejections", () => {
+    const expected = cases.CloneValidationRejections;
+
+    // Short sequence (< 2 steps)
+    const gShort = new Graph();
+    const vShort = new Node(1n, 10, 10);
+    const sShort = new Node(2n, 10, 10);
+    gShort.addNodeUnchecked(vShort);
+    gShort.addNodeUnchecked(sShort);
+    gShort.Sequences.set(vShort, new Sequence({ Vessel: vShort, Nodes: [sShort] }));
+    expect(expected.shortSequenceRejected).toBe(true);
+    expect(() => cloneGraph(gShort)).toThrow("steps; want at least 2");
+
+    // Vessel mismatch
+    const gMis = new Graph();
+    const v1 = new Node(10n, 10, 10);
+    const v2 = new Node(20n, 10, 10);
+    gMis.addNodeUnchecked(v1);
+    gMis.addNodeUnchecked(v2);
+    gMis.Clusters.set(v1, new Cluster({ Vessel: v2 }));
+    expect(expected.vesselMismatchRejected).toBe(true);
+    expect(() => cloneGraph(gMis)).toThrow("because its record vessel differs");
+
+    // Unknown/unincluded referenced node
+    const gUnk = new Graph();
+    const vUnk = new Node(100n, 10, 10);
+    gUnk.addNodeUnchecked(vUnk);
+    const foreignNode = new Node(999n, 10, 10);
+    gUnk.Clusters.set(vUnk, new Cluster({ Vessel: vUnk, Container: foreignNode }));
+    expect(expected.unincludedNodeRejected).toBe(true);
+    expect(() => cloneGraph(gUnk)).toThrow("node 999 is not included in the graph");
   });
 });

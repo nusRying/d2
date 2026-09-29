@@ -31,11 +31,12 @@ export class Sequence {
   }
 
   /**
-   * first returns the first node in the sequence, or null if empty.
+   * first returns the first node in the sequence.
+   * Throws if sequence has no nodes, matching Go panic behavior.
    */
   first() {
     if (!this.Nodes || this.Nodes.length === 0) {
-      return null;
+      throw new Error("cannot get first node of empty sequence");
     }
     return this.Nodes[0];
   }
@@ -45,11 +46,12 @@ export class Sequence {
   }
 
   /**
-   * last returns the last node in the sequence, or null if empty.
+   * last returns the last node in the sequence.
+   * Throws if sequence has no nodes, matching Go panic behavior.
    */
   last() {
     if (!this.Nodes || this.Nodes.length === 0) {
-      return null;
+      throw new Error("cannot get last node of empty sequence");
     }
     return this.Nodes[this.Nodes.length - 1];
   }

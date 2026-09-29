@@ -23,11 +23,11 @@ export function flipArrangement(arrangement) {
 export class Cluster {
   Vessel = null;
   Nodes = [];
-  Arrangement = ClusterArrangement.Row;
-  DesiredArrangement = ClusterArrangement.Row;
+  Arrangement = '';
+  DesiredArrangement = '';
   Graph = null;
   EdgeAbductions = [];
-  Padding = null;
+  Padding = 0;
   FixedSize = false;
   Container = null;
 
