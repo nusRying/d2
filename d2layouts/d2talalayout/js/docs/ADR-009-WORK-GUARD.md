@@ -4,7 +4,7 @@
 2026-09-29
 
 ## Status
-Implemented — awaiting Slice 08 review
+Accepted
 
 ## Context
 TALA relies on bounded iterative and recursive algorithms across its layout stages (such as sequence discovery, bin-packing, compaction, tree placement, and label positioning). To guard against infinite loops, excessive resource consumption, and runaway computations, Go TALA uses a reusable accounting primitive defined in `internal/limits/work.go`: `WorkGuard`.
