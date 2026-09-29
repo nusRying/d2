@@ -32,9 +32,23 @@ export class Graph {
     this.edgesByEntityId = new Map();
   }
 
+  addNode(node) {
+    this.addNodeUnchecked(node);
+    return node;
+  }
+
+  AddNode(node) {
+    return this.addNode(node);
+  }
+
   addNodeUnchecked(node) {
     this.Nodes.push(node);
     node.Graph = this;
+    return node;
+  }
+
+  AddNodeUnchecked(node) {
+    return this.addNodeUnchecked(node);
   }
 
   addNodeToContainer(container, node) {
@@ -220,7 +234,53 @@ export class Graph {
     return order;
   }
 
-  ContainerRDFSOrder(root = null) {
+  containerRDFSOrderContext(root = null, guard) {
+    const order = [];
+
+    if (root !== null && (!root || !root.isContainer)) {
+      return order;
+    }
+
+    const children = this.Containers.get(root) || [];
+    for (let i = children.length - 1; i >= 0; i--) {
+      guard.Step();
+      const child = children[i];
+
+      if (child.isContainer) {
+        const descendants = this.containerRDFSOrderContext(child, guard);
+        order.push(...descendants);
+        order.push(child);
+        continue;
+      }
+
+      if (child.isClusterVessel) {
+        const cluster = this.Clusters.get(child);
+        if (cluster && cluster.Nodes) {
+          for (let j = cluster.Nodes.length - 1; j >= 0; j--) {
+            guard.Step();
+            const cNode = cluster.Nodes[j];
+            if (cNode.isContainer) {
+              const descendants = this.containerRDFSOrderContext(cNode, guard);
+              order.push(...descendants);
+              order.push(cNode);
+            }
+          }
+        }
+        continue;
+      }
+    }
+
+    return order;
+  }
+
+  ContainerRDFSOrder(root = null, guard) {
+    if (!guard || typeof guard.Step !== "function") {
+      throw new Error("ContainerRDFSOrder requires a WorkGuard");
+    }
+    return this.containerRDFSOrderContext(root, guard);
+  }
+
+  ContainerRDFSOrderUnbounded(root = null) {
     return this.containerRDFSOrder(root);
   }
 
