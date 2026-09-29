@@ -131,10 +131,10 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 ## 13. Full Regression Suite
 - **Command:** `bun test`
 - **Results:**
-  - Tests: **376 passed**, **0 failed**
+  - Tests: **376 pass**, **0 fail**
   - Expect() Calls: **9,109**
-  - Files: **21 passed**
-  - Duration: **989 ms**
+  - Files: **21 test files**
+  - Duration: **1,286.00 ms** (Runtime is informational and nondeterministic; the final recorded verification run was 1,286.00 ms.)
 
 ## 14. Performance Sanity
 - 10,000 `Validate` calls on tiny graph: **~141.39 ms** (~14.1 µs/call)
@@ -169,3 +169,4 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 - `test(tala-js): add Go topology preflight oracle`
 - `docs(tala-js): document Slice 10 topology preflight`
 - `fix(tala-js): finalize Slice 10 preflight parity`
+- `docs(tala-js): finalize Slice 10 review record`
