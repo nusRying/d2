@@ -7,3 +7,6 @@ export * from "./graph/edge-abduction.js";
 export * from "./graph/sequence.js";
 export * from "./graph/cluster.js";
 export * from "./graph/tree.js";
+export * from "./graph/label.js";
+export * from "./placementcost/index.js";
+export * from "./placement/index.js";
