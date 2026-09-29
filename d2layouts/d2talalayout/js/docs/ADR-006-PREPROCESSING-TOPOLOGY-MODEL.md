@@ -4,7 +4,7 @@
 2026-09-29
 
 ## Status
-Implemented — awaiting Slice 05 review
+Accepted
 
 ## Context
 TALA's engine pipeline begins with a series of preprocessing passes:
