@@ -468,10 +468,12 @@ export function cloneGraph(source) {
     const clonedHierarchy = new Hierarchy();
     // LevelCount is NOT copied in Go clone, so LevelCount remains 0
     clonedHierarchy.ReplaceLevels(levels);
-    for (const [srcMember, level] of srcHierarchy.Levels().entries()) {
-      const member = resolveNode(srcMember, "hierarchy member");
-      levels.set(member, level);
-      member.Hierarchy = clonedHierarchy;
+    if (srcHierarchy.levels) {
+      for (const [srcMember, level] of srcHierarchy.levels.entries()) {
+        const member = resolveNode(srcMember, "hierarchy member");
+        levels.set(member, level);
+        member.Hierarchy = clonedHierarchy;
+      }
     }
   }
 

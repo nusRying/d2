@@ -5,6 +5,7 @@ import {
   Node,
   Edge,
   Point,
+  Box,
   Cluster,
   Sequence,
   Tree,
@@ -19,10 +20,28 @@ import {
   RestoreGraphState,
   WorkGuard,
   WorkContext,
+  MAX_ENGINE_NODES,
+  MAX_ENGINE_EDGES,
   MAX_ENGINE_WORK_UNITS,
 } from "../../src/index.js";
 
 describe("Slice 09 GraphState Go Oracle Parity", () => {
+  it("asserts fixture metadata and constants", () => {
+    expect(typeof fixture.metadata.runtimeGoVersion).toBe("string");
+    expect(fixture.metadata.runtimeGoVersion.length).toBeGreaterThan(0);
+    expect(typeof fixture.metadata.runtimeGOOS).toBe("string");
+    expect(fixture.metadata.runtimeGOOS.length).toBeGreaterThan(0);
+    expect(typeof fixture.metadata.runtimeGOARCH).toBe("string");
+    expect(fixture.metadata.runtimeGOARCH.length).toBeGreaterThan(0);
+    expect(fixture.metadata.d2BaseCommit).toBe("01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579");
+    expect(fixture.metadata.referencePackage).toBe(
+      "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph"
+    );
+
+    expect(fixture.constants.MaxEngineNodes).toBe(MAX_ENGINE_NODES);
+    expect(fixture.constants.MaxEngineEdges).toBe(MAX_ENGINE_EDGES);
+    expect(fixture.constants.MaxEngineWorkUnits).toBe(Number(MAX_ENGINE_WORK_UNITS));
+  });
   it("replays topology_full_rollback", () => {
     const sc = fixture.scenarios.topology_full_rollback;
 
@@ -97,6 +116,11 @@ describe("Slice 09 GraphState Go Oracle Parity", () => {
     n1.Hierarchy = hierarchy;
     n2.Hierarchy = hierarchy;
 
+    const origN1Box = n1.Box;
+    const originalStroke = { Value: "red" };
+    edge.Style = { Stroke: originalStroke };
+    const origEdgeStyle = edge.Style;
+
     const guard = new WorkGuard(new WorkContext(), "Snapshot", MAX_ENGINE_WORK_UNITS);
     const state = NewGraphStateSnapshot({
       CaptureTopology: true,
@@ -122,17 +146,17 @@ describe("Slice 09 GraphState Go Oracle Parity", () => {
     const origHierarchyLevels = hierarchy.Levels();
 
     // Mutate everything
-    n1.Width = 999;
-    n1.Height = 888;
+    n1.Box = new Box(new Point(555, 444), 999, 888);
     origN1TopLeft.X = 777;
     origN1TopLeft.Y = 666;
-    n1.TopLeft = new Point(555, 444);
     origN1FixedTopLeft.X = 333;
     n1.FixedTopLeft = new Point(222, 111);
     n1.Label.Text = "MUTATED";
     n1.Icon = new Icon();
     edge.Points[0].X = 9999;
     edge.Points.push(new Point(300, 300));
+    edge.Style.Stroke = { Value: "blue" };
+    originalStroke.Value = "green";
     g.Nodes.push(new Node(99n, 1, 1));
     g.Clusters = new Map();
     g.Sequences = new Map();
@@ -141,6 +165,12 @@ describe("Slice 09 GraphState Go Oracle Parity", () => {
 
     // Rollback
     RestoreGraphState(g, state);
+
+    // Representation mapping: Go embedded-field address stability -> JS Box object identity
+    expect(n1.Box === origN1Box).toBe(sc.boxStorageIdentityRestored);
+    expect(edge.Style).toBe(origEdgeStyle);
+    expect(edge.Style.Stroke === originalStroke).toBe(sc.styleStrokeIdentityRestored);
+    expect(edge.Style.Stroke.Value).toBe(sc.styleStrokeFinalValue);
 
     // Verify exact scalar restorations
     expect(n1.Width).toBe(sc.n1Width);
@@ -495,5 +525,28 @@ describe("Slice 09 GraphState Go Oracle Parity", () => {
     const geomRoutesState = NewGraphStateSnapshot({ CaptureEdgeRoutes: true });
     const guard2 = new WorkGuard(new WorkContext(), "test2", MAX_ENGINE_WORK_UNITS);
     expect(() => geomRoutesState.UpdateWithWorkGuard(g, guard2)).toThrow(errs.nil_edge_geometry);
+  });
+
+  it("replays nil_hierarchy_levels", () => {
+    const sc = fixture.scenarios.nil_hierarchy_levels;
+
+    const g = new Graph();
+    const n1 = new Node(1n, 10, 10);
+    g.addNodeUnchecked(n1);
+    const h = new Hierarchy();
+    h.ReplaceLevels(null);
+    n1.Hierarchy = h;
+
+    expect(h.levels === null).toBe(sc.hierarchyLevelNilBefore);
+
+    const guard = new WorkGuard(new WorkContext(), "NilHierarchy", MAX_ENGINE_WORK_UNITS);
+    const state = NewGraphStateSnapshot({ CaptureTopology: true });
+    state.UpdateWithWorkGuard(g, guard);
+
+    expect(h.levels === null).toBe(sc.hierarchyLevelNilAfterSnapshot);
+
+    RestoreGraphState(g, state);
+
+    expect(h.levels === null).toBe(sc.hierarchyLevelNilAfterRestore);
   });
 });

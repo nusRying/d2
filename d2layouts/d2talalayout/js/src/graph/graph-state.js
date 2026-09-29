@@ -27,6 +27,24 @@ export function captureExactSlice(array) {
   };
 }
 
+export function captureEdgeStyle(style) {
+  if (style == null) return null;
+  return {
+    original: style,
+    fields: { ...style },
+    restore() {
+      if (this.original == null) return null;
+      for (const key of Object.keys(this.original)) {
+        if (!(key in this.fields)) {
+          delete this.original[key];
+        }
+      }
+      Object.assign(this.original, this.fields);
+      return this.original;
+    }
+  };
+}
+
 export function captureExactSliceMap(map) {
   if (map == null) return null;
   const values = new Map();
@@ -152,6 +170,7 @@ export function snapshotIcon(icon) {
 
 function captureNode(node) {
   return {
+    originalBox: node.Box,
     value: {
       ID: node.ID,
       D2ID: node.D2ID,
@@ -188,6 +207,9 @@ function captureNode(node) {
     longDistanceNeighborRequirements: cloneRequirementsMap(node.LongDistanceNeighborRequirements),
 
     restore(n) {
+      if (this.originalBox) {
+        n.Box = this.originalBox;
+      }
       if (this.topLeft) {
         n.TopLeft = this.topLeft.restore();
       } else {
@@ -231,7 +253,7 @@ function captureNode(node) {
       n.Width = this.value.width;
       n.Height = this.value.height;
 
-      n.Edges = this.edges ? this.edges.restore() : [];
+      n.Edges = this.edges ? this.edges.restore() : null;
       n.Nears = restoreSet(this.originalNears, this.nears);
       n.LoopOffsets = restoreMap(this.originalLoopOffsets, this.loopOffsets);
       n.LongDistanceNeighborRequirements = restoreRequirementsMap(
@@ -243,9 +265,11 @@ function captureNode(node) {
 }
 
 function captureEdge(edge) {
-  const pointValues = new Array(edge.Points.length);
-  for (let i = 0; i < edge.Points.length; i++) {
-    pointValues[i] = snapshotPoint(edge.Points[i]);
+  const pointValues = edge.Points ? new Array(edge.Points.length) : [];
+  if (edge.Points) {
+    for (let i = 0; i < edge.Points.length; i++) {
+      pointValues[i] = snapshotPoint(edge.Points[i]);
+    }
   }
   return {
     value: {
@@ -261,12 +285,12 @@ function captureEdge(edge) {
       FromTableColumnIndex: edge.FromTableColumnIndex,
       ToTableColumnIndex: edge.ToTableColumnIndex,
       IsInvisible: edge.IsInvisible,
-      Style: edge.Style,
       sourceEndpointId: edge.sourceEndpointId,
       targetEndpointId: edge.targetEndpointId,
       route: edge.route,
       elkData: edge.elkData,
     },
+    style: captureEdgeStyle(edge.Style),
     points: captureExactSlice(edge.Points),
     pointValues,
     label: snapshotLabel(edge.Label),
@@ -295,7 +319,7 @@ function captureEdge(edge) {
           this.pointValues[i].restore();
         }
       }
-      const originalPoints = this.points ? this.points.restore() : [];
+      const originalPoints = this.points ? this.points.restore() : null;
 
       e.ID = this.value.ID;
       e.D2ID = this.value.D2ID;
@@ -309,7 +333,7 @@ function captureEdge(edge) {
       e.FromTableColumnIndex = this.value.FromTableColumnIndex;
       e.ToTableColumnIndex = this.value.ToTableColumnIndex;
       e.IsInvisible = this.value.IsInvisible;
-      e.Style = this.value.Style;
+      e.Style = this.style ? this.style.restore() : null;
       e.sourceEndpointId = this.value.sourceEndpointId;
       e.targetEndpointId = this.value.targetEndpointId;
       e.route = this.value.route;
@@ -342,8 +366,8 @@ function captureCluster(cluster) {
       c.Padding = this.value.Padding;
       c.FixedSize = this.value.FixedSize;
       c.Container = this.value.Container;
-      c.Nodes = this.nodes ? this.nodes.restore() : [];
-      c.EdgeAbductions = this.edgeAbductions ? this.edgeAbductions.restore() : [];
+      c.Nodes = this.nodes ? this.nodes.restore() : null;
+      c.EdgeAbductions = this.edgeAbductions ? this.edgeAbductions.restore() : null;
     }
   };
 }
@@ -362,8 +386,8 @@ function captureSequence(sequence) {
       s.Vessel = this.value.Vessel;
       s.Graph = this.value.Graph;
       s.Container = this.value.Container;
-      s.Nodes = this.nodes ? this.nodes.restore() : [];
-      s.EdgeAbductions = this.edgeAbductions ? this.edgeAbductions.restore() : [];
+      s.Nodes = this.nodes ? this.nodes.restore() : null;
+      s.EdgeAbductions = this.edgeAbductions ? this.edgeAbductions.restore() : null;
     }
   };
 }
@@ -383,7 +407,7 @@ function captureTree(tree) {
       t.Parent = this.value.Parent;
       t.SentinelEdge = this.value.SentinelEdge;
       t.Orientation = this.value.Orientation;
-      t.Children = this.children ? this.children.restore() : [];
+      t.Children = this.children ? this.children.restore() : null;
     }
   };
 }
@@ -427,7 +451,7 @@ function captureHerd(herd) {
 }
 
 function captureHierarchy(hierarchy) {
-  const levelsMap = hierarchy.Levels ? hierarchy.Levels() : hierarchy.levels;
+  const levelsMap = hierarchy.levels;
   return {
     LevelCount: hierarchy.LevelCount,
     originalLevels: levelsMap,
@@ -435,11 +459,19 @@ function captureHierarchy(hierarchy) {
 
     restore(h) {
       h.LevelCount = this.LevelCount;
-      const restored = restoreMap(this.originalLevels, this.level);
-      if (h.ReplaceLevels) {
-        h.ReplaceLevels(restored);
+      if (this.originalLevels == null) {
+        if (h.ReplaceLevels) {
+          h.ReplaceLevels(null);
+        } else {
+          h.levels = null;
+        }
       } else {
-        h.levels = restored;
+        const restored = restoreMap(this.originalLevels, this.level);
+        if (h.ReplaceLevels) {
+          h.ReplaceLevels(restored);
+        } else {
+          h.levels = restored;
+        }
       }
     }
   };
@@ -466,14 +498,14 @@ function captureGraph(graph) {
 
     restore(g) {
       g.IsRootHierarchy = this.isRootHierarchy;
-      g.Nodes = this.nodes.restore();
-      g.Edges = this.edges.restore();
+      g.Nodes = this.nodes ? this.nodes.restore() : null;
+      g.Edges = this.edges ? this.edges.restore() : null;
       g.CellSize = this.cellSize;
-      g.Containers = this.containers ? this.containers.restore() : new Map();
+      g.Containers = this.containers ? this.containers.restore() : null;
       g.Clusters = restoreMap(this.clustersRef, this.clusters);
-      g.Trees = this.trees ? this.trees.restore() : new Map();
+      g.Trees = this.trees ? this.trees.restore() : null;
       g.NodeToTree = restoreMap(this.nodeToTreeRef, this.nodeToTree);
-      g.Hubs = this.hubs ? this.hubs.restore() : new Map();
+      g.Hubs = this.hubs ? this.hubs.restore() : null;
       g.Sequences = restoreMap(this.sequencesRef, this.sequences);
       g.Directions = restoreMap(this.directionsRef, this.directions);
       g.CommonUncleSiblings = this.commonSiblings ? this.commonSiblings.restore() : null;
@@ -796,7 +828,7 @@ function collectRuntimeObjectsContext(graph, guard, scope) {
       }
     } else if (hierarchyIndex < hierarchyQueue.length) {
       const hierarchy = hierarchyQueue[hierarchyIndex++];
-      const levels = hierarchy.Levels ? hierarchy.Levels() : hierarchy.levels;
+      const levels = hierarchy.levels;
       if (levels) {
         for (const node of levels.keys()) {
           addNode(node);
@@ -898,6 +930,7 @@ export class GraphState {
       }
       guard.Step();
       this.nodeGeometry.set(n, {
+        box: n.Box,
         topLeft: snapshotPoint(n.TopLeft),
         width: n.Width,
         height: n.Height,
@@ -1165,6 +1198,9 @@ export class GraphState {
 
     // Geometry-only rollback
     for (const [node, geometry] of this.nodeGeometry.entries()) {
+      if (geometry.box) {
+        node.Box = geometry.box;
+      }
       node.TopLeft = geometry.topLeft ? geometry.topLeft.restore() : null;
       node.Width = geometry.width;
       node.Height = geometry.height;

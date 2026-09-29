@@ -55,10 +55,16 @@
       "hiddenNodeTopLeftX": 15,
       "hiddenNodeWidth": 50
     },
+    "nil_hierarchy_levels": {
+      "hierarchyLevelNilAfterRestore": true,
+      "hierarchyLevelNilAfterSnapshot": true,
+      "hierarchyLevelNilBefore": true
+    },
     "state_reuse": {
       "reusedStateRestoredWidth": 200
     },
     "topology_full_rollback": {
+      "boxStorageIdentityRestored": true,
       "clustersCount": 1,
       "clustersMapIdentityRestored": true,
       "containersMapIdentityRestored": true,
@@ -91,7 +97,9 @@
       "n1Width": 100,
       "nodeToTreeMapIdentityRestored": true,
       "sequencesCount": 1,
-      "sequencesMapIdentityRestored": true
+      "sequencesMapIdentityRestored": true,
+      "styleStrokeFinalValue": "green",
+      "styleStrokeIdentityRestored": true
     },
     "topology_without_routes_option": {
       "edgeRouteRestoredInTopology": true

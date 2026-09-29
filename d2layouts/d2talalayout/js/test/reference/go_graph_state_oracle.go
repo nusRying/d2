@@ -124,6 +124,10 @@ func main() {
 		n1.Hierarchy = hierarchy
 		n2.Hierarchy = hierarchy
 
+		origN1BoxPtr := &n1.Box
+		originalStroke := &layoutgraph.StyleScalar{Value: "red"}
+		edge.Style.Stroke = originalStroke
+
 		guard, err := limits.NewWorkGuard(context.Background(), "Snapshot", limits.MaxEngineWorkUnits)
 		if err != nil {
 			panic(err)
@@ -143,6 +147,7 @@ func main() {
 		origN1Icon := n1.Icon
 		origEdgePoints := edge.Points
 		origEdgeFirstPoint := edge.Points[0]
+		origStrokePtr := edge.Style.Stroke
 		origClustersMapPtr := reflect.ValueOf(g.Clusters).Pointer()
 		origContainersMapPtr := reflect.ValueOf(g.Containers).Pointer()
 		origSequencesMapPtr := reflect.ValueOf(g.Sequences).Pointer()
@@ -155,17 +160,17 @@ func main() {
 		origHierarchyLevelsPtr := reflect.ValueOf(hierarchy.Levels()).Pointer()
 
 		// Mutate everything
-		n1.Width = 999
-		n1.Height = 888
+		n1.Box = geo.Box{Width: 999, Height: 888, TopLeft: geo.NewPoint(555, 444)}
 		origN1TopLeft.X = 777
 		origN1TopLeft.Y = 666
-		n1.TopLeft = geo.NewPoint(555, 444)
 		origN1FixedTopLeft.X = 333
 		n1.FixedTopLeft = geo.NewPoint(222, 111)
 		n1.Label.Text = "MUTATED"
 		n1.Icon = &layoutgraph.Icon{}
 		edge.Points[0].X = 9999
 		edge.Points = append(edge.Points, geo.NewPoint(300, 300))
+		edge.Style.Stroke = &layoutgraph.StyleScalar{Value: "blue"}
+		originalStroke.Value = "green"
 		g.Nodes = append(g.Nodes, layoutgraph.NewNode(99, 1, 1))
 		g.Clusters = make(map[*layoutgraph.Node]*layoutgraph.Cluster)
 		g.Sequences = make(map[*layoutgraph.Node]*layoutgraph.Sequence)
@@ -181,6 +186,9 @@ func main() {
 			"n1TopLeftX":                          n1.TopLeft.X,
 			"n1TopLeftY":                          n1.TopLeft.Y,
 			"n1TopLeftIdentityRestored":           n1.TopLeft == origN1TopLeft,
+			"boxStorageIdentityRestored":          &n1.Box == origN1BoxPtr,
+			"styleStrokeIdentityRestored":         edge.Style.Stroke == origStrokePtr,
+			"styleStrokeFinalValue":               edge.Style.Stroke.Value,
 			"n1FixedTopLeftIdentityRestored":      n1.FixedTopLeft == origN1FixedTopLeft,
 			"n1FixedTopLeftX":                     n1.FixedTopLeft.X,
 			"n1LabelIdentityRestored":             n1.Label == origN1Label,
@@ -582,6 +590,37 @@ func main() {
 		}
 
 		out.Scenarios["error_messages"] = errorsMap
+	}
+
+	// 10. Nil hierarchy level scenario
+	{
+		g := layoutgraph.NewGraph()
+		n1 := layoutgraph.NewNode(1, 10, 10)
+		g.AddNodeUnchecked(n1)
+		h := layoutgraph.NewHierarchy()
+		h.ReplaceLevels(nil)
+		n1.Hierarchy = h
+
+		isNilBefore := reflect.ValueOf(h).Elem().FieldByName("level").IsNil()
+
+		guard, _ := limits.NewWorkGuard(context.Background(), "NilHierarchy", limits.MaxEngineWorkUnits)
+		state := layoutgraph.NewGraphStateSnapshot(layoutgraph.GraphStateSnapshotOptions{CaptureTopology: true})
+		if err := state.UpdateWithWorkGuard(g, guard); err != nil {
+			panic(err)
+		}
+
+		isNilAfterSnapshot := reflect.ValueOf(h).Elem().FieldByName("level").IsNil()
+
+		layoutgraph.RestoreGraphState(g, state)
+
+		isNilAfterRestore := reflect.ValueOf(h).Elem().FieldByName("level").IsNil()
+
+		scenario := map[string]interface{}{
+			"hierarchyLevelNilBefore":        isNilBefore,
+			"hierarchyLevelNilAfterSnapshot": isNilAfterSnapshot,
+			"hierarchyLevelNilAfterRestore":  isNilAfterRestore,
+		}
+		out.Scenarios["nil_hierarchy_levels"] = scenario
 	}
 
 	data, err := json.MarshalIndent(out, "", "  ")

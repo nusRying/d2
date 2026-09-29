@@ -4,6 +4,7 @@ import {
   Node,
   Edge,
   Point,
+  Box,
   Cluster,
   Sequence,
   Tree,
@@ -25,6 +26,7 @@ import {
   MAX_ENGINE_WORK_UNITS,
   captureExactSlice,
   captureExactSliceMap,
+  captureEdgeStyle,
 } from "../../src/index.js";
 
 describe("Slice 09 GraphState Focused Unit Tests", () => {
@@ -477,6 +479,172 @@ describe("Slice 09 GraphState Focused Unit Tests", () => {
       expect(source.Nodes.length).toBe(1);
       expect(n1.Width).toBe(100);
       expect(n1.TopLeft.X).toBe(10);
+    });
+  });
+
+  describe("Slice 09 Review Parity Corrections", () => {
+    it("restores original Box object identity after replacement in topology mode", () => {
+      const g = new Graph();
+      const node = new Node(1n, 100, 80);
+      node.TopLeft = new Point(10, 20);
+      g.addNodeUnchecked(node);
+
+      const originalBox = node.Box;
+      const originalTopLeft = node.TopLeft;
+
+      const guard = new WorkGuard(new WorkContext(), "BoxTest", MAX_ENGINE_WORK_UNITS);
+      const state = NewGraphStateSnapshot({ CaptureTopology: true });
+      state.UpdateWithWorkGuard(g, guard);
+
+      node.Box = new Box(new Point(500, 600), 999, 888);
+
+      RestoreGraphState(g, state);
+
+      expect(node.Box).toBe(originalBox);
+      expect(node.TopLeft).toBe(originalTopLeft);
+      expect(node.Width).toBe(100);
+      expect(node.Height).toBe(80);
+      expect(node.TopLeft.X).toBe(10);
+      expect(node.TopLeft.Y).toBe(20);
+    });
+
+    it("restores original Box object identity after replacement in geometry-only mode", () => {
+      const g = new Graph();
+      const node = new Node(1n, 100, 80);
+      node.TopLeft = new Point(10, 20);
+      g.addNodeUnchecked(node);
+
+      const originalBox = node.Box;
+      const originalTopLeft = node.TopLeft;
+
+      const guard = new WorkGuard(new WorkContext(), "BoxGeomTest", MAX_ENGINE_WORK_UNITS);
+      const state = NewGraphStateSnapshot({ CaptureTopology: false, CaptureEdgeRoutes: false });
+      state.UpdateWithWorkGuard(g, guard);
+
+      node.Box = new Box(new Point(500, 600), 999, 888);
+
+      RestoreGraphState(g, state);
+
+      expect(node.Box).toBe(originalBox);
+      expect(node.TopLeft).toBe(originalTopLeft);
+      expect(node.Width).toBe(100);
+      expect(node.Height).toBe(80);
+      expect(node.TopLeft.X).toBe(10);
+      expect(node.TopLeft.Y).toBe(20);
+    });
+
+    it("preserves Edge.Style object identity and pointer-target mutation semantics", () => {
+      const g = new Graph();
+      const n1 = new Node(1n, 10, 10);
+      const n2 = new Node(2n, 10, 10);
+      g.addNodeUnchecked(n1);
+      g.addNodeUnchecked(n2);
+      const edge = g.connect(n1, n2);
+
+      const originalStyle = { Stroke: { Value: "red" }, Fill: { Value: "white" } };
+      edge.Style = originalStyle;
+      const originalStroke = originalStyle.Stroke;
+
+      const guard = new WorkGuard(new WorkContext(), "StyleTest", MAX_ENGINE_WORK_UNITS);
+      const state = NewGraphStateSnapshot({ CaptureTopology: true });
+      state.UpdateWithWorkGuard(g, guard);
+
+      // change pointer field and add new property
+      originalStyle.Stroke = { Value: "blue" };
+      originalStyle.Extra = "temp";
+
+      // mutate original pointee
+      originalStroke.Value = "green";
+
+      RestoreGraphState(g, state);
+
+      // Identity of Style object is preserved
+      expect(edge.Style).toBe(originalStyle);
+      // Top-level field Stroke is restored to original pointer
+      expect(edge.Style.Stroke).toBe(originalStroke);
+      // Pointee value was NOT deep-restored (remains green, matching Go)
+      expect(edge.Style.Stroke.Value).toBe("green");
+      // Added top-level property was cleared
+      expect("Extra" in edge.Style).toBe(false);
+    });
+
+    it("preserves null Hierarchy levels without lazy allocation during capture or rollback", () => {
+      const g = new Graph();
+      const node = new Node(1n, 10, 10);
+      g.addNodeUnchecked(node);
+
+      const hierarchy = new Hierarchy();
+      hierarchy.ReplaceLevels(null);
+      node.Hierarchy = hierarchy;
+
+      const guard = new WorkGuard(new WorkContext(), "HierarchyNullTest", MAX_ENGINE_WORK_UNITS);
+      const state = NewGraphStateSnapshot({ CaptureTopology: true });
+      state.UpdateWithWorkGuard(g, guard);
+
+      // Capture must be read-only: levels must still be null before rollback
+      expect(hierarchy.levels).toBeNull();
+
+      RestoreGraphState(g, state);
+
+      // After restore, levels must still be null
+      expect(hierarchy.levels).toBeNull();
+    });
+
+    it("cloneGraph does not mutate source Hierarchy when levels is null", () => {
+      const source = new Graph();
+      const node = new Node(1n, 10, 10);
+      source.addNodeUnchecked(node);
+
+      const hierarchy = new Hierarchy();
+      hierarchy.ReplaceLevels(null);
+      node.Hierarchy = hierarchy;
+
+      expect(hierarchy.levels).toBeNull();
+
+      const cloned = cloneGraph(source);
+
+      // Source hierarchy must remain null (capture/clone did not mutate source)
+      expect(hierarchy.levels).toBeNull();
+      expect(source.Nodes[0].Hierarchy.levels).toBeNull();
+    });
+
+    it("accepts null node in HerdAssignment pair methods matching Go nil key support", () => {
+      const herd = new HerdAssignment();
+      herd.PairSameSide(null);
+      herd.PairOppositeSide(null);
+
+      expect(herd.SameSidePairCount()).toBe(1);
+      expect(herd.OppositeSidePairCount()).toBe(1);
+      expect(herd.sameSidePaired.has(null)).toBe(true);
+      expect(herd.oppositeSidePaired.has(null)).toBe(true);
+    });
+
+    it("restores explicitly null collections as null rather than converting to [] or Map", () => {
+      const g = new Graph();
+      const node = new Node(1n, 10, 10);
+      g.addNodeUnchecked(node);
+
+      node.Edges = null;
+      node.LongDistanceNeighborRequirements = null;
+      g.Containers = null;
+      g.CommonUncleSiblings = null;
+
+      const guard = new WorkGuard(new WorkContext(), "NullableTest", MAX_ENGINE_WORK_UNITS);
+      const state = NewGraphStateSnapshot({ CaptureTopology: true });
+      state.UpdateWithWorkGuard(g, guard);
+
+      // Mutate
+      node.Edges = [];
+      node.LongDistanceNeighborRequirements = new Map();
+      g.Containers = new Map();
+      g.CommonUncleSiblings = new Map();
+
+      RestoreGraphState(g, state);
+
+      expect(node.Edges).toBeNull();
+      expect(node.LongDistanceNeighborRequirements).toBeNull();
+      expect(g.Containers).toBeNull();
+      expect(g.CommonUncleSiblings).toBeNull();
     });
   });
 });

@@ -10,9 +10,7 @@ export class HerdAssignment {
   }
 
   pairSameSide(node) {
-    if (node != null) {
-      this.sameSidePaired.add(node);
-    }
+    this.sameSidePaired.add(node);
   }
 
   PairSameSide(node) {
@@ -20,9 +18,7 @@ export class HerdAssignment {
   }
 
   pairOppositeSide(node) {
-    if (node != null) {
-      this.oppositeSidePaired.add(node);
-    }
+    this.oppositeSidePaired.add(node);
   }
 
   PairOppositeSide(node) {
