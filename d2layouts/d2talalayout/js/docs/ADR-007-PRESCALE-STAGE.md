@@ -4,7 +4,7 @@
 2026-09-29
 
 ## Status
-Implemented — awaiting Slice 06 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, `Prescale` is the very first executable stage executed before any grouping, placement, or routing logic.
