@@ -325,14 +325,28 @@ describe("Slice 10 Topology Preflight Unit Tests", () => {
       expect(Number(guard.Used())).toBe(0);
     });
 
-    test("ContainerRDFSOrder requires a WorkGuard", () => {
+    test("ContainerRDFSOrder with nil guard returns [] on non-container root", () => {
       const g = new Graph();
-      expect(() => g.ContainerRDFSOrder(null, null)).toThrow(
-        "ContainerRDFSOrder requires a WorkGuard"
-      );
-      expect(() => g.ContainerRDFSOrder(null, {})).toThrow(
-        "ContainerRDFSOrder requires a WorkGuard"
-      );
+      const leaf = new Node(1, 1, 1);
+      g.addNode(leaf);
+      const order = g.ContainerRDFSOrder(leaf, null);
+      expect(order).toEqual([]);
+    });
+
+    test("ContainerRDFSOrder with nil guard returns [] on empty root", () => {
+      const g = new Graph();
+      const order = g.ContainerRDFSOrder(null, null);
+      expect(order).toEqual([]);
+    });
+
+    test("Validate succeeds with large repeated references (200,000 children)", () => {
+      const g = new Graph();
+      const child = g.addNode(new Node(1, 1, 1));
+      const children = new Array(200_000);
+      children.fill(child);
+      g.Containers.set(null, children);
+
+      expect(() => Validate(ctx, "largeRepeated", g)).not.toThrow();
     });
 
     test("ContainerRDFSOrderUnbounded runs without guard", () => {

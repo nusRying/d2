@@ -134,3 +134,19 @@ Serialized tree validation guarantees:
 
 ### 11. Browser Safety and Zero Randomness
 The implementation resides entirely in `src/graph/topology-preflight.js` and `src/graph/graph.js` with zero Node.js built-ins (`fs`, `path`, `process`, `Buffer`, etc.) and zero calls to `Math.random()`.
+
+## Review Findings and Resolutions
+1. **ContainerRDFSOrder Nil-Guard Early-Return Parity:**
+   Removed eager `WorkGuard` validation from `ContainerRDFSOrder(root, guard)`. Pinned Go performs early return for non-container roots (`root != nil && !root.isContainer`) and empty container roots (`Containers[root]` empty) before any `guard.Step()` invocation. The JS implementation now directly delegates to `containerRDFSOrderContext`, returning `[]` without dereferencing a nil guard in these early-return scenarios.
+2. **Removal of Untrusted Argument Spreads:**
+   Replaced `children.push(...items)` calls in `descendantChildren()` with bounded `for-of` loops. This prevents stack overflow / maximum argument length errors when processing large collections of repeated valid references (e.g. 200,000 children).
+3. **Canonical RDFS Work Accounting:**
+   Corrected the documented work units used for the canonical upstream fixture (`TestGraphRDFSOrder`) from 15 to 20, matching the authoritative Go oracle fixture.
+4. **Fixture Go Runtime Version:**
+   Corrected documentation from `go1.24.1` to `go1.27.0`, matching the active Go toolchain recorded in `metadata.runtimeGoVersion`.
+5. **Route-Point and Cancellation Error Wording:**
+   Aligned documented error strings with the pinned Go implementation:
+   - Route points limit: `TALA engine route point count exceeds limit 1000000`.
+   - Cancellation: `AddSequences: context canceled` (via `WorkGuard.Finish()`).
+6. **Tree Validation Scenario Ordering Clarification:**
+   In the standard shared-tree scenario where two parents point to one child, the child's single `Parent` pointer triggers `TALA engine tree child has an inconsistent parent` before ownership duplicate checks occur. An explicit scenario (`tree_shared_by_multiple_parents_explicit`), where a tree is installed both as a root and as a child with a matching `Parent` backlink, was verified against Go to reach the explicit `TALA engine tree is shared by multiple parents` error branch.

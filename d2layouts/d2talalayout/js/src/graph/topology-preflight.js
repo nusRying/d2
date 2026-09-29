@@ -525,7 +525,9 @@ export function validateEngineGraph(context, location, graph) {
     if (node == null || node.isContainer) {
       const containerChildren = graph.Containers ? graph.Containers.get(node) : null;
       if (containerChildren != null) {
-        children.push(...containerChildren);
+        for (const child of containerChildren) {
+          children.push(child);
+        }
       }
     }
     if (node != null && node.isClusterVessel) {
@@ -535,7 +537,9 @@ export function validateEngineGraph(context, location, graph) {
         throw new Error(`TALA engine cluster vessel ${idStr} has no cluster record`);
       }
       if (cluster.Nodes != null) {
-        children.push(...cluster.Nodes);
+        for (const child of cluster.Nodes) {
+          children.push(child);
+        }
       }
     }
     if (graph.Sequences != null && graph.Sequences.has(node)) {
@@ -544,7 +548,9 @@ export function validateEngineGraph(context, location, graph) {
         structuralNil("sequence record");
       }
       if (sequence.Nodes != null) {
-        children.push(...sequence.Nodes);
+        for (const child of sequence.Nodes) {
+          children.push(child);
+        }
       }
     }
     return children;

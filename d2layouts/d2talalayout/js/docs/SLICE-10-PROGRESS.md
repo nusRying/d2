@@ -7,7 +7,7 @@ Port the bounded engine-topology validation layer required by `AddSequences` and
 - **Approved Slice 09 Base Head:** `b4a34f8f176465f690b4e29710631f72679ffcd0`
 - **Pinned Upstream D2 Reference:** `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`
 - **Runtime Environment:**
-  - Go Version: `go1.24.1`
+  - Go Version: `go1.27.0`
   - OS / Arch: `windows` / `amd64`
   - Runtime Engine: Bun `v1.3.14 (Windows x64)`
 
@@ -119,22 +119,22 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
   - Does not traverse sequence members.
 - `Graph.ContainerRDFSOrderUnbounded(root)` provides unmetered traversal for callers without a guard.
 - Canonical TestGraphRDFSOrder order verified: `[19, 15, 13, 16, 14, 12, 11, 9, 5, 3, 6, 4, 2, 1]`.
-- Work accounting verified: exactly 15 `guard.Step()` calls for the canonical fixture.
+- Work accounting verified: exactly 20 `guard.Step()` calls for the canonical fixture.
 
 ## 12. Real Go Oracle Verification
 - **Oracle Source:** `test/reference/go_topology_preflight_oracle.go`
 - **Output Fixture:** `test/fixtures/go-topology-preflight-reference.json`
-- **Canonical SHA256:** `6BCEC85EB72451EF304C659AAAC2DEE3FA7A468E2DBF76FB3408F742DFDAFE3D`
+- **Canonical SHA256:** `A3A99B563F692B11B6BBB01B88AA7D148E3E4158A4724126AE5524BF78B8A63D`
 - **Reproducibility:** Confirmed by running two independent oracle generations and performing byte-for-byte SHA256 comparison.
-- **Oracle Test Coverage:** 42 test assertions in `test/unit/topology-preflight-oracle.test.js` validating all 40 scenarios.
+- **Oracle Test Coverage:** 46 test assertions in `test/unit/topology-preflight-oracle.test.js` validating all 44 scenarios.
 
 ## 13. Full Regression Suite
 - **Command:** `bun test`
 - **Results:**
-  - Tests: **370 passed**, **0 failed**
-  - Expect() Calls: **9,098**
+  - Tests: **376 passed**, **0 failed**
+  - Expect() Calls: **9,109**
   - Files: **21 passed**
-  - Duration: **836 ms**
+  - Duration: **989 ms**
 
 ## 14. Performance Sanity
 - 10,000 `Validate` calls on tiny graph: **~141.39 ms** (~14.1 µs/call)
@@ -147,12 +147,20 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 - **Read-Only / Non-Mutation Audit:** Verified `Validate()` and `ContainerRDFSOrder()` do not modify node, edge, cluster, sequence, tree, or container collections, even across cancellation and work-limit errors.
 
 ## 16. Review Findings & Resolutions
-1. **Go Map Iteration Randomness in Cycle Oracles:**
-   Go randomized map iteration could report different cycle start nodes on symmetric 2-node cycles. Resolved by formulating cycle test cases with single-node/asymmetric loops, achieving 100% deterministic, byte-identical fixture reproduction.
-2. **Descendant Depth Setup:**
-   Directly setting `node.Container = parent` caused container parent depth validation to trigger first. Resolved by setting `Containers[parent] = [node]` without setting `node.Container`, properly testing descendant graph depth validation.
-3. **JS Cluster/Sequence Constructor Signature:**
-   Constructors expect `{ Vessel, Nodes, Graph }` option objects; callers updated to ensure `Vessel` is properly attached.
+1. **Public ContainerRDFSOrder Eager Guard Validation:**
+   Public `ContainerRDFSOrder` initially performed eager validation rejecting a null guard. In Go, early returns for non-container roots (`root != nil && !root.isContainer`) and empty container roots occur before dereferencing the guard. Removed the eager validation to directly delegate to `containerRDFSOrderContext`, matching Go source parity.
+2. **Untrusted Topology Array Spread:**
+   `descendantChildren()` initially used argument spreads (`children.push(...items)`). Large arrays of repeated references (e.g. 200,000 items) exceed JavaScript argument count limits. Replaced with bounded `for-of` loops.
+3. **Canonical RDFS Work Accounting Count:**
+   Canonical RDFS Go fixture records `used: 20`, whereas initial progress text stated 15. Corrected the documentation to 20 to match the authoritative Go oracle fixture.
+4. **Fixture Go Runtime Version:**
+   Fixture metadata records `go1.27.0`, whereas initial progress text stated `go1.24.1`. Corrected progress record to `go1.27.0`.
+5. **Route-Point Error Wording:**
+   Corrected documented error wording to match the pinned implementation: `TALA engine route point count exceeds limit 1000000`.
+6. **Cancellation Error Wording:**
+   Corrected documented cancellation wording to match the pinned Go WorkGuard contract: `AddSequences: context canceled`.
+7. **Tree Validation Scenario Ordering:**
+   In standard multi-parent shared child scenarios, the child's single `Parent` pointer causes `TALA engine tree child has an inconsistent parent` to trigger before duplicate ownership is evaluated. Added an explicit scenario (`tree_shared_by_multiple_parents_explicit`) verifying that installing a tree as both root and child with consistent parentage reaches `TALA engine tree is shared by multiple parents`.
 
 ## 17. Commit History
 - `1e1bf8f3d`: `docs(tala-js): close approved Slice 09`
@@ -160,3 +168,4 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 - `feat(tala-js): add guarded container traversal`
 - `test(tala-js): add Go topology preflight oracle`
 - `docs(tala-js): document Slice 10 topology preflight`
+- `fix(tala-js): finalize Slice 10 preflight parity`

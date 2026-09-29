@@ -64,6 +64,11 @@
       "error": "TALA engine tree child has an inconsistent parent",
       "success": false
     },
+    "large_repeated_references": {
+      "count": 200000,
+      "error": null,
+      "success": true
+    },
     "nil_cluster_record": {
       "error": "TALA engine topology contains nil cluster record",
       "success": false
@@ -146,6 +151,16 @@
       ],
       "requiredUnits": 7
     },
+    "rdfs_nil_guard_empty_root": {
+      "error": null,
+      "order": [],
+      "success": true
+    },
+    "rdfs_nil_guard_non_container_root": {
+      "error": null,
+      "order": [],
+      "success": true
+    },
     "root_also_has_installed_parent": {
       "error": "TALA engine tree root also has an installed parent",
       "success": false
@@ -188,6 +203,10 @@
     },
     "tree_shared_by_multiple_parents": {
       "error": "TALA engine tree child has an inconsistent parent",
+      "success": false
+    },
+    "tree_shared_by_multiple_parents_explicit": {
+      "error": "TALA engine tree is shared by multiple parents",
       "success": false
     },
     "valid_empty_graph": {

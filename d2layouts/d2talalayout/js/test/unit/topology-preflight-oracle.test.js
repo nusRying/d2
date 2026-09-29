@@ -594,5 +594,52 @@ describe("Slice 10 Go Topology Preflight Oracle Parity", () => {
         oracle.scenarios.rdfs_guarded_accounting.belowLimitErrorMsg
       );
     });
+
+    test("41. tree_shared_by_multiple_parents_explicit", () => {
+      const g = new Graph();
+      const p = new Tree(g.addNode(new Node(1, 1, 1)));
+      const child = new Tree(g.addNode(new Node(2, 1, 1)));
+      child.Parent = p;
+      p.Children = [child];
+      g.Trees.set(null, [child, p]);
+      const res = runScenario(() => Validate(ctx, "test", g));
+      expect(res.success).toBe(oracle.scenarios.tree_shared_by_multiple_parents_explicit.success);
+      expect(res.error).toBe(oracle.scenarios.tree_shared_by_multiple_parents_explicit.error);
+    });
+
+    test("42. rdfs_nil_guard_non_container_root", () => {
+      const g = new Graph();
+      const leaf = g.addNode(new Node(1, 1, 1));
+      let order = null;
+      const res = runScenario(() => {
+        order = g.ContainerRDFSOrder(leaf, null);
+      });
+      expect(res.success).toBe(oracle.scenarios.rdfs_nil_guard_non_container_root.success);
+      expect(order.map((n) => Number(n.ID))).toEqual(oracle.scenarios.rdfs_nil_guard_non_container_root.order);
+      expect(res.error).toBe(oracle.scenarios.rdfs_nil_guard_non_container_root.error);
+    });
+
+    test("43. rdfs_nil_guard_empty_root", () => {
+      const g = new Graph();
+      let order = null;
+      const res = runScenario(() => {
+        order = g.ContainerRDFSOrder(null, null);
+      });
+      expect(res.success).toBe(oracle.scenarios.rdfs_nil_guard_empty_root.success);
+      expect(order.map((n) => Number(n.ID))).toEqual(oracle.scenarios.rdfs_nil_guard_empty_root.order);
+      expect(res.error).toBe(oracle.scenarios.rdfs_nil_guard_empty_root.error);
+    });
+
+    test("44. large_repeated_references", () => {
+      const g = new Graph();
+      const child = g.addNode(new Node(1, 1, 1));
+      const count = 200000;
+      const children = new Array(count);
+      children.fill(child);
+      g.Containers.set(null, children);
+      const res = runScenario(() => Validate(ctx, "largeRepeated", g));
+      expect(res.success).toBe(oracle.scenarios.large_repeated_references.success);
+      expect(res.error).toBe(oracle.scenarios.large_repeated_references.error);
+    });
   });
 });

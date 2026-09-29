@@ -579,6 +579,69 @@ func main() {
 		}
 	}
 
+	// 41. Tree shared by multiple parents explicit branch
+	{
+		g := layoutgraph.NewGraph()
+		p := &layoutgraph.Tree{Node: g.AddNode(layoutgraph.NewNode(1, 1, 1))}
+		child := &layoutgraph.Tree{Node: g.AddNode(layoutgraph.NewNode(2, 1, 1)), Parent: p}
+		p.Children = []*layoutgraph.Tree{child}
+		g.Trees = map[*layoutgraph.Node][]*layoutgraph.Tree{
+			nil: {child, p},
+		}
+		recordValidation(out.Scenarios, "tree_shared_by_multiple_parents_explicit", ctx, "test", g)
+	}
+
+	// 42. RDFS nil guard on non-container root
+	{
+		g := layoutgraph.NewGraph()
+		leaf := g.AddNode(layoutgraph.NewNode(1, 1, 1))
+		order, err := g.ContainerRDFSOrder(leaf, nil)
+		orderIds := make([]int64, len(order))
+		for i, n := range order {
+			orderIds[i] = int64(n.ID)
+		}
+		out.Scenarios["rdfs_nil_guard_non_container_root"] = map[string]interface{}{
+			"success": err == nil,
+			"order":   orderIds,
+			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+		}
+	}
+
+	// 43. RDFS nil guard on empty root (nil)
+	{
+		g := layoutgraph.NewGraph()
+		order, err := g.ContainerRDFSOrder(nil, nil)
+		orderIds := make([]int64, len(order))
+		for i, n := range order {
+			orderIds[i] = int64(n.ID)
+		}
+		out.Scenarios["rdfs_nil_guard_empty_root"] = map[string]interface{}{
+			"success": err == nil,
+			"order":   orderIds,
+			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+		}
+	}
+
+	// 44. Large repeated references (200,000 children)
+	{
+		g := layoutgraph.NewGraph()
+		child := g.AddNode(layoutgraph.NewNode(1, 1, 1))
+		const count = 200000
+		children := make([]*layoutgraph.Node, count)
+		for i := 0; i < count; i++ {
+			children[i] = child
+		}
+		g.Containers = map[*layoutgraph.Node][]*layoutgraph.Node{
+			nil: children,
+		}
+		err := layoutgraph.Validate(ctx, "largeRepeated", g)
+		out.Scenarios["large_repeated_references"] = map[string]interface{}{
+			"success": err == nil,
+			"count":   count,
+			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+		}
+	}
+
 	data, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
 		panic(err)

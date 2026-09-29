@@ -248,7 +248,9 @@ export class Graph {
 
       if (child.isContainer) {
         const descendants = this.containerRDFSOrderContext(child, guard);
-        order.push(...descendants);
+        for (const d of descendants) {
+          order.push(d);
+        }
         order.push(child);
         continue;
       }
@@ -261,7 +263,9 @@ export class Graph {
             const cNode = cluster.Nodes[j];
             if (cNode.isContainer) {
               const descendants = this.containerRDFSOrderContext(cNode, guard);
-              order.push(...descendants);
+              for (const d of descendants) {
+                order.push(d);
+              }
               order.push(cNode);
             }
           }
@@ -274,9 +278,6 @@ export class Graph {
   }
 
   ContainerRDFSOrder(root = null, guard) {
-    if (!guard || typeof guard.Step !== "function") {
-      throw new Error("ContainerRDFSOrder requires a WorkGuard");
-    }
     return this.containerRDFSOrderContext(root, guard);
   }
 
