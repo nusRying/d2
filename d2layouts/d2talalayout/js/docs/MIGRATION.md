@@ -18,8 +18,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 01 — complete
 * Slice 02 — complete
 * Slice 03 — complete
-* Slice 04 — layoutgraph structural core — complete
-* Slice 05 — preprocessing topology foundation — current
+* Slice 04 — complete
+* Slice 05 — preprocessing topology foundation — implemented, under review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
