@@ -1,11 +1,15 @@
 import {
   CONTEXT_CHECK_STRIDE,
   CANCELLABLE_CONTEXT_CHECK_STRIDE,
+  INT64_MIN,
+  INT64_MAX,
 } from "./constants.js";
 import {
   WorkContext,
   abortSignalWorkContext,
 } from "./work-context.js";
+
+export { INT64_MIN, INT64_MAX };
 
 /**
  * Cancellation error matching Go's context.Canceled wrapped with location.
@@ -50,17 +54,23 @@ export function isWorkLimitError(error) {
   return error instanceof WorkLimitError || error.name === "WorkLimitError";
 }
 
-function normalizeLimitOrUnits(value, location, description) {
+function normalizeInt64Input(value, location, description) {
+  let bi;
   if (typeof value === "bigint") {
-    return value;
-  }
-  if (typeof value === "number") {
+    bi = value;
+  } else if (typeof value === "number") {
     if (!Number.isFinite(value) || !Number.isInteger(value) || !Number.isSafeInteger(value)) {
       throw new TypeError(`TALA ${location} ${description} must be a safe integer or BigInt`);
     }
-    return BigInt(value);
+    bi = BigInt(value);
+  } else {
+    throw new TypeError(`TALA ${location} ${description} must be a safe integer or BigInt`);
   }
-  throw new TypeError(`TALA ${location} ${description} must be a safe integer or BigInt`);
+
+  if (bi < INT64_MIN || bi > INT64_MAX) {
+    throw new TypeError(`TALA ${location} ${description} must fit signed int64`);
+  }
+  return bi;
 }
 
 function normalizeContext(ctx, location) {
@@ -90,12 +100,16 @@ function normalizeContext(ctx, location) {
 export class WorkGuard {
   constructor(ctx, location = "", limit = 0n) {
     const normCtx = normalizeContext(ctx, location);
-    const normLimit = normalizeLimitOrUnits(limit, location, "work limit");
+    const normLimit = normalizeInt64Input(limit, location, "work limit");
     if (normLimit < 0n) {
       throw new Error(`TALA ${location} work limit must not be negative`);
     }
 
     this.ctx = normCtx;
+    this.doneAvailable = Boolean(normCtx.doneAvailable);
+    this.pollingStrideValue = this.doneAvailable
+      ? CANCELLABLE_CONTEXT_CHECK_STRIDE
+      : CONTEXT_CHECK_STRIDE;
     this.location = location ?? "";
     this.limit = normLimit;
     this.used = 0n;
@@ -123,7 +137,7 @@ export class WorkGuard {
    * Add records multiple work units as one accounting operation.
    */
   Add(units) {
-    const normUnits = normalizeLimitOrUnits(units, this.location, "work charge");
+    const normUnits = normalizeInt64Input(units, this.location, "work charge");
     if (normUnits < 0n) {
       throw new Error(`TALA ${this.location} work charge must not be negative`);
     }
@@ -168,7 +182,7 @@ export class WorkGuard {
   }
 
   pollingStride() {
-    return this.ctx.doneAvailable ? CANCELLABLE_CONTEXT_CHECK_STRIDE : CONTEXT_CHECK_STRIDE;
+    return this.pollingStrideValue;
   }
 
   /**
@@ -199,16 +213,7 @@ export class WorkGuard {
    * SetLimit changes the ceiling without resetting already consumed work.
    */
   SetLimit(limit) {
-    if (typeof limit === "bigint") {
-      this.limit = limit;
-    } else if (typeof limit === "number") {
-      if (!Number.isFinite(limit) || !Number.isInteger(limit) || !Number.isSafeInteger(limit)) {
-        throw new TypeError(`TALA ${this.location} work limit must be a safe integer or BigInt`);
-      }
-      this.limit = BigInt(limit);
-    } else {
-      throw new TypeError(`TALA ${this.location} work limit must be a safe integer or BigInt`);
-    }
+    this.limit = normalizeInt64Input(limit, this.location, "work limit");
   }
 
   setLimit(limit) {

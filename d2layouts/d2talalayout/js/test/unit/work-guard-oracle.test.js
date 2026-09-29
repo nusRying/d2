@@ -27,7 +27,32 @@ const __dirname = dirname(__filename);
 const fixturePath = join(__dirname, "../fixtures/go-work-guard-reference.json");
 const reference = JSON.parse(readFileSync(fixturePath, "utf8"));
 
+function classifyJsError(err) {
+  if (err == null) return "none";
+  if (isWorkCanceledError(err)) return "canceled";
+  if (isWorkLimitError(err)) return "workLimit";
+  return "validation";
+}
+
+function assertScenario(caughtErr, used, expected) {
+  expect(classifyJsError(caughtErr)).toBe(expected.kind);
+  expect(caughtErr ? caughtErr.message : "").toBe(expected.message);
+  expect(used).toBe(BigInt(expected.used));
+}
+
 describe("Slice 08 WorkGuard Go Oracle Parity", () => {
+  it("verifies oracle metadata", () => {
+    const m = reference.metadata;
+    expect(typeof m.runtimeGoVersion).toBe("string");
+    expect(m.runtimeGoVersion.length).toBeGreaterThan(0);
+    expect(typeof m.runtimeGOOS).toBe("string");
+    expect(m.runtimeGOOS.length).toBeGreaterThan(0);
+    expect(typeof m.runtimeGOARCH).toBe("string");
+    expect(m.runtimeGOARCH.length).toBeGreaterThan(0);
+    expect(m.d2BaseCommit).toBe("01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579");
+    expect(m.referencePackage).toBe("github.com/d2lang/d2/d2layouts/d2talalayout/internal/limits");
+  });
+
   it("verifies public constants match Go reference exactly", () => {
     const c = reference.constants;
     expect(MAX_ENGINE_NODES).toBe(c.MaxEngineNodes);
@@ -55,11 +80,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(false);
-      expect(isWorkLimitError(caughtErr)).toBe(false);
-      expect(used).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, used, expected);
     });
 
     it("negative_initial_limit", () => {
@@ -72,11 +93,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(false);
-      expect(isWorkLimitError(caughtErr)).toBe(false);
-      expect(used).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, used, expected);
     });
 
     it("zero_limit_first_step", () => {
@@ -88,11 +105,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(isWorkCanceledError(caughtErr)).toBe(false);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("limit_two_three_steps", () => {
@@ -106,10 +119,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("already_canceled_constructor", () => {
@@ -124,10 +134,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(used).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, used, expected);
     });
 
     it("standard_context_step_cancellation_at_1024", () => {
@@ -144,10 +151,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("nil_done_context_step_cancellation_at_64", () => {
@@ -164,10 +168,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("check_immediate_cancellation", () => {
@@ -182,10 +183,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("finish_immediate_cancellation", () => {
@@ -200,10 +198,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_negative", () => {
@@ -216,11 +211,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(false);
-      expect(isWorkLimitError(caughtErr)).toBe(false);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_accepted_without_crossing_boundary", () => {
@@ -229,8 +220,13 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       const g = NewWorkGuard(abortSignalWorkContext(controller.signal), "addAcceptedNoCross", 2000);
       g.Step();
       controller.abort();
-      g.Add(100);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      let caughtErr = null;
+      try {
+        g.Add(100);
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_accepted_crossing_cancellation_boundary", () => {
@@ -245,10 +241,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_overflow_crossing_boundary_cancellation_precedence", () => {
@@ -263,10 +256,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_overflow_without_accepted_boundary_work_limit_precedence", () => {
@@ -281,11 +271,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(isWorkCanceledError(caughtErr)).toBe(false);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_huge_math_max_int64_charge", () => {
@@ -298,10 +284,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_huge_math_max_int64_with_max_limit", () => {
@@ -314,10 +297,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_0_canceled_at_exact_boundary", () => {
@@ -331,10 +311,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("add_0_canceled_away_from_boundary", () => {
@@ -343,8 +320,13 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       const g = NewWorkGuard(abortSignalWorkContext(controller.signal), "addZeroAway", 10000);
       g.Step();
       controller.abort();
-      g.Add(0);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      let caughtErr = null;
+      try {
+        g.Add(0);
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("set_limit_lower_without_reset", () => {
@@ -360,10 +342,7 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkLimitError(caughtErr)).toBe(true);
-      expect(g.Used()).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("set_limit_raise_without_reset", () => {
@@ -372,8 +351,13 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       g.Step();
       g.Step();
       g.SetLimit(10);
-      g.Step();
-      expect(g.Used()).toBe(BigInt(expected.used));
+      let caughtErr = null;
+      try {
+        g.Step();
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
     });
 
     it("empty_location_canceled", () => {
@@ -388,10 +372,60 @@ describe("Slice 08 WorkGuard Go Oracle Parity", () => {
       } catch (err) {
         caughtErr = err;
       }
-      expect(caughtErr).not.toBeNull();
-      expect(caughtErr.message).toBe(expected.message);
-      expect(isWorkCanceledError(caughtErr)).toBe(true);
-      expect(used).toBe(BigInt(expected.used));
+      assertScenario(caughtErr, used, expected);
+    });
+
+    it("cached_done_stride_retained", () => {
+      const expected = reference.scenarios.cached_done_stride_retained;
+      let canceled = false;
+      const ctx = {
+        doneAvailable: false,
+        isCancelled: () => canceled,
+      };
+      const g = NewWorkGuard(ctx, "cachedDoneStride", 200);
+
+      // Mutate context's doneAvailable after construction to test that WorkGuard
+      // retained its snapshot of doneAvailable = false (stride = 64)
+      ctx.doneAvailable = true;
+
+      for (let i = 0; i < 63; i++) {
+        g.Step();
+      }
+      canceled = true;
+
+      let caughtErr = null;
+      try {
+        g.Step();
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
+    });
+
+    it("set_limit_negative", () => {
+      const expected = reference.scenarios.set_limit_negative;
+      const g = NewWorkGuard(backgroundWorkContext(), "setNegative", 10);
+      g.SetLimit(-5);
+      let caughtErr = null;
+      try {
+        g.Step();
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
+    });
+
+    it("step_int64_wrap", () => {
+      const expected = reference.scenarios.step_int64_wrap;
+      const g = NewWorkGuard(backgroundWorkContext(), "stepWrap", 9223372036854775807n);
+      g.Add(9223372036854775807n);
+      let caughtErr = null;
+      try {
+        g.Step();
+      } catch (err) {
+        caughtErr = err;
+      }
+      assertScenario(caughtErr, g.Used(), expected);
     });
   });
 });

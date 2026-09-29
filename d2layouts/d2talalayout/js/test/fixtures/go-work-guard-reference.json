@@ -70,6 +70,11 @@
       "message": "alreadyCanceled: context canceled",
       "used": "0"
     },
+    "cached_done_stride_retained": {
+      "kind": "canceled",
+      "message": "cachedDoneStride: context canceled",
+      "used": "64"
+    },
     "check_immediate_cancellation": {
       "kind": "canceled",
       "message": "checkImmediate: context canceled",
@@ -110,6 +115,11 @@
       "message": "TALA setLimitLower work exceeds limit 2",
       "used": "4"
     },
+    "set_limit_negative": {
+      "kind": "workLimit",
+      "message": "TALA setNegative work exceeds limit -5",
+      "used": "1"
+    },
     "set_limit_raise_without_reset": {
       "kind": "none",
       "message": "",
@@ -119,6 +129,11 @@
       "kind": "canceled",
       "message": "stdStride1024: context canceled",
       "used": "1024"
+    },
+    "step_int64_wrap": {
+      "kind": "none",
+      "message": "",
+      "used": "-9223372036854775808"
     },
     "zero_limit_first_step": {
       "kind": "workLimit",

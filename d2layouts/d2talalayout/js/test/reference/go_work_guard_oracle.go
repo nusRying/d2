@@ -38,6 +38,23 @@ func (ctx *errOnlyCancelContext) Err() error {
 	return nil
 }
 
+type mutableDoneContext struct {
+	context.Context
+	doneChan chan struct{}
+	canceled bool
+}
+
+func (ctx *mutableDoneContext) Done() <-chan struct{} {
+	return ctx.doneChan
+}
+
+func (ctx *mutableDoneContext) Err() error {
+	if ctx.canceled {
+		return context.Canceled
+	}
+	return nil
+}
+
 func classifyError(err error) string {
 	if err == nil {
 		return "none"
@@ -432,6 +449,58 @@ func main() {
 			Kind:    classifyError(err),
 			Message: errMessage(err),
 			Used:    used,
+		}
+	}
+
+	// 21. cached Done stride retained despite later Done change
+	{
+		mCtx := &mutableDoneContext{Context: context.Background(), doneChan: nil}
+		g, err := limits.NewWorkGuard(mCtx, "cachedDoneStride", 200)
+		if err != nil {
+			panic(err)
+		}
+		mCtx.doneChan = make(chan struct{})
+		for i := 0; i < 63; i++ {
+			if sErr := g.Step(); sErr != nil {
+				panic(sErr)
+			}
+		}
+		mCtx.canceled = true
+		stepErr := g.Step()
+		out.Scenarios["cached_done_stride_retained"] = ScenarioResult{
+			Kind:    classifyError(stepErr),
+			Message: errMessage(stepErr),
+			Used:    strconv.FormatInt(g.Used(), 10),
+		}
+	}
+
+	// 22. SetLimit negative
+	{
+		g, err := limits.NewWorkGuard(context.Background(), "setNegative", 10)
+		if err != nil {
+			panic(err)
+		}
+		g.SetLimit(-5)
+		stepErr := g.Step()
+		out.Scenarios["set_limit_negative"] = ScenarioResult{
+			Kind:    classifyError(stepErr),
+			Message: errMessage(stepErr),
+			Used:    strconv.FormatInt(g.Used(), 10),
+		}
+	}
+
+	// 23. Step int64 wrap
+	{
+		g, err := limits.NewWorkGuard(context.Background(), "stepWrap", math.MaxInt64)
+		if err != nil {
+			panic(err)
+		}
+		_ = g.Add(math.MaxInt64)
+		stepErr := g.Step()
+		out.Scenarios["step_int64_wrap"] = ScenarioResult{
+			Kind:    classifyError(stepErr),
+			Message: errMessage(stepErr),
+			Used:    strconv.FormatInt(g.Used(), 10),
 		}
 	}
 

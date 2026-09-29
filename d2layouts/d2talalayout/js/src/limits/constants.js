@@ -19,6 +19,10 @@ export const MAX_ENGINE_TREE_DEPTH = 256;
 // MaxGraphSize is the maximum supported width or height at a pipeline stage boundary.
 export const MAX_GRAPH_SIZE = 30_000;
 
+// Signed 64-bit integer range boundaries
+export const INT64_MIN = -9223372036854775808n;
+export const INT64_MAX = 9223372036854775807n;
+
 // Internal polling strides and entity scaling (represented as BigInt)
 export const CONTEXT_CHECK_STRIDE = 64n;
 export const CANCELLABLE_CONTEXT_CHECK_STRIDE = 1024n;
