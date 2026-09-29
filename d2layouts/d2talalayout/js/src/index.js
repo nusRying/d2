@@ -13,3 +13,4 @@ export * from "./shape/index.js";
 export * from "./geometry/index.js";
 export * from "./placementcost/index.js";
 export * from "./placement/index.js";
+export * from "./limits/index.js";
