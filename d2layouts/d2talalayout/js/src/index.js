@@ -3,3 +3,7 @@ export * from "./graph/graph.js";
 export * from "./graph/node.js";
 export * from "./graph/edge.js";
 export * from "./graph/clone.js";
+export * from "./graph/edge-abduction.js";
+export * from "./graph/sequence.js";
+export * from "./graph/cluster.js";
+export * from "./graph/tree.js";

@@ -2,6 +2,10 @@ import { Graph } from "./graph.js";
 import { Node } from "./node.js";
 import { Edge } from "./edge.js";
 import { Point } from "../geometry/point.js";
+import { Cluster } from "./cluster.js";
+import { Sequence } from "./sequence.js";
+import { Tree } from "./tree.js";
+import { EdgeAbduction } from "./edge-abduction.js";
 
 // copyValue clones an embedded value if present, specifically geo primitives
 function copyValue(val) {
@@ -23,7 +27,6 @@ export function cloneGraph(source) {
   cloned.IsRootHierarchy = source.IsRootHierarchy;
   cloned.elkData = structuredClone(source.elkData);
 
-
   const nodesByID = new Map();
   const nodesBySource = new Map();
 
@@ -38,7 +41,7 @@ export function cloneGraph(source) {
     node.FixedTopLeft = copyValue(srcNode.FixedTopLeft);
     node.DesiredWidth = srcNode.DesiredWidth;
     node.DesiredHeight = srcNode.DesiredHeight;
-    node.Graph = cloned;
+    node.Graph = srcNode.Graph === null ? null : cloned;
     node.FontSize = srcNode.FontSize;
     node.Label = copyValue(srcNode.Label);
     node.Icon = copyValue(srcNode.Icon);
@@ -46,6 +49,7 @@ export function cloneGraph(source) {
     node.Is3D = srcNode.Is3D;
     node.IsMultiple = srcNode.IsMultiple;
     node.IsInvisible = srcNode.IsInvisible;
+    node.isClusterVessel = srcNode.isClusterVessel;
     node.setShape(srcNode.shapeType());
     node.setNumColumns(srcNode.numColumns());
     node.elkData = structuredClone(srcNode.elkData);
@@ -55,16 +59,38 @@ export function cloneGraph(source) {
     return node;
   }
 
-  // 1. Copy Nodes
-  for (const node of source.Nodes) {
-    addNodeRecord(node);
+  // copyAuxiliaryNodeRecord copies a node record embedded in another graph record,
+  // such as a grouping vessel or tree node.
+  function copyAuxiliaryNodeRecord(srcNode, relation) {
+    if (!srcNode) {
+      throw new Error(`cannot clone ${relation}: nil node`);
+    }
+    if (srcNode.ID === 0n) {
+      throw new Error(`cannot clone ${relation}: reserved node ID 0`);
+    }
+    if (nodesByID.has(srcNode.ID)) {
+      return nodesByID.get(srcNode.ID);
+    }
+
+    const clonedNode = addNodeRecord(srcNode);
+    if (srcNode.Graph === null) {
+      clonedNode.Graph = null;
+    }
+    return clonedNode;
   }
 
-  function resolveNode(srcNode) {
+  function resolveNode(srcNode, relation = "node") {
     if (!srcNode) return null;
-    const resolved = nodesByID.get(srcNode.ID);
-    if (!resolved) throw new Error(`node ${srcNode.ID} is not included in the graph`);
-    return resolved;
+    if (nodesByID.has(srcNode.ID)) {
+      return nodesByID.get(srcNode.ID);
+    }
+    return copyAuxiliaryNodeRecord(srcNode, relation);
+  }
+
+  // 1. Copy Nodes in source.Nodes
+  for (const node of source.Nodes) {
+    const clonedNode = addNodeRecord(node);
+    cloned.Nodes.push(clonedNode);
   }
 
   // 2. Copy Edges
@@ -83,8 +109,8 @@ export function cloneGraph(source) {
       }
     }
 
-    const from = resolveNode(edge.From);
-    const to = resolveNode(edge.To);
+    const from = resolveNode(edge.From, "edge source");
+    const to = resolveNode(edge.To, "edge target");
     
     const clonedEdge = new Edge(from, to);
     clonedEdge.ID = edge.ID;
@@ -123,9 +149,7 @@ export function cloneGraph(source) {
     }
   }
 
-  // 3. Copy Containers using RDFS from null (matches Go's copyContainers traversal).
-  // Containers not reachable from Containers[null] are intentionally not propagated,
-  // preserving parity with Go's containerRDFSOrderContext behavior.
+  // 3. Copy Containers using RDFS from null
   if (source.Containers.size > 0) {
     function containerRDFSOrder(root) {
       const order = [];
@@ -147,11 +171,11 @@ export function cloneGraph(source) {
 
     cloned.Containers = new Map();
     for (const srcContainer of rdfsOrder) {
-      const container = srcContainer ? resolveNode(srcContainer) : null;
+      const container = srcContainer ? resolveNode(srcContainer, "container") : null;
       const srcChildren = source.Containers.get(srcContainer) || [];
       const clonedChildren = [];
       for (const child of srcChildren) {
-        const clonedChild = resolveNode(child);
+        const clonedChild = resolveNode(child, "container child");
         clonedChild.Container = container;
         clonedChildren.push(clonedChild);
       }
@@ -162,39 +186,156 @@ export function cloneGraph(source) {
     }
   }
 
-  // 4. Copy Nears
-  for (const srcNode of source.Nodes) {
-    const node = nodesBySource.get(srcNode);
-    for (const srcNear of srcNode.orderedNears()) {
-      node.addNear(resolveNode(srcNear));
+  // Helper to copy EdgeAbductions
+  function copyEdgeAbduction(sourceAbduction) {
+    if (!sourceAbduction) return null;
+    let edge = null;
+    if (sourceAbduction.Edge != null) {
+      edge = edgesBySource.get(sourceAbduction.Edge);
+      if (!edge) {
+        throw new Error(`cannot resolve edge abduction edge ${sourceAbduction.Edge.ID}`);
+      }
+    }
+    const originallyFrom = resolveNode(sourceAbduction.OriginallyFrom, "abduction original source");
+    const originallyTo = resolveNode(sourceAbduction.OriginallyTo, "abduction original target");
+    const currentFrom = resolveNode(sourceAbduction.CurrentFrom, "abduction current source");
+    const currentTo = resolveNode(sourceAbduction.CurrentTo, "abduction current target");
+
+    return new EdgeAbduction({
+      Edge: edge,
+      OriginallyFrom: originallyFrom,
+      OriginallyTo: originallyTo,
+      CurrentFrom: currentFrom,
+      CurrentTo: currentTo,
+    });
+  }
+
+  // 4. Copy Clusters
+  for (const sourceVessel of source.clusterOrder()) {
+    const sourceCluster = source.Clusters.get(sourceVessel);
+    if (!sourceCluster) continue;
+
+    const vessel = copyAuxiliaryNodeRecord(sourceVessel, "cluster vessel");
+    if (sourceVessel.Graph === null) {
+      vessel.Graph = null;
+    }
+    vessel.isClusterVessel = sourceVessel.isClusterVessel;
+
+    const container = resolveNode(sourceCluster.Container, "cluster container");
+    const members = (sourceCluster.Nodes || []).map(m => resolveNode(m, "cluster member"));
+    const abductions = (sourceCluster.EdgeAbductions || []).map(copyEdgeAbduction);
+
+    const cluster = new Cluster({
+      Vessel: vessel,
+      Nodes: members,
+      Arrangement: sourceCluster.Arrangement,
+      DesiredArrangement: sourceCluster.DesiredArrangement,
+      Graph: sourceCluster.Graph ? cloned : null,
+      EdgeAbductions: abductions,
+      Padding: copyValue(sourceCluster.Padding),
+      FixedSize: sourceCluster.FixedSize,
+      Container: container,
+    });
+
+    cloned.Clusters.set(vessel, cluster);
+    for (const member of members) {
+      if (member) member.Cluster = cluster;
     }
   }
 
-  // Set Top-level Nodes
-  for (const srcNode of source.Nodes) {
-    const node = nodesBySource.get(srcNode);
-    if (node.Cluster && node.Cluster.isActive && node.Cluster.isActive()) continue;
-    if (node.Sequence && node.Sequence.isActive && node.Sequence.isActive()) continue;
-    cloned.Nodes.push(node);
+  // 5. Copy Sequences
+  for (const sourceVessel of source.sequenceOrder()) {
+    const sourceSequence = source.Sequences.get(sourceVessel);
+    if (!sourceSequence) continue;
+
+    const vessel = copyAuxiliaryNodeRecord(sourceVessel, "sequence vessel");
+    if (sourceVessel.Graph === null) {
+      vessel.Graph = null;
+    }
+
+    const container = resolveNode(sourceSequence.Container, "sequence container");
+    const members = (sourceSequence.Nodes || []).map(m => resolveNode(m, "sequence member"));
+    const abductions = (sourceSequence.EdgeAbductions || []).map(copyEdgeAbduction);
+
+    const sequence = new Sequence({
+      Vessel: vessel,
+      Nodes: members,
+      Graph: sourceSequence.Graph ? cloned : null,
+      EdgeAbductions: abductions,
+      Container: container,
+    });
+
+    cloned.Sequences.set(vessel, sequence);
+    for (const member of members) {
+      if (member) member.Sequence = sequence;
+    }
   }
 
-  // 5. Copy Indexes and Directions
+  // 6. Copy Trees
+  function copyTree(sourceTree, parent = null) {
+    if (!sourceTree) return null;
+    const node = copyAuxiliaryNodeRecord(sourceTree.Node, "tree node");
+    let sentinelEdge = null;
+    if (sourceTree.SentinelEdge != null) {
+      sentinelEdge = edgesBySource.get(sourceTree.SentinelEdge);
+      if (!sentinelEdge) {
+        throw new Error(`cannot resolve tree sentinel edge ${sourceTree.SentinelEdge.ID}`);
+      }
+    }
+
+    const tree = new Tree(node);
+    tree.Parent = parent;
+    tree.SentinelEdge = sentinelEdge;
+    tree.Orientation = sourceTree.Orientation;
+
+    cloned.NodeToTree.set(node, tree);
+
+    for (const sourceChild of sourceTree.Children) {
+      const child = copyTree(sourceChild, tree);
+      tree.Children.push(child);
+    }
+    return tree;
+  }
+
+  for (const sourceSentinel of source.treeOrder()) {
+    const sourceRoots = source.Trees.get(sourceSentinel);
+    if (!sourceRoots) continue;
+    const sentinel = resolveNode(sourceSentinel, "tree root sentinel");
+    const roots = [];
+    for (const sourceRoot of sourceRoots) {
+      const root = copyTree(sourceRoot, null);
+      roots.push(root);
+    }
+    cloned.Trees.set(sentinel, roots);
+  }
+
+  // 7. Copy Nears
+  for (const srcNode of source.Nodes) {
+    const node = nodesBySource.get(srcNode);
+    if (node) {
+      for (const srcNear of srcNode.orderedNears()) {
+        node.addNear(resolveNode(srcNear, "near relation"));
+      }
+    }
+  }
+
+  // 8. Copy Indexes and Directions
   for (const [k, v] of source.Directions.entries()) {
     if (k === null) {
       cloned.Directions.set(null, v);
     } else {
-      cloned.Directions.set(resolveNode(k), v);
+      cloned.Directions.set(resolveNode(k, "direction container"), v);
     }
   }
 
   for (const [k, v] of source.nodesByExternalId.entries()) {
-    cloned.nodesByExternalId.set(k, resolveNode(v));
+    cloned.nodesByExternalId.set(k, resolveNode(v, "nodesByExternalId"));
   }
   for (const [k, v] of source.edgesByExternalId.entries()) {
     cloned.edgesByExternalId.set(k, edgesBySource.get(v));
   }
   for (const [k, v] of source.nodesByEntityId.entries()) {
-    cloned.nodesByEntityId.set(k, resolveNode(v));
+    cloned.nodesByEntityId.set(k, resolveNode(v, "nodesByEntityId"));
   }
   for (const [k, v] of source.edgesByEntityId.entries()) {
     cloned.edgesByEntityId.set(k, edgesBySource.get(v));
@@ -204,12 +345,12 @@ export function cloneGraph(source) {
     if (v.kind === "node") {
       cloned.endpoints.set(k, {
         kind: "node",
-        node: resolveNode(v.node)
+        node: resolveNode(v.node, "endpoint node")
       });
     } else if (v.kind === "port") {
       cloned.endpoints.set(k, {
         kind: "port",
-        node: resolveNode(v.node),
+        node: resolveNode(v.node, "endpoint port node"),
         port: structuredClone(v.port)
       });
     }
