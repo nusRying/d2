@@ -8,5 +8,8 @@ export * from "./graph/sequence.js";
 export * from "./graph/cluster.js";
 export * from "./graph/tree.js";
 export * from "./graph/label.js";
+export * from "./graph/group-geometry.js";
+export * from "./shape/index.js";
+export * from "./geometry/index.js";
 export * from "./placementcost/index.js";
 export * from "./placement/index.js";

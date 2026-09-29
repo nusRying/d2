@@ -242,6 +242,31 @@ export class Graph {
   ClusterRDFSOrder() {
     return this.clusterRDFSOrder();
   }
+
+  /**
+   * SyncSequences synchronizes every active sequence in nested graph order.
+   * Traverses graph.Nodes through rdfsWalk without sorting.
+   */
+  syncSequences() {
+    if (!this.Sequences || this.Sequences.size === 0) {
+      return;
+    }
+
+    const sync = (n) => {
+      const sequence = this.Sequences.get(n);
+      if (sequence) {
+        sequence.SyncGeometry();
+      }
+    };
+
+    for (const n of this.Nodes) {
+      n.rdfsWalk(sync);
+    }
+  }
+
+  SyncSequences() {
+    this.syncSequences();
+  }
 }
 
 export function newGraph() {

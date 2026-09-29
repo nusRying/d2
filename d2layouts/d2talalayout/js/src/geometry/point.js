@@ -29,6 +29,10 @@ export class Point {
     return new Point(this.X, this.Y);
   }
 
+  Copy() {
+    return this.copy();
+  }
+
   getOrientation(pTo) {
     if (this.Y < pTo.Y) {
       if (this.X < pTo.X) return Orientation.TopLeft;
