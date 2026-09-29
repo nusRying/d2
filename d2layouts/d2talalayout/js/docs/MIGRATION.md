@@ -18,6 +18,7 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 01 — ELK/internal graph foundation — complete
 * Slice 02 — deterministic Go RNG parity — complete
 * Slice 03 — core geometry parity — complete
+* Slice 04 — layoutgraph structural core — complete
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

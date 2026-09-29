@@ -1,6 +1,27 @@
 export const firstD2SpillEntityID = 0x100000000n; // 1 << 32
 
 /**
+ * Compares two strings using Go's byte-wise UTF-8 comparison.
+ *
+ * @param {string} a
+ * @param {string} b
+ * @returns {number}
+ */
+export function compareGoStringsUTF8(a, b) {
+  const encoder = new TextEncoder();
+  const bytesA = encoder.encode(a);
+  const bytesB = encoder.encode(b);
+  
+  const minLen = Math.min(bytesA.length, bytesB.length);
+  for (let i = 0; i < minLen; i++) {
+    if (bytesA[i] !== bytesB[i]) {
+      return bytesA[i] < bytesB[i] ? -1 : 1;
+    }
+  }
+  return bytesA.length < bytesB.length ? -1 : bytesA.length > bytesB.length ? 1 : 0;
+}
+
+/**
  * Computes the 32-bit FNV-1a hash of a string, exactly matching Go's hash/fnv.New32a().
  *
  * @param {string} id
@@ -64,11 +85,12 @@ export function allocateD2EntityIDs(identities) {
     }
   }
   
+
   ambiguous.sort((a, b) => {
     if (a.hash !== b.hash) {
       return a.hash < b.hash ? -1 : 1;
     }
-    return a.absID < b.absID ? -1 : a.absID > b.absID ? 1 : 0;
+    return compareGoStringsUTF8(a.absID, b.absID);
   });
   
   for (let i = 0; i < ambiguous.length; i++) {

@@ -30,14 +30,25 @@ export class Edge {
     return this.From === this.To;
   }
 
-  reconnect(from, to) {
-    if (this.From) this.From.removeEdge(this);
-    if (this.To && !this.isLoop()) this.To.removeEdge(this);
+  reconnect(newEndpoint, isTo) {
+    if (isTo) {
+      if (this.To) this.To.removeEdge(this);
+      this.To = newEndpoint;
+      if (this.To && !this.isLoop()) this.To.addEdge(this);
+    } else {
+      if (this.From) this.From.removeEdge(this);
+      this.From = newEndpoint;
+      if (this.From) this.From.addEdge(this);
+    }
+  }
 
-    this.From = from;
-    this.To = to;
+  sourcePort() {
+    if (this.Points.length === 0) return null;
+    return this.Points[0];
+  }
 
-    if (this.From) this.From.addEdge(this);
-    if (this.To && !this.isLoop()) this.To.addEdge(this);
+  targetPort() {
+    if (this.Points.length === 0) return null;
+    return this.Points[this.Points.length - 1];
   }
 }

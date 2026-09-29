@@ -38,7 +38,7 @@ describe("LayoutGraph Structure", () => {
     expect(n2.Edges.length).toBe(1); // e3 remains
     
     // Edge reconnect
-    e3.reconnect(n1, n3);
+    e3.reconnect(n1, false);
     expect(e3.From).toBe(n1);
     expect(e3.To).toBe(n3);
     expect(n2.Edges.length).toBe(0);
@@ -75,7 +75,7 @@ describe("LayoutGraph Structure", () => {
     n1.addNear(n3);
     n1.addNear(n2); // duplicate should be ignored
 
-    expect(n1.Nears.length).toBe(2);
+    expect(n1.Nears.size).toBe(2);
     expect(n1.orderedNears()).toEqual([n2, n3]);
   });
 
@@ -124,7 +124,7 @@ describe("LayoutGraph Structure", () => {
     expect(cChildren[0]).toBe(cN2);
 
     // Nears isolation
-    expect(cN1.Nears.length).toBe(1);
-    expect(cN1.Nears[0]).toBe(cN2);
+    expect(cN1.Nears.size).toBe(1);
+    expect(Array.from(cN1.Nears)[0]).toBe(cN2);
   });
 });

@@ -1,5 +1,6 @@
 import { Node } from './node.js';
 import { Edge } from './edge.js';
+import { Orientation } from '../geometry/orientation.js';
 
 export class Graph {
   constructor() {
@@ -8,6 +9,7 @@ export class Graph {
     this.Edges = [];
 
     this.Containers = new Map();
+    this.Containers.set(null, []);
     this.Directions = new Map();
     this.CellSize = 0;
     this.IsRootHierarchy = false;
@@ -22,6 +24,9 @@ export class Graph {
     this.turnCost = 0;
     this.nonCenterPortCost = 0;
     this.edgeLengthCache = new Map();
+
+    this.endpoints = new Map();
+    this.nodesByExternalId = new Map();
   }
 
   addNodeUnchecked(node) {
@@ -29,11 +34,9 @@ export class Graph {
     node.Graph = this;
   }
 
-  addNewNodeToContainer(container, node) {
-    node.Graph = this;
+  addNodeToContainer(container, node) {
     node.Container = container;
-    this.Nodes.push(node);
-
+    
     let children = this.Containers.get(container);
     if (!children) {
       children = [];
@@ -46,9 +49,27 @@ export class Graph {
     }
   }
 
+  addNewNodeToContainer(container, node) {
+    this.addNodeUnchecked(node);
+    this.addNodeToContainer(container, node);
+  }
+
+  removeNode(node) {
+    const idx = this.Nodes.indexOf(node);
+    if (idx !== -1) {
+      this.Nodes.splice(idx, 1);
+    }
+  }
+
+  AddEdge(edge) {
+    if (!this.Edges.includes(edge)) {
+      this.Edges.push(edge);
+    }
+  }
+
   connect(from, to) {
     const edge = new Edge(from, to);
-    this.Edges.push(edge);
+    this.AddEdge(edge);
     from.addEdge(edge);
     if (from !== to) {
       to.addEdge(edge);
@@ -65,6 +86,45 @@ export class Graph {
     const idx = this.Edges.indexOf(edge);
     if (idx !== -1) {
       this.Edges.splice(idx, 1);
+    }
+  }
+
+  direction(container) {
+    return this.Directions.has(container) ? this.Directions.get(container) : Orientation.NONE;
+  }
+
+  computeCellSize() {
+    let minWidth = Number.POSITIVE_INFINITY;
+    let minHeight = Number.POSITIVE_INFINITY;
+    let maxWidth = 0;
+    let maxHeight = 0;
+
+    let hasNodes = false;
+    for (const n of this.Nodes) {
+      if (n.isContainer) continue;
+      hasNodes = true;
+      if (n.Width < minWidth) minWidth = n.Width;
+      if (n.Height < minHeight) minHeight = n.Height;
+      if (n.Width > maxWidth) maxWidth = n.Width;
+      if (n.Height > maxHeight) maxHeight = n.Height;
+    }
+
+    if (!hasNodes) {
+      this.CellSize = 10;
+      return;
+    }
+
+    const minLength = Math.min(minWidth, minHeight);
+    const maxLength = Math.max(maxWidth, maxHeight);
+
+    if (maxLength < 3 * minLength) {
+      this.CellSize = Math.ceil(maxLength);
+    } else {
+      this.CellSize = Math.ceil((3 * minLength) / 2);
+    }
+    
+    if (this.CellSize < 10) {
+      this.CellSize = 10;
     }
   }
 }

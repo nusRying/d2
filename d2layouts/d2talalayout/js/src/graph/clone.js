@@ -23,6 +23,7 @@ export function cloneGraph(source) {
   cloned.IsRootHierarchy = source.IsRootHierarchy;
   cloned.elkData = structuredClone(source.elkData);
 
+
   const nodesByID = new Map();
   const nodesBySource = new Map();
 
@@ -123,13 +124,30 @@ export function cloneGraph(source) {
     }
   }
 
-  // Set Top-level Nodes (only nodes that aren't inside clusters/sequences)
-  // For Slice 04 we don't have full Cluster/Sequence implementations but we filter them.
+  // Set Top-level Nodes
   for (const srcNode of source.Nodes) {
     const node = nodesBySource.get(srcNode);
     if (node.Cluster && node.Cluster.isActive && node.Cluster.isActive()) continue;
     if (node.Sequence && node.Sequence.isActive && node.Sequence.isActive()) continue;
     cloned.Nodes.push(node);
+  }
+
+  // 5. Copy Indexes and Directions
+  for (const [k, v] of source.Directions.entries()) {
+    if (k === null) {
+      cloned.Directions.set(null, v);
+    } else {
+      cloned.Directions.set(resolveNode(k), v);
+    }
+  }
+
+  for (const [k, v] of source.nodesByExternalId.entries()) {
+    cloned.nodesByExternalId.set(k, resolveNode(v));
+  }
+
+  for (const [k, v] of source.endpoints.entries()) {
+    // For now we assume v is a node, port logic isn't fully separated
+    cloned.endpoints.set(k, resolveNode(v));
   }
 
   return cloned;

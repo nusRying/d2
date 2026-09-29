@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"hash/fnv"
 	"os"
+	"runtime"
 	"sort"
+	"strconv"
 )
 
 type EntityID int64
+
 const firstD2SpillEntityID EntityID = 1 << 32
 
 func d2FNV32(id string) uint32 {
@@ -31,7 +34,7 @@ func allocateD2EntityIDs(identities []d2EntityIdentity) (map[string]EntityID, er
 	hashed := make([]hashedD2EntityIdentity, len(identities))
 	bucketSizes := make(map[uint32]int, len(identities))
 	seenAbsIDs := make(map[string]struct{}, len(identities))
-	
+
 	for i, identity := range identities {
 		if _, duplicate := seenAbsIDs[identity.absID]; duplicate {
 			return nil, fmt.Errorf("D2 ID %q is repeated", identity.absID)
@@ -44,7 +47,7 @@ func allocateD2EntityIDs(identities []d2EntityIdentity) (map[string]EntityID, er
 
 	allocated := make(map[string]EntityID, len(identities))
 	ambiguous := make([]hashedD2EntityIdentity, 0)
-	
+
 	for _, identity := range hashed {
 		if identity.hash != 0 && bucketSizes[identity.hash] == 1 {
 			allocated[identity.entity] = EntityID(identity.hash)
@@ -52,7 +55,7 @@ func allocateD2EntityIDs(identities []d2EntityIdentity) (map[string]EntityID, er
 		}
 		ambiguous = append(ambiguous, identity)
 	}
-	
+
 	sort.Slice(ambiguous, func(i, j int) bool {
 		a := ambiguous[i]
 		b := ambiguous[j]
@@ -61,7 +64,7 @@ func allocateD2EntityIDs(identities []d2EntityIdentity) (map[string]EntityID, er
 		}
 		return a.absID < b.absID
 	})
-	
+
 	for i, identity := range ambiguous {
 		allocated[identity.entity] = firstD2SpillEntityID + EntityID(i)
 	}
@@ -75,59 +78,66 @@ type TestCase struct {
 
 type Output struct {
 	HashOracle      map[string]uint32 `json:"hash_oracle"`
-	AllocatedOracle map[string]int64  `json:"allocated_oracle"`
+	AllocatedOracle map[string]string `json:"allocated_oracle"`
+}
+
+type RootOutput struct {
+	Metadata map[string]string `json:"metadata"`
+	Cases    map[string]Output `json:"cases"`
 }
 
 func main() {
 	cases := []TestCase{
 		{Name: "simple", Input: []string{"a", "b", "c"}},
-		{Name: "collision_mock", Input: []string{}}, // we'll find some actual FNV32 collisions below or let it run
 		{Name: "zero_hash", Input: []string{}},
 		{Name: "complex_unicode", Input: []string{"hello", "world", "你好", "🌍", "a longer string with spaces"}},
+		{Name: "collision_mock", Input: []string{"lKWF05zzXT", "bls2q7BifE"}},
+		{Name: "collision_mock_reversed", Input: []string{"bls2q7BifE", "lKWF05zzXT"}},
+		{Name: "many_nodes", Input: []string{"n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10"}},
 	}
-	
-	// Add an explicit collision if we can find one, or just trust the logic.
-	// Actually, let's just generate a large set of random IDs to ensure we cover edge cases
-	cases = append(cases, TestCase{
-		Name: "many_nodes",
-		Input: []string{"n1", "n2", "n3", "n4", "n5", "n6", "n7", "n8", "n9", "n10"},
-	})
-	
-	// Let's add strings that hash to 0
-	// We might not know one off-hand, but we can test the ambiguity logic via collision
-	// Let's create an artificial ambiguous case by providing a string that hashes to 0? No, we don't know a string that hashes to 0. 
 
-	var outData = make(map[string]Output)
+	outData := RootOutput{
+		Metadata: map[string]string{
+			"runtimeGoVersion":   runtime.Version(),
+			"d2BaseCommit":       "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+			"referenceAlgorithm": "hash/fnv New32a + D2 allocateD2EntityIDs semantics",
+		},
+		Cases: make(map[string]Output),
+	}
 
 	for _, tc := range cases {
 		out := Output{
 			HashOracle:      make(map[string]uint32),
-			AllocatedOracle: make(map[string]int64),
+			AllocatedOracle: make(map[string]string),
 		}
-		
+
 		identities := make([]d2EntityIdentity, len(tc.Input))
 		for i, id := range tc.Input {
 			out.HashOracle[id] = d2FNV32(id)
 			identities[i] = d2EntityIdentity{entity: id, absID: id}
 		}
-		
+
 		alloc, err := allocateD2EntityIDs(identities)
 		if err != nil {
 			panic(err)
 		}
-		
+
 		for k, v := range alloc {
-			out.AllocatedOracle[k] = int64(v)
+			out.AllocatedOracle[k] = strconv.FormatInt(int64(v), 10)
 		}
-		
-		outData[tc.Name] = out
+
+		outData.Cases[tc.Name] = out
 	}
 
 	b, err := json.MarshalIndent(outData, "", "  ")
 	if err != nil {
 		panic(err)
 	}
-	err = os.WriteFile("entity_id_fixture.json", b, 0644)
+	err = os.MkdirAll("../fixtures", 0755)
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile("../fixtures/go-entity-id-reference.json", b, 0644)
 	if err != nil {
 		panic(err)
 	}

@@ -1,0 +1,87 @@
+{
+  "metadata": {
+    "runtimeGoVersion": "go1.27.0",
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referenceAlgorithm": "hash/fnv New32a + D2 allocateD2EntityIDs semantics"
+  },
+  "cases": {
+    "simple": {
+      "hash_oracle": {
+        "a": 3826002220,
+        "b": 3876335077,
+        "c": 3859557458
+      },
+      "allocated_oracle": {
+        "a": "3826002220",
+        "b": "3876335077",
+        "c": "3859557458"
+      }
+    },
+    "zero_hash": {
+      "hash_oracle": {},
+      "allocated_oracle": {}
+    },
+    "complex_unicode": {
+      "hash_oracle": {
+        "hello": 1335831723,
+        "world": 933488787,
+        "你好": 2257816995,
+        "🌍": 819108635,
+        "a longer string with spaces": 3309522673
+      },
+      "allocated_oracle": {
+        "hello": "1335831723",
+        "world": "933488787",
+        "你好": "2257816995",
+        "🌍": "819108635",
+        "a longer string with spaces": "3309522673"
+      }
+    },
+    "collision_mock": {
+      "hash_oracle": {
+        "lKWF05zzXT": 3524517778,
+        "bls2q7BifE": 3524517778
+      },
+      "allocated_oracle": {
+        "bls2q7BifE": "4294967296",
+        "lKWF05zzXT": "4294967297"
+      }
+    },
+    "collision_mock_reversed": {
+      "hash_oracle": {
+        "bls2q7BifE": 3524517778,
+        "lKWF05zzXT": 3524517778
+      },
+      "allocated_oracle": {
+        "bls2q7BifE": "4294967296",
+        "lKWF05zzXT": "4294967297"
+      }
+    },
+    "many_nodes": {
+      "hash_oracle": {
+        "n1": 70638592,
+        "n2": 120971449,
+        "n3": 104193830,
+        "n4": 154526687,
+        "n5": 137749068,
+        "n6": 188081925,
+        "n7": 171304306,
+        "n8": 221637163,
+        "n9": 204859544,
+        "n10": 3502874512
+      },
+      "allocated_oracle": {
+        "n1": "70638592",
+        "n2": "120971449",
+        "n3": "104193830",
+        "n4": "154526687",
+        "n5": "137749068",
+        "n6": "188081925",
+        "n7": "171304306",
+        "n8": "221637163",
+        "n9": "204859544",
+        "n10": "3502874512"
+      }
+    }
+  }
+}
