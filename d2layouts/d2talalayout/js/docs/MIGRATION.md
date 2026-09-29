@@ -20,8 +20,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 03 — complete
 * Slice 04 — complete
 * Slice 05 — complete
-* Slice 06 — Prescale — complete
-* Slice 07 — sequence geometry primitives — current
+* Slice 06 — complete
+* Slice 07 — sequence geometry primitives — implemented, under review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
