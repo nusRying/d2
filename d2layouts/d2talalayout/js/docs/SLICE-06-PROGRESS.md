@@ -184,4 +184,4 @@ Deterministic, browser-safe implementation of the `Prescale` stage in JavaScript
 - `d9fe2c611` docs(tala-js): close approved Slice 05
 - `f48a09d3a` feat(tala-js): port Prescale stage
 - `6b97a61d5` test(tala-js): add Go Prescale parity oracle
-- (docs commit) docs(tala-js): document Slice 06 Prescale
+- `59a3e3b8a` docs(tala-js): document Slice 06 Prescale
