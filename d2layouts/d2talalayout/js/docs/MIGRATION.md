@@ -24,7 +24,7 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 07 — complete
 * Slice 08 — complete
 * Slice 09 — complete
-* Slice 10 — topology preflight and guarded container traversal — current
+* Slice 10 — topology preflight and guarded container traversal — implemented, under review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
