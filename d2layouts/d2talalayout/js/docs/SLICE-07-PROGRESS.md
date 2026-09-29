@@ -178,3 +178,4 @@ Deterministic, browser-safe implementation of Sequence geometry primitives in Ja
 - `19a0a2c6a` docs(tala-js): close approved Slice 06
 - `bc05feb4e` feat(tala-js): port sequence geometry primitives
 - `beacdff82` test(tala-js): add Go sequence geometry oracle
+- `ddca67e67` docs(tala-js): document Slice 07 sequence geometry
