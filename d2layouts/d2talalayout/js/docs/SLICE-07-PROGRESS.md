@@ -147,7 +147,7 @@ Result:
 - 0 fail
 - 8547 expect() calls
 - 15 test files
-- Runtime: ~230ms
+- 164.00ms
 
 ## Math.random Audit
 - `Math.random` occurrences in `js/src`: **0**
@@ -159,12 +159,19 @@ Result:
 Benchmarked via Bun runtime:
 - 100,000 `SequenceAdvance` calls: 2.32 ms (~23.2 ns/call).
 - 100,000 `SyncGeometry` calls on 2-step sequence: 19.34 ms (~193.4 ns/call).
-- 10,000 `Graph.SyncSequences` calls on nested graph: 4.06 ms (~406 ns/call).
+- 10,000 `Graph.SyncSequences` calls on a small graph with one directly reachable sequence vessel: 4.06 ms (~406 ns/call).
 
 ## Problems Encountered and Review Findings
 1. **Container marking during nested sequence sync**: In Go `rdfsWalk`, containers are only walked if `n.isContainer == true`. Using `g.AddNewNodeToContainer(nil, container)` and `g.AddNodeToContainer(container, vessel)` correctly marks `container.isContainer = true`, ensuring nested sequence vessels are visited during graph synchronization.
 2. **Active sequence member filtration in clone**: In `cloneGraph`, active sequence members are attached to `clonedSequence.Nodes` and filtered out of `clonedGraph.Nodes` to match Go layoutgraph semantics. Step references must be resolved via `clonedSequence.Nodes` rather than `clonedGraph.Nodes`.
 3. **Point independence**: Verified that `arrangeStepsWithWork` copies `tl` for each step, preventing shared coordinate references across steps.
+
+## Review Resolution
+Independent Slice 07 review found no production-code parity blocker.
+
+Documentation corrections:
+- authoritative Bun runtime corrected to 164.00ms;
+- SyncSequences benchmark description corrected from nested graph to directly reachable/top-level sequence graph.
 
 ## Limitations
 - Sequence discovery, candidate evaluation, and automatic vessel installation (`grouping.AddSequences`) are deferred to subsequent slices.
@@ -179,3 +186,4 @@ Deterministic, browser-safe implementation of Sequence geometry primitives in Ja
 - `bc05feb4e` feat(tala-js): port sequence geometry primitives
 - `beacdff82` test(tala-js): add Go sequence geometry oracle
 - `ddca67e67` docs(tala-js): document Slice 07 sequence geometry
+- `6ffb9481f` docs(tala-js): record final docs commit SHA
