@@ -25,8 +25,22 @@ Coupling `WorkGuard` work accounting with `GraphState` would inflate the slice s
 
 ## Decisions
 
-### 1. Limits Constants & BigInt Representation
+### 1. Limits Constants, BigInt Representation & Signed int64 API Boundary
 Go's work units are signed 64-bit integers (`int64`). Floating-point JavaScript `Number` loses integer precision beyond $2^{53} - 1$ (9,007,199,254,740,991), which risks silent corruption on large charges or pathological boundaries (such as `math.MaxInt64`).
+
+JavaScript `BigInt` can represent values far beyond Go's `int64` range. Since Go's API parameters are typed `int64`, all JavaScript API inputs are restricted to the signed int64 domain:
+
+```text
+INT64_MIN = -9223372036854775808n
+INT64_MAX =  9223372036854775807n
+```
+
+`normalizeInt64Input` validates every external `limit` and `units` parameter:
+- Must be a `BigInt` or a safe-integer `Number`.
+- Must satisfy `INT64_MIN <= value <= INT64_MAX`.
+- Out-of-range BigInts are rejected with `TypeError`.
+
+Internal Go-equivalent arithmetic (such as `used++` or `limit + 1`) may wrap through `BigInt.asIntN(64, ...)` to faithfully reproduce Go's signed overflow behavior. This wrapping is deliberate and does not indicate an input validation failure.
 
 We define:
 - **Structural counts** as standard `Number`:
@@ -58,6 +72,14 @@ We create a minimal browser-safe `WorkContext` abstraction with three factory fu
 1. `backgroundWorkContext()`: Non-cancellable background context (`context.Background()`). `doneAvailable = false`, `isCancelled() => false`. Polling stride = 64.
 2. `abortSignalWorkContext(signal)`: Standard cancellable context backed by browser `AbortSignal`. `doneAvailable = true`, `isCancelled() => Boolean(signal?.aborted)`. Polling stride = 1024.
 3. `pollingWorkContext(isCancelled)`: Synthetic polling context for Go parity testing. `doneAvailable = false`, `isCancelled() => Boolean(isCancelled())`. Polling stride = 64.
+
+**Cached polling-mode semantics.** In Go, the Done channel availability is captured at `NewWorkGuard` construction:
+```go
+done: ctx.Done()
+```
+The JS implementation therefore captures the polling category/stride once at construction via `this.pollingStrideValue`. Changing `ctx.doneAvailable` after construction must not alter an existing WorkGuard's polling stride.
+
+This behavior is proven by the real Go oracle scenario `cached_done_stride_retained`: a WorkGuard constructed with a standard (Done-available) context retains its 1024-stride even if the context's Done availability were to change, and polls cancellation at step 64 only if constructed with a nil-Done context.
 
 ### 3. Context Validation & Null Rejection
 In Go:
@@ -135,17 +157,32 @@ func (guard *WorkGuard) SetLimit(limit int64) {
     guard.limit = limit
 }
 ```
+- Input is validated via `normalizeInt64Input` (rejects non-safe-integer Numbers, out-of-range BigInts).
 - Does NOT reset `used`.
 - Does NOT immediately validate or check `used`.
-- Does NOT reject a negative replacement limit.
+- Accepts negative replacement limits without immediate check (Go parity: no guard on the replacement value beyond `int64` typing).
 - Subsequent operations evaluate against the new ceiling.
 
-### 9. Error Hierarchy & Classification
+The oracle scenario `set_limit_negative` proves that `SetLimit(-5)` is accepted by Go; subsequent `Step()` yields `WorkLimitError` with message `"TALA setNegative work exceeds limit -5"` and `used: 1`.
+
+### 9. Step int64 Wrap Behavior
+When `limit = math.MaxInt64` (9223372036854775807), `Add(math.MaxInt64)` succeeds and sets `used = 9223372036854775807n`. A subsequent `Step()` executes `used++`, which in Go's signed int64 arithmetic wraps to `-9223372036854775808` (math.MinInt64).
+
+In JavaScript, `BigInt.asIntN(64, 9223372036854775807n + 1n)` produces `-9223372036854775808n`, faithfully reproducing this behavior.
+
+Since the wrapped `used` (`-9223372036854775808n`) is less than `limit` (`9223372036854775807n`), no `WorkLimitError` is thrown. The oracle scenario `step_int64_wrap` records exactly:
+```json
+{ "kind": "none", "message": "", "used": "-9223372036854775808" }
+```
+
+This proves the internal `used++` signed int64 wrap behavior separately from the `limit + 1` Add-overflow case.
+
+### 10. Error Hierarchy & Classification
 - `WorkCanceledError`: Subclass of `Error` with `name = "AbortError"` and message `<location>: context canceled`.
 - `WorkLimitError`: Subclass of `Error` with `name = "WorkLimitError"` and message `TALA <location> work exceeds limit <limit>` (interpolated as a decimal string without a trailing `n`).
 - Helper functions: `isWorkCanceledError(error)` and `isWorkLimitError(error)`.
 
-### 10. SharedWorkStepper Compatibility
+### 11. SharedWorkStepper Compatibility
 Slice 07 established the narrow work-accounting contract for sequence geometry:
 ```javascript
 Sequence.SyncGeometryWithWork(guard)
@@ -154,7 +191,7 @@ Sequence.SyncGeometryWithWork(guard)
 1 initial step + 2 resize steps + 2 arrange steps = 5.
 `Finish()` verifies cancellation without charging work, leaving `guard.Used() === 5n`.
 
-### 11. Arithmetic Utilities Omission
+### 12. Arithmetic Utilities Omission
 Pinned `limits/arithmetic.go` contains `CheckedAddUint64` and `CheckedMulUint64`. These are independent unsigned arithmetic helpers not used by `WorkGuard` or sequence geometry. They are deliberately omitted from Slice 08.
 
 ## Consequences

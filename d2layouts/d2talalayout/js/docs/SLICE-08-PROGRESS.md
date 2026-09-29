@@ -113,16 +113,23 @@ Verified integration with `Sequence.SyncGeometryWithWork(guard)`:
 - Reference Oracle: `test/reference/go_work_guard_oracle.go`
 - Generated Fixture: `test/fixtures/go-work-guard-reference.json`
 - Generated independently twice using `C:\Program Files\Go\bin\go.exe`.
-- Fixture SHA256: `5A99C37C658203FFEAAEBF9718831A0F51E6BD4FD763BEBEA4DBC0D3F34D2A76` (both runs identical).
+- Fixture SHA256: `6F0F78E508EBB4F4465F36B69A1AD04E8E8E26F4A30ABECB5DE159E679260449` (A/B/canonical all identical).
+
+The final fixture includes three additional review scenarios beyond the initial implementation:
+- `cached_done_stride_retained`: Proves constructor-captured polling mode is immutable.
+- `set_limit_negative`: Proves `SetLimit(-5)` is accepted and subsequent `Step()` yields `WorkLimitError` with `message: "TALA setNegative work exceeds limit -5"`, `used: 1`.
+- `step_int64_wrap`: Proves `Add(MaxInt64)` followed by `Step()` wraps `used` to `-9223372036854775808` via signed int64 overflow.
 
 ## Full Regression Test Suite
-Executed `bun test` (authoritative final run after correction commit):
+Authoritative final verification after all corrections and documentation:
 - **Result**: `267 pass, 0 fail`
 - **Expect calls**: `8753 expect() calls`
 - **Test files**: `17 test files`
-- **Runtime**: `492.00ms`
+- **Latest run**: `326.00ms`
 
 All test suites from Slices 01–07 remained completely green.
+
+Note: runtime varies across executions (326–492ms observed). Test count, assertion count, and file count are stable.
 
 ## Math.random Audit
 - `js/src` audit for `Math.random`: 0 matches found.
@@ -132,10 +139,14 @@ All test suites from Slices 01–07 remained completely green.
 - No asynchronous timers (`setTimeout`, `setInterval`) or promise loops.
 
 ## Performance Sanity Benchmark
-Informational benchmarks measured in `test/unit/work-guard.test.js`:
-- 1,000,000 background `Step()` calls: ~75ms (budget < 500ms).
-- 100,000 `Add(10)` calls: ~24ms (budget < 200ms).
-- 100,000 `Check()` calls: ~1.2ms (budget < 200ms).
+Performance measurements are informational and are not functional test assertions. The unit tests verify work counts, error types, and cancellation semantics only.
+
+Historical local benchmark measurements (non-deterministic, host-dependent):
+- 1,000,000 background `Step()` calls: ~75–128ms.
+- 100,000 `Add(10)` calls: ~24–51ms.
+- 100,000 `Check()` calls: ~1.2–3ms.
+
+These benchmarks use generous budgets (<500ms, <200ms, <200ms) and do not gate the functional test suite.
 
 ## Problems Encountered & Resolutions
 1. **Initial method naming conflict**: In `WorkGuard`, the property `this.used` held a `BigInt`, which conflicted with an alias `used()`. Removed `used()` method alias and retained `Used()` and `usedCount()`.
@@ -144,6 +155,16 @@ Informational benchmarks measured in `test/unit/work-guard.test.js`:
 4. **Polling stride not cached**: `pollingStride()` re-read `ctx.doneAvailable` on every call. Go captures the context's Done channel availability at construction. Fixed by caching `pollingStrideValue` during `WorkGuard` construction.
 5. **SetLimit lacked range validation**: `SetLimit` used inline validation instead of `normalizeInt64Input`. Unified to use the same validation path as constructor and `Add`.
 
+## Review Resolution
+Independent review found and corrected the following discrepancies:
+1. **Arbitrary BigInt values outside Go int64 domain**: `normalizeLimitOrUnits` accepted any BigInt. Renamed to `normalizeInt64Input` with `INT64_MIN`/`INT64_MAX` range enforcement matching Go's `int64` parameter domain.
+2. **Dynamic polling-stride selection**: `pollingStride()` re-read `ctx.doneAvailable` on every call. Go captures the Done channel availability at `NewWorkGuard` construction. Fixed by caching `pollingStrideValue` at construction.
+3. **Incomplete oracle metadata/kind/message assertions**: Go oracle scenarios lacked `kind` and `message` fields for deterministic replay. Extended oracle and test harness to assert exact error classification.
+4. **Performance timing as functional test gates**: Initial test implementation used timing-based `expect()` calls. These were brittle on varying host CPUs. Removed in favor of informational benchmarks with generous budgets.
+5. **Stale fixture SHA after oracle expansion**: The documented SHA256 was computed before three additional review scenarios were added. Recomputed and verified via independent A/B regeneration.
+
+No remaining production WorkGuard parity blocker was found after correction.
+
 ## Limitations & Deferred Work
 - `GraphState` snapshots and `RestoreGraphState` are deferred to Slice 09.
 - `grouping.AddSequences` and sequence candidate discovery are deferred to a subsequent slice.
@@ -151,7 +172,9 @@ Informational benchmarks measured in `test/unit/work-guard.test.js`:
 
 ## Commit History on Branch
 ```text
+<DOCS>   docs(tala-js): finalize Slice 08 review record
 3605b6999 fix(tala-js): enforce signed-int64 API domain and cache polling stride
+44af5aa8c docs(tala-js): update Slice 08 progress with correction metrics and history
 3290d3d54 docs(tala-js): document Slice 08 WorkGuard
 206039ff8 test(tala-js): add Go WorkGuard parity oracle
 e56d542a7 feat(tala-js): port WorkGuard accounting
