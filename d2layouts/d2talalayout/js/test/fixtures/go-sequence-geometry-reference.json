@@ -1,0 +1,288 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0",
+    "stepWedgeWidth": 35
+  },
+  "cases": {
+    "AbductedNodeByEdge": {
+      "BothVesselPrecedence": "301",
+      "CurrentFromVessel": "301",
+      "CurrentToVessel": "302",
+      "DifferentEdgeObject": "",
+      "NoCurrentVesselEndpoint": ""
+    },
+    "ArrangeSteps": {
+      "MultipleSteps": {
+        "s1TopLeft": {
+          "x": 50,
+          "y": 60
+        },
+        "s2TopLeft": {
+          "x": 115,
+          "y": 60
+        },
+        "s3TopLeft": {
+          "x": 180,
+          "y": 60
+        }
+      },
+      "NarrowWidths": {
+        "s1TopLeft": {
+          "x": 100,
+          "y": 200
+        },
+        "s2TopLeft": {
+          "x": 105,
+          "y": 200
+        }
+      },
+      "NegativeWidth": {
+        "s1TopLeft": {
+          "x": 100,
+          "y": 200
+        },
+        "s2TopLeft": {
+          "x": 100,
+          "y": 200
+        }
+      },
+      "OneStep": {
+        "s1TopLeft": {
+          "x": 10,
+          "y": 20
+        }
+      },
+      "UnpositionedVessel": {
+        "s1TopLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "s2TopLeft": {
+          "x": 30,
+          "y": 40
+        }
+      },
+      "WideWidths": {
+        "s1TopLeft": {
+          "x": 100,
+          "y": 200
+        },
+        "s2TopLeft": {
+          "x": 135,
+          "y": 200
+        }
+      }
+    },
+    "PlaceVessel": {
+      "AllStepsPositioned": {
+        "vesselTopLeft": {
+          "x": 100,
+          "y": 30
+        }
+      },
+      "EmptyNodesInfinity": {
+        "vesselTopLeft": {
+          "x": 0,
+          "y": 0,
+          "xIsPositiveInfinity": true,
+          "yIsPositiveInfinity": true
+        }
+      },
+      "ExistingTopLeftMissingStep": {
+        "vesselTopLeft": {
+          "x": 999,
+          "y": 999
+        }
+      },
+      "IndependentMinima": {
+        "vesselTopLeft": {
+          "x": 50,
+          "y": 10
+        }
+      },
+      "OneMissingTopLeft": {
+        "vesselTopLeft": null
+      }
+    },
+    "SequenceAdvance": [
+      {
+        "advance": 0,
+        "width": -1
+      },
+      {
+        "advance": 0,
+        "width": 0
+      },
+      {
+        "advance": 5,
+        "width": 10
+      },
+      {
+        "advance": 17.5,
+        "width": 35
+      },
+      {
+        "advance": 1,
+        "width": 36
+      },
+      {
+        "advance": 35,
+        "width": 70
+      },
+      {
+        "advance": 65,
+        "width": 100
+      },
+      {
+        "advance": 0,
+        "width": -10
+      },
+      {
+        "advance": 8.75,
+        "width": 17.5
+      },
+      {
+        "advance": 17.5,
+        "width": 35
+      },
+      {
+        "advance": 15,
+        "width": 50
+      },
+      {
+        "advance": 85,
+        "width": 120
+      }
+    ],
+    "SyncGeometry": {
+      "DifferentHeights": {
+        "vesselHeight": 100,
+        "vesselWidth": 80
+      },
+      "EmptySequence": {
+        "vesselHeight": 0,
+        "vesselWidth": 0
+      },
+      "MissingVesselFailure": {
+        "message": "layout invariant violated: sequence is missing its vessel",
+        "panicked": true
+      },
+      "MixedNarrowAndWide": {
+        "vesselHeight": 60,
+        "vesselWidth": 55
+      },
+      "NegativeDimensions": {
+        "vesselHeight": 30,
+        "vesselWidth": 50
+      },
+      "NilStepFailure": {
+        "message": "layout invariant violated: sequence contains a nil step",
+        "panicked": true
+      },
+      "PositionedVessel": {
+        "s1TopLeft": {
+          "x": 200,
+          "y": 300
+        },
+        "s2TopLeft": {
+          "x": 215,
+          "y": 300
+        },
+        "vesselHeight": 40,
+        "vesselTopLeft": {
+          "x": 200,
+          "y": 300
+        },
+        "vesselWidth": 75
+      },
+      "ThreeWideSteps": {
+        "stepTopLefts": [
+          null,
+          null,
+          null
+        ],
+        "vesselHeight": 60,
+        "vesselTopLeft": null,
+        "vesselWidth": 230
+      },
+      "TwoNarrowSteps": {
+        "vesselHeight": 30,
+        "vesselWidth": 25
+      },
+      "VesselWithoutTopLeft": {
+        "s1TopLeft": null,
+        "s2TopLeft": null,
+        "vesselTopLeft": null
+      }
+    },
+    "SyncSequences": {
+      "NestedSequenceVessel": {
+        "s1TopLeft": {
+          "x": 1000,
+          "y": 1000
+        },
+        "s2TopLeft": {
+          "x": 1015,
+          "y": 1000
+        },
+        "vesselHeight": 40,
+        "vesselTopLeft": {
+          "x": 1000,
+          "y": 1000
+        },
+        "vesselWidth": 85
+      },
+      "NoSequences": {
+        "node1Width": 100
+      },
+      "TopLevelSequenceVessel": {
+        "s1TopLeft": {
+          "x": 500,
+          "y": 500
+        },
+        "s2TopLeft": {
+          "x": 525,
+          "y": 500
+        },
+        "vesselHeight": 50,
+        "vesselTopLeft": {
+          "x": 500,
+          "y": 500
+        },
+        "vesselWidth": 105
+      },
+      "TwoReachableSequences": {
+        "v1Height": 30,
+        "v1Width": 65,
+        "v1_s1TopLeft": {
+          "x": 100,
+          "y": 100
+        },
+        "v1_s2TopLeft": {
+          "x": 115,
+          "y": 100
+        },
+        "v2Height": 70,
+        "v2Width": 135,
+        "v2_s1TopLeft": {
+          "x": 300,
+          "y": 300
+        },
+        "v2_s2TopLeft": {
+          "x": 345,
+          "y": 300
+        }
+      },
+      "UnreachableSequenceMapEntry": {
+        "s1TopLeft": null,
+        "s2TopLeft": null,
+        "vesselHeight": 10,
+        "vesselWidth": 10
+      }
+    }
+  }
+}
