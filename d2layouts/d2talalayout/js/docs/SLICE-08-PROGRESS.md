@@ -68,7 +68,8 @@ Implemented in `src/limits/work-context.js`:
 ## BigInt / int64 Decision
 To prevent floating-point precision loss and accurately mirror Go's signed `int64` semantics:
 - Internal counters (`used`, `limit`) and strides are represented as `BigInt`.
-- Input parameters (`limit`, `units`) accept either `BigInt` or safe-integer `Number`, normalized immediately via `normalizeLimitOrUnits`. Fractional numbers, `NaN`, `Infinity`, and unsafe integers are rejected with `TypeError`.
+- Input parameters (`limit`, `units`) accept either `BigInt` or safe-integer `Number`, normalized immediately via `normalizeInt64Input`. Fractional numbers, `NaN`, `Infinity`, and unsafe integers are rejected with `TypeError`. Values outside the signed int64 range (`INT64_MIN` to `INT64_MAX`) are rejected with `TypeError`.
+- `INT64_MIN = -9223372036854775808n` and `INT64_MAX = 9223372036854775807n` are defined in `constants.js` and re-exported from `work-guard.js`.
 - Counter updates apply two's complement 64-bit signed truncation via `BigInt.asIntN(64, ...)`. This faithfully reproduces Go's exact behavior on pathological boundaries (such as `math.MaxInt64 + 1` wrapping to `-9223372036854775808n`).
 
 ## WorkGuard Operation Semantics
@@ -93,7 +94,9 @@ Implemented in `src/limits/work-guard.js`:
 - `Check()` / `Finish()`:
   - Immediately queries context cancellation. If canceled, throws `WorkCanceledError` (`name = "AbortError"`).
 - `SetLimit(limit)`:
-  - Replaces `limit` without resetting `used`, without checking existing `used`, and without rejecting negative values, exactly matching Go.
+  - Validates via `normalizeInt64Input` (rejects non-safe-integer Numbers, out-of-range BigInts).
+  - Replaces `limit` without resetting `used` and without checking existing `used`, exactly matching Go.
+  - Accepts negative replacement limits (Go parity: no immediate check).
 - `Used()`:
   - Returns `used` as `BigInt`.
 
@@ -113,11 +116,11 @@ Verified integration with `Sequence.SyncGeometryWithWork(guard)`:
 - Fixture SHA256: `5A99C37C658203FFEAAEBF9718831A0F51E6BD4FD763BEBEA4DBC0D3F34D2A76` (both runs identical).
 
 ## Full Regression Test Suite
-Executed `bun test`:
-- **Result**: `256 pass, 0 fail`
-- **Expect calls**: `8730 expect() calls`
+Executed `bun test` (authoritative final run after correction commit):
+- **Result**: `267 pass, 0 fail`
+- **Expect calls**: `8753 expect() calls`
 - **Test files**: `17 test files`
-- **Runtime**: `374.00ms`
+- **Runtime**: `492.00ms`
 
 All test suites from Slices 01–07 remained completely green.
 
@@ -137,6 +140,9 @@ Informational benchmarks measured in `test/unit/work-guard.test.js`:
 ## Problems Encountered & Resolutions
 1. **Initial method naming conflict**: In `WorkGuard`, the property `this.used` held a `BigInt`, which conflicted with an alias `used()`. Removed `used()` method alias and retained `Used()` and `usedCount()`.
 2. **Sequence integration node setup**: In `Sequence.SyncGeometryWithWork` tests, `Node` constructor arguments were passed as `{ ID: 1n, TopLeft: ... }` rather than `new Node(1n); node.TopLeft = ...`. Fixed instantiation to properly assign TopLeft on the vessel.
+3. **INT64 range enforcement**: `normalizeLimitOrUnits` did not enforce signed int64 boundaries, accepting arbitrary BigInt values. Renamed to `normalizeInt64Input` with `INT64_MIN`/`INT64_MAX` range checks matching Go's `int64` parameter domain.
+4. **Polling stride not cached**: `pollingStride()` re-read `ctx.doneAvailable` on every call. Go captures the context's Done channel availability at construction. Fixed by caching `pollingStrideValue` during `WorkGuard` construction.
+5. **SetLimit lacked range validation**: `SetLimit` used inline validation instead of `normalizeInt64Input`. Unified to use the same validation path as constructor and `Add`.
 
 ## Limitations & Deferred Work
 - `GraphState` snapshots and `RestoreGraphState` are deferred to Slice 09.
@@ -145,8 +151,9 @@ Informational benchmarks measured in `test/unit/work-guard.test.js`:
 
 ## Commit History on Branch
 ```text
+3605b6999 fix(tala-js): enforce signed-int64 API domain and cache polling stride
+3290d3d54 docs(tala-js): document Slice 08 WorkGuard
 206039ff8 test(tala-js): add Go WorkGuard parity oracle
 e56d542a7 feat(tala-js): port WorkGuard accounting
 71dd68663 docs(tala-js): close approved Slice 07
 ```
-(Followed by documentation commit `docs(tala-js): document Slice 08 WorkGuard`)
