@@ -1,0 +1,109 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "cases": {
+    "CloneParity": {
+      "clonedAbductionCurrFrom": "1",
+      "clonedAbductionEdgeID": "0",
+      "clonedAbductionOrigFrom": "2",
+      "clonedClusterActive": true,
+      "clonedClusterArrangement": "Column",
+      "clonedClusterVesselFlag": true,
+      "clonedNodeToTreeMatches": true,
+      "clonedSeqActive": false,
+      "clonedSeqVesselGraphNil": true,
+      "clonedTreeOrientation": "Top",
+      "clonedTreeRootNodeID": "7"
+    },
+    "ClusterSemantics": {
+      "activeIsActive": true,
+      "flip1": "Row",
+      "flip2": "Column",
+      "flip3": "Row",
+      "inactiveIsActive": false,
+      "isClusterVessel": true
+    },
+    "IsDescendantOf": {
+      "cMemberDescOfChild": true,
+      "cMemberDescOfRoot": true,
+      "childDescOfNull": true,
+      "childDescOfOther": false,
+      "childDescOfRoot": true,
+      "sMemberDescOfChild": true,
+      "sMemberDescOfOther": false,
+      "sMemberDescOfRoot": true,
+      "selfDesc": true
+    },
+    "OwningContainerAndLevel": {
+      "childContainerLevel": 2,
+      "clusterMemberLevel": 3,
+      "clusterMemberOwning": "2",
+      "directLevel": 3,
+      "directOwning": "2",
+      "inactClusterLevel": 3,
+      "inactClusterOwning": "2",
+      "inactSeqLevel": 3,
+      "inactSeqOwning": "2",
+      "rootLevel": 1,
+      "seqStepLevel": 3,
+      "seqStepOwning": "2"
+    },
+    "RDFSOrders": {
+      "clusterMemberOrder": [
+        "7",
+        "4",
+        "1"
+      ],
+      "clusterRDFSOrder": [
+        "6"
+      ],
+      "normalContainerOrder": [
+        "4",
+        "1"
+      ]
+    },
+    "SequenceSemantics": {
+      "activeFirstID": "2",
+      "activeIsActive": true,
+      "activeLastID": "3",
+      "inactiveIsActive": false,
+      "isSequenceVesselAct": true,
+      "isSequenceVesselMem": false
+    },
+    "StableGroupOrder": {
+      "clusterOrder": [
+        "-2",
+        "5",
+        "30",
+        "100"
+      ],
+      "isTreeSentinel": true,
+      "sequenceOrder": [
+        "-2",
+        "5",
+        "30",
+        "100"
+      ],
+      "treeOrder": [
+        "-2",
+        "5",
+        "30",
+        "100"
+      ]
+    },
+    "TreeSentinelNode": {
+      "fwdSentinel": "2",
+      "revSentinel": "2"
+    },
+    "WalkRDFSPrecedence": {
+      "walkOrder": [
+        "2",
+        "3",
+        "1"
+      ]
+    }
+  }
+}
