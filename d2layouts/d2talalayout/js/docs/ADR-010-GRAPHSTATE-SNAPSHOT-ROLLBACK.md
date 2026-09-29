@@ -4,7 +4,7 @@
 2026-09-30
 
 ## Status
-Implemented — awaiting Slice 09 review
+Accepted
 
 ## Context
 TALA relies on bounded speculative trials and layout exploration stages (such as sequence discovery and placement in `grouping.AddSequences`, cluster formation, and tree extraction). When a speculative trial fails, violates layout invariants, or is superseded, the graph state must be restored completely and atomically to its exact prior state.
