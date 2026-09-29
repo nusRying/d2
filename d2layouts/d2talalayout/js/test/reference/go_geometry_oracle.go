@@ -159,6 +159,28 @@ func testMedian() []map[string]interface{} {
 	return res
 }
 
+func testOrientationToString() []map[string]interface{} {
+	inputs := []geo.Orientation{
+		geo.TopLeft,
+		geo.TopRight,
+		geo.BottomLeft,
+		geo.BottomRight,
+		geo.Top,
+		geo.Right,
+		geo.Bottom,
+		geo.Left,
+		geo.NONE,
+	}
+	res := []map[string]interface{}{}
+	for _, o := range inputs {
+		res = append(res, map[string]interface{}{
+			"value": int(o),
+			"string": o.ToString(),
+		})
+	}
+	return res
+}
+
 func main() {
 	if len(os.Args) < 2 {
 		fmt.Println("Missing output file")
@@ -284,6 +306,7 @@ func main() {
 		"truncateDecimals": testTruncateDecimals(),
 		"goRound": testGoRound(),
 		"median": testMedian(),
+		"orientation": testOrientationToString(),
 	}
 
 	bytes, err := json.MarshalIndent(out, "", "  ")

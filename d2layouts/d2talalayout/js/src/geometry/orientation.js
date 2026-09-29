@@ -29,8 +29,6 @@ export function orientationToString(o) {
       return 'Bottom';
     case Orientation.Left:
       return 'Left';
-    case Orientation.NONE:
-      return 'NONE';
     default:
       return '';
   }

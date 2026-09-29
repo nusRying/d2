@@ -427,15 +427,9 @@ describe('Geometry Parity', () => {
       expect(geo.isHorizontal(geo.Orientation.Left)).toBe(true);
       expect(geo.isVertical(geo.Orientation.Top)).toBe(true);
 
-      expect(geo.orientationToString(geo.Orientation.TopLeft)).toBe("TopLeft");
-      expect(geo.orientationToString(geo.Orientation.TopRight)).toBe("TopRight");
-      expect(geo.orientationToString(geo.Orientation.Top)).toBe("Top");
-      expect(geo.orientationToString(geo.Orientation.BottomLeft)).toBe("BottomLeft");
-      expect(geo.orientationToString(geo.Orientation.BottomRight)).toBe("BottomRight");
-      expect(geo.orientationToString(geo.Orientation.Bottom)).toBe("Bottom");
-      expect(geo.orientationToString(geo.Orientation.Left)).toBe("Left");
-      expect(geo.orientationToString(geo.Orientation.Right)).toBe("Right");
-      expect(geo.orientationToString(geo.Orientation.NONE)).toBe("NONE");
+      for (const tc of oracleData.orientation) {
+        expect(geo.orientationToString(tc.value)).toBe(tc.string);
+      }
     });
   });
 

@@ -46,16 +46,19 @@ Median test parity checks cases including single point, odd count, even count, n
 Raw IEEE-754 hex representations checked via `DataView.getUint8`.
 
 ## Orientation contract
-Matches exported Go-style semantics exactly.
+Matches exported Go-style semantics exactly. Final review found that Orientation.NONE had been given the string "NONE" in JavaScript, while Go's ToString falls through to the default empty string. The JS implementation and parity test were corrected to return "" and are backed by the Go oracle fixture.
 
 ## Mutation semantics
 Points and Vectors mutate locally as in Go.
 
 ## Full regression result
-41 tests passed across 3 files with 7000+ expect calls. 
+41 pass
+0 fail
+7455 expect() calls
+3 test files
 
 ## Oracle reproducibility SHA256
-SHA256 identical across multiple runs.
+Oracle SHA256: DE12A93BFE9D3C885EAF68F4E60197971D441A2B3BE9557AE2662829E0DAAAED
 
 ## Math.random audit
 0 occurrences found.
@@ -67,4 +70,4 @@ Informational benchmarking confirms acceptable layout geometry operations.
 Temporary `test_go_behaviors.go` and `update_geometry_tests.js` removed.
 
 ## Result
-Under final review.
+Complete.
