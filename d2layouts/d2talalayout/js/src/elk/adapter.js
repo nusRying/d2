@@ -1,7 +1,13 @@
 import { Graph } from "../graph/graph.js";
 import { Node } from "../graph/node.js";
 import { Edge } from "../graph/edge.js";
+import { Point } from "../geometry/point.js";
+import { allocateD2EntityIDs } from "../graph/entity-id.js";
 
+/**
+ * elkToTalaGraph converts an ELK JSON payload into a TALA structural Graph model.
+ * It allocates stable EntityIDs and maps ELK's relative coordinates into absolute coordinates.
+ */
 export function elkToTalaGraph(elkGraph) {
   if (!elkGraph || typeof elkGraph !== 'object') {
     throw new Error("Invalid ELK graph: must be an object");
@@ -11,19 +17,18 @@ export function elkToTalaGraph(elkGraph) {
     throw new Error("Invalid ELK graph: missing id");
   }
 
-  const graph = new Graph(elkGraph.id);
+  const graph = new Graph();
+  graph.ID = elkGraph.id;
   graph.elkData = structuredClone(elkGraph);
 
-  const endpoints = graph.endpoints;
   const seenEdgeIds = new Set();
   const seenNodeIds = new Set();
+  const endpoints = new Map();
 
-  function registerEndpoint(id, entity) {
-    if (endpoints.has(id)) {
-      throw new Error(`Invalid ELK graph: duplicate endpoint id "${id}"`);
-    }
-    endpoints.set(id, entity);
-  }
+  const nodeIdentities = [];
+  const edgeIdentities = [];
+  const elkNodes = [];
+  const elkEdges = [];
 
   function validateArray(arr, name, context) {
     if (arr !== undefined && !Array.isArray(arr)) {
@@ -32,7 +37,8 @@ export function elkToTalaGraph(elkGraph) {
     return arr || [];
   }
 
-  function visitNode(elkNode, parent) {
+  // Pass 1: Collect nodes and edges to allocate IDs
+  function collectNodesAndEdges(elkNode) {
     if (typeof elkNode.id !== 'string' || elkNode.id === '') {
       throw new Error("Invalid ELK node: missing id");
     }
@@ -42,127 +48,155 @@ export function elkToTalaGraph(elkGraph) {
     }
     seenNodeIds.add(elkNode.id);
 
-    const node = new Node({
-      id: elkNode.id,
-      width: elkNode.width ?? 0,
-      height: elkNode.height ?? 0,
-      x: elkNode.x ?? 0,
-      y: elkNode.y ?? 0,
-      parent
-    });
+    // D2/TALA usually uses absolute ID matching, but here ELK id is absID
+    nodeIdentities.push({ entity: elkNode, absID: elkNode.id });
+    elkNodes.push(elkNode);
 
-    node.elkData = structuredClone(elkNode);
-    graph.nodes.set(node.id, node);
-
-    registerEndpoint(node.id, { kind: "node", node });
-
-    const ports = validateArray(elkNode.ports, "ports", `node "${node.id}"`);
-    for (const port of ports) {
-      if (typeof port.id !== 'string' || port.id === '') {
-        throw new Error(`Invalid ELK port: missing id on node "${node.id}"`);
-      }
-      registerEndpoint(port.id, { kind: "port", node, port: structuredClone(port) });
-    }
-
-    if (parent) {
-      parent.children.push(node);
-    } else {
-      graph.rootNodes.push(node);
-    }
-
-    const children = validateArray(elkNode.children, "children", `node "${node.id}"`);
-    for (const child of children) {
-      visitNode(child, node);
-    }
-
-    return node;
-  }
-
-  const children = validateArray(elkGraph.children, "children", "root graph");
-  for (const child of children) {
-    visitNode(child, null);
-  }
-
-  function collectEdges(elkNode) {
-    const edges = validateArray(elkNode.edges, "edges", elkNode.id ? `node "${elkNode.id}"` : "root graph");
+    const edges = validateArray(elkNode.edges, "edges", `node "${elkNode.id}"`);
     for (const edge of edges) {
       if (typeof edge.id !== 'string' || edge.id === '') throw new Error("Invalid ELK edge: missing id");
       if (seenEdgeIds.has(edge.id)) throw new Error(`Invalid ELK graph: duplicate edge id "${edge.id}"`);
       seenEdgeIds.add(edge.id);
 
-      const sources = validateArray(edge.sources, "sources", `edge "${edge.id}"`);
-      const targets = validateArray(edge.targets, "targets", `edge "${edge.id}"`);
-      
-      if (sources.length !== 1) {
-        throw new Error(`ELK hyperedges are not supported yet: edge "${edge.id}" has ${sources.length} sources`);
-      }
-      if (targets.length !== 1) {
-        throw new Error(`ELK hyperedges are not supported yet: edge "${edge.id}" has ${targets.length} targets`);
-      }
-
-      const sourceEndpointId = sources[0];
-      const targetEndpointId = targets[0];
-
-      if (typeof sourceEndpointId !== 'string') {
-        throw new Error(`Invalid ELK edge "${edge.id}": source endpoint must be a string`);
-      }
-      if (typeof targetEndpointId !== 'string') {
-        throw new Error(`Invalid ELK edge "${edge.id}": target endpoint must be a string`);
-      }
-
-      const sourceEndpoint = endpoints.get(sourceEndpointId);
-      if (!sourceEndpoint) {
-        throw new Error(`Invalid ELK edge "${edge.id}": source endpoint "${sourceEndpointId}" does not exist`);
-      }
-
-      const targetEndpoint = endpoints.get(targetEndpointId);
-      if (!targetEndpoint) {
-        throw new Error(`Invalid ELK edge "${edge.id}": target endpoint "${targetEndpointId}" does not exist`);
-      }
-
-      const fromNode = sourceEndpoint.node;
-      const toNode = targetEndpoint.node;
-
-      const newEdge = new Edge({
-        id: edge.id,
-        from: fromNode,
-        to: toNode,
-        sourceEndpointId,
-        targetEndpointId
-      });
-      newEdge.elkData = structuredClone(edge);
-      graph.edges.set(newEdge.id, newEdge);
-
-      fromNode.edges.push(newEdge);
-      if (fromNode !== toNode) {
-        toNode.edges.push(newEdge);
-      }
+      edgeIdentities.push({ entity: edge, absID: edge.id });
+      elkEdges.push(edge);
     }
-    const children = validateArray(elkNode.children, "children", elkNode.id ? `node "${elkNode.id}"` : "root graph");
+
+    const children = validateArray(elkNode.children, "children", `node "${elkNode.id}"`);
     for (const child of children) {
-      collectEdges(child);
+      collectNodesAndEdges(child);
     }
   }
 
-  collectEdges(elkGraph);
+  const rootChildren = validateArray(elkGraph.children, "children", "root graph");
+  for (const child of rootChildren) {
+    collectNodesAndEdges(child);
+  }
+  
+  // Also collect root edges
+  const rootEdges = validateArray(elkGraph.edges, "edges", "root graph");
+  for (const edge of rootEdges) {
+    if (typeof edge.id !== 'string' || edge.id === '') throw new Error("Invalid ELK edge: missing id");
+    if (seenEdgeIds.has(edge.id)) throw new Error(`Invalid ELK graph: duplicate edge id "${edge.id}"`);
+    seenEdgeIds.add(edge.id);
+
+    edgeIdentities.push({ entity: edge, absID: edge.id });
+    elkEdges.push(edge);
+  }
+
+  const nodeIDs = allocateD2EntityIDs(nodeIdentities);
+  const edgeIDs = allocateD2EntityIDs(edgeIdentities);
+
+  // Pass 2: Build hierarchy and compute absolute coordinates
+  const elkToNode = new Map();
+
+  function registerEndpoint(id, entity) {
+    if (endpoints.has(id)) {
+      throw new Error(`Invalid ELK graph: duplicate endpoint id "${id}"`);
+    }
+    endpoints.set(id, entity);
+  }
+
+  function visitNode(elkNode, containerNode, absX, absY) {
+    const node = new Node(nodeIDs.get(elkNode), elkNode.width ?? 0, elkNode.height ?? 0);
+    node.D2ID = elkNode.id;
+    
+    // Convert relative ELK coordinates to absolute TopLeft
+    const x = absX + (elkNode.x ?? 0);
+    const y = absY + (elkNode.y ?? 0);
+    node.TopLeft = new Point(x, y);
+
+    elkToNode.set(elkNode.id, node);
+    graph.addNewNodeToContainer(containerNode, node);
+
+    registerEndpoint(node.D2ID, { kind: "node", node });
+    
+    const ports = validateArray(elkNode.ports, "ports", `node "${node.D2ID}"`);
+    for (const port of ports) {
+      if (typeof port.id !== 'string' || port.id === '') {
+        throw new Error(`Invalid ELK port: missing id on node "${node.D2ID}"`);
+      }
+      registerEndpoint(port.id, { kind: "port", node, port: structuredClone(port) });
+    }
+
+    const children = validateArray(elkNode.children, "children", `node "${node.D2ID}"`);
+    for (const child of children) {
+      visitNode(child, node, x, y);
+    }
+  }
+
+  for (const child of rootChildren) {
+    visitNode(child, null, 0, 0);
+  }
+
+  // Pass 3: Build edges
+  for (const elkEdge of elkEdges) {
+    const sources = validateArray(elkEdge.sources, "sources", `edge "${elkEdge.id}"`);
+    const targets = validateArray(elkEdge.targets, "targets", `edge "${elkEdge.id}"`);
+    
+    if (sources.length !== 1) throw new Error(`ELK hyperedges are not supported yet: edge "${elkEdge.id}" has ${sources.length} sources`);
+    if (targets.length !== 1) throw new Error(`ELK hyperedges are not supported yet: edge "${elkEdge.id}" has ${targets.length} targets`);
+
+    const sourceEndpointId = sources[0];
+    const targetEndpointId = targets[0];
+
+    if (typeof sourceEndpointId !== 'string') {
+      throw new Error(`Invalid ELK edge "${elkEdge.id}": source endpoint must be a string`);
+    }
+    if (typeof targetEndpointId !== 'string') {
+      throw new Error(`Invalid ELK edge "${elkEdge.id}": target endpoint must be a string`);
+    }
+
+    const sourceEndpoint = endpoints.get(sourceEndpointId);
+    if (!sourceEndpoint) throw new Error(`Invalid ELK edge "${elkEdge.id}": source endpoint "${sourceEndpointId}" does not exist`);
+
+    const targetEndpoint = endpoints.get(targetEndpointId);
+    if (!targetEndpoint) throw new Error(`Invalid ELK edge "${elkEdge.id}": target endpoint "${targetEndpointId}" does not exist`);
+
+    const edge = graph.connect(sourceEndpoint.node, targetEndpoint.node);
+    edge.ID = edgeIDs.get(elkEdge);
+    edge.D2ID = elkEdge.id;
+    // Map elk edge sections to Points if present
+    if (elkEdge.sections) {
+      for (const section of elkEdge.sections) {
+        if (section.startPoint) edge.Points.push(new Point(section.startPoint.x, section.startPoint.y));
+        if (section.bendPoints) {
+          for (const bp of section.bendPoints) {
+            edge.Points.push(new Point(bp.x, bp.y));
+          }
+        }
+        if (section.endPoint) edge.Points.push(new Point(section.endPoint.x, section.endPoint.y));
+      }
+    }
+  }
 
   return graph;
 }
 
 export function talaToElkGraph(graph) {
   const output = structuredClone(graph.elkData);
+  
+  // We need a fast lookup by D2ID
+  const d2idToNode = new Map();
+  for (const node of graph.Nodes) {
+    d2idToNode.set(node.D2ID, node);
+  }
 
-  function reconstructNode(node, elkRef) {
-    elkRef.x = node.x;
-    elkRef.y = node.y;
-    elkRef.width = node.width;
-    elkRef.height = node.height;
-
-    if (elkRef.children) {
-      for (const elkChild of elkRef.children) {
-        const childNode = graph.nodes.get(elkChild.id);
-        if (childNode) {
-          reconstructNode(childNode, elkChild);
+  function reconstructNode(elkRef, absX, absY) {
+    const node = d2idToNode.get(elkRef.id);
+    if (node) {
+      elkRef.width = node.Width;
+      elkRef.height = node.Height;
+      // Revert absolute to relative
+      elkRef.x = node.TopLeft ? node.TopLeft.X - absX : 0;
+      elkRef.y = node.TopLeft ? node.TopLeft.Y - absY : 0;
+      
+      const nextAbsX = absX + elkRef.x;
+      const nextAbsY = absY + elkRef.y;
+      
+      if (elkRef.children) {
+        for (const elkChild of elkRef.children) {
+          reconstructNode(elkChild, nextAbsX, nextAbsY);
         }
       }
     }
@@ -170,19 +204,34 @@ export function talaToElkGraph(graph) {
 
   if (output.children) {
     for (const elkChild of output.children) {
-      const childNode = graph.nodes.get(elkChild.id);
-      if (childNode) {
-        reconstructNode(childNode, elkChild);
-      }
+      reconstructNode(elkChild, 0, 0);
     }
+  }
+
+  // Quick lookup for edges
+  const d2idToEdge = new Map();
+  for (const edge of graph.Edges) {
+    d2idToEdge.set(edge.D2ID, edge);
   }
 
   function updateEdges(elkNode) {
     if (elkNode.edges) {
       for (const elkEdge of elkNode.edges) {
-        const edge = graph.edges.get(elkEdge.id);
-        if (edge && edge.route && edge.route.length > 0) {
-          elkEdge.sections = edge.route;
+        const edge = d2idToEdge.get(elkEdge.id);
+        if (edge && edge.Points && edge.Points.length > 0) {
+          // Naive conversion back to sections for ELK compatibility tests
+          const section = {
+            id: elkEdge.id + "_s0",
+            startPoint: { x: edge.Points[0].X, y: edge.Points[0].Y },
+            endPoint: { x: edge.Points[edge.Points.length - 1].X, y: edge.Points[edge.Points.length - 1].Y }
+          };
+          if (edge.Points.length > 2) {
+            section.bendPoints = [];
+            for (let i = 1; i < edge.Points.length - 1; i++) {
+              section.bendPoints.push({ x: edge.Points[i].X, y: edge.Points[i].Y });
+            }
+          }
+          elkEdge.sections = [section];
         }
       }
     }
