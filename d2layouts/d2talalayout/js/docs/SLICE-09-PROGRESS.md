@@ -116,9 +116,9 @@ Port the rollback-state substrate required by topology-changing TALA stages (suc
 ## Go Oracle & Fixture
 - Script: `test/reference/go_graph_state_oracle.go`
 - Fixture: `test/fixtures/go-graph-state-reference.json`
-- Canonical SHA256: `0F5BC9D5587FBDF4156162DA163B7369177B9B949F92DF8C9D4141656EFBFD1B`
+- Canonical SHA256: `26B0BCC365D486C7465C565D01757FED4A37B4EE8C2234B9B7F9D83064F41503`
 - Scenarios covered:
-  1. `topology_full_rollback`
+  1. `topology_full_rollback` (includes Box identity restoration and EdgeStyle shallow struct / pointer-target mutation parity)
   2. `exact_slice_backing`
   3. `hidden_runtime_objects`
   4. `geometry_only`
@@ -127,14 +127,36 @@ Port the rollback-state substrate required by topology-changing TALA stages (suc
   7. `state_reuse`
   8. `work_accounting_neighbor`
   9. `error_messages`
+  10. `nil_hierarchy_levels`
+
+## Review Findings & Parity Resolutions
+1. **Box Identity Restoration:**
+   - *Finding:* The initial implementation claimed Box identity restoration, but only restored geometry through the currently attached `node.Box`. If `node.Box` was replaced with a new instance after snapshotting (`node.Box = new Box(...)`), rollback failed to restore `node.Box === originalBox`.
+   - *Resolution:* `captureNode()` in topology mode now captures `originalBox: node.Box`, and `nodeGeometry` in geometry-only mode records `box: n.Box`. Rollback reattaches `node.Box = originalBox` *before* setting `TopLeft`, `Width`, and `Height`.
+   - *Review correction note:* GraphState now captures the original JS Box object because Go's Box is embedded storage whose address remains stable across struct rollback. Representation mapping: Go embedded-field address stability → JS Box object identity.
+2. **Edge.Style Shallow Struct Value Semantics:**
+   - *Finding:* `Edge.Style` was captured by direct reference. In Go, `edgeSnapshot.value = *edge` copies `EdgeStyle` as a struct value with pointer fields (`Stroke *StyleScalar`). The Go snapshot copies top-level struct fields by value, but shares pointed `StyleScalar` targets.
+   - *Resolution:* Implemented `captureEdgeStyle(style)`, which preserves the original Style object reference (`edge.Style === originalStyle`), captures a shallow copy of its own top-level fields, restores top-level properties and deletes added keys upon rollback, but leaves pointed `StyleScalar` mutations intact (e.g. `originalStroke.Value = "green"` is preserved).
+3. **Read-Only Hierarchy Capture & Null Preservation:**
+   - *Finding:* GraphState capture (`captureHierarchy` and `collectRuntimeObjectsContext`) called `hierarchy.Levels()`, which lazily allocates `levels = new Map()` if `levels == null`, violating snapshot read-only behavior. Similarly, `cloneGraph()` called `srcHierarchy.Levels()`.
+   - *Resolution:* GraphState capture and `cloneGraph()` now inspect raw `hierarchy.levels` without calling `Levels()`. If `hierarchy.levels` was `null`, capture leaves it `null` before, during, and after rollback. `cloneGraph()` clones with a fresh empty map for the target hierarchy but leaves `sourceHierarchy.levels` untouched as `null`.
+4. **Oracle Metadata and Constants Consumption:**
+   - *Finding:* Oracle metadata (`runtimeGoVersion`, `runtimeGOOS`, `runtimeGOARCH`, `d2BaseCommit`, `referencePackage`) and limit constants (`MaxEngineNodes`, `MaxEngineEdges`, `MaxEngineWorkUnits`) were generated in the fixture but not asserted in unit tests.
+   - *Resolution:* Added strict assertions in `graph-state-oracle.test.js` validating all metadata fields against non-empty strings, `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`, `github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph`, and matching engine constants.
+5. **HerdAssignment Null Key Parity:**
+   - *Finding:* `HerdAssignment.PairSameSide(node)` and `PairOppositeSide(node)` filtered `null` unlike Go, where `nil` is a legal map key in `map[*Node]struct{}`.
+   - *Resolution:* Removed `if (node != null)` check; `Set.add(node)` now supports `null` keys identically to Go.
+6. **Exact Nullable Collections Restoration:**
+   - *Finding:* Rollback fallback patterns (`this.edges ? this.edges.restore() : []`, `Containers ? ... : new Map()`) could convert an explicitly `null` source field into `[]` or `new Map()`.
+   - *Resolution:* Replaced fallbacks with `snapshot ? snapshot.restore() : null`, preserving `null` state fidelity.
 
 ## Full Regression
 Run with `bun test`:
-- 292 pass
+- 301 pass
 - 0 fail
-- 8904 expect() calls
+- 8951 expect() calls
 - 19 test files
-- Runtime: ~476ms
+- Runtime: 512.00ms
 
 ## Audits
 - **Math.random audit:** 0 occurrences in `src/`.
@@ -150,3 +172,5 @@ Run with `bun test`:
 3. `feat(tala-js): port GraphState snapshot and rollback`
 4. `test(tala-js): add Go GraphState parity oracle`
 5. `docs(tala-js): document Slice 09 GraphState`
+6. `fix(tala-js): finalize GraphState identity parity`
+7. `docs(tala-js): document Slice 09 review parity resolutions`
