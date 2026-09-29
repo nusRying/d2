@@ -164,7 +164,10 @@ export function intersectionPoint(u0, u1, v0, v1) {
 }
 
 export function getMedianPoint(ps) {
-  if (!ps || ps.length === 0) return new Point(0, 0); // Unspecified by Go but safe
+  if (!Array.isArray(ps) || ps.length === 0) {
+    // Defensive JS contract around a Go precondition (Go assumes non-empty slice and indexes it)
+    throw new Error("getMedianPoint requires at least one point");
+  }
   
   const xs = [];
   const ys = [];

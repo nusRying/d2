@@ -14,13 +14,14 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 - Every seed exclusively owns its mutable TALA graph clone.
 - The original D2 graph is only mutated after a completed graph has been validated and selected.
 
-## Migration strategy
-Instead of translating the whole engine in one step, we use an incremental, parity-focused slice approach. 
-The first slice establishes the foundational JavaScript graph structures and the ELK-to-internal conversion boundary, without any actual layout algorithms. Subsequent slices will port subsystems one at a time (e.g., deterministic RNG, geometry, hierarchy, placement, routing), using the existing Go engine as a specification and comparing outputs using automated round-trip tests and fixtures to ensure exact parity.
+## Migration Roadmap
+* Slice 01 — ELK/internal graph foundation — complete
+* Slice 02 — deterministic Go RNG parity — complete
+* Slice 03 — core geometry parity — under final review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
 - **Go math/rand (Slice 02):** The Slice 02 implementation reproduces the portions of Go `math/rand` needed by the current TALA code path: underlying `rngSource` state progression, `Uint64`, `Int63`, `Int63n` and `Float64` behavior. 
-- **Go geometry (Slice 03):** The Slice 03 geometry foundation perfectly reflects the Go implementation's behavior (e.g. `truncateDecimals`, precision boundaries, and overlapping semantics) exactly down to the IEEE-754 bit-pattern.
+- **Go geometry (Slice 03):** Slice 03 ports the core `lib/geo` behavior required by the current TALA migration scope and validates selected numeric outputs against a deterministic Go oracle, including exact IEEE-754 comparisons where relevant.
 
 The overall TALA JS project lives in the MPL-2.0 D2 repository. Portions of `go-math-rand.js` are derived from Go standard-library source. Those derived portions retain the Go Authors copyright and BSD attribution. `THIRD_PARTY_NOTICES.txt` records this provenance explicitly. Any modifications to this ported component must preserve the original behavior and comply with the included BSD-style license terms.

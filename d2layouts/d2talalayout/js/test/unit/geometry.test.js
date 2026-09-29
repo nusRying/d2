@@ -202,9 +202,21 @@ describe('Geometry Parity', () => {
 
     test('getMedianPoint exact parity', () => {
       for (const tc of oracleData.median) {
+        const points = tc.points.map(p => {
+          const pt = new geo.Point(0,0);
+          pt.X = decodeFloat(p.x);
+          pt.Y = decodeFloat(p.y);
+          return pt;
+        });
         const expected = tc.output;
-        // Reconstruct array of points from input logic or we can just test the deterministic ones we know
+        const actual = geo.getMedianPoint(points);
+        assertExactFloat(actual.X, expected.x);
+        assertExactFloat(actual.Y, expected.y);
       }
+      
+      // Empty/invalid input contract
+      expect(() => geo.getMedianPoint([])).toThrow("getMedianPoint requires at least one point");
+      expect(() => geo.getMedianPoint(null)).toThrow("getMedianPoint requires at least one point");
       
       // Explicit JS semantic median tests
       // 1 point
@@ -416,6 +428,14 @@ describe('Geometry Parity', () => {
       expect(geo.isVertical(geo.Orientation.Top)).toBe(true);
 
       expect(geo.orientationToString(geo.Orientation.TopLeft)).toBe("TopLeft");
+      expect(geo.orientationToString(geo.Orientation.TopRight)).toBe("TopRight");
+      expect(geo.orientationToString(geo.Orientation.Top)).toBe("Top");
+      expect(geo.orientationToString(geo.Orientation.BottomLeft)).toBe("BottomLeft");
+      expect(geo.orientationToString(geo.Orientation.BottomRight)).toBe("BottomRight");
+      expect(geo.orientationToString(geo.Orientation.Bottom)).toBe("Bottom");
+      expect(geo.orientationToString(geo.Orientation.Left)).toBe("Left");
+      expect(geo.orientationToString(geo.Orientation.Right)).toBe("Right");
+      expect(geo.orientationToString(geo.Orientation.NONE)).toBe("NONE");
     });
   });
 

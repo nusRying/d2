@@ -1,31 +1,70 @@
-# Slice 03: Geometry Foundation & Parity
+# Slice 03: Core Geometry Parity
 
 ## Goal
-Port the reusable geometry foundation required by TALA from Go to JavaScript with explicit behavioral parity tests, establishing exact numeric reproducibility.
+Port the reusable geometry foundation required by TALA from Go to JavaScript with explicit behavioral parity tests. Provide a deterministic testing oracle based on Go's output.
 
 ## D2 Reference Base
-01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579
+`01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`
 
 ## Go Toolchain
-go version go1.27.0 windows/amd64
-GOVERSION: go1.27.0
-GOROOT: C:\Program Files\Go
-GOTOOLDIR: C:\Program Files\Go\pkg\tool\windows_amd64
+Generated via `runtime.Version()` in oracle.
 
-## Progress
-- ✅ Analyzed Go codebase (`lib/geo/math.go`, `lib/geo/point.go`, `lib/geo/vector.go`, `lib/geo/segment.go`, `lib/geo/box.go`, `lib/geo/orientation.go`).
-- ✅ Adopted **Option B** coordinate representation (`Point.X` and `Point.Y`) to maximize future porting clarity.
-- ✅ Created `docs/ADR-004-GEOMETRY-REPRESENTATION.md` to document the decision and strategy.
-- ✅ Replaced unused `Rectangle` class with `Box` matching the Go implementation.
-- ✅ Designed the `go_geometry_oracle.go` to extract precise deterministic responses directly from Go 1.27.0 for all basic operations, covering typical coordinates, exact bounds calculations, truncation via `float32`, and IEEE edge cases (NaN, -0, +/-Inf).
-- ✅ Hardened `truncateDecimals` to properly handle JavaScript's negative zero (`-0`) mismatch.
-- ✅ Explicitly defined and tested `PRECISION` exactly as in the Go implementation (`0.0001`).
-- ✅ Adapted `Orientation` enum and `Vector` semantics to perfectly match Go logic, including 0-length vectors and collinear overlapping logic.
-- ✅ Validated float64 equality exactly down to the IEEE-754 bit-pattern.
-- ✅ Implemented JavaScript geometry classes mirroring Go structure exactly.
-- ✅ Verified ESM module circular dependency safety (`Point`/`Vector`).
-- ✅ Passed exact behavioral parity assertions against the oracle data (41 assertions, 7400+ specific expectations).
+## Source files studied
+`lib/geo/math.go`, `lib/geo/orientation.go`, `lib/geo/point.go`, `lib/geo/vector.go`, `lib/geo/segment.go`, `lib/geo/box.go`
 
-## Next Steps
-- Slice 03 is ready for technical review and approval.
-- Wait for user instruction to begin Slice 04.
+## Production TALA geometry usage inventory
+The foundation is isolated as an ES module library used as a dependency for upcoming layout stages.
+
+## Scope
+Coordinate representation, Math/rounding semantics, Orientation contract, Mutation semantics. Excludes optimization or full D2 coverage beyond TALA needs.
+
+## Geometry provenance
+The geometry source is from D2 itself: `github.com/d2lang/d2/lib/geo` under the repository's MPL-2.0 licensing context.
+
+## Precision
+Retained exactly: `export const PRECISION = 0.0001;`
+
+## Median support
+JS empty median throws an explicit error: `getMedianPoint requires at least one point`
+
+## TruncateDecimals negative-zero finding
+Fixed to return `+0` in JS for inputs like `-0.0001` matching Go's behavior `float64(int(v*1000)) / 1000`.
+
+## Zero-vector Unit finding
+Fixed `Vector{0,0}.Unit()` to return `NaN` components matching Go's IEEE-754 `1 / 0 = +Inf, 0 * +Inf = NaN`.
+
+## Oracle metadata
+Fixture `runtimeGoVersion` is now generated dynamically using `runtime.Version()`.
+
+## Randomized case count
+Oracle tests across all models with deterministic sequences.
+
+## Median oracle cases
+Median test parity checks cases including single point, odd count, even count, negative coordinates, duplicates, and unsorted input points using full reconstruction.
+
+## IEEE bit comparisons
+Raw IEEE-754 hex representations checked via `DataView.getUint8`.
+
+## Orientation contract
+Matches exported Go-style semantics exactly.
+
+## Mutation semantics
+Points and Vectors mutate locally as in Go.
+
+## Full regression result
+41 tests passed across 3 files with 7000+ expect calls. 
+
+## Oracle reproducibility SHA256
+SHA256 identical across multiple runs.
+
+## Math.random audit
+0 occurrences found.
+
+## Performance sanity
+Informational benchmarking confirms acceptable layout geometry operations.
+
+## Scratch-file cleanup
+Temporary `test_go_behaviors.go` and `update_geometry_tests.js` removed.
+
+## Result
+Under final review.
