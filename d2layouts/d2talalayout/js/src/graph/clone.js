@@ -7,12 +7,23 @@ import { Sequence } from "./sequence.js";
 import { Tree } from "./tree.js";
 import { EdgeAbduction } from "./edge-abduction.js";
 import { Label } from "./label.js";
+import { Icon } from "./icon.js";
+import { Hierarchy } from "./hierarchy.js";
 
 function copyLabelRecord(source) {
   if (source == null) return null;
   const cloned = new Label(source.Text, source.Width, source.Height);
   cloned.Position = copyValue(source.Position);
   // Note: positionFixed is intentionally NOT copied, matching Go copyLabelRecord semantics
+  return cloned;
+}
+
+function copyIconRecord(source) {
+  if (source == null) return null;
+  const cloned = new Icon();
+  cloned.Position = copyValue(source.Position);
+  // Note: positionFixed is intentionally NOT copied, matching Go copyIconRecord semantics
+  cloned._positionFixed = false;
   return cloned;
 }
 
@@ -58,7 +69,10 @@ export function cloneGraph(source) {
     node.Graph = cloned;
     node.FontSize = srcNode.FontSize;
     node.Label = copyLabelRecord(srcNode.Label);
-    node.Icon = copyValue(srcNode.Icon);
+    node.Icon = copyIconRecord(srcNode.Icon);
+    node.HerdAssignment = null;
+    node.LoopOffsets = null;
+    node.LongDistanceNeighborRequirements = null;
     node.ForceHierarchy = srcNode.ForceHierarchy;
     node.Is3D = srcNode.Is3D;
     node.IsMultiple = srcNode.IsMultiple;
@@ -443,7 +457,25 @@ export function cloneGraph(source) {
     }
   }
 
-  // 9. Filter Graph.Nodes for active cluster and sequence members
+  // 9. Copy Hierarchies
+  const seenHierarchies = new Set();
+  for (const srcNode of source.Nodes) {
+    const srcHierarchy = srcNode.Hierarchy;
+    if (!srcHierarchy || seenHierarchies.has(srcHierarchy)) continue;
+    seenHierarchies.add(srcHierarchy);
+
+    const levels = new Map();
+    const clonedHierarchy = new Hierarchy();
+    // LevelCount is NOT copied in Go clone, so LevelCount remains 0
+    clonedHierarchy.ReplaceLevels(levels);
+    for (const [srcMember, level] of srcHierarchy.Levels().entries()) {
+      const member = resolveNode(srcMember, "hierarchy member");
+      levels.set(member, level);
+      member.Hierarchy = clonedHierarchy;
+    }
+  }
+
+  // 10. Filter Graph.Nodes for active cluster and sequence members
   const filtered = [];
   for (const sourceNode of nodeRecords) {
     const node = nodesBySource.get(sourceNode);
@@ -456,8 +488,9 @@ export function cloneGraph(source) {
     filtered.push(node);
   }
   cloned.Nodes = filtered;
+  cloned.CommonUncleSiblings = null;
 
-  // 10. Copy Indexes and Directions
+  // 11. Copy Indexes and Directions
   for (const [k, v] of source.Directions.entries()) {
     if (k === null) {
       cloned.Directions.set(null, v);

@@ -18,6 +18,7 @@ export class Graph {
     this.Clusters = new Map();
     this.Sequences = new Map();
     this.Hubs = new Map();
+    this.CommonUncleSiblings = null;
 
     this.crossingCost = 0;
     this.turnCost = 0;

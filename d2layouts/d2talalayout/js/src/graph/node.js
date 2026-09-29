@@ -1,4 +1,5 @@
 import { Box } from '../geometry/box.js';
+import { Icon } from './icon.js';
 
 export function sortNodesByID(nodes) {
   nodes.sort((a, b) => {
@@ -61,6 +62,9 @@ export class Node {
     this.Cluster = null;
     this.Sequence = null;
     this.Hierarchy = null;
+    this.HerdAssignment = null;
+    this.LoopOffsets = null;
+    this.LongDistanceNeighborRequirements = null;
     this.elkData = null;
 
     this.FontSize = null;
@@ -101,6 +105,14 @@ export class Node {
 
   UnmarkClusterVessel() {
     this.unmarkClusterVessel();
+  }
+
+  initIcon() {
+    this.Icon = new Icon();
+  }
+
+  InitIcon() {
+    this.initIcon();
   }
 
   addEdge(edge) {
