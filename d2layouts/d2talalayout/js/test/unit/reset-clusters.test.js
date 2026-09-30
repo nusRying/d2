@@ -39,10 +39,9 @@ describe("Slice 16 Direct Unit Tests - ResetClusters Lifecycle Retirement", () =
   });
 
   describe("Entry and Nil Handling", () => {
-    test("handles null or undefined graph safely without throwing", () => {
-      expect(() => resetClusters(null)).not.toThrow();
-      expect(() => resetClusters(undefined)).not.toThrow();
-      expect(() => resetClusters({})).not.toThrow();
+    test("throws on null or undefined graph", () => {
+      expect(() => resetClusters(null)).toThrow();
+      expect(() => resetClusters(undefined)).toThrow();
     });
 
     test("empty Clusters map is a no-op and preserves Map identity", () => {

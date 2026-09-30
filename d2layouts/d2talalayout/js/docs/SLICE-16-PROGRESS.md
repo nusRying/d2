@@ -14,7 +14,7 @@ Slice 16 delivers the synchronous cluster lifecycle retirement stage `ResetClust
 
 - **`resetClusters` / `ResetClusters`** (`js/src/grouping/lifecycle.js`):
   - Procedural mutation without `WorkGuard`, `context`, `GraphState` snapshots, or RNG.
-  - Early-return on null or empty `graph.Clusters` without replacing the Map.
+  - Throws on null/undefined graph (corresponding to Go nil-pointer panic); returns on null or empty `graph.Clusters` without replacing the Map.
   - Branch selection: `bulkFilter = graph.Clusters.size > 1` based on original map size.
   - Skips nil-valued cluster entries without touching key node.
   - Skips nil-key entries for vessel retirement, but still restores member/edge state.

@@ -43,9 +43,10 @@ if len(graph.Clusters) == 0 {
     return
 }
 ```
-- If `!graph || !graph.Clusters || graph.Clusters.size === 0`, `resetClusters` returns immediately without mutation.
-- An existing empty `graph.Clusters` Map is never replaced.
-- No custom null-graph validation or error throwing is added.
+- A `nil` or `undefined` `graph` is not guarded; direct property dereference throws a native JavaScript `TypeError`, corresponding directly to Go's nil-pointer runtime panic.
+- A valid `Graph` instance with `graph.Clusters == null` is treated as a Go nil map and returns without mutation.
+- An existing empty `graph.Clusters` Map returns without mutation, preserving Map identity.
+- No custom null-graph validation or explicit error throwing is added.
 
 ### 4. Branch Selection Based on Original Clusters Map Size
 Pinned Go logic:

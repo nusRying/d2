@@ -17,6 +17,12 @@ describe("ResetClusters Oracle Reference Suite", () => {
     test("pinned D2 SHA", () => {
       expect(reference.metadata.d2BaseCommit).toBe("01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579");
     });
+
+    test("nil graph panics in Go and throws in JS", () => {
+      expect(reference.helpers.nilGraphPanics).toBe(true);
+      expect(() => resetClusters(null)).toThrow();
+      expect(() => resetClusters(undefined)).toThrow();
+    });
   });
 
   function buildGraphForScenario(name) {

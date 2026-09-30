@@ -5,6 +5,9 @@
     "goOS": "windows",
     "goVersion": "go1.27.0"
   },
+  "helpers": {
+    "nilGraphPanics": true
+  },
   "scenarios": {
     "bulk_matrix_1": {
       "nodes": [

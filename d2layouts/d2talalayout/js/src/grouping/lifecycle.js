@@ -7,7 +7,7 @@
  * @param {import("../graph/graph.js").Graph} graph
  */
 export function resetClusters(graph) {
-  if (!graph || !graph.Clusters || graph.Clusters.size === 0) {
+  if (graph.Clusters == null || graph.Clusters.size === 0) {
     return;
   }
 

@@ -17,6 +17,7 @@ import (
 
 type OracleOutput struct {
 	Metadata  map[string]interface{}    `json:"metadata"`
+	Helpers   map[string]interface{}    `json:"helpers"`
 	Scenarios map[string]ScenarioResult `json:"scenarios"`
 }
 
@@ -194,12 +195,25 @@ func serializeScenario(g *layoutgraph.Graph, tracked []*layoutgraph.Node) Scenar
 }
 
 func main() {
+	nilGraphPanics := func() (panicked bool) {
+		defer func() {
+			if r := recover(); r != nil {
+				panicked = true
+			}
+		}()
+		grouping.ResetClusters(nil)
+		return false
+	}()
+
 	out := OracleOutput{
 		Metadata: map[string]interface{}{
 			"d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"goVersion":    runtime.Version(),
 			"goOS":         runtime.GOOS,
 			"goArch":       runtime.GOARCH,
+		},
+		Helpers: map[string]interface{}{
+			"nilGraphPanics": nilGraphPanics,
 		},
 		Scenarios: make(map[string]ScenarioResult),
 	}
