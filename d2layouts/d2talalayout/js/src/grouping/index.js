@@ -6,3 +6,12 @@ export {
   hasNodeID,
   nextAvailableNodeID,
 } from "./sequences-analysis.js";
+
+export {
+  clearRememberedSequenceMembership,
+  buildSequence,
+  addSequence,
+  abductSequenceEdges,
+  addSequences,
+  AddSequences,
+} from "./sequences-mutation.js";
