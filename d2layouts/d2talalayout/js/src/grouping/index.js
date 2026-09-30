@@ -26,3 +26,12 @@ export {
   clusterHasLeakyEdgeGuarded,
   clusterIncidentEdges,
 } from "./cluster-discovery.js";
+
+export {
+  // Slice 14 – cluster mutation
+  createVessel,
+  CreateVessel,
+  addCluster,
+  AddCluster,
+  abductClusterEdges,
+} from "./clusters-mutation.js";

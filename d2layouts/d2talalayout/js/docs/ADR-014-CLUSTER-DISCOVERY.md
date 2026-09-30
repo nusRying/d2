@@ -4,7 +4,7 @@
 2026-09-30
 
 ## Status
-Implemented — awaiting Slice 13 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, clustering identifies groups of sibling nodes that share structural characteristics and edge patterns so they can be abstracted into composite cluster vessels. The clustering pipeline is divided into two distinct phases:

@@ -55,6 +55,56 @@ export class Cluster {
   }
 
   /**
+   * resize makes the cluster nodes consistent in size, and sizes the vessel to exact fit of cluster nodes.
+   * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/cluster.go
+   */
+  resize(vessel) {
+    if (vessel == null) {
+      throw new Error('cluster is missing its vessel');
+    }
+    const nodes = this.Nodes || [];
+    if (!this.FixedSize) {
+      const [nodeWidth, nodeHeight] = this._maximums();
+      for (const node of nodes) {
+        node.Width = nodeWidth;
+        node.Height = nodeHeight;
+      }
+    }
+    const [nodeWidth, nodeHeight] = this._maximums();
+    const padding = typeof this.Padding === 'number' ? this.Padding : 0;
+    if (this.Arrangement === ClusterArrangement.Row) {
+      vessel.Width = nodeWidth * nodes.length + padding * (nodes.length - 1);
+      vessel.Height = nodeHeight;
+    } else if (this.Arrangement === ClusterArrangement.Column) {
+      vessel.Width = nodeWidth;
+      vessel.Height = nodeHeight * nodes.length + padding * (nodes.length - 1);
+    }
+  }
+
+  Resize(vessel) {
+    this.resize(vessel);
+  }
+
+  _maximums() {
+    let maxWidth = 0.0;
+    let maxHeight = 0.0;
+    const nodes = this.Nodes || [];
+    for (const node of nodes) {
+      if (node == null) {
+        throw new Error('cluster contains a nil node');
+      }
+      maxWidth = Math.max(maxWidth, node.Width);
+    }
+    for (const node of nodes) {
+      if (node == null) {
+        throw new Error('cluster contains a nil node');
+      }
+      maxHeight = Math.max(maxHeight, node.Height);
+    }
+    return [maxWidth, maxHeight];
+  }
+
+  /**
    * isActive reports whether the cluster is actively part of layout.
    * Exact Go semantics: cluster != nil && cluster.Vessel.Graph != nil
    */

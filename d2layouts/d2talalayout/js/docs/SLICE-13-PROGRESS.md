@@ -82,8 +82,8 @@
 ### Exact WorkGuard Counts Replayed Against Go
 - **Descendant:**
   - `descendant_self`: 1
-  - `descendant_null_null`: 0
-  - `descendant_null_non_null`: 0
+  - `descendant_null_null`: 1
+  - `descendant_null_non_null`: 1
   - `descendant_parent`: 2
   - `descendant_nested`: 3
   - `descendant_unrelated`: 2

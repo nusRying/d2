@@ -72,10 +72,7 @@ export class Graph {
   }
 
   removeNode(node) {
-    const idx = this.Nodes.indexOf(node);
-    if (idx !== -1) {
-      this.Nodes.splice(idx, 1);
-    }
+    this.Nodes = this.Nodes.filter((n) => n !== node);
   }
 
   AddEdge(edge) {
