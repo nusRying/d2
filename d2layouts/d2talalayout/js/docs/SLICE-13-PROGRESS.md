@@ -3,7 +3,7 @@
 ## 1. Environment and Branch Verification
 - **Repository Root:** `C:\Users\Umair\Videos\Freelance\Test Task\d2` (`nusRying/d2`)
 - **Approved Slice 12 Base SHA:** `829ba5457caf68ce36d424b036ea4f7694efaf06`
-- **Starting Reviewed Remote HEAD:** `4cfce9870ad427d05405754ec45aebe004fcba41`
+- **Reviewed Remote HEAD:** `010eb34040435fae75e417a9bf0739f04f07b801`
 - **Branch:** `tala-js/slice-13-cluster-discovery`
 - **Pinned Upstream D2 Reference:** `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`
 
@@ -21,85 +21,126 @@
 - `d2layouts/d2talalayout/internal/limits/work.go`
 
 ## 3. Files Modified and Created
-- **Production Source Modified:**
+- **Production Source Cleaned & Preserved:**
   - `d2layouts/d2talalayout/js/src/graph/graph.js`: Removed scope-creep aliases `AddNewNodeToContainer` and `RemoveNode`.
-  - `d2layouts/d2talalayout/js/src/graph/node.js`: Removed scope-creep aliases `isContainerNode` and `IsContainer`.
-  - `d2layouts/d2talalayout/js/src/graph/edge.js`: Removed scope-creep alias `IsLoop`. Kept `edge.isLoop()` and direction helper methods (`HasSourceArrow`, `HasTargetArrow`, `IsDirected`, `IsBidirectional`, `IsUndirected`).
-  - `d2layouts/d2talalayout/js/src/grouping/cluster-discovery.js`: Preserved approved production structure (`ClusterEdgeSignature`, `ClusterDiscoveryInfo`, `ClusterDiscoveryIndex`, `clusterIsDescendantOfGuarded`, `clusterHasLeakyEdgeGuarded`, `buildClusterDiscoveryIndex`, `clusterIncidentEdges`, `sequenceOriginal`, `refreshNeighbors`, `refreshAfterClusterAbduction`). Removed arrowhead string coercion in `ClusterEdgeSignature.add`.
-  - `d2layouts/d2talalayout/js/src/random/go-math-rand.js`: Added `Int31()`, `Int31n(n)`, `Intn(n)` to match Go standard library `math/rand` (essential for 0..99 corpus parity).
-- **Go Oracle Bridge Implemented:**
-  - `d2layouts/d2talalayout/internal/grouping/cluster_oracle_bridge.go`: Real thin bridge holding `*clusterDiscoveryIndex` under build tag `tala_cluster_discovery_oracle`. Directly delegates to private Go methods without reconstructing DTOs.
-- **Go Reference Oracle Created:**
-  - `d2layouts/d2talalayout/js/test/reference/go_cluster_discovery_oracle.go`: Builds full test matrix under build tag `tala_cluster_discovery_oracle`.
+  - `d2layouts/d2talalayout/js/src/graph/node.js`: Removed scope-creep aliases `isContainerNode` and `IsContainer`. Preserved `node.isContainer`.
+  - `d2layouts/d2talalayout/js/src/graph/edge.js`: Removed scope-creep alias `IsLoop`. Preserved `edge.isLoop()` and direction helper methods (`HasSourceArrow`, `HasTargetArrow`, `IsDirected`, `IsBidirectional`, `IsUndirected`).
+  - `d2layouts/d2talalayout/js/src/grouping/cluster-discovery.js`: Preserved approved production structure without redesign. Raw Arrowhead identifiers preserved without string coercion.
+  - `d2layouts/d2talalayout/js/src/random/go-math-rand.js`: Reverted to approved Slice 12 state (removed temporary `Int31`, `Int31n`, `Intn` additions; diff against Slice 12 base is 0).
+- **Go Oracle Bridge:**
+  - `d2layouts/d2talalayout/internal/grouping/cluster_oracle_bridge.go`: Real thin bridge holding `*clusterDiscoveryIndex` under build tag `tala_cluster_discovery_oracle`. Directly delegates to unexported Go private methods without DTO duplication.
+- **Go Reference Oracle Generator:**
+  - `d2layouts/d2talalayout/js/test/reference/go_cluster_discovery_oracle.go`:
+    - Extended `legacyCorpus` with explicit `edgeRecipes` (from, to, arrowheads, removed To incident edge, table-column index).
+    - Extended `exactWorkGuard` with representative real topologies for `buildClusterDiscoveryIndex_*`.
 - **Reference Fixture Generated:**
-  - `d2layouts/d2talalayout/js/test/fixtures/go-cluster-discovery-reference.json` (1,471,971 bytes). Verified with repeatable SHA256 hash.
+  - `d2layouts/d2talalayout/js/test/fixtures/go-cluster-discovery-reference.json` (2,523,923 bytes). Verified with repeatable SHA256 hash.
 - **Unit and Oracle Replay Tests:**
   - `d2layouts/d2talalayout/js/test/unit/cluster-discovery.test.js`: 46 tests covering core cluster discovery functionality.
-  - `d2layouts/d2talalayout/js/test/unit/cluster-discovery-oracle.test.js`: 15 comprehensive oracle replay tests with 30,167 `expect()` assertions.
+  - `d2layouts/d2talalayout/js/test/unit/cluster-discovery-oracle.test.js`: 15 comprehensive oracle replay tests with 30,234 `expect()` assertions.
 - **Documentation Updated and Created:**
-  - `d2layouts/d2talalayout/js/docs/ADR-013-SEQUENCE-MUTATION.md`: Updated status to `Accepted`.
+  - `d2layouts/d2talalayout/js/docs/ADR-013-SEQUENCE-MUTATION.md`: Status updated to `Accepted`.
   - `d2layouts/d2talalayout/js/docs/MIGRATION.md`: Updated roadmap (Slice 12 complete, Slice 13 implemented).
-  - `d2layouts/d2talalayout/js/docs/ADR-014-CLUSTER-DISCOVERY.md`: Documented architecture, directed-count quirk, WorkGuard bounds, and non-goals.
+  - `d2layouts/d2talalayout/js/docs/ADR-014-CLUSTER-DISCOVERY.md`: Documented architecture, semantics, WorkGuard bounds, quirk parity, and non-goals.
   - `d2layouts/d2talalayout/js/docs/SLICE-13-PROGRESS.md`: This comprehensive report.
 
-## 4. Thin Go Oracle Bridge Details
-`internal/grouping/cluster_oracle_bridge.go` uses `//go:build tala_cluster_discovery_oracle`:
-- `ClusterDiscoveryIndexBridge`: Holds the unexported `*clusterDiscoveryIndex`.
-- `BuildClusterDiscoveryIndexBridge(g, nodes, guard)`: Invokes private Go `buildClusterDiscoveryIndex(g, nodes, guard)`.
-- `GetInfoDTO(node)`: Extracts fields (`Neighbors`, `Signatures`, `ToTableColumn`, `NoClustering`) into clean JSON-serializable DTOs, preserving empty string `""` for nil neighbors.
-- `SequenceOriginalBridge(sequence, edge, guard)`: Directly calls `index.sequenceOriginal(sequence, edge, guard)`.
-- `RefreshNeighborsBridge(g, node, guard)`: Directly calls `index.refreshNeighbors(g, node, guard)`.
-- `RefreshAfterClusterAbductionBridge(g, cluster, guard)`: Directly calls `index.refreshAfterClusterAbduction(g, cluster, guard)`.
-- `ClusterIncidentEdgesBridge(nodes, guard)`: Directly calls `clusterIncidentEdges(index, nodes, guard)`.
-- `ClusterIsDescendantOfGuardedBridge(g, descendant, ancestor, guard)`: Directly calls `clusterIsDescendantOfGuarded`.
-- `ClusterHasLeakyEdgeGuardedBridge(g, node, guard)`: Directly calls `clusterHasLeakyEdgeGuarded`.
+## 4. Fixture Repeatability Proof
+- **Output path:** `js/test/fixtures/go-cluster-discovery-reference.json`
+- **File size:** 2,523,923 bytes
+- **Deterministic repeat SHA256:**
+  `03050B8974BF298082AB44C7217BC24A03B9D92057F4E1E933433FA59AB22E11`
 
-## 5. Fixture Repeatability Proof
-The oracle fixture was generated multiple times and checked with SHA256:
-- Output path: `js/test/fixtures/go-cluster-discovery-reference.json`
-- File size: 1,471,971 bytes
-- Deterministic repeat SHA256:
-  `DB96227913AFB918C08A85E204A7BD0CFB42B43F01A8363B4E22295E2886FAC3`
+## 5. Mid-Operation Cancellation Calibration
 
-## 6. Parity Verification Results
+1. **`allDescendantNodesWithWorkGuard`:**
+   - Root container with 45 direct children (> 40 children).
+   - Initial push charges 45 steps. While loop pops children up to step 64.
+   - At step 64 (`(64n & 63n) === 0n`), `doneAvailable = false` polls `isCancelled()` and throws `WorkCanceledError`.
+   - `guard.Used() == 64n`, `location == "cancel desc"`, traversal incomplete (only 19 children popped), graph untouched.
 
-### Oracle Replay Scenarios (`cluster-discovery-oracle.test.js` - 15/15 Passed)
-1. `fixture metadata matches pinned contract`
-2. `arrowhead and edge classification matches Go oracle`
-3. `Node.adjacent matches Go oracle including malformed fallback`
-4. `ClusterEdgeSignature counts and matching match Go oracle`
-5. `ClusterEdgeSignature directed-count quirk matches Go oracle` (matches `true` between `sigA` directed=2 and `sigC` directed=1)
-6. `sequence neighbor recovery and WorkGuard deltas match Go oracle` (delta=0 on cached lookup)
-7. `legacy/index parity corpus seeds 0..99 match Go oracle` (100 pseudo-random graph seeds comparing discovery infos, signatures, and match matrix)
-8. `leaky container detection matches Go oracle`
-9. `refreshAfterClusterAbduction matches Go oracle`
-10. `clusterIncidentEdges matches Go oracle and preserves graph-edge order`
-11. `exact WorkGuard Used counts match Go oracle` (11 exact operational test cases matching Go units)
-12. `WorkGuard low-limit boundary tests: limit=exact succeeds, limit=exact-1 fails`
-13. `genuine mid-operation cancellation throws WorkCanceledError and preserves graph topology`
-14. `buildClusterDiscoveryIndex guarantees read-only graph topology across success and failure`
-15. `Graph.allDescendantNodesWithWorkGuard matches Go oracle exactly`
+2. **`sequenceOriginal`:**
+   - Sequence with 70 abductions (>= 64).
+   - Fresh index with no cached entry.
+   - Loop charges 1 step per abduction. At step 64, cancels mid-scan.
+   - `guard.Used() == 64n`, `location == "cancel seqOriginal"`, `index.sequenceEdges.has(seq) === false` (cache entry was NOT completed), graph untouched.
 
-### Unit Tests (`cluster-discovery.test.js` - 46/46 Passed)
-- Edge direction and arrowhead properties
-- Node adjacency fallback
-- ClusterEdgeSignature counting and matching constraints
-- Descent and ancestry cycle detection
-- Leaky container boundary detection
-- Unique neighbor ordering and deduplication
-- Table column incident flagging
-- Incident edge collection and sorting
+3. **`clusterIncidentEdges`:**
+   - 1 cluster node with 16 unique incident edges.
+   - Member & edge collection work: 1 + 16 = 17 steps (< 64).
+   - Merge-sort approximation charges: width=1 (16 steps), width=2 (16 steps), width=4 (crosses 64 at i=14).
+   - Cancels inside the sort loop before `guard.Finish()`.
+   - `guard.Used() == 64n`, `location == "cancel incident"`, graph untouched.
 
-### Full Suite Regression Status
-- `bun test`: 585 pass, 0 fail (39,866 expect() calls across 27 files).
+4. **`buildClusterDiscoveryIndex`:**
+   - 75 root nodes in container.
+   - Iterates root children in `addNode`: charges 1 step per child.
+   - Cancels at 64th child during inventory.
+   - `guard.Used() == 64n`, `location == "cancel build"`, graph untouched.
+
+## 6. Complete Exact WorkGuard Replay & Low-Limit Boundary Results
+
+### Exact WorkGuard Counts Replayed Against Go
+- **Descendant:**
+  - `descendant_self`: 1
+  - `descendant_null_null`: 0
+  - `descendant_null_non_null`: 0
+  - `descendant_parent`: 2
+  - `descendant_nested`: 3
+  - `descendant_unrelated`: 2
+  - `descendant_cycle`: 2
+- **AllDescendants:**
+  - `allDesc_empty`: 1
+  - `allDesc_nested_container`: 6
+- **SequenceOriginal:**
+  - `sequenceOriginal_empty`: 0
+  - `sequenceOriginal_first_cached_build`: 2
+  - `sequenceOriginal_second_cached_lookup`: 0
+- **RefreshNeighbors:**
+  - `refreshNeighbors_no_edge`: 1
+  - `refreshNeighbors_one_edge`: 2
+  - `refreshNeighbors_duplicate_neighbor`: 2
+- **ClusterIncidentEdges:**
+  - `clusterIncidentEdges_empty`: 1
+  - `clusterIncidentEdges_1_edge`: 2
+  - `clusterIncidentEdges_2_edges`: 5
+  - `clusterIncidentEdges_4_edges`: 13
+- **BuildClusterDiscoveryIndex (Representative Topologies):**
+  - `buildClusterDiscoveryIndex_root_only`: 5
+  - `buildClusterDiscoveryIndex_nested`: 7
+  - `buildClusterDiscoveryIndex_malformed_adjacency`: 7
+  - `buildClusterDiscoveryIndex_sequence_recovery`: 6
+  - `buildClusterDiscoveryIndex_leaky_container`: 16
+
+### Low-Limit Boundary Checks (`limit = exact` -> pass, `limit = exact - 1` -> `WorkLimitError`)
+- `clusterIsDescendantOfGuarded` (descendant_nested, limit=3 succeeds, limit=2 fails)
+- `clusterIncidentEdges` (1_edge, limit=2 succeeds, limit=1 fails)
+- `sequenceOriginal` (first_cached_build, limit=2 succeeds, limit=1 fails)
+- `refreshNeighbors` (one_edge, limit=2 succeeds, limit=1 fails)
+- `buildClusterDiscoveryIndex` (root_only, limit=5 succeeds, limit=4 fails)
+
+## 7. Full Graph Read-Only Alias Proof
+Verified on graph with non-null geometry/routes (`Box`, `TopLeft`, `Points` array with `Point` instances, `Clusters`, `Sequences`).
+All references captured before discovery:
+- `graph.Nodes`, `graph.Edges`, `graph.Containers`, `graph.Clusters`, `graph.Sequences`, `graph.Trees`
+- Container child arrays: `Containers.get(null)`, `Containers.get(root)`
+- Node properties: `Edges`, `Container`, `Cluster`, `Sequence`, `Graph`, `Box`, `TopLeft`
+- Edge properties: `From`, `To`, `Points`, `Points[0]`, `Points[1]`
+Asserted exact reference equality (`toBe`) and unchanged contents:
+1. After successful `buildClusterDiscoveryIndex`.
+2. After genuinely mid-operation cancelled `buildClusterDiscoveryIndex`.
+
+## 8. Verification & Test Execution Results
+- `bun test test/unit/cluster-discovery.test.js`: 46 pass, 0 fail (84 expect calls).
+- `bun test test/unit/cluster-discovery-oracle.test.js`: 15 pass, 0 fail (30,234 expect calls).
+- `bun test test/unit/random.test.js`: 8 pass, 0 fail (478 expect calls).
+- `bun test`: 585 pass, 0 fail (39,933 expect calls across 27 files).
 - `go test ./internal/grouping/...`: ok (cached, 0 errors).
 - `go test -tags tala_cluster_discovery_oracle ./internal/grouping/...`: ok (cached, 0 errors).
-- `git diff --check`: 0 whitespace or formatting issues.
+- `git diff --check`: 0 whitespace or formatting warnings.
 - `Math.random` scan in `js/src`: 0 occurrences.
 - Node built-in imports (`fs`, `path`, `crypto`, etc.) in `js/src`: 0 occurrences.
-- Prohibited Slice 14 methods (`AddClusters`, `AssignArrangement`, `CreateVessel`, `AddCluster`, `abductClusterEdges`, `Cleanup`, `Join`) in `js/src`: 0 occurrences.
-- Public exports in `js/src/index.js`: grouping is NOT exported.
+- Forbidden Slice 14 methods (`AddClusters`, `AssignArrangement`, `CreateVessel`, `AddCluster`, `abductClusterEdges`, `Cleanup`, `Join`) in `js/src`: 0 occurrences.
+- `js/src/index.js` does NOT export grouping.
 
-## 7. Status and Next Steps
-Slice 13 is complete, fully tested against the Go reference oracle, and ready for review.
-Do NOT start Slice 14. Do NOT merge into main.
+## 9. Non-Goals Explicit Statement
+No `AddClusters`, `AssignArrangement`, `CreateVessel`, `AddCluster`, `abductClusterEdges`, `Cleanup`, `Join`, cluster topology mutation, or later grouping-stage functionality was implemented.

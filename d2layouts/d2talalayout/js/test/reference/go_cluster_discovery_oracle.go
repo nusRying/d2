@@ -339,10 +339,21 @@ func main() {
 	// =========================================================================
 	{
 		arrowheads := []layoutgraph.Arrowhead{"", layoutgraph.NoArrowhead, layoutgraph.TriangleArrowhead, layoutgraph.Arrowhead("diamond")}
+		type EdgeRecipe struct {
+			ID                    int64  `json:"id"`
+			FromID                int64  `json:"fromId"`
+			ToID                  int64  `json:"toId"`
+			SourceArrowhead       string `json:"sourceArrowhead"`
+			TargetArrowhead       string `json:"targetArrowhead"`
+			RemovedToSideIncident bool   `json:"removedToSideIncident"`
+			FromTableColumnIndex  *int   `json:"fromTableColumnIndex"`
+		}
 		type SeedResult struct {
-			Seed    int64                                `json:"seed"`
-			Nodes   map[string]*grouping.ClusterDiscoveryInfoDTO `json:"nodes"`
-			Matches map[string]bool                      `json:"matches"`
+			Seed        int64                                        `json:"seed"`
+			NodeCount   int                                          `json:"nodeCount"`
+			EdgeRecipes []EdgeRecipe                                 `json:"edgeRecipes"`
+			Nodes       map[string]*grouping.ClusterDiscoveryInfoDTO `json:"nodes"`
+			Matches     map[string]bool                              `json:"matches"`
 		}
 
 		corpus := make([]SeedResult, 0, 100)
@@ -354,6 +365,7 @@ func main() {
 				node.TopLeft = geo.NewPoint(float64(index*50), float64((index%3)*50))
 				g.AddNewNodeToContainer(nil, node)
 			}
+			edgeRecipes := make([]EdgeRecipe, 0, 40)
 			for index := 0; index < 40; index++ {
 				from := g.Nodes[random.Intn(len(g.Nodes))]
 				to := g.Nodes[random.Intn(len(g.Nodes))]
@@ -361,13 +373,26 @@ func main() {
 				edge.ID = layoutgraph.EntityID(1000 + index)
 				edge.SourceArrowhead = arrowheads[random.Intn(len(arrowheads))]
 				edge.TargetArrowhead = arrowheads[random.Intn(len(arrowheads))]
+				removed := false
 				if from != to && random.Intn(4) == 0 {
 					legacyRemoveIncidentEdge(to, edge)
+					removed = true
 				}
+				var colPtr *int
 				if random.Intn(9) == 0 {
 					column := index
+					colPtr = &column
 					edge.FromTableColumnIndex = &column
 				}
+				edgeRecipes = append(edgeRecipes, EdgeRecipe{
+					ID:                    int64(edge.ID),
+					FromID:                int64(from.ID),
+					ToID:                  int64(to.ID),
+					SourceArrowhead:       string(edge.SourceArrowhead),
+					TargetArrowhead:       string(edge.TargetArrowhead),
+					RemovedToSideIncident: removed,
+					FromTableColumnIndex:  colPtr,
+				})
 			}
 
 			guard, _ := limits.NewWorkGuard(context.Background(), "legacy corpus", limits.MaxTransactionWorkUnits)
@@ -391,9 +416,11 @@ func main() {
 			}
 
 			corpus = append(corpus, SeedResult{
-				Seed:    seed,
-				Nodes:   nodeInfos,
-				Matches: matches,
+				Seed:        seed,
+				NodeCount:   12,
+				EdgeRecipes: edgeRecipes,
+				Nodes:       nodeInfos,
+				Matches:     matches,
 			})
 		}
 		out.Scenarios["legacyCorpus"] = corpus
@@ -809,6 +836,91 @@ func main() {
 			workGuardCases["clusterIncidentEdges_1_edge"] = measureIncident(1)
 			workGuardCases["clusterIncidentEdges_2_edges"] = measureIncident(2)
 			workGuardCases["clusterIncidentEdges_4_edges"] = measureIncident(4)
+		}
+
+		// buildClusterDiscoveryIndex representative real topologies
+		{
+			// 1. root only
+			{
+				g := layoutgraph.NewGraph()
+				n1 := layoutgraph.NewNode(1, 10, 10)
+				n2 := layoutgraph.NewNode(2, 10, 10)
+				g.AddNewNodeToContainer(nil, n1)
+				g.AddNewNodeToContainer(nil, n2)
+				g.Connect(n1, n2)
+				gd, _ := limits.NewWorkGuard(context.Background(), "b_root_only", limits.MaxTransactionWorkUnits)
+				_, _ = grouping.BuildClusterDiscoveryIndexBridge(g, []*layoutgraph.Node{n1, n2}, gd)
+				workGuardCases["buildClusterDiscoveryIndex_root_only"] = gd.Used()
+			}
+
+			// 2. nested
+			{
+				g := layoutgraph.NewGraph()
+				root := layoutgraph.NewNode(1, 100, 100)
+				child1 := layoutgraph.NewNode(2, 10, 10)
+				child2 := layoutgraph.NewNode(3, 10, 10)
+				g.AddNewNodeToContainer(nil, root)
+				g.AddNewNodeToContainer(root, child1)
+				g.AddNewNodeToContainer(root, child2)
+				g.Connect(child1, child2)
+				gd, _ := limits.NewWorkGuard(context.Background(), "b_nested", limits.MaxTransactionWorkUnits)
+				_, _ = grouping.BuildClusterDiscoveryIndexBridge(g, []*layoutgraph.Node{root, child1, child2}, gd)
+				workGuardCases["buildClusterDiscoveryIndex_nested"] = gd.Used()
+			}
+
+			// 3. malformed adjacency
+			{
+				g := layoutgraph.NewGraph()
+				n1 := layoutgraph.NewNode(1, 10, 10)
+				n2 := layoutgraph.NewNode(2, 10, 10)
+				n3 := layoutgraph.NewNode(3, 10, 10)
+				g.AddNewNodeToContainer(nil, n1)
+				g.AddNewNodeToContainer(nil, n2)
+				g.AddNewNodeToContainer(nil, n3)
+				e := g.Connect(n1, n2)
+				legacyAddIncidentEdge(n3, e)
+				gd, _ := limits.NewWorkGuard(context.Background(), "b_malformed", limits.MaxTransactionWorkUnits)
+				_, _ = grouping.BuildClusterDiscoveryIndexBridge(g, []*layoutgraph.Node{n1, n2, n3}, gd)
+				workGuardCases["buildClusterDiscoveryIndex_malformed_adjacency"] = gd.Used()
+			}
+
+			// 4. sequence recovery
+			{
+				g := layoutgraph.NewGraph()
+				n1 := layoutgraph.NewNode(1, 10, 10)
+				vessel := layoutgraph.NewNode(2, 10, 10)
+				step := layoutgraph.NewNode(3, 10, 10)
+				g.AddNewNodeToContainer(nil, n1)
+				g.AddNewNodeToContainer(nil, vessel)
+				e := g.Connect(n1, vessel)
+				seq := &layoutgraph.Sequence{
+					Vessel: vessel,
+					Nodes:  []*layoutgraph.Node{step},
+					Graph:  g,
+					EdgeAbductions: []*layoutgraph.EdgeAbduction{
+						{Edge: e, OriginallyTo: step, CurrentFrom: n1, CurrentTo: vessel},
+					},
+				}
+				g.Sequences[vessel] = seq
+				gd, _ := limits.NewWorkGuard(context.Background(), "b_seq", limits.MaxTransactionWorkUnits)
+				_, _ = grouping.BuildClusterDiscoveryIndexBridge(g, []*layoutgraph.Node{n1, vessel}, gd)
+				workGuardCases["buildClusterDiscoveryIndex_sequence_recovery"] = gd.Used()
+			}
+
+			// 5. leaky container
+			{
+				g := layoutgraph.NewGraph()
+				container := layoutgraph.NewNode(1, 100, 100)
+				child := layoutgraph.NewNode(2, 10, 10)
+				external := layoutgraph.NewNode(3, 10, 10)
+				g.AddNewNodeToContainer(nil, container)
+				g.AddNewNodeToContainer(container, child)
+				g.AddNewNodeToContainer(nil, external)
+				g.Connect(child, external)
+				gd, _ := limits.NewWorkGuard(context.Background(), "b_leaky", limits.MaxTransactionWorkUnits)
+				_, _ = grouping.BuildClusterDiscoveryIndexBridge(g, []*layoutgraph.Node{container, child, external}, gd)
+				workGuardCases["buildClusterDiscoveryIndex_leaky_container"] = gd.Used()
+			}
 		}
 
 		out.Scenarios["exactWorkGuard"] = workGuardCases

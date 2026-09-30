@@ -10,7 +10,7 @@ import {
   clusterHasLeakyEdgeGuarded,
   clusterIncidentEdges,
 } from "../../src/grouping/cluster-discovery.js";
-import { GoRand } from "../../src/random/go-math-rand.js";
+import { Point, Box } from "../../src/geometry/index.js";
 import {
   WorkGuard,
   WorkLimitError,
@@ -256,42 +256,39 @@ describe("Cluster Discovery Go Oracle Replay", () => {
   // Scenario 5: Legacy/Index Parity Corpus Seeds 0..99 (Section 11)
   // -------------------------------------------------------------------------
   test("legacy/index parity corpus seeds 0..99 match Go oracle", () => {
-    const arrowheads = ["", NO_ARROWHEAD, "triangle", "diamond"];
-
     for (const seedData of fixture.scenarios.legacyCorpus) {
       const seed = seedData.seed;
-      const rng = new GoRand(seed);
       const g = new Graph();
 
-      for (let i = 0; i < 12; i++) {
+      const nodeCount = seedData.nodeCount || 12;
+      for (let i = 0; i < nodeCount; i++) {
         const node = new Node(i + 1, 10 + i, 20 + i);
         node.Box.X = i * 50;
         node.Box.Y = (i % 3) * 50;
         g.addNewNodeToContainer(null, node);
       }
 
-      for (let i = 0; i < 40; i++) {
-        const fromIdx = rng.Intn(g.Nodes.length);
-        const toIdx = rng.Intn(g.Nodes.length);
-        const from = g.Nodes[fromIdx];
-        const to = g.Nodes[toIdx];
+      const nodeMap = new Map();
+      for (const n of g.Nodes) {
+        nodeMap.set(n.ID, n);
+      }
+
+      for (const recipe of seedData.edgeRecipes) {
+        const from = nodeMap.get(recipe.fromId);
+        const to = nodeMap.get(recipe.toId);
         const edge = g.connect(from, to);
-        edge.ID = 1000 + i;
+        edge.ID = recipe.id;
+        edge.SourceArrowhead = recipe.sourceArrowhead;
+        edge.TargetArrowhead = recipe.targetArrowhead;
 
-        const srcAHIdx = rng.Intn(arrowheads.length);
-        const tgtAHIdx = rng.Intn(arrowheads.length);
-        edge.SourceArrowhead = arrowheads[srcAHIdx];
-        edge.TargetArrowhead = arrowheads[tgtAHIdx];
-
-        if (from !== to && rng.Intn(4) === 0) {
-          // Asymmetric observer removal matching Go test
+        if (recipe.removedToSideIncident) {
           const idx = to.Edges.indexOf(edge);
           if (idx !== -1) {
             to.Edges.splice(idx, 1);
           }
         }
-        if (rng.Intn(9) === 0) {
-          edge.FromTableColumnIndex = i;
+        if (recipe.fromTableColumnIndex != null) {
+          edge.FromTableColumnIndex = recipe.fromTableColumnIndex;
         }
       }
 
@@ -570,6 +567,79 @@ describe("Cluster Discovery Go Oracle Replay", () => {
       }, true)).toBe(wg.allDesc_nested_container);
     }
 
+    // sequenceOriginal
+    {
+      const g = new Graph();
+      const vessel = new Node(1);
+      const s1 = new Node(2);
+      const s2 = new Node(3);
+      const e1 = g.connect(s1, vessel);
+      const e2 = g.connect(s2, vessel);
+      const seqEmpty = { Vessel: vessel, Nodes: [], Graph: g };
+      const seqMulti = {
+        Vessel: vessel,
+        Nodes: [s1, s2],
+        Graph: g,
+        EdgeAbductions: [
+          { Edge: e1, OriginallyFrom: s1, CurrentFrom: vessel },
+          { Edge: e2, OriginallyFrom: s2, CurrentFrom: vessel },
+        ],
+      };
+
+      const gd = newUnlimitedGuard("seq orig guard");
+      const index = buildClusterDiscoveryIndex(g, null, gd);
+
+      const gd1 = newUnlimitedGuard("seq1");
+      index.sequenceOriginal(seqEmpty, e1, gd1);
+      expect(Number(gd1.Used())).toBe(wg.sequenceOriginal_empty);
+
+      const gd2 = newUnlimitedGuard("seq2");
+      index.sequenceOriginal(seqMulti, e1, gd2);
+      expect(Number(gd2.Used())).toBe(wg.sequenceOriginal_first_cached_build);
+
+      const usedBefore = gd2.Used();
+      index.sequenceOriginal(seqMulti, e1, gd2);
+      expect(Number(gd2.Used() - usedBefore)).toBe(wg.sequenceOriginal_second_cached_lookup);
+    }
+
+    // refreshNeighbors
+    {
+      const measureRefresh = (setup) => {
+        const g = new Graph();
+        const n = setup(g);
+        const gd = newUnlimitedGuard("refresh");
+        const index = buildClusterDiscoveryIndex(g, null, gd);
+        const gdNode = newUnlimitedGuard("refresh node");
+        index.refreshNeighbors(g, n, gdNode);
+        return Number(gdNode.Used());
+      };
+
+      expect(measureRefresh(g => {
+        const n = new Node(1);
+        g.addNewNodeToContainer(null, n);
+        return n;
+      })).toBe(wg.refreshNeighbors_no_edge);
+
+      expect(measureRefresh(g => {
+        const n1 = new Node(1);
+        const n2 = new Node(2);
+        g.addNewNodeToContainer(null, n1);
+        g.addNewNodeToContainer(null, n2);
+        g.connect(n1, n2);
+        return n1;
+      })).toBe(wg.refreshNeighbors_one_edge);
+
+      expect(measureRefresh(g => {
+        const n1 = new Node(1);
+        const n2 = new Node(2);
+        g.addNewNodeToContainer(null, n1);
+        g.addNewNodeToContainer(null, n2);
+        g.connect(n1, n2);
+        g.connect(n1, n2);
+        return n1;
+      })).toBe(wg.refreshNeighbors_duplicate_neighbor);
+    }
+
     // clusterIncidentEdges
     {
       const measureIncident = (edgeCount) => {
@@ -594,12 +664,97 @@ describe("Cluster Discovery Go Oracle Replay", () => {
       expect(measureIncident(2)).toBe(wg.clusterIncidentEdges_2_edges);
       expect(measureIncident(4)).toBe(wg.clusterIncidentEdges_4_edges);
     }
+
+    // buildClusterDiscoveryIndex representative real topologies
+    {
+      // 1. root only
+      {
+        const g = new Graph();
+        const n1 = new Node(1);
+        const n2 = new Node(2);
+        g.addNewNodeToContainer(null, n1);
+        g.addNewNodeToContainer(null, n2);
+        g.connect(n1, n2);
+        const gd = newUnlimitedGuard("b_root_only");
+        buildClusterDiscoveryIndex(g, [n1, n2], gd);
+        expect(Number(gd.Used())).toBe(wg.buildClusterDiscoveryIndex_root_only);
+      }
+
+      // 2. nested
+      {
+        const g = new Graph();
+        const root = new Node(1, 100, 100);
+        const child1 = new Node(2);
+        const child2 = new Node(3);
+        g.addNewNodeToContainer(null, root);
+        g.addNewNodeToContainer(root, child1);
+        g.addNewNodeToContainer(root, child2);
+        g.connect(child1, child2);
+        const gd = newUnlimitedGuard("b_nested");
+        buildClusterDiscoveryIndex(g, [root, child1, child2], gd);
+        expect(Number(gd.Used())).toBe(wg.buildClusterDiscoveryIndex_nested);
+      }
+
+      // 3. malformed adjacency
+      {
+        const g = new Graph();
+        const n1 = new Node(1);
+        const n2 = new Node(2);
+        const n3 = new Node(3);
+        g.addNewNodeToContainer(null, n1);
+        g.addNewNodeToContainer(null, n2);
+        g.addNewNodeToContainer(null, n3);
+        const e = g.connect(n1, n2);
+        n3.Edges.push(e);
+        const gd = newUnlimitedGuard("b_malformed");
+        buildClusterDiscoveryIndex(g, [n1, n2, n3], gd);
+        expect(Number(gd.Used())).toBe(wg.buildClusterDiscoveryIndex_malformed_adjacency);
+      }
+
+      // 4. sequence recovery
+      {
+        const g = new Graph();
+        const n1 = new Node(1);
+        const vessel = new Node(2);
+        const step = new Node(3);
+        g.addNewNodeToContainer(null, n1);
+        g.addNewNodeToContainer(null, vessel);
+        const e = g.connect(n1, vessel);
+        const seq = {
+          Vessel: vessel,
+          Nodes: [step],
+          Graph: g,
+          EdgeAbductions: [
+            { Edge: e, OriginallyTo: step, CurrentFrom: n1, CurrentTo: vessel },
+          ],
+        };
+        g.Sequences.set(vessel, seq);
+        const gd = newUnlimitedGuard("b_seq");
+        buildClusterDiscoveryIndex(g, [n1, vessel], gd);
+        expect(Number(gd.Used())).toBe(wg.buildClusterDiscoveryIndex_sequence_recovery);
+      }
+
+      // 5. leaky container
+      {
+        const g = new Graph();
+        const container = new Node(1, 100, 100);
+        const child = new Node(2);
+        const external = new Node(3);
+        g.addNewNodeToContainer(null, container);
+        g.addNewNodeToContainer(container, child);
+        g.addNewNodeToContainer(null, external);
+        g.connect(child, external);
+        const gd = newUnlimitedGuard("b_leaky");
+        buildClusterDiscoveryIndex(g, [container, child, external], gd);
+        expect(Number(gd.Used())).toBe(wg.buildClusterDiscoveryIndex_leaky_container);
+      }
+    }
   });
 
   test("WorkGuard low-limit boundary tests: limit=exact succeeds, limit=exact-1 fails", () => {
     const wg = fixture.scenarios.exactWorkGuard;
 
-    // Test descendant boundary
+    // 1. Test descendant boundary
     const root = new Node(1);
     const mid = new Node(2);
     const leaf = new Node(3);
@@ -609,15 +764,20 @@ describe("Cluster Discovery Go Oracle Replay", () => {
     leaf.Container = mid;
 
     const exactDesc = BigInt(wg.descendant_nested);
-    // Exactly at budget -> succeeds
     const guardSuccess = new WorkGuard(backgroundWorkContext(), "desc success", exactDesc);
     expect(clusterIsDescendantOfGuarded(leaf, root, guardSuccess)).toBe(true);
 
-    // One below budget -> fails with WorkLimitError
     const guardFail = new WorkGuard(backgroundWorkContext(), "desc fail", exactDesc - 1n);
-    expect(() => clusterIsDescendantOfGuarded(leaf, root, guardFail)).toThrow(WorkLimitError);
+    let caughtDesc = null;
+    try {
+      clusterIsDescendantOfGuarded(leaf, root, guardFail);
+    } catch (err) {
+      caughtDesc = err;
+    }
+    expect(caughtDesc).toBeInstanceOf(WorkLimitError);
+    expect(caughtDesc.location).toBe("desc fail");
 
-    // Test clusterIncidentEdges boundary
+    // 2. Test clusterIncidentEdges boundary
     const g = new Graph();
     const n1 = new Node(1);
     const n2 = new Node(2);
@@ -633,86 +793,248 @@ describe("Cluster Discovery Go Oracle Replay", () => {
     expect(clusterIncidentEdges(cluster, index.infos, index.edgeOrder, gIncidentPass)).toBeDefined();
 
     const gIncidentFail = new WorkGuard(backgroundWorkContext(), "incident fail", exactIncident - 1n);
-    expect(() => clusterIncidentEdges(cluster, index.infos, index.edgeOrder, gIncidentFail)).toThrow(WorkLimitError);
+    let caughtIncident = null;
+    try {
+      clusterIncidentEdges(cluster, index.infos, index.edgeOrder, gIncidentFail);
+    } catch (err) {
+      caughtIncident = err;
+    }
+    expect(caughtIncident).toBeInstanceOf(WorkLimitError);
+    expect(caughtIncident.location).toBe("incident fail");
+
+    // 3. Test sequenceOriginal first uncached scan boundary
+    {
+      const gSeq = new Graph();
+      const vessel = new Node(1);
+      const s1 = new Node(2);
+      const s2 = new Node(3);
+      const e1 = gSeq.connect(s1, vessel);
+      const e2 = gSeq.connect(s2, vessel);
+      const seqMulti = {
+        Vessel: vessel,
+        Nodes: [s1, s2],
+        Graph: gSeq,
+        EdgeAbductions: [
+          { Edge: e1, OriginallyFrom: s1, CurrentFrom: vessel },
+          { Edge: e2, OriginallyFrom: s2, CurrentFrom: vessel },
+        ],
+      };
+      const idxSeq = buildClusterDiscoveryIndex(gSeq, null, newUnlimitedGuard("init seq"));
+      const exactSeq = BigInt(wg.sequenceOriginal_first_cached_build);
+      const gSeqPass = new WorkGuard(backgroundWorkContext(), "seq pass", exactSeq);
+      expect(idxSeq.sequenceOriginal(seqMulti, e1, gSeqPass)).toBeDefined();
+
+      const idxSeqFail = buildClusterDiscoveryIndex(gSeq, null, newUnlimitedGuard("init seq fail"));
+      const gSeqFail = new WorkGuard(backgroundWorkContext(), "seq fail", exactSeq - 1n);
+      let caughtSeq = null;
+      try {
+        idxSeqFail.sequenceOriginal(seqMulti, e1, gSeqFail);
+      } catch (err) {
+        caughtSeq = err;
+      }
+      expect(caughtSeq).toBeInstanceOf(WorkLimitError);
+      expect(caughtSeq.location).toBe("seq fail");
+    }
+
+    // 4. Test refreshNeighbors representative case boundary
+    {
+      const gRef = new Graph();
+      const n1 = new Node(1);
+      const n2 = new Node(2);
+      gRef.addNewNodeToContainer(null, n1);
+      gRef.addNewNodeToContainer(null, n2);
+      gRef.connect(n1, n2);
+      const idxRef = buildClusterDiscoveryIndex(gRef, null, newUnlimitedGuard("init ref"));
+      const exactRef = BigInt(wg.refreshNeighbors_one_edge);
+      const gRefPass = new WorkGuard(backgroundWorkContext(), "refresh pass", exactRef);
+      expect(() => idxRef.refreshNeighbors(gRef, n1, gRefPass)).not.toThrow();
+
+      const gRefFail = new WorkGuard(backgroundWorkContext(), "refresh fail", exactRef - 1n);
+      let caughtRef = null;
+      try {
+        idxRef.refreshNeighbors(gRef, n1, gRefFail);
+      } catch (err) {
+        caughtRef = err;
+      }
+      expect(caughtRef).toBeInstanceOf(WorkLimitError);
+      expect(caughtRef.location).toBe("refresh fail");
+    }
+
+    // 5. Test buildClusterDiscoveryIndex representative case boundary
+    {
+      const gBuild = new Graph();
+      const n1 = new Node(1);
+      const n2 = new Node(2);
+      gBuild.addNewNodeToContainer(null, n1);
+      gBuild.addNewNodeToContainer(null, n2);
+      gBuild.connect(n1, n2);
+      const exactBuild = BigInt(wg.buildClusterDiscoveryIndex_root_only);
+      const gBuildPass = new WorkGuard(backgroundWorkContext(), "build pass", exactBuild);
+      expect(buildClusterDiscoveryIndex(gBuild, [n1, n2], gBuildPass)).toBeDefined();
+
+      const gBuildFail = new WorkGuard(backgroundWorkContext(), "build fail", exactBuild - 1n);
+      let caughtBuild = null;
+      try {
+        buildClusterDiscoveryIndex(gBuild, [n1, n2], gBuildFail);
+      } catch (err) {
+        caughtBuild = err;
+      }
+      expect(caughtBuild).toBeInstanceOf(WorkLimitError);
+      expect(caughtBuild.location).toBe("build fail");
+    }
   });
 
   // -------------------------------------------------------------------------
   // Scenario 10: Mid-Operation Cancellation (Section 16)
   // -------------------------------------------------------------------------
   test("genuine mid-operation cancellation throws WorkCanceledError and preserves graph topology", () => {
-    // 1. AllDescendantNodesWithWorkGuard
+    // 1. AllDescendantNodesWithWorkGuard mid-traversal cancellation
     {
       const g = new Graph();
       const root = new Node(1);
-      const c1 = new Node(2);
-      const c2 = new Node(3);
+      root.isContainer = true;
       g.addNewNodeToContainer(null, root);
-      g.addNewNodeToContainer(root, c1);
-      g.addNewNodeToContainer(c1, c2);
+      for (let i = 0; i < 45; i++) {
+        const child = new Node(10 + i);
+        g.addNewNodeToContainer(root, child);
+      }
 
-      let steps = 0;
+      let checkCalls = 0;
       const ctx = new WorkContext({
+        doneAvailable: false,
         isCancelled: () => {
-          steps++;
-          return steps >= 2; // cancel mid-operation
+          checkCalls++;
+          return checkCalls > 1; // constructor Finish() -> false, step 64 -> true
         },
       });
       const guard = new WorkGuard(ctx, "cancel desc", 10_000n);
 
-      expect(() => g.allDescendantNodesWithWorkGuard(root, true, guard)).toThrow(WorkCanceledError);
+      let caughtError = null;
+      try {
+        g.allDescendantNodesWithWorkGuard(root, true, guard);
+      } catch (err) {
+        caughtError = err;
+      }
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      expect(caughtError.location).toBe("cancel desc");
+      expect(Number(guard.Used())).toBe(64);
+
       // Graph topology untouched
-      expect(g.Nodes.length).toBe(3);
+      expect(g.Nodes.length).toBe(46);
       expect(root.Container).toBeNull();
-      expect(c1.Container).toBe(root);
-      expect(c2.Container).toBe(c1);
+      expect(g.Containers.get(root).length).toBe(45);
     }
 
-    // 2. buildClusterDiscoveryIndex mid-operation cancellation
+    // 2. sequenceOriginal mid-scan cancellation
     {
       const g = new Graph();
-      for (let i = 0; i < 5; i++) {
-        g.addNewNodeToContainer(null, new Node(i + 1));
+      const vessel = new Node(1);
+      g.addNewNodeToContainer(null, vessel);
+      const abductions = [];
+      for (let i = 0; i < 70; i++) {
+        const stepNode = new Node(100 + i);
+        g.addNewNodeToContainer(null, stepNode);
+        const e = g.connect(stepNode, vessel);
+        abductions.push({ Edge: e, OriginallyFrom: stepNode, CurrentFrom: vessel, CurrentTo: stepNode });
       }
-      g.connect(g.Nodes[0], g.Nodes[1]);
-      g.connect(g.Nodes[1], g.Nodes[2]);
+      const seq = {
+        Vessel: vessel,
+        Nodes: [],
+        Graph: g,
+        EdgeAbductions: abductions,
+      };
 
-      let steps = 0;
+      const initGuard = newUnlimitedGuard("init");
+      const index = buildClusterDiscoveryIndex(g, null, initGuard);
+
+      let checkCalls = 0;
       const ctx = new WorkContext({
+        doneAvailable: false,
         isCancelled: () => {
-          steps++;
-          return steps >= 4; // cancels during build
+          checkCalls++;
+          return checkCalls > 1;
         },
       });
-      const guard = new WorkGuard(ctx, "cancel build", 10_000n);
+      const cancelGuard = new WorkGuard(ctx, "cancel seqOriginal", 10_000n);
 
-      expect(() => buildClusterDiscoveryIndex(g, null, guard)).toThrow(WorkCanceledError);
-      expect(g.Nodes.length).toBe(5);
-      expect(g.Edges.length).toBe(2);
+      let caughtError = null;
+      try {
+        index.sequenceOriginal(seq, abductions[0].Edge, cancelGuard);
+      } catch (err) {
+        caughtError = err;
+      }
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      expect(caughtError.location).toBe("cancel seqOriginal");
+      expect(Number(cancelGuard.Used())).toBe(64);
+      expect(index.sequenceEdges.has(seq)).toBe(false);
+      expect(g.Nodes.length).toBe(71);
     }
 
-    // 3. clusterIncidentEdges mid-operation cancellation
+    // 3. clusterIncidentEdges mid-operation cancellation during sort charging
     {
       const g = new Graph();
       const n1 = new Node(1);
-      const n2 = new Node(2);
       g.addNewNodeToContainer(null, n1);
-      g.addNewNodeToContainer(null, n2);
-      g.connect(n1, n2);
+      for (let i = 0; i < 16; i++) {
+        const ext = new Node(10 + i);
+        g.addNewNodeToContainer(null, ext);
+        g.connect(n1, ext);
+      }
 
       const initGuard = newUnlimitedGuard("init");
       const index = buildClusterDiscoveryIndex(g, null, initGuard);
       const cluster = { Nodes: [n1], Graph: g };
 
-      let steps = 0;
+      let checkCalls = 0;
       const ctx = new WorkContext({
+        doneAvailable: false,
         isCancelled: () => {
-          steps++;
-          return steps >= 2;
+          checkCalls++;
+          return checkCalls > 1;
         },
       });
       const cancelGuard = new WorkGuard(ctx, "cancel incident", 10_000n);
 
-      expect(() => clusterIncidentEdges(cluster, index.infos, index.edgeOrder, cancelGuard)).toThrow(WorkCanceledError);
+      let caughtError = null;
+      try {
+        clusterIncidentEdges(cluster, index.infos, index.edgeOrder, cancelGuard);
+      } catch (err) {
+        caughtError = err;
+      }
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      expect(caughtError.location).toBe("cancel incident");
+      expect(Number(cancelGuard.Used())).toBe(64);
+      expect(g.Nodes.length).toBe(17);
+      expect(g.Edges.length).toBe(16);
+    }
+
+    // 4. buildClusterDiscoveryIndex mid-operation cancellation
+    {
+      const g = new Graph();
+      for (let i = 0; i < 75; i++) {
+        g.addNewNodeToContainer(null, new Node(i + 1));
+      }
+
+      let checkCalls = 0;
+      const ctx = new WorkContext({
+        doneAvailable: false,
+        isCancelled: () => {
+          checkCalls++;
+          return checkCalls > 1;
+        },
+      });
+      const guard = new WorkGuard(ctx, "cancel build", 10_000n);
+
+      let caughtError = null;
+      try {
+        buildClusterDiscoveryIndex(g, null, guard);
+      } catch (err) {
+        caughtError = err;
+      }
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      expect(caughtError.location).toBe("cancel build");
+      expect(Number(guard.Used())).toBe(64);
+      expect(g.Nodes.length).toBe(75);
     }
   });
 
@@ -723,9 +1045,25 @@ describe("Cluster Discovery Go Oracle Replay", () => {
     const g = new Graph();
     const root = new Node(1, 100, 100);
     const child = new Node(2, 50, 50);
+    root.Box = new Box(10, 10, 100, 100);
+    root.TopLeft = new Point(10, 10);
+    child.Box = new Box(20, 20, 50, 50);
+    child.TopLeft = new Point(20, 20);
+
     g.addNewNodeToContainer(null, root);
     g.addNewNodeToContainer(root, child);
     const edge = g.connect(root, child);
+    edge.Points = [new Point(10, 15), new Point(20, 25)];
+
+    const clusterVessel = new Node(3, 30, 30);
+    const cluster = { Nodes: [child], Vessel: clusterVessel, Graph: g };
+    g.Clusters.set(clusterVessel, cluster);
+    child.Cluster = cluster;
+
+    const seqVessel = new Node(4, 40, 40);
+    const seq = { Nodes: [child], Vessel: seqVessel, Graph: g, EdgeAbductions: [] };
+    g.Sequences.set(seqVessel, seq);
+    child.Sequence = seq;
 
     // Capture exact references before discovery
     const nodesRef = g.Nodes;
@@ -735,55 +1073,80 @@ describe("Cluster Discovery Go Oracle Replay", () => {
     const sequencesRef = g.Sequences;
     const treesRef = g.Trees;
     const rootChildrenRef = g.Containers.get(root);
+    const nullChildrenRef = g.Containers.get(null);
     const rootEdgesRef = root.Edges;
     const childEdgesRef = child.Edges;
     const rootContainerRef = root.Container;
     const childContainerRef = child.Container;
+    const rootClusterRef = root.Cluster;
+    const childClusterRef = child.Cluster;
+    const rootSeqRef = root.Sequence;
+    const childSeqRef = child.Sequence;
     const rootGraphRef = root.Graph;
     const childGraphRef = child.Graph;
     const rootBoxRef = root.Box;
+    const childBoxRef = child.Box;
+    const rootTopLeftRef = root.TopLeft;
+    const childTopLeftRef = child.TopLeft;
     const edgeFromRef = edge.From;
     const edgeToRef = edge.To;
+    const edgePointsRef = edge.Points;
+    const edgeP0Ref = edge.Points[0];
+    const edgeP1Ref = edge.Points[1];
 
-    // Successful discovery
+    const assertAllIdentities = () => {
+      expect(g.Nodes).toBe(nodesRef);
+      expect(g.Edges).toBe(edgesRef);
+      expect(g.Containers).toBe(containersRef);
+      expect(g.Clusters).toBe(clustersRef);
+      expect(g.Sequences).toBe(sequencesRef);
+      expect(g.Trees).toBe(treesRef);
+      expect(g.Containers.get(root)).toBe(rootChildrenRef);
+      expect(g.Containers.get(null)).toBe(nullChildrenRef);
+      expect(root.Edges).toBe(rootEdgesRef);
+      expect(child.Edges).toBe(childEdgesRef);
+      expect(root.Container).toBe(rootContainerRef);
+      expect(child.Container).toBe(childContainerRef);
+      expect(root.Cluster).toBe(rootClusterRef);
+      expect(child.Cluster).toBe(childClusterRef);
+      expect(root.Sequence).toBe(rootSeqRef);
+      expect(child.Sequence).toBe(childSeqRef);
+      expect(root.Graph).toBe(rootGraphRef);
+      expect(child.Graph).toBe(childGraphRef);
+      expect(root.Box).toBe(rootBoxRef);
+      expect(child.Box).toBe(childBoxRef);
+      expect(root.TopLeft).toBe(rootTopLeftRef);
+      expect(child.TopLeft).toBe(childTopLeftRef);
+      expect(edge.From).toBe(edgeFromRef);
+      expect(edge.To).toBe(edgeToRef);
+      expect(edge.Points).toBe(edgePointsRef);
+      expect(edge.Points[0]).toBe(edgeP0Ref);
+      expect(edge.Points[1]).toBe(edgeP1Ref);
+    };
+
+    // 1. Successful discovery
     const guardSuccess = newUnlimitedGuard("readonly success");
     const index = buildClusterDiscoveryIndex(g, [root], guardSuccess);
     expect(index).toBeDefined();
+    assertAllIdentities();
 
-    // Verify all references and contents are unchanged by identity and value
-    expect(g.Nodes).toBe(nodesRef);
-    expect(g.Edges).toBe(edgesRef);
-    expect(g.Containers).toBe(containersRef);
-    expect(g.Clusters).toBe(clustersRef);
-    expect(g.Sequences).toBe(sequencesRef);
-    expect(g.Trees).toBe(treesRef);
-    expect(g.Containers.get(root)).toBe(rootChildrenRef);
-    expect(root.Edges).toBe(rootEdgesRef);
-    expect(child.Edges).toBe(childEdgesRef);
-    expect(root.Container).toBe(rootContainerRef);
-    expect(child.Container).toBe(childContainerRef);
-    expect(root.Graph).toBe(rootGraphRef);
-    expect(child.Graph).toBe(childGraphRef);
-    expect(root.Box).toBe(rootBoxRef);
-    expect(edge.From).toBe(edgeFromRef);
-    expect(edge.To).toBe(edgeToRef);
-
-    // Cancelled discovery
-    let cancelSteps = 0;
+    // 2. Mid-operation cancelled discovery (75 root nodes to cross 64 units)
+    for (let i = 0; i < 75; i++) {
+      g.addNewNodeToContainer(null, new Node(100 + i));
+    }
+    let cancelCalls = 0;
     const ctx = new WorkContext({
+      doneAvailable: false,
       isCancelled: () => {
-        cancelSteps++;
-        return cancelSteps >= 2;
+        cancelCalls++;
+        return cancelCalls > 1;
       },
     });
-    const cancelGuard = new WorkGuard(ctx, "readonly cancel", 1000n);
-    expect(() => buildClusterDiscoveryIndex(g, [root], cancelGuard)).toThrow(WorkCanceledError);
+    const cancelGuard = new WorkGuard(ctx, "readonly cancel", 10_000n);
+    expect(() => buildClusterDiscoveryIndex(g, null, cancelGuard)).toThrow(WorkCanceledError);
 
-    // Verify graph is still completely unchanged
-    expect(g.Nodes).toBe(nodesRef);
-    expect(g.Edges).toBe(edgesRef);
-    expect(root.Edges).toBe(rootEdgesRef);
-    expect(child.Edges).toBe(childEdgesRef);
+    // Verify all original references remain identical
+    assertAllIdentities();
   });
 
   // -------------------------------------------------------------------------

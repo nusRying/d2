@@ -21,7 +21,7 @@ Slice 13 implements the complete, read-only cluster discovery index and classifi
 The `ClusterDiscoveryIndex` is an internal grouping data structure used during cluster formation, not an engine pipeline stage or public graph API. It indexes nodes and edges within a candidate container, maintaining:
 - `infos`: Map of `Node -> ClusterDiscoveryInfo` (`neighbors`, `signatures`, `toTableColumn`, `noClustering`).
 - `edgeOrder`: Map of `Edge -> int` tracking the canonical insertion order from `graph.Edges`.
-- `edgeNodes`: Map of `Edge -> [Node, Node]` tracking the endpoints of each indexed edge.
+- `edgeNodes`: Reverse adjacency inventory built by scanning `node.Edges` for each indexed node. This map can include malformed observers and duplicate references; it is not necessarily strictly `[From, To]`.
 - `sequenceEdges`: Map of `Sequence -> (Edge -> Node)` caching resolved original pre-abduction endpoints.
 
 It is created via `buildClusterDiscoveryIndex(g, nodes, guard)` and remains internal to the grouping module.
@@ -69,23 +69,30 @@ Sequence vessels in a graph represent abducted chains of step nodes. When comput
 - A non-container node is never leaky.
 - For a container node, all descendant nodes are collected via `g.allDescendantNodesWithWorkGuard(node, guard)`.
 - If any descendant has an incident edge whose other endpoint is not also a descendant of `node`, the container is classified as **leaky**.
-- Leaky containers are ineligible for clustering.
+- Leaky containers are excluded from clustering.
 
 ### 7. Exclusion Criteria for Clustering (`noClustering`)
-A node is marked `noClustering = true` in its discovery info if any of the following hold:
-- It is a container node (`node.isContainer` is true).
-- It is a sequence vessel (`g.Sequences.has(node)`).
-- It has a self-loop edge (`edge.From === edge.To`).
-- It is a leaky container (`clusterHasLeakyEdgeGuarded`).
-- It has edges connected to table columns (`toTableColumn` flag).
+In pinned Go, `info.noClustering` is evaluated as:
+```text
+tree sentinel
+OR cluster vessel
+OR sequence vessel
+OR table
+OR Hierarchy != nil
+OR FixedTopLeft != nil
+OR leaky
+OR hasLoop
+```
+Generic containers are **not** automatically `noClustering` (they are only excluded if they are leaky).
+Furthermore, `toTableColumn` is a separate discovery classification on `ClusterDiscoveryInfo`, used later during candidate filtering in `AddClusters`, and is **not** part of `info.noClustering`.
 
 ### 8. Incremental Update Methods
 The index provides incremental refresh methods matching Go:
-- `refreshNeighbors(g, node, guard)`: Recomputes the unique neighbor list for a single node, resolving sequence vessels and sorting edges by graph-edge order.
-- `refreshAfterClusterAbduction(g, cluster, guard)`: Refreshes neighbors for all nodes that were adjacent to the cluster members, preparing the index after cluster vessel creation.
+- `refreshNeighbors(g, node, guard)`: Recomputes the unique neighbor list for a single node by traversing `node.Edges` in encounter order, resolving sequence vessels and deduplicating first encounters. It preserves `node.Edges` encounter order and does **not** sort by graph edge order.
+- `refreshAfterClusterAbduction(g, cluster, edges, guard)`: Refreshes neighbors for all nodes that were adjacent to the cluster members, accepting `g`, `cluster`, `edges`, and `guard`.
 
 ### 9. Incident Edge Ordering
-`clusterIncidentEdges(index, nodes, guard)` retrieves all unique edges incident to a set of cluster nodes. To ensure determinism, edges are sorted by their original insertion order in `graph.Edges` using `index.edgeOrder`.
+`clusterIncidentEdges(cluster, infos, edgeOrderMap, guard)` retrieves all unique edges incident to a set of cluster nodes. To ensure determinism, edges are sorted by their original insertion order in `graph.Edges` using `edgeOrderMap`.
 
 ### 10. WorkGuard Integration
 Every discovery operation integrates with `WorkGuard`:
@@ -107,14 +114,11 @@ Slice 13 exclusively provides analysis, indexing, and classification. Mutation m
 A minimal Go bridge (`internal/grouping/cluster_oracle_bridge.go`) wraps the unexported Go `clusterDiscoveryIndex` behind the build tag `//go:build tala_cluster_discovery_oracle`. It exposes lightweight DTOs without duplicating business logic, ensuring direct oracle parity verification.
 
 ### 14. Deterministic Repeat-Run SHA256 Proof
-The reference generator `js/test/reference/go_cluster_discovery_oracle.go` runs with `-tags tala_cluster_discovery_oracle` to produce `js/test/fixtures/go-cluster-discovery-reference.json` (1,471,971 bytes). Two consecutive runs produce the identical SHA256 hash:
-`DB96227913AFB918C08A85E204A7BD0CFB42B43F01A8363B4E22295E2886FAC3`
+The reference generator `js/test/reference/go_cluster_discovery_oracle.go` runs with `-tags tala_cluster_discovery_oracle` to produce `js/test/fixtures/go-cluster-discovery-reference.json` (2,523,923 bytes). Two consecutive runs produce the identical SHA256 hash:
+`03050B8974BF298082AB44C7217BC24A03B9D92057F4E1E933433FA59AB22E11`
 
-### 15. Extended `go-math-rand.js` for Exact Standard Library Parity
-To reproduce Go's `rand.Intn(n)` behavior in the 0..99 corpus test, `go-math-rand.js` was extended with:
-- `Int31()`: Shifts `Int63()` right by 32 bits, matching Go's `rng.Int31()`.
-- `Int31n(n)`: Computes 31-bit pseudo-random integer in `[0, n)` with non-power-of-two rejection sampling.
-- `Intn(n)`: Delegates to `Int31n(n)` for 32-bit integer ranges, matching Go's `rand.Intn`.
+### 15. Reverted RNG Extensions & Recipe-Based Oracle Replay
+Slice 2 `go-math-rand.js` was fully restored to its approved Slice 12 state (removing temporary `Int31`, `Int31n`, `Intn` additions). In their place, the Go oracle records the complete `edgeRecipes` for each seed in the `legacyCorpus` scenario, allowing the JS replay test to reconstruct the exact graphs chosen by Go without needing RNG reproduction in JS.
 
 ### 16. Non-Goals
 The following methods and operations are strictly outside the scope of Slice 13:
