@@ -62,6 +62,7 @@ In `identifySequences(graph, nodes, guard)`:
 - Defining Edge Selection: For each discovered step sequence `steps`, for each consecutive pair `steps[i - 1]` and `steps[i]`, scans `steps[i - 1].Edges` in order (charging `guard.Step()`). The first edge where endpoints match `{previous, current}` is chosen. Parallel edges yield the first matching edge in `previous.Edges`.
 - Missing Defining Edge Guard: If no edge connects consecutive sequence steps, throws `TALA sequence steps <A> and <B> have no defining edge`.
 - Returns `Set<EntityID>` of defining edge IDs. Concludes with `guard.Finish()`.
+- **Mid-Traversal Cancellation Integrity:** When context cancellation occurs mid-traversal inside guarded `ContainerRDFSOrder`, execution halts immediately with the proper cancellation error classification and location, no result is produced, and graph state remains completely unmutated (`Graph.Nodes`, `Edges`, `Containers`, `Clusters`, `Sequences`, `Trees`, node/edge aliases, and endpoints are unchanged).
 
 ### 5. Remembered-Sequence Validity (`isValidRememberedSequence`)
 - Validates whether an inactive remembered sequence can be reconstructed.
@@ -72,14 +73,15 @@ In `identifySequences(graph, nodes, guard)`:
   - `sequence.Vessel !== vessel`
   - `sequence.Graph !== graph`
   - `sequence.Nodes.length < 2`
+  - Container key missing from `graph.Containers`
 - **Active Container Requirement:** If `sequence.Container != null`, it must be present by reference identity in `activeNodes`.
-- **Container Key Existence:** `graph.Containers.has(sequence.Container)` must be `true` (distinguishing key presence from empty default).
+- **Container Key Existence:** `graph.Containers.has(sequence.Container)` must be `true` (distinguishing key presence from empty default). Empty container list charges 1 step (`guard.Step()`) and fails.
 - **Duplicate Container Children:** Container children are indexed; each charges `guard.Step()`. Duplicate child references in the container invalidate the sequence.
 - **Sequence Node Invariants:** For each node in `sequence.Nodes` (charges `guard.Step()`):
   - Must not be null or duplicate in `sequence.Nodes`.
   - Must be in `activeNodes`.
   - `node.Graph === graph`.
-  - `node.IsSequenceStep() === true`.
+  - `node.isSequenceStep() === true`.
   - `node.FixedTopLeft == null`.
   - `node.Sequence === sequence`.
   - `node.Container === sequence.Container`.
@@ -88,32 +90,49 @@ In `identifySequences(graph, nodes, guard)`:
 - **Absence of Defining-Edge Requirement:** Crucially, remembered validity does NOT require defining edges to be present. Layout output intentionally omits defining edges, so rebuilt remembered sequences accept steps with no remaining edge connection.
 - **No Mutation:** `isValidRememberedSequence` returns a Boolean and never modifies `node.Sequence` or graph topology.
 
-### 6. Node ID Occupancy and Candidate Generation
+### 6. Node ID Occupancy, Signed-Int64 Enforcement, and RNG Continuation
 - `hasNodeID(graph, id)`:
   - Compares IDs using `BigInt(id) === BigInt(node.ID)` to ensure precision for 64-bit integers and interoperability between Numbers and BigInts.
+  - **Iterative Tree Traversal:** Tree traversal uses an explicit DFS stack over `graph.Trees` (root sentinel, `tree.Node`, `tree.Children`) instead of recursive calls, preventing stack overflow on deep tree hierarchies.
   - Search domains are strictly bounded to:
     1. `graph.Nodes`
     2. `graph.Clusters` (vessels and `cluster.Nodes`)
     3. `graph.Sequences` (vessels and `sequence.Nodes`)
-    4. `graph.Trees` (sentinel keys, `tree.Node`, recursive `tree.Children`)
+    4. `graph.Trees` (sentinel keys, `tree.Node`, `tree.Children`)
   - Other maps (`Containers`, `Hubs`, `Directions`, `Nears`) are not searched.
 - `nextAvailableNodeID(graph, candidate, unavailable)`:
-  - Takes candidate ID and `unavailable` ID set.
+  - **Signed-Int64 Range Enforcement:** Candidate must represent a valid 64-bit signed integer in `[-9223372036854775808n, 9223372036854775807n]`. Unsafe JavaScript Numbers (`!Number.isSafeInteger(candidate)`) and out-of-range BigInts throw `TypeError`.
   - Evaluates whether candidate is free in `unavailable` and absent from `hasNodeID(graph, candidate)`.
   - Wrap-around behavior: if candidate equals `INT64_MAX` (`9223372036854775807n`), wraps to `0n`; otherwise increments by `1n`.
   - Negative candidates (e.g. `-1n`) are legal signed int64 values and are supported.
-  - Consumes zero RNG: candidate resolution is deterministic increment/wrap.
+  - **Zero RNG Consumption & Seed-19 Continuation:** `nextAvailableNodeID` consumes zero RNG draws. When candidate generation starts with an initial draw from Go-compatible `Int63()` (seed 19) colliding with an existing node ID, candidate resolves to `colliding ID + 1`, and the RNG's subsequent draw is verified to match the probe RNG's second draw exactly.
 
-### 7. Go Oracle and Dual-Layer Verification Strategy
-- Public Go APIs (`Node.IsContainer`, `Node.IsSequenceStep`, `Node.ConnectionTo`, `Graph.SequenceOrder`, `grouping.SequenceDefiningEdges`, `grouping.AddSequences`, `grouping.Cleanup`) are exercised directly in `test/reference/go_sequence_analysis_oracle.go`.
-- Private Go helpers (`identifySequences`, `isValidRememberedSequence`, `hasNodeID`, `nextAvailableNodeID`) are verified through a dual-layer strategy:
-  1. Direct JS unit tests derived from pinned source semantics (`test/unit/sequence-analysis.test.js`).
-  2. Public Go behavioral manifestations (`test/unit/sequence-analysis-oracle.test.js`) observing `SequenceDefiningEdges`, remembered sequence rebuilds via `AddSequences` + `Cleanup`, and collision resolution in `AddSequences`.
+### 7. Direct Build-Tagged Private-Helper Go Bridge and Exact WorkGuard Parity
+- Rather than inferring private helper semantics indirectly through high-level mutations, a build-tagged bridge file `d2layouts/d2talalayout/internal/grouping/sequence_oracle_bridge.go` is introduced under `//go:build tala_sequence_oracle`.
+- The bridge exposes narrow wrappers around ONLY the four private helpers:
+  - `identifySequences` -> `BridgeIdentifySequences`
+  - `isValidRememberedSequence` -> `BridgeIsValidRememberedSequence`
+  - `hasNodeID` -> `BridgeHasNodeID`
+  - `nextAvailableNodeID` -> `BridgeNextAvailableNodeID`
+- The Go reference oracle `test/reference/go_sequence_analysis_oracle.go` compiles against this bridge using `-tags tala_sequence_oracle` and directly executes all mandatory private-helper scenarios.
+- Serialized Go outputs record exact `guard.Used()` values, confirming complete parity:
+  - `identifySequences`: empty (0), one step (2), connected pair (6), disconnected pair (5), late edge match (10), inactive remembered steps (4), active sequence membership (6), duplicate supplied node refs (9), fixed top left (4).
+  - `isValidRememberedSequence`: immediate rejects (0), empty container key (1), valid pair (4), duplicate child (4), duplicate sequence member (4), noncontiguous sequence (5), nil member (4), wrong graph (3), fixed top left (3), wrong sequence (4), wrong container (5), node missing from children (3), valid with unrelated neighbors (6).
+- Caches RNG draw values during serialization (`nextDraw := layoutRand.Int63()`) rather than calling `Int63()` twice, ensuring exact stream parity.
+
+### 8. Production Scope Minimization
+- Unnecessary production surface additions were eliminated:
+  - `Node.prototype.IsContainer()` was removed; production code and tests rely on the canonical boolean property `node.isContainer`.
+  - `Graph.prototype.AddNodeToContainer()`, `Graph.prototype.AddNewNodeToContainer()`, and `Graph.prototype.RemoveNode()` were removed from `src/graph/graph.js`; tests invoke the existing lowercase methods `graph.addNodeToContainer(...)`, `graph.addNewNodeToContainer(...)`, `graph.removeNode(...)`.
+  - Removed top-level export `export * from "./grouping/index.js";` from `src/index.js`. Sequence analysis functions remain internal and importable via their module path `src/grouping/index.js`.
 
 ---
 
 ## Consequences
-- **Positive:** Read-only analysis logic is fully verified and matches Go behavior across all edge cases (candidate filtering, container boundaries, contiguity, int64 wrap-around).
-- **Positive:** Zero topology mutation ensures safety and isolation ahead of mutation stages.
-- **Positive:** Browser-safe execution with zero Node built-in dependencies and zero unseeded/Math.random consumption.
-- **Downstream Dependency:** Slice 12 will implement `buildSequence`, `addSequence`, `abductSequenceEdges`, `clearRememberedSequenceMembership`, and `AddSequences` pipeline orchestration utilizing these Slice 11 helpers.
+- **Positive:** Private helper algorithms (`identifySequences`, `isValidRememberedSequence`, `hasNodeID`, `nextAvailableNodeID`) are directly verified against real Go functions via the build-tagged bridge.
+- **Positive:** Exact deterministic `WorkGuard.Used()` counts match between Go and JavaScript.
+- **Positive:** Iterative tree traversal protects against deep recursion stack limits.
+- **Positive:** Strict signed-int64 validation prevents silent truncation or unsafe Number usage.
+- **Positive:** Graph topology remains 100% immutable and unmutated across all analysis passes and mid-traversal cancellations.
+- **Positive:** Zero Node built-ins and zero unseeded `Math.random` consumption.
+- **Downstream Dependency:** Slice 12 will implement sequence topology mutation (`buildSequence`, `addSequence`, `abductSequenceEdges`, `clearRememberedSequenceMembership`, and `AddSequences` pipeline orchestration) on top of this verified analysis foundation.

@@ -1,6 +1,6 @@
 import { Validate } from "../graph/topology-preflight.js";
 import { WorkGuard } from "../limits/work-guard.js";
-import { MAX_ENGINE_WORK_UNITS, INT64_MAX } from "../limits/constants.js";
+import { MAX_ENGINE_WORK_UNITS, INT64_MIN, INT64_MAX } from "../limits/constants.js";
 
 /**
  * identifySequences discovers contiguous runs of connected Step nodes.
@@ -29,13 +29,13 @@ export function identifySequences(graph, nodes, guard) {
   const candidateNodes = nodes ?? [];
   for (const node of candidateNodes) {
     guard.Step();
-    if (!node || !activeNodes.has(node) || node.IsContainer()) {
+    if (!node || !activeNodes.has(node) || Boolean(node.isContainer)) {
       continue;
     }
-    if (node.Sequence != null && !node.Sequence.IsActive()) {
+    if (node.Sequence != null && !node.Sequence.isActive()) {
       continue;
     }
-    if (node.FixedTopLeft != null || !node.IsSequenceStep()) {
+    if (node.FixedTopLeft != null || !node.isSequenceStep()) {
       continue;
     }
     stepNodes.push(node);
@@ -192,7 +192,7 @@ export function isValidRememberedSequence(graph, vessel, sequence, activeNodes, 
     seen.add(node);
 
     const isActive = activeNodes?.has ? activeNodes.has(node) : false;
-    if (!isActive || node.Graph !== graph || !node.IsSequenceStep() || node.FixedTopLeft != null) {
+    if (!isActive || node.Graph !== graph || !node.isSequenceStep() || node.FixedTopLeft != null) {
       return false;
     }
     if (node.Sequence !== sequence || node.Container !== sequence.Container) {
@@ -223,9 +223,22 @@ export function isValidRememberedSequence(graph, vessel, sequence, activeNodes, 
  */
 export function hasNodeID(graph, id) {
   let targetID;
-  try {
+  if (typeof id === "bigint") {
+    targetID = id;
+  } else if (typeof id === "number") {
+    if (!Number.isFinite(id) || !Number.isInteger(id) || !Number.isSafeInteger(id)) {
+      return false;
+    }
     targetID = BigInt(id);
-  } catch {
+  } else {
+    try {
+      targetID = BigInt(id);
+    } catch {
+      return false;
+    }
+  }
+
+  if (targetID < INT64_MIN || targetID > INT64_MAX) {
     return false;
   }
 
@@ -266,23 +279,26 @@ export function hasNodeID(graph, id) {
     }
   }
 
-  const treeHasID = (tree) => {
-    if (tree == null) return false;
-    if (hasID(tree.Node)) return true;
-    if (Array.isArray(tree.Children)) {
-      for (const child of tree.Children) {
-        if (treeHasID(child)) return true;
-      }
-    }
-    return false;
-  };
-
   if (graph?.Trees) {
     for (const [sentinel, roots] of graph.Trees) {
       if (hasID(sentinel)) return true;
       if (Array.isArray(roots)) {
         for (const root of roots) {
-          if (treeHasID(root)) return true;
+          if (!root) continue;
+          const stack = [root];
+          while (stack.length > 0) {
+            const current = stack.pop();
+            if (!current) continue;
+            if (hasID(current.Node)) return true;
+            if (Array.isArray(current.Children)) {
+              for (let i = current.Children.length - 1; i >= 0; i--) {
+                const child = current.Children[i];
+                if (child) {
+                  stack.push(child);
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -295,7 +311,8 @@ export function hasNodeID(graph, id) {
  * nextAvailableNodeID finds the next free ID starting from candidate,
  * incrementing and wrapping at INT64_MAX to 0.
  *
- * Canonical unavailable contract: Set<bigint> (Set<number> also handled safely).
+ * Enforces signed int64 range [-9223372036854775808n, 9223372036854775807n]
+ * and rejects unsafe Numbers or non-integers.
  *
  * Pinned reference: internal/grouping/sequences.go::nextAvailableNodeID
  *
@@ -305,7 +322,21 @@ export function hasNodeID(graph, id) {
  * @returns {bigint}
  */
 export function nextAvailableNodeID(graph, candidate, unavailable) {
-  let c = BigInt(candidate);
+  let c;
+  if (typeof candidate === "bigint") {
+    c = candidate;
+  } else if (typeof candidate === "number") {
+    if (!Number.isFinite(candidate) || !Number.isInteger(candidate) || !Number.isSafeInteger(candidate)) {
+      throw new TypeError("nextAvailableNodeID candidate must be a safe integer or BigInt");
+    }
+    c = BigInt(candidate);
+  } else {
+    throw new TypeError("nextAvailableNodeID candidate must be a safe integer or BigInt");
+  }
+
+  if (c < INT64_MIN || c > INT64_MAX) {
+    throw new TypeError("nextAvailableNodeID candidate must fit signed int64");
+  }
 
   const isUnavailable = (idBigInt) => {
     if (!unavailable) return false;

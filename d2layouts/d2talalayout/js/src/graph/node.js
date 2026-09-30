@@ -200,10 +200,6 @@ export class Node {
     return this.isSequenceStep();
   }
 
-  IsContainer() {
-    return Boolean(this.isContainer);
-  }
-
   aspectRatio1() {
     return this._shapeType === "Circle" || this._shapeType === "RealSquare";
   }

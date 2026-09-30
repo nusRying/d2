@@ -8,18 +8,25 @@ import {
   Cluster,
   Sequence,
   Point,
-  SequenceDefiningEdges,
-  identifySequences,
-  isValidRememberedSequence,
-  hasNodeID,
-  nextAvailableNodeID,
   WorkGuard,
+  WorkContext,
   MAX_ENGINE_WORK_UNITS,
+  INT64_MIN,
   INT64_MAX,
   backgroundWorkContext,
   WorkLimitError,
   WorkCanceledError,
 } from "../../src/index.js";
+
+import {
+  SequenceDefiningEdges,
+  identifySequences,
+  isValidRememberedSequence,
+  hasNodeID,
+  nextAvailableNodeID,
+} from "../../src/grouping/index.js";
+
+import { GoRand } from "../../src/random/go-math-rand.js";
 
 function createGuard(limit = MAX_ENGINE_WORK_UNITS) {
   return new WorkGuard(backgroundWorkContext(), "TestGuard", limit);
@@ -259,8 +266,8 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       const s2 = new Node(2, 40, 30);
       s1.SetShape("Step");
       s2.SetShape("Step");
-      g.AddNewNodeToContainer(null, s1);
-      g.AddNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
       const edge = g.Connect(s1, s2);
 
       const nodesRef = g.Nodes;
@@ -292,8 +299,8 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       const s2 = new Node(2, 40, 30);
       s1.SetShape("Step");
       s2.SetShape("Step");
-      g.AddNewNodeToContainer(null, s1);
-      g.AddNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
       const edge = g.Connect(s1, s2);
       edge.ID = 42;
 
@@ -308,8 +315,8 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       const s2 = new Node(2, 40, 30);
       s1.SetShape("Step");
       s2.SetShape("Step");
-      g.AddNewNodeToContainer(null, s1);
-      g.AddNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
       g.Connect(s1, s2);
 
       const controller = new AbortController();
@@ -318,26 +325,105 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       expect(() => SequenceDefiningEdges(controller.signal, g)).toThrow("GetSequenceDefiningEdges: context canceled");
     });
 
+    test("cancels mid-traversal during guarded ContainerRDFSOrder without mutating graph state", () => {
+      const g = new Graph();
+      // Add 70 containers so ContainerRDFSOrder visits more than 64 nodes (crossing the 64 stride)
+      for (let i = 0; i < 70; i++) {
+        const c = new Node(100 + i, 20, 20);
+        c.isContainer = true;
+        g.addNewNodeToContainer(null, c);
+      }
+      const s1 = new Node(1, 40, 30);
+      const s2 = new Node(2, 40, 30);
+      s1.SetShape("Step");
+      s2.SetShape("Step");
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
+      const edge = g.Connect(s1, s2);
+      edge.ID = 500;
+
+      // Deep capture initial topology snapshots to verify zero mutation
+      const nodesBefore = [...g.Nodes];
+      const edgesBefore = [...g.Edges];
+      const containersSnapshot = new Map();
+      for (const [k, v] of g.Containers) {
+        containersSnapshot.set(k, [...v]);
+      }
+      const clustersSizeBefore = g.Clusters.size;
+      const sequencesSizeBefore = g.Sequences.size;
+      const treesSizeBefore = g.Trees.size;
+      const edgeFromBefore = edge.From;
+      const edgeToBefore = edge.To;
+      const s1EdgesCount = s1.Edges.length;
+      const s2EdgesCount = s2.Edges.length;
+
+      // Cancellable context that becomes cancelled after construction (during traversal)
+      let cancelled = false;
+      const ctx = new WorkContext({
+        isCancelled: () => cancelled,
+        doneAvailable: false,
+      });
+
+      // Cancellation triggered during ContainerRDFSOrder traversal
+      let orderCalls = 0;
+      const origContainerRDFS = g.containerRDFSOrderContext.bind(g);
+      g.containerRDFSOrderContext = function (root, guard) {
+        orderCalls++;
+        // After starting traversal, set cancelled = true so the 64-step stride check catches it
+        cancelled = true;
+        return origContainerRDFS(root, guard);
+      };
+
+      let thrownError = null;
+      let result = null;
+      try {
+        result = SequenceDefiningEdges(ctx, g);
+      } catch (err) {
+        thrownError = err;
+      }
+
+      // Verification per review criteria:
+      // 1. Result is not produced
+      expect(result).toBeNull();
+      // 2. Cancellation error classification/location is correct
+      expect(thrownError).toBeInstanceOf(WorkCanceledError);
+      expect(thrownError.name).toBe("AbortError");
+      expect(thrownError.location).toBe("GetSequenceDefiningEdges");
+      expect(thrownError.message).toBe("GetSequenceDefiningEdges: context canceled");
+      // 3. Traversal was reached
+      expect(orderCalls).toBeGreaterThan(0);
+      // 4. Graph.Nodes unchanged
+      expect(g.Nodes).toEqual(nodesBefore);
+      // 5. Graph.Edges unchanged
+      expect(g.Edges).toEqual(edgesBefore);
+      // 6. Graph.Containers unchanged
+      expect(g.Containers.size).toBe(containersSnapshot.size);
+      for (const [k, v] of g.Containers) {
+        expect(v).toEqual(containersSnapshot.get(k));
+      }
+      // 7. Graph.Clusters, Sequences, Trees unchanged
+      expect(g.Clusters.size).toBe(clustersSizeBefore);
+      expect(g.Sequences.size).toBe(sequencesSizeBefore);
+      expect(g.Trees.size).toBe(treesSizeBefore);
+      // 8. Node/Edge aliases and endpoints unchanged
+      expect(edge.From).toBe(edgeFromBefore);
+      expect(edge.To).toBe(edgeToBefore);
+      expect(s1.Edges.length).toBe(s1EdgesCount);
+      expect(s2.Edges.length).toBe(s2EdgesCount);
+      expect(s1.Sequence).toBeNull();
+      expect(s2.Sequence).toBeNull();
+    });
+
     test("throws missing defining edge error when steps in sequence lack connecting edge", () => {
       const g = new Graph();
       const s1 = new Node(1, 40, 30);
       const s2 = new Node(2, 40, 30);
       s1.SetShape("Step");
       s2.SetShape("Step");
-      g.AddNewNodeToContainer(null, s1);
-      g.AddNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
 
-      // Create a mock sequence in container that identifySequences wouldn't normally produce
-      // but test the defensive branch:
-      // If we disconnect edge between identifySequences and defining-edge resolution
-      // We can test the exact branch by monkey-patching or passing a scenario
-      const origEdges = s1.Edges;
-      // In normal operation, identifySequences only finds connected steps.
-      // But if steps[i-1].Edges has no connecting edge to steps[i], it throws:
-      // "TALA sequence steps 1 and 2 have no defining edge"
-      // Let's verify through identifySequences returning a pair whose edge was stripped:
       const edge = g.Connect(s1, s2);
-      // Strip edge from s1.Edges right before defining-edge scan by getter:
       Object.defineProperty(s1, "Edges", {
         get() {
           const stack = new Error().stack || "";
@@ -360,8 +446,8 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       const s2 = new Node(2, 40, 30);
       s1.SetShape("Step");
       s2.SetShape("Step");
-      g.AddNewNodeToContainer(null, s1);
-      g.AddNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
       const edge = g.Connect(s1, s2);
 
       const nodesRef = g.Nodes;
@@ -683,6 +769,53 @@ describe("Slice 11 Sequence Analysis Unit Tests", () => {
       // 1n is free
       const result = nextAvailableNodeID(g, INT64_MAX, reserved);
       expect(result).toBe(1n);
+    });
+
+    test("rejects unsafe JavaScript Number inputs and non-integers", () => {
+      const g = new Graph();
+      const reserved = new Set();
+
+      expect(() => nextAvailableNodeID(g, 1.5, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, NaN, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, Infinity, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, Number.MAX_SAFE_INTEGER + 1, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, Number.MIN_SAFE_INTEGER - 1, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, "not-a-number", reserved)).toThrow(TypeError);
+    });
+
+    test("enforces signed int64 bounds [-9223372036854775808n, 9223372036854775807n]", () => {
+      const g = new Graph();
+      const reserved = new Set();
+
+      expect(() => nextAvailableNodeID(g, INT64_MAX + 1n, reserved)).toThrow(TypeError);
+      expect(() => nextAvailableNodeID(g, INT64_MIN - 1n, reserved)).toThrow(TypeError);
+
+      // INT64_MIN is accepted and returns BigInt
+      expect(nextAvailableNodeID(g, INT64_MIN, reserved)).toBe(INT64_MIN);
+
+      // INT64_MIN collision advances deterministically
+      const resCollidingMin = new Set([INT64_MIN]);
+      expect(nextAvailableNodeID(g, INT64_MIN, resCollidingMin)).toBe(INT64_MIN + 1n);
+    });
+
+    test("seed-19 RNG regression: colliding ID advances by 1 and consumes zero RNG draws", () => {
+      const probe = new GoRand(19);
+      const collidingID = probe.Int63();
+
+      const layoutRand = new GoRand(19);
+      const candidate = layoutRand.Int63();
+      expect(candidate).toBe(collidingID);
+
+      const g = new Graph();
+      g.AddNode(new Node(collidingID, 40, 30));
+
+      const resolved = nextAvailableNodeID(g, candidate, new Set());
+      expect(resolved).toBe(collidingID + 1n);
+
+      // Crucial: nextAvailableNodeID must not draw from layoutRand
+      const nextDraw = layoutRand.Int63();
+      const probeNextDraw = probe.Int63();
+      expect(nextDraw).toBe(probeNextDraw);
     });
   });
 });
