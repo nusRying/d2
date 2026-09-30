@@ -624,37 +624,51 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 1. Basic shared adjacent cluster
 	runScenario("basic_shared_adjacent_cluster", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
 	})
 
-	// 2. Already clustered node -> preflight failure (node.Cluster != nil)
+	// 2. Already clustered node is ineligible for new clustering
 	runScenario("already_clustered_ineligible_node", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		vesselExisting := layoutgraph.NewNode(99, 100, 100)
+		vesselExisting.SetClusterVessel(true)
+
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
+		g.AddNewNodeToContainer(nil, vesselExisting)
+
+		existingCluster := &layoutgraph.Cluster{Vessel: vesselExisting, Nodes: []*layoutgraph.Node{n1}}
+		n1.Cluster = existingCluster
+		g.Clusters[vesselExisting] = existingCluster
+
 		g.Connect(n1, target)
 		g.Connect(n2, target)
-		n1.Cluster = &layoutgraph.Cluster{} // ineligible
 		return rand.New(rand.NewSource(12345)), 42
 	})
 
 	// 2b. Genuine hierarchy ineligible node (node.Hierarchy != nil -> no clustering)
 	runScenario("hierarchy_ineligible_nodes", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		c := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		c := layoutgraph.NewNode(10, 300, 300)
 		c.SetContainer(true)
-		g.AddNodeToContainer(nil, c)
+		g.AddNewNodeToContainer(nil, c)
 
 		n1 := layoutgraph.NewNode(11, 80, 80)
 		n2 := layoutgraph.NewNode(12, 80, 80)
 		target := layoutgraph.NewNode(13, 60, 60)
-		g.AddNodeToContainer(c, n1)
-		g.AddNodeToContainer(c, n2)
-		g.AddNodeToContainer(c, target)
+		g.AddNewNodeToContainer(c, n1)
+		g.AddNewNodeToContainer(c, n2)
+		g.AddNewNodeToContainer(c, target)
 
 		g.Connect(n1, target)
 		g.Connect(n2, target)
@@ -665,18 +679,18 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 2c. RealSquare members -> FixedSize == true
 	runScenario("real_square_members_fixed_size", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		c := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		c := layoutgraph.NewNode(10, 300, 300)
 		c.SetContainer(true)
-		g.AddNodeToContainer(nil, c)
+		g.AddNewNodeToContainer(nil, c)
 
 		n1 := layoutgraph.NewNode(11, 80, 80)
 		n1.SetShape(shape.REAL_SQUARE_TYPE)
 		n2 := layoutgraph.NewNode(12, 80, 80)
 		n2.SetShape(shape.REAL_SQUARE_TYPE)
 		target := layoutgraph.NewNode(13, 60, 60)
-		g.AddNodeToContainer(c, n1)
-		g.AddNodeToContainer(c, n2)
-		g.AddNodeToContainer(c, target)
+		g.AddNewNodeToContainer(c, n1)
+		g.AddNewNodeToContainer(c, n2)
+		g.AddNewNodeToContainer(c, target)
 
 		g.Connect(n1, target)
 		g.Connect(n2, target)
@@ -686,10 +700,14 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 3. Inconsistent multiple shared adjacency -> no cluster
 	runScenario("inconsistent_multiple_shared_adjacency", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		targetA := g.AddNode(layoutgraph.NewNode(3, 80, 80))
-		targetB := g.AddNode(layoutgraph.NewNode(4, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		targetA := layoutgraph.NewNode(3, 80, 80)
+		targetB := layoutgraph.NewNode(4, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, targetA)
+		g.AddNewNodeToContainer(nil, targetB)
 		g.Connect(n1, targetA)
 		g.Connect(n2, targetB)
 		return rand.New(rand.NewSource(12345)), 42
@@ -697,10 +715,14 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 4. Consistent multiple shared adjacency -> 1 cluster created
 	runScenario("consistent_multiple_shared_adjacency", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		targetA := g.AddNode(layoutgraph.NewNode(3, 80, 80))
-		targetB := g.AddNode(layoutgraph.NewNode(4, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		targetA := layoutgraph.NewNode(3, 80, 80)
+		targetB := layoutgraph.NewNode(4, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, targetA)
+		g.AddNewNodeToContainer(nil, targetB)
 		g.Connect(n1, targetA)
 		g.Connect(n2, targetA)
 		g.Connect(n1, targetB)
@@ -710,18 +732,23 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 5. Zero-neighbor sibling pair -> no cluster
 	runScenario("zero_neighbor_sibling_pair", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		g.AddNode(layoutgraph.NewNode(2, 100, 50))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
 		return rand.New(rand.NewSource(12345)), 42
 	})
 
 	// 6. Shape mismatch: Circle vs Square
 	runScenario("shape_mismatch_circle_vs_square", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 100))
+		n1 := layoutgraph.NewNode(1, 100, 100)
 		n1.SetShape(shape.CIRCLE_TYPE)
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 100))
+		n2 := layoutgraph.NewNode(2, 100, 100)
 		n2.SetShape(shape.SQUARE_TYPE)
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
@@ -729,9 +756,12 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 7. Size ratio: exactly 4x eligible -> cluster created
 	runScenario("size_ratio_exactly_4x", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 25, 100))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 100))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 25, 100)
+		n2 := layoutgraph.NewNode(2, 100, 100)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
@@ -739,9 +769,12 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 8. Size ratio: beyond 4x rejected -> no cluster
 	runScenario("size_ratio_beyond_4x", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 24, 100))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 100))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 24, 100)
+		n2 := layoutgraph.NewNode(2, 100, 100)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
@@ -749,26 +782,32 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 9. Circle cluster: FixedSize=true
 	runScenario("circle_cluster_fixed_size", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 80, 80))
+		n1 := layoutgraph.NewNode(1, 80, 80)
 		n1.SetShape(shape.CIRCLE_TYPE)
-		n2 := g.AddNode(layoutgraph.NewNode(2, 80, 80))
+		n2 := layoutgraph.NewNode(2, 80, 80)
 		n2.SetShape(shape.CIRCLE_TYPE)
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
 	})
 
-	// 10. Connected to sequence candidate -> forced Row
+	// 10. Connected to sequence candidate -> forced Row (width 200 > height 50 would normally be Column)
 	runScenario("connected_to_sequence_forced_row", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		// averageWidth (50) < averageHeight (200), so would normally be Column
-		n1 := g.AddNode(layoutgraph.NewNode(1, 50, 200))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 50, 200))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
-		seqVessel := g.AddNode(layoutgraph.NewNode(99, 100, 100))
-		seqVessel.SetClusterVessel(true)
-		target.Sequence = &layoutgraph.Sequence{Vessel: seqVessel}
-		g.Sequences[seqVessel] = target.Sequence
+		n1 := layoutgraph.NewNode(1, 200, 50)
+		n2 := layoutgraph.NewNode(2, 200, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		seqVessel := layoutgraph.NewNode(99, 100, 100)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
+		g.AddNewNodeToContainer(nil, seqVessel)
+		seq := &layoutgraph.Sequence{Vessel: seqVessel, Nodes: []*layoutgraph.Node{target}}
+		target.Sequence = seq
+		g.Sequences[seqVessel] = seq
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		return rand.New(rand.NewSource(12345)), 42
@@ -776,9 +815,12 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 11. Table-column edge metadata -> skipped
 	runScenario("table_column_edge_metadata", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		e1 := g.Connect(n1, target)
 		e2 := g.Connect(n2, target)
 		colIdx := 0
@@ -789,91 +831,117 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 12. Ordinary node vessel-ID collision
 	runScenario("ordinary_node_vessel_id_collision", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		// Predict next Int63 draw from seed 1
 		rndTest := rand.New(rand.NewSource(1))
 		predictedID := layoutgraph.EntityID(rndTest.Int63())
-		// Place an obstacle node with that exact ID
-		g.AddNode(layoutgraph.NewNode(predictedID, 50, 50))
+		// Place an obstacle node with that exact ID in root container
+		obs := layoutgraph.NewNode(predictedID, 50, 50)
+		g.AddNewNodeToContainer(nil, obs)
 		return rand.New(rand.NewSource(1)), 42
 	})
 
 	// 13. Sequence-vessel ID collision
 	runScenario("sequence_vessel_id_collision", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		rndTest := rand.New(rand.NewSource(2))
 		predictedID := layoutgraph.EntityID(rndTest.Int63())
 		seqV := layoutgraph.NewNode(predictedID, 50, 50)
+		g.AddNewNodeToContainer(nil, seqV)
 		g.Sequences[seqV] = &layoutgraph.Sequence{Vessel: seqV}
 		return rand.New(rand.NewSource(2)), 42
 	})
 
 	// 14. Sequence-member ID collision
 	runScenario("sequence_member_id_collision", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		rndTest := rand.New(rand.NewSource(3))
 		predictedID := layoutgraph.EntityID(rndTest.Int63())
 		seqV := layoutgraph.NewNode(999, 50, 50)
 		seqM := layoutgraph.NewNode(predictedID, 50, 50)
-		g.Sequences[seqV] = &layoutgraph.Sequence{Vessel: seqV, Nodes: []*layoutgraph.Node{seqM}}
+		g.AddNewNodeToContainer(nil, seqV)
+		g.AddNewNodeToContainer(nil, seqM)
+		seq := &layoutgraph.Sequence{Vessel: seqV, Nodes: []*layoutgraph.Node{seqM}}
+		seqM.Sequence = seq
+		g.Sequences[seqV] = seq
 		return rand.New(rand.NewSource(3)), 42
 	})
 
 	// 15. Tree-sentinel ID collision
 	runScenario("tree_sentinel_id_collision", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		rndTest := rand.New(rand.NewSource(4))
 		predictedID := layoutgraph.EntityID(rndTest.Int63())
 		sentinel := layoutgraph.NewNode(predictedID, 50, 50)
+		g.AddNewNodeToContainer(nil, sentinel)
 		g.Trees[sentinel] = []*layoutgraph.Tree{}
 		return rand.New(rand.NewSource(4)), 42
 	})
 
 	// 16. Tree-node ID collision
 	runScenario("tree_node_id_collision", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		rndTest := rand.New(rand.NewSource(5))
 		predictedID := layoutgraph.EntityID(rndTest.Int63())
 		sentinel := layoutgraph.NewNode(998, 50, 50)
 		treeNode := layoutgraph.NewNode(predictedID, 50, 50)
+		g.AddNewNodeToContainer(nil, sentinel)
+		g.AddNewNodeToContainer(nil, treeNode)
 		g.Trees[sentinel] = []*layoutgraph.Tree{{Node: treeNode}}
 		return rand.New(rand.NewSource(5)), 42
 	})
 
 	// 17. Nested containers
 	runScenario("nested_containers", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		cRoot := g.AddNode(layoutgraph.NewNode(10, 500, 500))
+		cRoot := layoutgraph.NewNode(10, 500, 500)
 		cRoot.SetContainer(true)
+		g.AddNewNodeToContainer(nil, cRoot)
+
 		cInner := layoutgraph.NewNode(20, 300, 300)
 		cInner.SetContainer(true)
-		g.AddNodeToContainer(cRoot, cInner)
+		g.AddNewNodeToContainer(cRoot, cInner)
 
 		n1 := layoutgraph.NewNode(21, 80, 40)
 		n2 := layoutgraph.NewNode(22, 80, 40)
 		target := layoutgraph.NewNode(23, 60, 60)
-		g.AddNodeToContainer(cInner, n1)
-		g.AddNodeToContainer(cInner, n2)
-		g.AddNodeToContainer(cInner, target)
+		g.AddNewNodeToContainer(cInner, n1)
+		g.AddNewNodeToContainer(cInner, n2)
+		g.AddNewNodeToContainer(cInner, target)
 
 		g.Connect(n1, target)
 		g.Connect(n2, target)
@@ -883,29 +951,29 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 18. Two containers with equal square clusters: proves per-container RNG reset
 	runScenario("two_containers_equal_square_clusters", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		cA := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		cA := layoutgraph.NewNode(10, 300, 300)
 		cA.SetContainer(true)
-		g.AddNodeToContainer(nil, cA)
+		g.AddNewNodeToContainer(nil, cA)
 
-		cB := g.AddNode(layoutgraph.NewNode(20, 300, 300))
+		cB := layoutgraph.NewNode(20, 300, 300)
 		cB.SetContainer(true)
-		g.AddNodeToContainer(nil, cB)
+		g.AddNewNodeToContainer(nil, cB)
 
 		nA1 := layoutgraph.NewNode(11, 80, 80)
 		nA2 := layoutgraph.NewNode(12, 80, 80)
 		targetA := layoutgraph.NewNode(13, 60, 60)
-		g.AddNodeToContainer(cA, nA1)
-		g.AddNodeToContainer(cA, nA2)
-		g.AddNodeToContainer(cA, targetA)
+		g.AddNewNodeToContainer(cA, nA1)
+		g.AddNewNodeToContainer(cA, nA2)
+		g.AddNewNodeToContainer(cA, targetA)
 		g.Connect(nA1, targetA)
 		g.Connect(nA2, targetA)
 
 		nB1 := layoutgraph.NewNode(21, 80, 80)
 		nB2 := layoutgraph.NewNode(22, 80, 80)
 		targetB := layoutgraph.NewNode(23, 60, 60)
-		g.AddNodeToContainer(cB, nB1)
-		g.AddNodeToContainer(cB, nB2)
-		g.AddNodeToContainer(cB, targetB)
+		g.AddNewNodeToContainer(cB, nB1)
+		g.AddNewNodeToContainer(cB, nB2)
+		g.AddNewNodeToContainer(cB, targetB)
 		g.Connect(nB1, targetB)
 		g.Connect(nB2, targetB)
 
@@ -914,15 +982,21 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 19. Multiple accepted clusters in same graph
 	runScenario("multiple_accepted_clusters", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
-		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
-		target1 := g.AddNode(layoutgraph.NewNode(3, 80, 80))
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target1 := layoutgraph.NewNode(3, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target1)
 		g.Connect(n1, target1)
 		g.Connect(n2, target1)
 
-		n4 := g.AddNode(layoutgraph.NewNode(4, 120, 60))
-		n5 := g.AddNode(layoutgraph.NewNode(5, 120, 60))
-		target2 := g.AddNode(layoutgraph.NewNode(6, 70, 70))
+		n4 := layoutgraph.NewNode(4, 120, 60)
+		n5 := layoutgraph.NewNode(5, 120, 60)
+		target2 := layoutgraph.NewNode(6, 70, 70)
+		g.AddNewNodeToContainer(nil, n4)
+		g.AddNewNodeToContainer(nil, n5)
+		g.AddNewNodeToContainer(nil, target2)
 		g.Connect(n4, target2)
 		g.Connect(n5, target2)
 
@@ -931,19 +1005,41 @@ func buildAddClustersScenarios(out *OracleOutput) {
 
 	// 20. Candidate rejected before vessel draw (descendant cycle / containment edge)
 	runScenario("candidate_rejected_before_vessel_draw", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
-		c := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		c := layoutgraph.NewNode(10, 300, 300)
 		c.SetContainer(true)
-		g.AddNodeToContainer(nil, c)
+		g.AddNewNodeToContainer(nil, c)
 
 		n1 := layoutgraph.NewNode(11, 80, 80)
 		n2 := layoutgraph.NewNode(12, 80, 80)
-		g.AddNodeToContainer(c, n1)
-		g.AddNodeToContainer(c, n2)
+		g.AddNewNodeToContainer(c, n1)
+		g.AddNewNodeToContainer(c, n2)
 
 		// Edge from n1 directly to its own container c makes c a descendant of n1's container
 		g.Connect(n1, c)
 		g.Connect(n2, c)
 
 		return rand.New(rand.NewSource(11111)), 42
+	})
+
+	// 21. Discovery refresh interaction: edge abduction changes topology for later candidates
+	runScenario("discovery_refresh_interaction", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
+		n1 := layoutgraph.NewNode(1, 100, 50)
+		n2 := layoutgraph.NewNode(2, 100, 50)
+		target := layoutgraph.NewNode(3, 80, 80)
+		n4 := layoutgraph.NewNode(4, 100, 50)
+		n5 := layoutgraph.NewNode(5, 80, 80)
+		g.AddNewNodeToContainer(nil, n1)
+		g.AddNewNodeToContainer(nil, n2)
+		g.AddNewNodeToContainer(nil, target)
+		g.AddNewNodeToContainer(nil, n4)
+		g.AddNewNodeToContainer(nil, n5)
+
+		g.Connect(n1, target)
+		g.Connect(n1, n4)
+		g.Connect(n2, target)
+		g.Connect(n2, n4)
+		g.Connect(n4, n5)
+
+		return rand.New(rand.NewSource(12345)), 42
 	})
 }

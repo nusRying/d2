@@ -50,19 +50,19 @@ Slice 15 delivers the top-level transactional clustering stage `AddClusters` alo
   - `internal/grouping/add_clusters_oracle_bridge.go` (`//go:build tala_add_clusters_oracle`)
   - `internal/layoutgraph/container_padding_oracle_bridge.go` (`//go:build tala_add_clusters_oracle`)
 - **Oracle Generator:** `js/test/reference/go_add_clusters_oracle.go`
-  - Generates helper test cases and 22 comprehensive end-to-end `AddClusters` graph scenarios (including `already_clustered_ineligible_node`, `hierarchy_ineligible_nodes`, and `real_square_members_fixed_size`).
-  - Tests four container padding matrix cases: `child_margin_only`, `container_padding_only`, `child_margin_plus_container_padding`, `circle_custom_padding`.
+  - Generates helper test cases and 23 comprehensive end-to-end `AddClusters` graph scenarios (including `discovery_refresh_interaction`, `already_clustered_ineligible_node`, `hierarchy_ineligible_nodes`, and `real_square_members_fixed_size`).
+  - Repaired root-container membership: all root candidates, targets, and obstacle nodes are explicitly installed into `g.Containers[nil]` via `AddNewNodeToContainer(nil, ...)`.
   - Serializes 64-bit integers as decimal strings.
 - **Oracle Fixture:** `js/test/fixtures/go-add-clusters-reference.json`
-  - File Size: `38,549` bytes
-  - Deterministic SHA256: `a76867b70da9e7f164bec08bb6634ed7b22775ae0f0187d6bf42e0993340b509`
-- **Oracle Replay Test:** `js/test/unit/add-clusters-oracle.test.js` (29 passing tests, 491 expect() assertions consuming all fixture fields).
-- **Direct JS Unit Test:** `js/test/unit/add-clusters.test.js` (25 passing tests, 1,428 expect() assertions with exact deep graph state capture and rollback proofs).
+  - File Size: `55,320` bytes
+  - Deterministic SHA256 (verified across duplicate runs): `3a2fa0d4b908224212364c369c90bcd64772aa9840a049e9084377bbbacdfa06`
+- **Oracle Replay Test:** `js/test/unit/add-clusters-oracle.test.js` (46 passing tests, 1,031 expect() assertions consuming all fixture fields, including 15 explicit scenario contract assertions and a test detecting removal of `refreshAfterClusterAbduction`).
+- **Direct JS Unit Test:** `js/test/unit/add-clusters.test.js` (25 passing tests, 1,431 expect() assertions with exact deep graph state capture, exactUsed success, and exactUsed - 1n rollback proofs).
 
 ## 4. Test Results
-- **Oracle Replay Suite:** 29 passed, 0 failed.
+- **Oracle Replay Suite:** 46 passed, 0 failed.
 - **Direct Unit Suite:** 25 passed, 0 failed.
-- **Full JavaScript Test Suite:** 709 passed, 0 failed across 31 files.
+- **Full JavaScript Test Suite:** 729 passed, 0 failed across 31 files.
 - **Go Unit Tests:** `go test ./d2layouts/d2talalayout/internal/grouping/...` passed.
 - **Go Oracle Build Tag:** `go test -tags tala_add_clusters_oracle ./d2layouts/d2talalayout/internal/grouping/...` passed.
 - **Go Layoutgraph Oracle Build Tag:** `go test -tags tala_add_clusters_oracle ./d2layouts/d2talalayout/internal/layoutgraph/...` passed.

@@ -569,28 +569,47 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       assertGraphDeepStateRestored(g, captured);
     });
 
-    test("WorkLimit exactUsed - 1n triggers complete rollback, exact state restoration, and external RNG is NOT rewound", () => {
-      // First run to get exact work units used
-      const { g: gSuccess } = createLateFailureGraph();
-      const rndSuccess = new GoRand(12345n);
-      const parentCtxSuccess = new WorkContext();
-      const guardSuccess = new WorkGuard(
-        parentCtxSuccess,
+    test("WorkLimit exactUsed succeeds, exactUsed - 1n triggers complete rollback, exact state restoration, and external RNG is NOT rewound", () => {
+      // Run 1: Determine exact work units used
+      const { g: gMeasure } = createLateFailureGraph();
+      const rndMeasure = new GoRand(12345n);
+      const parentCtxMeasure = new WorkContext();
+      const guardMeasure = new WorkGuard(
+        parentCtxMeasure,
         "AddClustersTransactions",
         1_000_000_000n
       );
-      const txCtxSuccess = contextWithTransactionWorkGuard(
-        parentCtxSuccess,
-        guardSuccess
+      const txCtxMeasure = contextWithTransactionWorkGuard(
+        parentCtxMeasure,
+        guardMeasure
       );
 
-      addClusters(txCtxSuccess, gSuccess, 42n, rndSuccess);
-      const exactUsed = guardSuccess.used;
+      addClusters(txCtxMeasure, gMeasure, 42n, rndMeasure);
+      const exactUsed = guardMeasure.used;
       expect(typeof exactUsed).toBe("bigint");
       expect(exactUsed).toBeGreaterThan(0n);
-      const expectedNextRnd = rndSuccess.Int63();
+      const expectedNextRnd = rndMeasure.Int63();
 
-      // Now run with limit = exactUsed - 1n to trigger rollback
+      // Run 2: Fresh run with limit set to EXACTLY exactUsed -> must SUCCEED with guard.used === exactUsed
+      const { g: gExact } = createLateFailureGraph();
+      const rndExact = new GoRand(12345n);
+      const parentCtxExact = new WorkContext();
+      const guardExact = new WorkGuard(
+        parentCtxExact,
+        "AddClustersTransactions",
+        exactUsed
+      );
+      const txCtxExact = contextWithTransactionWorkGuard(
+        parentCtxExact,
+        guardExact
+      );
+
+      addClusters(txCtxExact, gExact, 42n, rndExact);
+      expect(guardExact.used).toBe(exactUsed);
+      expect(gExact.Clusters.size).toBeGreaterThan(0);
+      expect(rndExact.Int63()).toBe(expectedNextRnd);
+
+      // Run 3: Fresh run with limit set to EXACTLY exactUsed - 1n -> must FAIL with WorkLimitError and roll back
       const { g: gFail } = createLateFailureGraph();
       const captured = captureGraphDeepState(gFail);
       const rndFail = new GoRand(12345n);
