@@ -211,7 +211,10 @@ export class Graph {
       const child = children[i];
 
       if (child.isContainer) {
-        order.push(...this.containerRDFSOrder(child));
+        const descendants = this.containerRDFSOrder(child);
+        for (const descendant of descendants) {
+          order.push(descendant);
+        }
         order.push(child);
         continue;
       }
@@ -222,7 +225,10 @@ export class Graph {
           for (let j = cluster.Nodes.length - 1; j >= 0; j--) {
             const cNode = cluster.Nodes[j];
             if (cNode.isContainer) {
-              order.push(...this.containerRDFSOrder(cNode));
+              const descendants = this.containerRDFSOrder(cNode);
+              for (const descendant of descendants) {
+                order.push(descendant);
+              }
               order.push(cNode);
             }
           }
@@ -287,7 +293,8 @@ export class Graph {
 
   clusterRDFSOrder() {
     const order = [];
-    const dfsContainerOrder = [...this.containerRDFSOrder(null), null];
+    const dfsContainerOrder = this.containerRDFSOrder(null);
+    dfsContainerOrder.push(null);
     for (const container of dfsContainerOrder) {
       const children = this.Containers.get(container);
       if (children) {

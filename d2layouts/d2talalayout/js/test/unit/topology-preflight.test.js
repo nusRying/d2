@@ -359,6 +359,25 @@ describe("Slice 10 Topology Preflight Unit Tests", () => {
       expect(order).toEqual([c]);
     });
 
+    test("ContainerRDFSOrderUnbounded succeeds with large nested containers (200,000 descendants)", () => {
+      const g = new Graph();
+      const parent = g.addNode(new Node(1, 1, 1));
+      parent.isContainer = true;
+
+      const count = 200_000;
+      const child = g.addNode(new Node(2, 1, 1));
+      child.isContainer = true;
+
+      const children = new Array(count);
+      children.fill(child);
+      g.Containers.set(parent, children);
+      g.Containers.set(null, [parent]);
+
+      const order = g.ContainerRDFSOrderUnbounded(null);
+      expect(order.length).toBe(count + 1);
+      expect(order[order.length - 1]).toBe(parent);
+    });
+
     test("Validate does not mutate graph, nodes, edges, or collections", () => {
       const g = new Graph();
       const n1 = g.addNode(new Node(1, 10, 10));

@@ -131,10 +131,10 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 ## 13. Full Regression Suite
 - **Command:** `bun test`
 - **Results:**
-  - Tests: **376 pass**, **0 fail**
-  - Expect() Calls: **9,109**
+  - Tests: **377 pass**, **0 fail**
+  - Expect() Calls: **9,111**
   - Files: **21 test files**
-  - Duration: **1,286.00 ms** (Runtime is informational and nondeterministic; the final recorded verification run was 1,286.00 ms.)
+  - Duration: **1,486.00 ms** (Runtime is informational and nondeterministic; the final recorded verification run was 1,486.00 ms.)
 
 ## 14. Performance Sanity
 - 10,000 `Validate` calls on tiny graph: **~141.39 ms** (~14.1 µs/call)
@@ -161,6 +161,8 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
    Corrected documented cancellation wording to match the pinned Go WorkGuard contract: `AddSequences: context canceled`.
 7. **Tree Validation Scenario Ordering:**
    In standard multi-parent shared child scenarios, the child's single `Parent` pointer causes `TALA engine tree child has an inconsistent parent` to trigger before duplicate ownership is evaluated. Added an explicit scenario (`tree_shared_by_multiple_parents_explicit`) verifying that installing a tree as both root and child with consistent parentage reaches `TALA engine tree is shared by multiple parents`.
+8. **Unbounded containerRDFSOrder Argument Spread (Residual Finding):**
+   During Slice 11 dependency research, one residual JavaScript-specific argument-spread risk was found in the unbounded `containerRDFSOrder` path. The guarded path had already been corrected, but the unbounded helper still used `order.push(...descendants)`. This was replaced with bounded iteration without changing traversal semantics. Added a focused large-scale regression (`ContainerRDFSOrderUnbounded succeeds with large nested containers (200,000 descendants)`).
 
 ## 17. Commit History
 - `1e1bf8f3d`: `docs(tala-js): close approved Slice 09`
@@ -170,3 +172,4 @@ All records are deduplicated by object identity (`Set.has(object)`), not EntityI
 - `docs(tala-js): document Slice 10 topology preflight`
 - `fix(tala-js): finalize Slice 10 preflight parity`
 - `docs(tala-js): finalize Slice 10 review record`
+- `fix(tala-js): remove unbounded RDFS spread limit`
