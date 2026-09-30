@@ -236,13 +236,23 @@ export class Node {
   }
 
   adjacent(edge) {
-    if (edge.From === this) return edge.To;
-    if (edge.To === this) return edge.From;
-    return null;
+    // Pinned to Go node.adjacent: returns edge.From as the fallback when this
+    // node is neither endpoint. This tolerates malformed adjacency inventories
+    // that cluster/sequence discovery relies on during edge scanning.
+    if (this === edge.From) return edge.To;
+    return edge.From;
   }
 
   Adjacent(edge) {
     return this.adjacent(edge);
+  }
+
+  isContainerNode() {
+    return this.isContainer;
+  }
+
+  IsContainer() {
+    return Boolean(this.isContainer);
   }
 
   owningContainer() {

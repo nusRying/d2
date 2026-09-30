@@ -1,4 +1,7 @@
-import { Point } from '../geometry/point.js';
+
+// NoArrowhead is the sentinel value matching Go's NoArrowhead constant ("none").
+export const NO_ARROWHEAD = "none";
+
 
 export class Edge {
   constructor(from, to) {
@@ -17,8 +20,9 @@ export class Edge {
     this.MinWidth = 0;
     this.MinHeight = 0;
 
-    this.SourceArrowhead = 0;
-    this.TargetArrowhead = 0;
+    // Go zero-value for string Arrowhead is "", not a number.
+    this.SourceArrowhead = "";
+    this.TargetArrowhead = "";
     this.SourceArrowheadLabel = null;
     this.TargetArrowheadLabel = null;
     
@@ -37,6 +41,57 @@ export class Edge {
 
   isLoop() {
     return this.From === this.To;
+  }
+
+  IsLoop() {
+    return this.isLoop();
+  }
+
+  // HasSourceArrow reports whether the source end carries a visible arrowhead.
+  // Pinned reference: layoutgraph/edge.go HasSourceArrow
+  hasSourceArrow() {
+    return this.SourceArrowhead !== "" && this.SourceArrowhead !== NO_ARROWHEAD;
+  }
+
+  HasSourceArrow() {
+    return this.hasSourceArrow();
+  }
+
+  // HasTargetArrow reports whether the target end carries a visible arrowhead.
+  // Pinned reference: layoutgraph/edge.go HasTargetArrow
+  hasTargetArrow() {
+    return this.TargetArrowhead !== "" && this.TargetArrowhead !== NO_ARROWHEAD;
+  }
+
+  HasTargetArrow() {
+    return this.hasTargetArrow();
+  }
+
+  // isDirected: exactly one end has an arrowhead. Pinned to Go edge.go.
+  isDirected() {
+    return this.hasSourceArrow() !== this.hasTargetArrow();
+  }
+
+  IsDirected() {
+    return this.isDirected();
+  }
+
+  // isBidirectional: both ends carry visible arrowheads. Pinned to Go edge.go.
+  isBidirectional() {
+    return this.hasSourceArrow() && this.hasTargetArrow();
+  }
+
+  IsBidirectional() {
+    return this.isBidirectional();
+  }
+
+  // isUndirected: neither end carries a visible arrowhead. Pinned to Go edge.go.
+  isUndirected() {
+    return !this.hasSourceArrow() && !this.hasTargetArrow();
+  }
+
+  IsUndirected() {
+    return this.isUndirected();
   }
 
   reconnect(newEndpoint, isTo) {

@@ -71,11 +71,19 @@ export class Graph {
     this.addNodeToContainer(container, node);
   }
 
+  AddNewNodeToContainer(container, node) {
+    this.addNewNodeToContainer(container, node);
+  }
+
   removeNode(node) {
     const idx = this.Nodes.indexOf(node);
     if (idx !== -1) {
       this.Nodes.splice(idx, 1);
     }
+  }
+
+  RemoveNode(node) {
+    this.removeNode(node);
   }
 
   AddEdge(edge) {
@@ -335,6 +343,81 @@ export class Graph {
 
   SyncSequences() {
     this.syncSequences();
+  }
+
+  /**
+   * allDescendantNodesWithWorkGuard collects every descendant node under `node`,
+   * optionally including cluster member nodes. Iterative, never recursive.
+   *
+   * Pinned reference: layoutgraph/graph.go allDescendantNodesGuarded
+   *
+   * Traversal order: container children > cluster members > sequence members,
+   * each pushed in reverse so the pop-from-end restores the original order.
+   *
+   * @param {import('./node.js').Node | null} node
+   * @param {boolean} includeClusterNodes
+   * @param {import('../limits/work-guard.js').WorkGuard} guard
+   * @returns {Array<import('./node.js').Node>}
+   */
+  allDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
+    const seen = new Set();
+    if (node !== null && node !== undefined) {
+      seen.add(node);
+    }
+
+    // Each stack entry: { node, emit }
+    const stack = [];
+
+    const pushChildren = (parent) => {
+      // Sequences: push members in reverse order
+      const sequence = this.Sequences.get(parent);
+      if (sequence != null) {
+        for (let i = sequence.Nodes.length - 1; i >= 0; i--) {
+          guard.Step();
+          stack.push({ node: sequence.Nodes[i], emit: includeClusterNodes });
+        }
+      }
+      // Clusters: push members in reverse order
+      if (parent != null && parent.isClusterVessel) {
+        const cluster = this.Clusters.get(parent);
+        if (cluster != null) {
+          for (let i = cluster.Nodes.length - 1; i >= 0; i--) {
+            guard.Step();
+            stack.push({ node: cluster.Nodes[i], emit: includeClusterNodes });
+          }
+        }
+      }
+      // Container children: push in reverse order
+      if (parent === null || parent === undefined || parent.isContainer) {
+        const children = this.Containers.get(parent) || [];
+        for (let i = children.length - 1; i >= 0; i--) {
+          guard.Step();
+          stack.push({ node: children[i], emit: true });
+        }
+      }
+    };
+
+    pushChildren(node);
+
+    const descendants = [];
+    while (stack.length > 0) {
+      guard.Step();
+      const current = stack.pop();
+      if (current.node == null) continue;
+      if (seen.has(current.node)) continue;
+      seen.add(current.node);
+      if (current.emit) {
+        descendants.push(current.node);
+      }
+      pushChildren(current.node);
+    }
+
+    guard.Finish();
+    return descendants;
+  }
+
+  AllDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
+    return this.allDescendantNodesWithWorkGuard(node, includeClusterNodes, guard);
   }
 }
 
