@@ -4,7 +4,7 @@
 2026-09-30
 
 ## Status
-Implemented — awaiting Slice 11 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, sequences of Step nodes are temporarily unified into single compound sequence vessels (`internal/grouping/sequences.go::AddSequences`). This transformation alters graph topology: step nodes are removed from their containers, internal defining edges between steps are abducted/disconnected, and a synthetic sequence vessel node is inserted into the container.
