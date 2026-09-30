@@ -20,8 +20,10 @@ Slice 14 ports the exact low-level cluster mutation and edge abduction primitive
   - Strict Go invariant errors on missing vessel (`"cluster is missing its vessel"`) and nil member (`"cluster contains a nil node"`).
 - **`createVessel` / `CreateVessel`** (`js/src/grouping/clusters-mutation.js`):
   - Minimum X and Y computed independently across positioned members.
+  - Position gate matches Go exact `!math.IsInf(minimumX, 1) && !math.IsInf(minimumY, 1)` via `minimumX !== Number.POSITIVE_INFINITY && minimumY !== Number.POSITIVE_INFINITY`.
+  - Non-finite coordinates (`-Infinity`, `NaN`) pass the gate and participate in positioning/sorting identically to Go.
+  - Localized Go 1.27 pdqsort compatibility sorter reproducing Go's exact tie-breaking permutations across larger sets (sizes 13, 20, 32) without global sort modifications or arbitrary tie-breakers.
   - In-place member sorting for `Row` (ascending by `TopLeft.X`) and `Column` (ascending by `TopLeft.Y`).
-  - Stable sort tie behavior matching Go insertion-sort pass in pdqsort.
   - Unpositioned clusters leave `vessel.TopLeft = null` and do not sort.
   - Does NOT assign `cluster.Vessel = vessel` and does not install vessel into graph.
 - **`addCluster` / `AddCluster`** (`js/src/grouping/clusters-mutation.js`):
@@ -40,21 +42,24 @@ Slice 14 ports the exact low-level cluster mutation and edge abduction primitive
   - Delayed publication: `cluster.EdgeAbductions` is assigned only after complete loop success.
   - Partial failure preserves earlier reconnects in place without rollback; prior `EdgeAbductions` untouched.
   - Route geometry, points array identity, point objects, and styles preserved intact.
+  - EdgeAbductions uses `[]` for zero successful abductions per approved JS convention.
+  - Context cancellation asserts typed `WorkCanceledError`, `location = "test"`, and step usage matching Go `errors.Is(err, context.Canceled)`.
+  - Final-Finish cancellation demonstrates all edge reconnects and `cluster.EdgeAbductions` publication completing before cancellation is observed by `guard.Finish()`.
 
 ## 3. Real-Go Oracle and Verification Infrastructure
 - **Go Bridge:** `internal/grouping/cluster_mutation_oracle_bridge.go` (`//go:build tala_cluster_mutation_oracle`) exposes private `abductClusterEdges`.
 - **Oracle Generator:** `js/test/reference/go_cluster_mutation_oracle.go`
 - **Oracle Fixture:** `js/test/fixtures/go-cluster-mutation-reference.json`
-  - File Size: `13,359` bytes
-  - Deterministic SHA256: `bdde088b573c6e417d8539f0ab9684796af1f95040b7c9d252c3dcf473337df2`
+  - File Size: `24,173` bytes
+  - Deterministic SHA256: `b8b8e487c11a74dabd61d050216d4978ef524a303d5b5247bbbfec3be555396b`
   - Re-generation verified byte-for-byte identical.
-- **Oracle Replay Test:** `js/test/unit/cluster-mutation-oracle.test.js` (43 passing tests).
-- **Direct JS Unit Test:** `js/test/unit/cluster-mutation.test.js` (18 passing tests).
+- **Oracle Replay Test:** `js/test/unit/cluster-mutation-oracle.test.js` (49 passing tests).
+- **Direct JS Unit Test:** `js/test/unit/cluster-mutation.test.js` (23 passing tests).
 
 ## 4. Test Results
-- **Oracle Replay Suite:** 43 passed, 0 failed.
-- **Direct Unit Tests:** 18 passed, 0 failed.
-- **Full Bun Test Suite:** 646 passed, 0 failed across 29 test files.
+- **Oracle Replay Suite:** 49 passed, 0 failed.
+- **Direct Unit Tests:** 23 passed, 0 failed.
+- **Full Bun Test Suite:** 657 passed, 0 failed across 29 test files.
 - **Go Grouping Tests:**
   - Standard: `go test ./d2layouts/d2talalayout/internal/grouping/...` -> PASS.
   - Tagged: `go test -tags tala_cluster_mutation_oracle ./d2layouts/d2talalayout/internal/grouping/...` -> PASS.
@@ -65,4 +70,3 @@ Slice 14 ports the exact low-level cluster mutation and edge abduction primitive
 - Zero Node-only browser-incompatible imports in production JS (`fs`, `path`, `crypto`, `process`, `Buffer`, `child_process`, `worker_threads`, `node:*`).
 - `src/index.js` does NOT export grouping.
 - `graph.removeNode` updated to filter all pointer matches matching Go `Graph.RemoveNode`.
-- Documentation corrections applied to `docs/SLICE-13-PROGRESS.md` for `descendant_null_*` counts.

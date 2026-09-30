@@ -517,6 +517,219 @@ describe("Slice 14 Go Oracle Parity - Cluster Mutation and Edge Abduction Primit
 
       expect(() => createVessel(c, 509)).toThrow();
     });
+
+    test("large_tie_13_row_and_column", () => {
+      // Row
+      {
+        const exp = s.row_large_tie_13;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(exp.coordinates[idx], 10);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Row,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1100);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+      // Column
+      {
+        const exp = s.col_large_tie_13;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(10, exp.coordinates[idx]);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Column,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1200);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+    });
+
+    test("large_tie_20_row_and_column", () => {
+      // Row
+      {
+        const exp = s.row_large_tie_20;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(exp.coordinates[idx], 10);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Row,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1300);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+      // Column
+      {
+        const exp = s.col_large_tie_20;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(10, exp.coordinates[idx]);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Column,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1400);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+    });
+
+    test("large_tie_32_row_and_column", () => {
+      // Row
+      {
+        const exp = s.row_large_tie_32;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(exp.coordinates[idx], 10);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Row,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1500);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+      // Column
+      {
+        const exp = s.col_large_tie_32;
+        const nodes = exp.inputMemberIDs.map((id, idx) => {
+          const n = new Node(Number(id), 40, 30);
+          n.TopLeft = new Point(10, exp.coordinates[idx]);
+          return n;
+        });
+        const c = new Cluster({
+          Nodes: nodes,
+          Arrangement: ClusterArrangement.Column,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1600);
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.outputMemberIDs);
+        expect(v.TopLeft.X).toBe(exp.vessel.topLeft.x);
+        expect(v.TopLeft.Y).toBe(exp.vessel.topLeft.y);
+      }
+    });
+
+    test("special_coordinates_negative_inf", () => {
+      // Row with min X = -Inf
+      {
+        const exp = s.row_min_x_neg_inf;
+        const n1 = new Node(701, 40, 30);
+        n1.TopLeft = new Point(-Infinity, 20);
+        const n2 = new Node(702, 40, 30);
+        n2.TopLeft = new Point(50, 20);
+        const c = new Cluster({
+          Nodes: [n1, n2],
+          Arrangement: ClusterArrangement.Row,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1701);
+        expect(v.TopLeft !== null).toBe(exp.hasTopLeft);
+        expect(v.TopLeft.X === -Infinity).toBe(true);
+        expect(exp.topLeftXKind).toBe("negative_inf");
+        expect(v.TopLeft.Y).toBe(20);
+        expect(exp.topLeftYKind).toBe("finite");
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.finalMemberIDs);
+      }
+      // Column with min Y = -Inf
+      {
+        const exp = s.col_min_y_neg_inf;
+        const n1 = new Node(711, 40, 30);
+        n1.TopLeft = new Point(20, 50);
+        const n2 = new Node(712, 40, 30);
+        n2.TopLeft = new Point(20, -Infinity);
+        const c = new Cluster({
+          Nodes: [n1, n2],
+          Arrangement: ClusterArrangement.Column,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1711);
+        expect(v.TopLeft !== null).toBe(exp.hasTopLeft);
+        expect(v.TopLeft.X).toBe(20);
+        expect(exp.topLeftXKind).toBe("finite");
+        expect(v.TopLeft.Y === -Infinity).toBe(true);
+        expect(exp.topLeftYKind).toBe("negative_inf");
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.finalMemberIDs);
+      }
+    });
+
+    test("special_coordinates_nan", () => {
+      // Row with NaN X
+      {
+        const exp = s.row_nan_x;
+        const n1 = new Node(721, 40, 30);
+        n1.TopLeft = new Point(NaN, 20);
+        const n2 = new Node(722, 40, 30);
+        n2.TopLeft = new Point(50, 20);
+        const c = new Cluster({
+          Nodes: [n1, n2],
+          Arrangement: ClusterArrangement.Row,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1721);
+        expect(v.TopLeft !== null).toBe(exp.hasTopLeft);
+        expect(Number.isNaN(v.TopLeft.X)).toBe(true);
+        expect(exp.topLeftXKind).toBe("nan");
+        expect(v.TopLeft.Y).toBe(20);
+        expect(exp.topLeftYKind).toBe("finite");
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.finalMemberIDs);
+      }
+      // Column with NaN Y
+      {
+        const exp = s.col_nan_y;
+        const n1 = new Node(731, 40, 30);
+        n1.TopLeft = new Point(20, NaN);
+        const n2 = new Node(732, 40, 30);
+        n2.TopLeft = new Point(20, 50);
+        const c = new Cluster({
+          Nodes: [n1, n2],
+          Arrangement: ClusterArrangement.Column,
+          Padding: 10,
+          FixedSize: true,
+        });
+        const v = createVessel(c, 1731);
+        expect(v.TopLeft !== null).toBe(exp.hasTopLeft);
+        expect(v.TopLeft.X).toBe(20);
+        expect(exp.topLeftXKind).toBe("finite");
+        expect(Number.isNaN(v.TopLeft.Y)).toBe(true);
+        expect(exp.topLeftYKind).toBe("nan");
+        expect(c.Nodes.map(n => String(n.ID))).toEqual(exp.finalMemberIDs);
+      }
+    });
   });
 
   describe("3. AddCluster", () => {
@@ -1140,15 +1353,62 @@ describe("Slice 14 Go Oracle Parity - Cluster Mutation and Edge Abduction Primit
       // Cancel context now (cancellable context checks at 1024 stride)
       controller.abort();
 
-      expect(() => {
+      let caughtErr;
+      try {
         abductClusterEdges(cluster, [e1, e2], guard);
-      }).toThrow();
+      } catch (err) {
+        caughtErr = err;
+      }
 
+      expect(caughtErr).toBeInstanceOf(WorkCanceledError);
+      expect(caughtErr.location).toBe(exp.expectedLocation);
+      expect(exp.isCanceled).toBe(true);
       expect(guard.Used()).toBe(BigInt(exp.used));
       expect(String(e1.From.ID)).toBe(exp.e1From);
       expect(String(e2.From.ID)).toBe(exp.e2From);
       expect(cluster.EdgeAbductions).toBe(sentinelArray);
       expect(vessel.Edges.length).toBe(exp.vesselEdgesLen);
+    });
+
+    test("final_finish_cancellation: published abductions and reconnected topology preserved before cancel", () => {
+      const exp = scenarios.cancellation.final_finish_cancellation;
+      const controller = new AbortController();
+      const ctx = abortSignalWorkContext(controller.signal);
+
+      const g = new Graph();
+      const n1 = new Node(1, 10, 10);
+      const ext = new Node(2, 10, 10);
+      g.addNewNodeToContainer(null, n1);
+      g.addNewNodeToContainer(null, ext);
+      const e1 = connectWithID(g, 901, n1, ext);
+
+      const vessel = new Node(500, 0, 0);
+      const cluster = new Cluster({
+        Vessel: vessel,
+        Nodes: [n1],
+      });
+      n1.Cluster = cluster;
+
+      const guard = new WorkGuard(ctx, "test", 10000);
+      // Abort after guard creation; total loop steps is 2, well below 1024 stride
+      controller.abort();
+
+      let caughtErr;
+      try {
+        abductClusterEdges(cluster, [e1], guard);
+      } catch (err) {
+        caughtErr = err;
+      }
+
+      expect(caughtErr).toBeInstanceOf(WorkCanceledError);
+      expect(caughtErr.location).toBe(exp.expectedLocation);
+      expect(exp.isCanceled).toBe(true);
+      expect(guard.Used()).toBe(BigInt(exp.used));
+      expect(cluster.EdgeAbductions.length).toBe(exp.publishedAbductionsLen);
+      expect(String(e1.From.ID)).toBe(exp.e1From);
+      expect(String(e1.To.ID)).toBe(exp.e1To);
+      expect(vessel.Edges.length).toBe(exp.vesselEdgesLen);
+      expect(n1.Edges.length).toBe(exp.n1EdgesLen);
     });
   });
 });

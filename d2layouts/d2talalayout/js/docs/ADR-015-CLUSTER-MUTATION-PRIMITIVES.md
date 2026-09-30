@@ -43,13 +43,16 @@ Go's `(*Cluster).Resize(vessel)` operates with unmetered work:
 1. Scans member `TopLeft` coordinates for independent minimum X and minimum Y across all positioned members (`node.TopLeft != nil`).
 2. Constructs a new vessel `Node(vesselID, 0, 0)` and marks `vessel.isClusterVessel = true`. Note: it does NOT assign `cluster.Vessel = vessel` (the caller assigns that later).
 3. Invokes `cluster.Resize(vessel)`.
-4. If at least one member was positioned (`Number.isFinite(minimumX) && Number.isFinite(minimumY)`):
+4. If at least one member was positioned (`minimumX !== Number.POSITIVE_INFINITY && minimumY !== Number.POSITIVE_INFINITY`):
    - For `Row`: sorts `cluster.Nodes` in place ascending by `TopLeft.X` and sets `vessel.TopLeft = Point(minimumX, minimumY)`.
    - For `Column`: sorts `cluster.Nodes` in place ascending by `TopLeft.Y` and sets `vessel.TopLeft = Point(minimumX, minimumY)`.
+   - Special coordinates like `-Infinity` and `NaN` pass this gate matching Go's `!math.IsInf(minimumX, 1) && !math.IsInf(minimumY, 1)`.
 5. If no member was positioned, `cluster.Nodes` is not sorted and `vessel.TopLeft` remains `null`.
 
 ### 4. Go `sort.Slice` Tie Parity
-Pinned Go uses `sort.Slice(cluster.Nodes, ...)` to sort cluster members. For small slices, Go's pdqsort algorithm uses insertion sort, which preserves the original relative order of elements with equal keys. In JavaScript, ECMAScript 2019 specifies that `Array.prototype.sort()` is strictly stable. Thus, returning `0` on equal coordinates in the JS sort comparator (`a.TopLeft.X - b.TopLeft.X`) guarantees exact tie parity with Go.
+Pinned Go uses unstable `sort.Slice`. Small tie cases may preserve relative order as an implementation artifact because pdqsort uses insertion sort for slices with length <= 12. However, larger tie sets (> 12 elements) undergo pdqsort partitioning, which reorders equal keys. Slice 14 validates larger adversarial tie sets (sizes 13, 20, 32) against the real Go 1.27 oracle.
+
+To guarantee exact tie permutation parity with pinned Go 1.27 across all sizes without inventing arbitrary tie-breakers or introducing non-deterministic behavior, `CreateVessel` employs a localized Go 1.27 pdqsort compatibility sorter. This helper faithfully ports Go's pdqsort algorithm (insertion sort, heap sort fallback, pivot selection, 64-bit xorshift pattern breaker, and partitioning).
 
 For mixed positioned/unpositioned members, Go's comparator dereferences `TopLeft.X` without a nil check, triggering a panic. JS mirrors this by accessing `a.TopLeft.X`, throwing a `TypeError`.
 
@@ -96,5 +99,8 @@ Edge abduction reconnects endpoints and alters incident edge lists on nodes, but
 - Individual `Point` object instances and coordinates.
 - Edge ID, arrowheads, labels, and style metadata.
 
-### 9. Real-Go Oracle Strategy
-A dedicated, build-tagged Go bridge (`internal/grouping/cluster_mutation_oracle_bridge.go` with `//go:build tala_cluster_mutation_oracle`) exposes private `abductClusterEdges`. The oracle generator (`js/test/reference/go_cluster_mutation_oracle.go`) generates `js/test/fixtures/go-cluster-mutation-reference.json`, capturing 43 comprehensive scenarios across `Cluster.Resize`, `CreateVessel`, `AddCluster`, `abductClusterEdges`, boundary conditions, and mid-operation cancellation. Deterministic generation is verified via repeatable SHA256 hashing.
+### 9. EdgeAbductions Zero Representation
+Do not change the JS slice representation convention merely because Go uses a nil slice. The already-approved JS migration convention throughout the engine uses `[]` (empty array) for collections with zero elements. EdgeAbductions uses `[]` for zero successful abductions rather than claiming pointer-level Go nil parity.
+
+### 10. Real-Go Oracle Strategy
+A dedicated, build-tagged Go bridge (`internal/grouping/cluster_mutation_oracle_bridge.go` with `//go:build tala_cluster_mutation_oracle`) exposes private `abductClusterEdges`. The oracle generator (`js/test/reference/go_cluster_mutation_oracle.go`) generates `js/test/fixtures/go-cluster-mutation-reference.json`, capturing 49 comprehensive scenarios across `Cluster.Resize`, `CreateVessel` (including large adversarial tie sets of size 13, 20, 32 and special non-finite coordinates `-Infinity` and `NaN`), `AddCluster`, `abductClusterEdges`, boundary conditions, mid-operation cancellation with `errors.Is(err, context.Canceled)` / location wrapping, and final-Finish cancellation. Deterministic generation is verified via repeatable SHA256 hashing.

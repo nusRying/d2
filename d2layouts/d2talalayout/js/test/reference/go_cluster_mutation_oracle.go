@@ -7,8 +7,10 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"runtime"
 	"slices"
@@ -153,6 +155,98 @@ func fileSHA256(filePath string) (string, error) {
 		return "", err
 	}
 	return hex.EncodeToString(h.Sum(nil)), nil
+}
+
+func classifyFloat(v float64) string {
+	if math.IsNaN(v) {
+		return "nan"
+	}
+	if math.IsInf(v, 1) {
+		return "positive_inf"
+	}
+	if math.IsInf(v, -1) {
+		return "negative_inf"
+	}
+	return "finite"
+}
+
+func makeLargeTieScenario(arrangement layoutgraph.ClusterArrangement, coords []float64, startID int) map[string]interface{} {
+	nodes := make([]*layoutgraph.Node, len(coords))
+	inputMemberIDs := make([]string, len(coords))
+	for i, c := range coords {
+		id := startID + i
+		n := layoutgraph.NewNode(layoutgraph.EntityID(id), 40, 30)
+		if arrangement == layoutgraph.Row {
+			n.TopLeft = geo.NewPoint(c, 10)
+		} else {
+			n.TopLeft = geo.NewPoint(10, c)
+		}
+		nodes[i] = n
+		inputMemberIDs[i] = fmt.Sprintf("%d", id)
+	}
+
+	cluster := &layoutgraph.Cluster{
+		Nodes:       nodes,
+		Arrangement: arrangement,
+		Padding:     10,
+		FixedSize:   true,
+	}
+
+	v := grouping.CreateVessel(cluster, layoutgraph.EntityID(startID+1000))
+
+	outputMemberIDs := make([]string, len(cluster.Nodes))
+	for i, n := range cluster.Nodes {
+		outputMemberIDs[i] = fmt.Sprintf("%d", n.ID)
+	}
+
+	return map[string]interface{}{
+		"inputMemberIDs":  inputMemberIDs,
+		"coordinates":     coords,
+		"outputMemberIDs": outputMemberIDs,
+		"vessel":          vesselToDTO(v),
+	}
+}
+
+func makeSpecialCoordScenario(arrangement layoutgraph.ClusterArrangement, x1, y1, x2, y2 float64, startID int) map[string]interface{} {
+	n1 := layoutgraph.NewNode(layoutgraph.EntityID(startID), 40, 30)
+	n1.TopLeft = geo.NewPoint(x1, y1)
+	n2 := layoutgraph.NewNode(layoutgraph.EntityID(startID+1), 40, 30)
+	n2.TopLeft = geo.NewPoint(x2, y2)
+
+	cluster := &layoutgraph.Cluster{
+		Nodes:       []*layoutgraph.Node{n1, n2},
+		Arrangement: arrangement,
+		Padding:     10,
+		FixedSize:   true,
+	}
+
+	v := grouping.CreateVessel(cluster, layoutgraph.EntityID(startID+1000))
+
+	nodeOrder := make([]string, len(cluster.Nodes))
+	for i, n := range cluster.Nodes {
+		nodeOrder[i] = fmt.Sprintf("%d", n.ID)
+	}
+
+	hasTopLeft := v.TopLeft != nil
+	var xKind, yKind string
+	if hasTopLeft {
+		xKind = classifyFloat(v.TopLeft.X)
+		yKind = classifyFloat(v.TopLeft.Y)
+	} else {
+		xKind = "none"
+		yKind = "none"
+	}
+
+	return map[string]interface{}{
+		"hasTopLeft":     hasTopLeft,
+		"topLeftXKind":   xKind,
+		"topLeftYKind":   yKind,
+		"enteredSorting": hasTopLeft,
+		"finalMemberIDs": nodeOrder,
+		"vesselID":       fmt.Sprintf("%d", v.ID),
+		"vesselWidth":    v.Width,
+		"vesselHeight":   v.Height,
+	}
 }
 
 func main() {
@@ -703,6 +797,29 @@ func main() {
 			"panicMsg": panicMsg,
 		}
 	}
+
+	// 2.11 Large tie scenarios: sizes 13, 20, 32 for Row and Column
+	tieCoords13 := []float64{50, 50, 20, 50, 30, 30, 50, 20, 40, 50, 30, 20, 50}
+	tieCoords20 := []float64{50, 20, 30, 50, 20, 40, 30, 50, 20, 30, 40, 50, 20, 30, 50, 40, 20, 30, 50, 20}
+	tieCoords32 := []float64{
+		50, 20, 30, 50, 20, 40, 30, 50, 20, 30, 40, 50, 20, 30, 50, 40,
+		20, 30, 50, 20, 10, 60, 30, 20, 50, 40, 30, 20, 50, 60, 10, 30,
+	}
+
+	createVesselScenarios["row_large_tie_13"] = makeLargeTieScenario(layoutgraph.Row, tieCoords13, 100)
+	createVesselScenarios["col_large_tie_13"] = makeLargeTieScenario(layoutgraph.Column, tieCoords13, 200)
+	createVesselScenarios["row_large_tie_20"] = makeLargeTieScenario(layoutgraph.Row, tieCoords20, 300)
+	createVesselScenarios["col_large_tie_20"] = makeLargeTieScenario(layoutgraph.Column, tieCoords20, 400)
+	createVesselScenarios["row_large_tie_32"] = makeLargeTieScenario(layoutgraph.Row, tieCoords32, 500)
+	createVesselScenarios["col_large_tie_32"] = makeLargeTieScenario(layoutgraph.Column, tieCoords32, 600)
+
+	// 2.12 Special coordinates parity: -Inf and NaN
+	infNeg := math.Inf(-1)
+	nan := math.NaN()
+	createVesselScenarios["row_min_x_neg_inf"] = makeSpecialCoordScenario(layoutgraph.Row, infNeg, 20, 50, 20, 701)
+	createVesselScenarios["col_min_y_neg_inf"] = makeSpecialCoordScenario(layoutgraph.Column, 20, 50, 20, infNeg, 711)
+	createVesselScenarios["row_nan_x"] = makeSpecialCoordScenario(layoutgraph.Row, nan, 20, 50, 20, 721)
+	createVesselScenarios["col_nan_y"] = makeSpecialCoordScenario(layoutgraph.Column, 20, nan, 20, 50, 731)
 
 	out.Scenarios["createVessel"] = createVesselScenarios
 
@@ -1428,14 +1545,61 @@ func main() {
 		}
 
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e1, e2}, guard)
+		var errText string
+		if err != nil {
+			errText = err.Error()
+		}
 		cancellationScenarios["mid_operation_cancellation"] = map[string]interface{}{
 			"err":              err != nil,
-			"errIsCanceled":    err == context.Canceled,
+			"isCanceled":       errors.Is(err, context.Canceled),
+			"errorText":        errText,
+			"expectedLocation": "test",
 			"used":             guard.Used(),
 			"e1From":           fmt.Sprintf("%d", e1.From.ID), // should be vessel (first edge succeeded!)
 			"e2From":           fmt.Sprintf("%d", e2.From.ID), // should still be n2 (failed mid-way!)
 			"sentinelRetained": len(cluster.EdgeAbductions) == 1 && cluster.EdgeAbductions[0] == sentinelAbduction,
 			"vesselEdgesLen":   len(vessel.Edges),
+		}
+	}
+
+	// 6.2 Final-Finish cancellation
+	{
+		ctx, cancel := context.WithCancel(context.Background())
+		guard, _ := limits.NewWorkGuard(ctx, "test", 10000)
+		cancel() // Cancel AFTER guard creation
+
+		g := layoutgraph.NewGraph()
+		n1 := layoutgraph.NewNode(1, 10, 10)
+		ext := layoutgraph.NewNode(2, 10, 10)
+		g.AddNodeUnchecked(n1)
+		g.AddNodeUnchecked(ext)
+		e1 := connectWithID(g, 901, n1, ext)
+
+		vessel := layoutgraph.NewNode(500, 0, 0)
+		cluster := &layoutgraph.Cluster{
+			Vessel: vessel,
+			Nodes:  []*layoutgraph.Node{n1},
+		}
+		n1.Cluster = cluster
+
+		// Loop steps will be: 1 (outer) + (1 + 0) = 2 steps total, well below 1024 stride!
+		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e1}, guard)
+		var errText string
+		if err != nil {
+			errText = err.Error()
+		}
+		cancellationScenarios["final_finish_cancellation"] = map[string]interface{}{
+			"err":                    err != nil,
+			"isCanceled":             errors.Is(err, context.Canceled),
+			"errorText":              errText,
+			"expectedLocation":       "test",
+			"used":                   guard.Used(),
+			"publishedAbductionsLen": len(cluster.EdgeAbductions),
+			"e1From":                 fmt.Sprintf("%d", e1.From.ID),
+			"e1To":                   fmt.Sprintf("%d", e1.To.ID),
+			"vesselEdgesLen":         len(vessel.Edges),
+			"n1EdgesLen":             len(n1.Edges),
+			"abductions":             abductionsToDTO(cluster.EdgeAbductions),
 		}
 	}
 	out.Scenarios["cancellation"] = cancellationScenarios
