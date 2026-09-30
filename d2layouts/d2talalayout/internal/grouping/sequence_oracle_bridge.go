@@ -32,3 +32,23 @@ func HasNodeIDBridge(graph *layoutgraph.Graph, id layoutgraph.EntityID) bool {
 func NextAvailableNodeIDBridge(graph *layoutgraph.Graph, candidate layoutgraph.EntityID, unavailable map[layoutgraph.EntityID]struct{}) layoutgraph.EntityID {
 	return nextAvailableNodeID(graph, candidate, unavailable)
 }
+
+// ClearRememberedSequenceMembershipBridge exposes private clearRememberedSequenceMembership for the test oracle.
+func ClearRememberedSequenceMembershipBridge(sequence *layoutgraph.Sequence, guard *limits.WorkGuard) error {
+	return clearRememberedSequenceMembership(sequence, guard)
+}
+
+// BuildSequenceBridge exposes private buildSequence for the test oracle.
+func BuildSequenceBridge(steps []*layoutgraph.Node, graph *layoutgraph.Graph, container *layoutgraph.Node, id layoutgraph.EntityID) *layoutgraph.Sequence {
+	return buildSequence(steps, graph, container, id)
+}
+
+// AddSequenceBridge exposes private addSequence for the test oracle.
+func AddSequenceBridge(graph *layoutgraph.Graph, sequence *layoutgraph.Sequence) {
+	addSequence(graph, sequence)
+}
+
+// AbductSequenceEdgesBridge exposes private abductSequenceEdges for the test oracle.
+func AbductSequenceEdgesBridge(sequence *layoutgraph.Sequence) {
+	abductSequenceEdges(sequence)
+}
