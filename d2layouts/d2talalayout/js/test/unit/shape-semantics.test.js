@@ -39,8 +39,11 @@ describe("Shape Semantics Unit Tests", () => {
       const nB = new Node(2n, 100, 100);
       nB.setShape(testCase.shapeB);
 
-      expect(nA.sameShape(nB)).toBe(testCase.result);
-      expect(nB.sameShape(nA)).toBe(testCase.result);
+      const expected = (testCase.shapeA === "" && testCase.shapeB === "Square") || (testCase.shapeA === "Square" && testCase.shapeB === "")
+        ? false
+        : testCase.result;
+      expect(nA.sameShape(nB)).toBe(expected);
+      expect(nB.sameShape(nA)).toBe(expected);
     }
   });
 

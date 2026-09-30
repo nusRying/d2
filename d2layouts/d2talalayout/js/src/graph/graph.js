@@ -408,6 +408,154 @@ export class Graph {
   AllDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
     return this.allDescendantNodesWithWorkGuard(node, includeClusterNodes, guard);
   }
+
+  containerPadding(container, considerChildren = false) {
+    let padding = 60;
+    const spacing = new Spacing(padding, padding, padding, padding);
+    if (container === null || container === undefined) {
+      return spacing;
+    }
+
+    if (container._shapeType === "Circle") {
+      padding /= 4;
+    }
+
+    if (container.Icon != null && container._shapeType !== "Image") {
+      padding = 64 + 2 * 5; // 74
+    }
+
+    if (container.Label != null && !isOutsideLabelPosition(container.Label.Position)) {
+      const labelWidth = (container.Label.Width ?? 0) + 10;
+      const labelHeight = (container.Label.Height ?? 0) + 10;
+
+      const insidePos = classifyInsidePosition(container.Label.Position);
+      if (insidePos === "top") {
+        spacing.top = Math.max(spacing.top, labelHeight);
+      } else if (insidePos === "bottom") {
+        spacing.bottom = Math.max(spacing.bottom, labelHeight);
+      } else if (insidePos === "left") {
+        spacing.left = Math.max(spacing.left, labelWidth);
+      } else if (insidePos === "right") {
+        spacing.right = Math.max(spacing.right, labelWidth);
+      }
+
+      const minContainerWidth = labelWidth + spacing.left + spacing.right;
+      if ((container.Width ?? 0) < minContainerWidth) {
+        const extraPadding = Math.ceil((minContainerWidth - (container.Width ?? 0)) / 2);
+        spacing.left = Math.max(spacing.left, extraPadding);
+        spacing.right = Math.max(spacing.right, extraPadding);
+      }
+
+      const minContainerHeight = labelHeight + spacing.top + spacing.bottom;
+      if ((container.Height ?? 0) < minContainerHeight) {
+        const extraPadding = Math.ceil((minContainerHeight - (container.Height ?? 0)) / 2);
+        spacing.top = Math.max(spacing.top, extraPadding);
+        spacing.bottom = Math.max(spacing.bottom, extraPadding);
+      }
+    }
+
+    const containerPad = container.padding ?? { top: 0, bottom: 0, left: 0, right: 0 };
+    const padTop = typeof containerPad.Top === "function" ? containerPad.Top() : (containerPad.top ?? 0);
+    const padBottom = typeof containerPad.Bottom === "function" ? containerPad.Bottom() : (containerPad.bottom ?? 0);
+    const padLeft = typeof containerPad.Left === "function" ? containerPad.Left() : (containerPad.left ?? 0);
+    const padRight = typeof containerPad.Right === "function" ? containerPad.Right() : (containerPad.right ?? 0);
+
+    if (considerChildren) {
+      let hasChildWithIcon = false;
+      const childrenMargin = { left: 0, right: 0, top: 0, bottom: 0 };
+      const children = this.Containers.get(container) || [];
+      for (const child of children) {
+        const childIsFixed = child.Icon?.PositionFixed ? child.Icon.PositionFixed() : false;
+        if (!hasChildWithIcon && child.Icon != null && child._shapeType !== "Image" && !childIsFixed) {
+          hasChildWithIcon = true;
+        }
+        const childMarg = child.margin ?? { left: 0, right: 0, top: 0, bottom: 0 };
+        const cmLeft = typeof childMarg.Left === "function" ? childMarg.Left() : (childMarg.left ?? 0);
+        const cmRight = typeof childMarg.Right === "function" ? childMarg.Right() : (childMarg.right ?? 0);
+        const cmTop = typeof childMarg.Top === "function" ? childMarg.Top() : (childMarg.top ?? 0);
+        const cmBottom = typeof childMarg.Bottom === "function" ? childMarg.Bottom() : (childMarg.bottom ?? 0);
+
+        childrenMargin.left = Math.max(childrenMargin.left, cmLeft);
+        childrenMargin.right = Math.max(childrenMargin.right, cmRight);
+        childrenMargin.top = Math.max(childrenMargin.top, cmTop);
+        childrenMargin.bottom = Math.max(childrenMargin.bottom, cmBottom);
+      }
+
+      spacing.left = Math.max(spacing.left, padLeft + childrenMargin.left);
+      spacing.right = Math.max(spacing.right, padRight + childrenMargin.right);
+      spacing.top = Math.max(spacing.top, padTop + childrenMargin.top);
+      spacing.bottom = Math.max(spacing.bottom, padBottom + childrenMargin.bottom);
+
+      if (hasChildWithIcon) {
+        padding = 64 + 2 * 5; // 74
+      }
+    }
+
+    if (container._shapeType === "Circle") {
+      spacing.top /= 4;
+      spacing.left /= 4;
+      spacing.bottom /= 4;
+      spacing.right /= 4;
+    }
+
+    spacing.left = Math.max(spacing.left, Math.max(padLeft, padding));
+    spacing.right = Math.max(spacing.right, Math.max(padRight, padding));
+    spacing.top = Math.max(spacing.top, Math.max(padTop, padding));
+    spacing.bottom = Math.max(spacing.bottom, Math.max(padBottom, padding));
+
+    return spacing;
+  }
+
+  ContainerPadding(container, considerChildren = false) {
+    return this.containerPadding(container, considerChildren);
+  }
+}
+
+export class Spacing {
+  constructor(top = 0, bottom = 0, left = 0, right = 0) {
+    this.top = top;
+    this.bottom = bottom;
+    this.left = left;
+    this.right = right;
+  }
+
+  Top() { return this.top; }
+  Bottom() { return this.bottom; }
+  Left() { return this.left; }
+  Right() { return this.right; }
+}
+
+function isOutsideLabelPosition(pos) {
+  if (pos === null || pos === undefined) return false;
+  if (typeof pos === "object" && typeof pos.IsOutside === "function") {
+    return pos.IsOutside();
+  }
+  if (typeof pos === "number") {
+    return pos >= 1 && pos <= 12;
+  }
+  if (typeof pos === "string") {
+    return pos.toUpperCase().startsWith("OUTSIDE_");
+  }
+  return false;
+}
+
+function classifyInsidePosition(pos) {
+  if (pos === null || pos === undefined) return null;
+  if (typeof pos === "number") {
+    if (pos >= 13 && pos <= 15) return "top";
+    if (pos === 16) return "left";
+    if (pos === 18) return "right";
+    if (pos >= 19 && pos <= 21) return "bottom";
+    return null;
+  }
+  if (typeof pos === "string") {
+    const s = pos.toUpperCase();
+    if (s === "INSIDE_TOP_LEFT" || s === "INSIDE_TOP_CENTER" || s === "INSIDE_TOP_RIGHT") return "top";
+    if (s === "INSIDE_BOTTOM_LEFT" || s === "INSIDE_BOTTOM_CENTER" || s === "INSIDE_BOTTOM_RIGHT") return "bottom";
+    if (s === "INSIDE_MIDDLE_LEFT") return "left";
+    if (s === "INSIDE_MIDDLE_RIGHT") return "right";
+  }
+  return null;
 }
 
 export function newGraph() {

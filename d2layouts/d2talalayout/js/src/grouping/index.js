@@ -35,3 +35,15 @@ export {
   AddCluster,
   abductClusterEdges,
 } from "./clusters-mutation.js";
+
+export {
+  // Slice 15 – atomic AddClusters orchestration
+  averageClusterDimensions,
+  AverageClusterDimensions,
+  assignArrangement,
+  AssignArrangement,
+  paddingBetween,
+  PaddingBetween,
+  addClusters,
+  AddClusters,
+} from "./clusters-orchestration.js";

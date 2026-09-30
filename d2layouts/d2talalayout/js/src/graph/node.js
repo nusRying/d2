@@ -1,5 +1,31 @@
 import { Box } from '../geometry/box.js';
+import { euclideanDistance } from '../geometry/math.js';
 import { Icon } from './icon.js';
+
+function intervalGap(aStart, aEnd, bStart, bEnd) {
+  if (aEnd < bStart) {
+    return bStart - aEnd;
+  }
+  if (bEnd < aStart) {
+    return aStart - bEnd;
+  }
+  return 0;
+}
+
+function distanceBetweenBoxes(b1, b2) {
+  const dx = intervalGap(b1.TopLeft.X, b1.TopLeft.X + b1.Width, b2.TopLeft.X, b2.TopLeft.X + b2.Width);
+  const dy = intervalGap(b1.TopLeft.Y, b1.TopLeft.Y + b1.Height, b2.TopLeft.Y, b2.TopLeft.Y + b2.Height);
+  return euclideanDistance(0, 0, dx, dy);
+}
+
+function nodeDistanceBox(node, includeSize) {
+  const box = { TopLeft: node.TopLeft, Width: 0, Height: 0 };
+  if (includeSize) {
+    box.Width = node.Width;
+    box.Height = node.Height;
+  }
+  return box;
+}
 
 export function sortNodesByID(nodes) {
   nodes.sort((a, b) => {
@@ -212,11 +238,19 @@ export class Node {
     if (other === null || other === undefined) {
       return false;
     }
-    return this.shapeKind() === other.shapeKind();
+    return this._shapeType === other._shapeType;
   }
 
   SameShape(other) {
     return this.sameShape(other);
+  }
+
+  distanceTo(other, includeSizes) {
+    return distanceBetweenBoxes(nodeDistanceBox(this, includeSizes), nodeDistanceBox(other, includeSizes));
+  }
+
+  DistanceTo(other, includeSizes) {
+    return this.distanceTo(other, includeSizes);
   }
 
   setNumColumns(n) {

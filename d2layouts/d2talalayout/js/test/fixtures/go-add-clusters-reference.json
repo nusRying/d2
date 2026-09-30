@@ -1,0 +1,1469 @@
+{
+  "metadata": {
+    "buildTag": "tala_add_clusters_oracle",
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "goarch": "amd64",
+    "goos": "windows",
+    "pinnedGoRuntime": "go1.27.0",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "helpers": {
+    "assignArrangementCases": [
+      {
+        "name": "connected_sequence",
+        "widths": [
+          100,
+          100
+        ],
+        "heights": [
+          200,
+          200
+        ],
+        "isConnectedToSequence": true,
+        "seed": 42,
+        "arrangement": "Row",
+        "nextFloat64": 0.3730283610466326
+      },
+      {
+        "name": "width_gt_height",
+        "widths": [
+          200,
+          200
+        ],
+        "heights": [
+          100,
+          100
+        ],
+        "isConnectedToSequence": false,
+        "seed": 42,
+        "arrangement": "Column",
+        "nextFloat64": 0.3730283610466326
+      },
+      {
+        "name": "width_lt_height",
+        "widths": [
+          100,
+          100
+        ],
+        "heights": [
+          200,
+          200
+        ],
+        "isConnectedToSequence": false,
+        "seed": 42,
+        "arrangement": "Row",
+        "nextFloat64": 0.3730283610466326
+      },
+      {
+        "name": "equality_seed_row",
+        "widths": [
+          100,
+          100
+        ],
+        "heights": [
+          100,
+          100
+        ],
+        "isConnectedToSequence": false,
+        "seed": 1,
+        "arrangement": "Column",
+        "nextFloat64": 0.9405090880450124
+      },
+      {
+        "name": "equality_seed_col",
+        "widths": [
+          100,
+          100
+        ],
+        "heights": [
+          100,
+          100
+        ],
+        "isConnectedToSequence": false,
+        "seed": 2,
+        "arrangement": "Row",
+        "nextFloat64": 0.2650543054337802
+      },
+      {
+        "name": "empty_cluster_rng",
+        "widths": [],
+        "heights": [],
+        "isConnectedToSequence": false,
+        "seed": 1,
+        "arrangement": "Column",
+        "nextFloat64": 0.9405090880450124
+      }
+    ],
+    "averageClusterDimensionsCases": [
+      {
+        "name": "ordinary",
+        "widths": [
+          100,
+          200
+        ],
+        "heights": [
+          50,
+          70
+        ],
+        "outW": 150,
+        "outH": 60,
+        "isNaNW": false,
+        "isNaNH": false
+      },
+      {
+        "name": "rounded_averages",
+        "widths": [
+          10,
+          15
+        ],
+        "heights": [
+          20,
+          25
+        ],
+        "outW": 13,
+        "outH": 23,
+        "isNaNW": false,
+        "isNaNH": false
+      },
+      {
+        "name": "negative_values",
+        "widths": [
+          -10,
+          -20
+        ],
+        "heights": [
+          10,
+          20
+        ],
+        "outW": -15,
+        "outH": 15,
+        "isNaNW": false,
+        "isNaNH": false
+      },
+      {
+        "name": "empty",
+        "widths": [],
+        "heights": [],
+        "outW": null,
+        "outH": null,
+        "isNaNW": true,
+        "isNaNH": true
+      }
+    ],
+    "containerPaddingCases": [
+      {
+        "name": "root_null",
+        "hasContainer": false,
+        "shape": "",
+        "width": 0,
+        "height": 0,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "ordinary",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "circle",
+        "hasContainer": true,
+        "shape": "Circle",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 15,
+        "bottom": 15,
+        "left": 15,
+        "right": 15
+      },
+      {
+        "name": "container_icon",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": true,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 74,
+        "bottom": 74,
+        "left": 74,
+        "right": 74
+      },
+      {
+        "name": "image_icon",
+        "hasContainer": true,
+        "shape": "Image",
+        "width": 200,
+        "height": 200,
+        "hasIcon": true,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "inside_top_label",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "INSIDE_TOP_CENTER",
+        "labelWidth": 50,
+        "labelHeight": 20,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "inside_bottom_label",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "INSIDE_BOTTOM_CENTER",
+        "labelWidth": 50,
+        "labelHeight": 20,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "inside_middle_left",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "INSIDE_MIDDLE_LEFT",
+        "labelWidth": 50,
+        "labelHeight": 20,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "inside_middle_right",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "INSIDE_MIDDLE_RIGHT",
+        "labelWidth": 50,
+        "labelHeight": 20,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "outside_label",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "OUTSIDE_TOP_CENTER",
+        "labelWidth": 50,
+        "labelHeight": 20,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "child_icon_unfixed",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": true,
+        "childHasIcon": true,
+        "childIconFixed": false,
+        "top": 74,
+        "bottom": 74,
+        "left": 74,
+        "right": 74
+      },
+      {
+        "name": "child_icon_fixed",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": true,
+        "childHasIcon": true,
+        "childIconFixed": true,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "circle_plus_interactions",
+        "hasContainer": true,
+        "shape": "Circle",
+        "width": 100,
+        "height": 100,
+        "hasIcon": true,
+        "iconFixed": false,
+        "labelPosition": "INSIDE_TOP_CENTER",
+        "labelWidth": 40,
+        "labelHeight": 20,
+        "considerChildren": true,
+        "childHasIcon": true,
+        "childIconFixed": false,
+        "top": 74,
+        "bottom": 74,
+        "left": 74,
+        "right": 74
+      }
+    ],
+    "distanceToCases": [
+      {
+        "name": "horizontal_separated",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 10,
+        "heightA": 10,
+        "tlBX": 20,
+        "tlBY": 0,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": true,
+        "distance": 10
+      },
+      {
+        "name": "horizontal_without_sizes",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 10,
+        "heightA": 10,
+        "tlBX": 20,
+        "tlBY": 0,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": false,
+        "distance": 20
+      },
+      {
+        "name": "vertical_separated",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 10,
+        "heightA": 10,
+        "tlBX": 0,
+        "tlBY": 25,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": true,
+        "distance": 15
+      },
+      {
+        "name": "diagonal_separated",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 10,
+        "heightA": 10,
+        "tlBX": 13,
+        "tlBY": 14,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": true,
+        "distance": 5
+      },
+      {
+        "name": "overlap",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 20,
+        "heightA": 20,
+        "tlBX": 10,
+        "tlBY": 10,
+        "widthB": 20,
+        "heightB": 20,
+        "includeSizes": true,
+        "distance": 0
+      },
+      {
+        "name": "touching",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": 10,
+        "heightA": 10,
+        "tlBX": 10,
+        "tlBY": 0,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": true,
+        "distance": 0
+      },
+      {
+        "name": "negative_dimensions",
+        "tlAX": 0,
+        "tlAY": 0,
+        "widthA": -10,
+        "heightA": -10,
+        "tlBX": 20,
+        "tlBY": 20,
+        "widthB": 10,
+        "heightB": 10,
+        "includeSizes": true,
+        "distance": 42.42640687119285
+      }
+    ],
+    "paddingBetweenCases": [
+      {
+        "name": "row_min_gap",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "col_min_gap",
+        "arrangement": "Column",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "large_avg_width",
+        "arrangement": "Row",
+        "widths": [
+          500,
+          500
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 50,
+        "isNaN": false
+      },
+      {
+        "name": "large_avg_height",
+        "arrangement": "Column",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          600,
+          600
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 60,
+        "isNaN": false
+      },
+      {
+        "name": "icon_plus_labels",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": true,
+        "labelWidth": 30,
+        "labelHeight": 20,
+        "considerPositions": false,
+        "padding": 40,
+        "isNaN": false
+      },
+      {
+        "name": "labels_without_icon",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 30,
+        "labelHeight": 20,
+        "considerPositions": false,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "unknown_arrangement_non_row",
+        "arrangement": "Custom",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          400,
+          400
+        ],
+        "topleftsX": [
+          0,
+          0
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 40,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_false",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          50
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": false,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_horizontal_gap",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          25
+        ],
+        "topleftsY": [
+          0,
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": true,
+        "padding": 15,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_diagonal_gap",
+        "arrangement": "Row",
+        "widths": [
+          10,
+          10
+        ],
+        "heights": [
+          10,
+          10
+        ],
+        "topleftsX": [
+          0,
+          13
+        ],
+        "topleftsY": [
+          0,
+          14
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": true,
+        "padding": 5,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_overlap_fallback",
+        "arrangement": "Row",
+        "widths": [
+          20,
+          20
+        ],
+        "heights": [
+          20,
+          20
+        ],
+        "topleftsX": [
+          0,
+          10
+        ],
+        "topleftsY": [
+          0,
+          10
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": true,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_single_node",
+        "arrangement": "Row",
+        "widths": [
+          10
+        ],
+        "heights": [
+          10
+        ],
+        "topleftsX": [
+          0
+        ],
+        "topleftsY": [
+          0
+        ],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": true,
+        "padding": 20,
+        "isNaN": false
+      },
+      {
+        "name": "consider_positions_empty",
+        "arrangement": "Row",
+        "widths": [],
+        "heights": [],
+        "topleftsX": [],
+        "topleftsY": [],
+        "hasIcon": false,
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerPositions": true,
+        "padding": null,
+        "isNaN": true
+      }
+    ],
+    "sameShapeCases": [
+      {
+        "name": "default_vs_default",
+        "shapeA": "",
+        "shapeB": "",
+        "result": true
+      },
+      {
+        "name": "square_vs_square",
+        "shapeA": "Square",
+        "shapeB": "Square",
+        "result": true
+      },
+      {
+        "name": "circle_vs_circle",
+        "shapeA": "Circle",
+        "shapeB": "Circle",
+        "result": true
+      },
+      {
+        "name": "circle_vs_square",
+        "shapeA": "Circle",
+        "shapeB": "Square",
+        "result": false
+      },
+      {
+        "name": "step_vs_step",
+        "shapeA": "Step",
+        "shapeB": "Step",
+        "result": true
+      }
+    ]
+  },
+  "scenarios": {
+    "basic_shared_adjacent_cluster": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "candidate_rejected_before_vessel_draw": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 122,
+      "randomNextInt63": "5065216499495820007",
+      "nodes": [
+        "10"
+      ],
+      "clusters": {},
+      "containers": {
+        "10": [
+          "11",
+          "12"
+        ],
+        "null": [
+          "10"
+        ]
+      },
+      "edges": [
+        {
+          "id": "0",
+          "from": "11",
+          "to": "10"
+        },
+        {
+          "id": "0",
+          "from": "12",
+          "to": "10"
+        }
+      ]
+    },
+    "circle_cluster_fixed_size": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "connected_to_sequence_forced_row": {
+      "success": false,
+      "errorText": "TALA engine cluster vessel 99 has no cluster record",
+      "workGuardUsed": 0,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "99"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "consistent_multiple_shared_adjacency": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 66,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "1",
+          "to": "4"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "4"
+        }
+      ]
+    },
+    "hierarchy_ineligible_nodes": {
+      "success": false,
+      "errorText": "TALA engine topology contains nil cluster vessel",
+      "workGuardUsed": 0,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "inconsistent_multiple_shared_adjacency": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 52,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "4"
+        }
+      ]
+    },
+    "multiple_accepted_clusters": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 84,
+      "randomNextInt63": "3875566847578189813",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "4",
+          "to": "6"
+        },
+        {
+          "id": "0",
+          "from": "5",
+          "to": "6"
+        }
+      ]
+    },
+    "nested_containers": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 65,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "10"
+      ],
+      "clusters": {},
+      "containers": {
+        "10": [
+          "20"
+        ],
+        "20": [
+          "21",
+          "22",
+          "23"
+        ]
+      },
+      "edges": [
+        {
+          "id": "0",
+          "from": "21",
+          "to": "23"
+        },
+        {
+          "id": "0",
+          "from": "22",
+          "to": "23"
+        }
+      ]
+    },
+    "ordinary_node_vessel_id_collision": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 52,
+      "randomNextInt63": "5577006791947779410",
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "5577006791947779410"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "sequence_member_id_collision": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 66,
+      "randomNextInt63": "6640668014774057861",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "sequence_vessel_id_collision": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 57,
+      "randomNextInt63": "1543039099823358511",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "shape_mismatch_circle_vs_square": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "size_ratio_beyond_4x": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "size_ratio_exactly_4x": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "table_column_edge_metadata": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 43,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "tree_node_id_collision": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 63,
+      "randomNextInt63": "7414159922357799360",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "tree_sentinel_id_collision": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 51,
+      "randomNextInt63": "2244708090865615074",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
+    "two_containers_equal_square_clusters": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 302,
+      "randomNextInt63": "4887109463581248485",
+      "nodes": [
+        "10",
+        "20",
+        "6959381606165702326",
+        "951120189833308398"
+      ],
+      "clusters": {
+        "6959381606165702326": {
+          "vesselID": "6959381606165702326",
+          "arrangement": "Column",
+          "desiredArrangement": "Column",
+          "padding": 20,
+          "fixedSize": false,
+          "vesselWidth": 80,
+          "vesselHeight": 180,
+          "vesselTopLeft": null,
+          "memberIDs": [
+            "21",
+            "22"
+          ],
+          "container": "20",
+          "edgeAbductions": [
+            {
+              "edgeID": "0",
+              "originallyFrom": "21",
+              "originallyTo": null,
+              "currentFrom": "6959381606165702326",
+              "currentTo": "23"
+            },
+            {
+              "edgeID": "0",
+              "originallyFrom": "22",
+              "originallyTo": null,
+              "currentFrom": "6959381606165702326",
+              "currentTo": "23"
+            }
+          ]
+        },
+        "951120189833308398": {
+          "vesselID": "951120189833308398",
+          "arrangement": "Column",
+          "desiredArrangement": "Column",
+          "padding": 20,
+          "fixedSize": false,
+          "vesselWidth": 80,
+          "vesselHeight": 180,
+          "vesselTopLeft": null,
+          "memberIDs": [
+            "11",
+            "12"
+          ],
+          "container": "10",
+          "edgeAbductions": [
+            {
+              "edgeID": "0",
+              "originallyFrom": "11",
+              "originallyTo": null,
+              "currentFrom": "951120189833308398",
+              "currentTo": "13"
+            },
+            {
+              "edgeID": "0",
+              "originallyFrom": "12",
+              "originallyTo": null,
+              "currentFrom": "951120189833308398",
+              "currentTo": "13"
+            }
+          ]
+        }
+      },
+      "containers": {
+        "10": [
+          "13",
+          "951120189833308398"
+        ],
+        "20": [
+          "23",
+          "6959381606165702326"
+        ],
+        "null": [
+          "10",
+          "20"
+        ]
+      },
+      "edges": [
+        {
+          "id": "0",
+          "from": "951120189833308398",
+          "to": "13"
+        },
+        {
+          "id": "0",
+          "from": "951120189833308398",
+          "to": "13"
+        },
+        {
+          "id": "0",
+          "from": "6959381606165702326",
+          "to": "23"
+        },
+        {
+          "id": "0",
+          "from": "6959381606165702326",
+          "to": "23"
+        }
+      ]
+    },
+    "zero_neighbor_sibling_pair": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 20,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": null
+    }
+  }
+}
