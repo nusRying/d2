@@ -370,50 +370,70 @@ func buildHelperCoverage(out *OracleOutput) {
 
 	// 6. ContainerPadding Cases
 	type containerPaddingCase struct {
-		Name             string  `json:"name"`
-		HasContainer     bool    `json:"hasContainer"`
-		Shape            string  `json:"shape"`
-		Width            float64 `json:"width"`
-		Height           float64 `json:"height"`
-		HasIcon          bool    `json:"hasIcon"`
-		IconFixed        bool    `json:"iconFixed"`
-		LabelPosition    string  `json:"labelPosition"`
-		LabelWidth       float64 `json:"labelWidth"`
-		LabelHeight      float64 `json:"labelHeight"`
-		ConsiderChildren bool    `json:"considerChildren"`
-		ChildHasIcon     bool    `json:"childHasIcon"`
-		ChildIconFixed   bool    `json:"childIconFixed"`
-		Top              float64 `json:"top"`
-		Bottom           float64 `json:"bottom"`
-		Left             float64 `json:"left"`
-		Right            float64 `json:"right"`
+		Name               string  `json:"name"`
+		HasContainer       bool    `json:"hasContainer"`
+		Shape              string  `json:"shape"`
+		Width              float64 `json:"width"`
+		Height             float64 `json:"height"`
+		HasIcon            bool    `json:"hasIcon"`
+		IconFixed          bool    `json:"iconFixed"`
+		LabelPosition      string  `json:"labelPosition"`
+		LabelWidth         float64 `json:"labelWidth"`
+		LabelHeight        float64 `json:"labelHeight"`
+		ConsiderChildren   bool    `json:"considerChildren"`
+		ChildHasIcon       bool    `json:"childHasIcon"`
+		ChildIconFixed     bool    `json:"childIconFixed"`
+		ChildMarginTop     float64 `json:"childMarginTop"`
+		ChildMarginBottom  float64 `json:"childMarginBottom"`
+		ChildMarginLeft    float64 `json:"childMarginLeft"`
+		ChildMarginRight   float64 `json:"childMarginRight"`
+		ContainerPadTop    float64 `json:"containerPadTop"`
+		ContainerPadBottom float64 `json:"containerPadBottom"`
+		ContainerPadLeft   float64 `json:"containerPadLeft"`
+		ContainerPadRight  float64 `json:"containerPadRight"`
+		Top                float64 `json:"top"`
+		Bottom             float64 `json:"bottom"`
+		Left               float64 `json:"left"`
+		Right              float64 `json:"right"`
 	}
 	cpDefs := []struct {
-		name             string
-		hasContainer     bool
-		shapeType        string
-		width, height    float64
-		hasIcon          bool
-		iconFixed        bool
-		labelPos         label.Position
-		lblW, lblH       float64
-		considerChildren bool
-		childHasIcon     bool
-		childIconFixed   bool
+		name               string
+		hasContainer       bool
+		shapeType          string
+		width, height      float64
+		hasIcon            bool
+		iconFixed          bool
+		labelPos           label.Position
+		lblW, lblH         float64
+		considerChildren   bool
+		childHasIcon       bool
+		childIconFixed     bool
+		childMarginTop     float64
+		childMarginBottom  float64
+		childMarginLeft    float64
+		childMarginRight   float64
+		containerPadTop    float64
+		containerPadBottom float64
+		containerPadLeft   float64
+		containerPadRight  float64
 	}{
-		{"root_null", false, "", 0, 0, false, false, label.Unset, 0, 0, false, false, false},
-		{"ordinary", true, "", 200, 200, false, false, label.Unset, 0, 0, false, false, false},
-		{"circle", true, shape.CIRCLE_TYPE, 200, 200, false, false, label.Unset, 0, 0, false, false, false},
-		{"container_icon", true, "", 200, 200, true, false, label.Unset, 0, 0, false, false, false},
-		{"image_icon", true, shape.IMAGE_TYPE, 200, 200, true, false, label.Unset, 0, 0, false, false, false},
-		{"inside_top_label", true, "", 200, 200, false, false, label.InsideTopCenter, 50, 20, false, false, false},
-		{"inside_bottom_label", true, "", 200, 200, false, false, label.InsideBottomCenter, 50, 20, false, false, false},
-		{"inside_middle_left", true, "", 200, 200, false, false, label.InsideMiddleLeft, 50, 20, false, false, false},
-		{"inside_middle_right", true, "", 200, 200, false, false, label.InsideMiddleRight, 50, 20, false, false, false},
-		{"outside_label", true, "", 200, 200, false, false, label.OutsideTopCenter, 50, 20, false, false, false},
-		{"child_icon_unfixed", true, "", 200, 200, false, false, label.Unset, 0, 0, true, true, false},
-		{"child_icon_fixed", true, "", 200, 200, false, false, label.Unset, 0, 0, true, true, true},
-		{"circle_plus_interactions", true, shape.CIRCLE_TYPE, 100, 100, true, false, label.InsideTopCenter, 40, 20, true, true, false},
+		{"root_null", false, "", 0, 0, false, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"ordinary", true, "", 200, 200, false, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"circle", true, shape.CIRCLE_TYPE, 200, 200, false, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"container_icon", true, "", 200, 200, true, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"image_icon", true, shape.IMAGE_TYPE, 200, 200, true, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"inside_top_label", true, "", 200, 200, false, false, label.InsideTopCenter, 50, 20, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"inside_bottom_label", true, "", 200, 200, false, false, label.InsideBottomCenter, 50, 20, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"inside_middle_left", true, "", 200, 200, false, false, label.InsideMiddleLeft, 50, 20, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"inside_middle_right", true, "", 200, 200, false, false, label.InsideMiddleRight, 50, 20, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"outside_label", true, "", 200, 200, false, false, label.OutsideTopCenter, 50, 20, false, false, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"child_icon_unfixed", true, "", 200, 200, false, false, label.Unset, 0, 0, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"child_icon_fixed", true, "", 200, 200, false, false, label.Unset, 0, 0, true, true, true, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"circle_plus_interactions", true, shape.CIRCLE_TYPE, 100, 100, true, false, label.InsideTopCenter, 40, 20, true, true, false, 0, 0, 0, 0, 0, 0, 0, 0},
+		{"child_margin_only", true, "", 200, 200, false, false, label.Unset, 0, 0, true, false, false, 15, 25, 35, 45, 0, 0, 0, 0},
+		{"container_padding_only", true, "", 200, 200, false, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 12, 24, 36, 48},
+		{"child_margin_plus_container_padding", true, "", 200, 200, false, false, label.Unset, 0, 0, true, false, false, 10, 15, 20, 25, 30, 35, 40, 45},
+		{"circle_custom_padding", true, shape.CIRCLE_TYPE, 200, 200, false, false, label.Unset, 0, 0, false, false, false, 0, 0, 0, 0, 40, 40, 40, 40},
 	}
 	var cpResults []containerPaddingCase
 	for _, cpd := range cpDefs {
@@ -424,6 +444,9 @@ func buildHelperCoverage(out *OracleOutput) {
 			if cpd.shapeType != "" {
 				container.SetShape(cpd.shapeType)
 			}
+			if cpd.containerPadTop > 0 || cpd.containerPadBottom > 0 || cpd.containerPadLeft > 0 || cpd.containerPadRight > 0 {
+				layoutgraph.SetNodePaddingForOracle(container, cpd.containerPadTop, cpd.containerPadBottom, cpd.containerPadLeft, cpd.containerPadRight)
+			}
 			if cpd.hasIcon {
 				container.InitIcon()
 				if cpd.iconFixed {
@@ -433,34 +456,47 @@ func buildHelperCoverage(out *OracleOutput) {
 			if cpd.lblW > 0 || cpd.lblH > 0 || cpd.labelPos != label.Unset {
 				container.Label = &layoutgraph.Label{Width: cpd.lblW, Height: cpd.lblH, Position: cpd.labelPos}
 			}
-			if cpd.considerChildren && cpd.childHasIcon {
+			if cpd.considerChildren && (cpd.childHasIcon || cpd.childMarginTop > 0 || cpd.childMarginBottom > 0 || cpd.childMarginLeft > 0 || cpd.childMarginRight > 0) {
 				child := layoutgraph.NewNode(2, 50, 50)
-				child.InitIcon()
-				if cpd.childIconFixed {
-					child.Icon.FixPosition()
+				if cpd.childHasIcon {
+					child.InitIcon()
+					if cpd.childIconFixed {
+						child.Icon.FixPosition()
+					}
+				}
+				if cpd.childMarginTop > 0 || cpd.childMarginBottom > 0 || cpd.childMarginLeft > 0 || cpd.childMarginRight > 0 {
+					layoutgraph.SetNodeMarginForOracle(child, cpd.childMarginTop, cpd.childMarginBottom, cpd.childMarginLeft, cpd.childMarginRight)
 				}
 				g.AddNodeToContainer(container, child)
 			}
 		}
 		sp := g.ContainerPadding(container, cpd.considerChildren)
 		cpResults = append(cpResults, containerPaddingCase{
-			Name:             cpd.name,
-			HasContainer:     cpd.hasContainer,
-			Shape:            cpd.shapeType,
-			Width:            cpd.width,
-			Height:           cpd.height,
-			HasIcon:          cpd.hasIcon,
-			IconFixed:        cpd.iconFixed,
-			LabelPosition:    cpd.labelPos.String(),
-			LabelWidth:       cpd.lblW,
-			LabelHeight:      cpd.lblH,
-			ConsiderChildren: cpd.considerChildren,
-			ChildHasIcon:     cpd.childHasIcon,
-			ChildIconFixed:   cpd.childIconFixed,
-			Top:              sp.Top(),
-			Bottom:           sp.Bottom(),
-			Left:             sp.Left(),
-			Right:            sp.Right(),
+			Name:               cpd.name,
+			HasContainer:       cpd.hasContainer,
+			Shape:              cpd.shapeType,
+			Width:              cpd.width,
+			Height:             cpd.height,
+			HasIcon:            cpd.hasIcon,
+			IconFixed:          cpd.iconFixed,
+			LabelPosition:      cpd.labelPos.String(),
+			LabelWidth:         cpd.lblW,
+			LabelHeight:        cpd.lblH,
+			ConsiderChildren:   cpd.considerChildren,
+			ChildHasIcon:       cpd.childHasIcon,
+			ChildIconFixed:     cpd.childIconFixed,
+			ChildMarginTop:     cpd.childMarginTop,
+			ChildMarginBottom:  cpd.childMarginBottom,
+			ChildMarginLeft:    cpd.childMarginLeft,
+			ChildMarginRight:   cpd.childMarginRight,
+			ContainerPadTop:    cpd.containerPadTop,
+			ContainerPadBottom: cpd.containerPadBottom,
+			ContainerPadLeft:   cpd.containerPadLeft,
+			ContainerPadRight:  cpd.containerPadRight,
+			Top:                sp.Top(),
+			Bottom:             sp.Bottom(),
+			Left:               sp.Left(),
+			Right:              sp.Right(),
 		})
 	}
 	out.Helpers["containerPaddingCases"] = cpResults
@@ -596,14 +632,55 @@ func buildAddClustersScenarios(out *OracleOutput) {
 		return rand.New(rand.NewSource(12345)), 42
 	})
 
-	// 2. Hierarchy ineligible nodes (e.g. node already has Cluster != nil)
-	runScenario("hierarchy_ineligible_nodes", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
+	// 2. Already clustered node -> preflight failure (node.Cluster != nil)
+	runScenario("already_clustered_ineligible_node", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
 		n1 := g.AddNode(layoutgraph.NewNode(1, 100, 50))
 		n2 := g.AddNode(layoutgraph.NewNode(2, 100, 50))
 		target := g.AddNode(layoutgraph.NewNode(3, 80, 80))
 		g.Connect(n1, target)
 		g.Connect(n2, target)
 		n1.Cluster = &layoutgraph.Cluster{} // ineligible
+		return rand.New(rand.NewSource(12345)), 42
+	})
+
+	// 2b. Genuine hierarchy ineligible node (node.Hierarchy != nil -> no clustering)
+	runScenario("hierarchy_ineligible_nodes", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
+		c := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		c.SetContainer(true)
+		g.AddNodeToContainer(nil, c)
+
+		n1 := layoutgraph.NewNode(11, 80, 80)
+		n2 := layoutgraph.NewNode(12, 80, 80)
+		target := layoutgraph.NewNode(13, 60, 60)
+		g.AddNodeToContainer(c, n1)
+		g.AddNodeToContainer(c, n2)
+		g.AddNodeToContainer(c, target)
+
+		g.Connect(n1, target)
+		g.Connect(n2, target)
+
+		n1.Hierarchy = &layoutgraph.Hierarchy{} // sets noClustering = true
+		return rand.New(rand.NewSource(12345)), 42
+	})
+
+	// 2c. RealSquare members -> FixedSize == true
+	runScenario("real_square_members_fixed_size", func(g *layoutgraph.Graph) (*rand.Rand, int64) {
+		c := g.AddNode(layoutgraph.NewNode(10, 300, 300))
+		c.SetContainer(true)
+		g.AddNodeToContainer(nil, c)
+
+		n1 := layoutgraph.NewNode(11, 80, 80)
+		n1.SetShape(shape.REAL_SQUARE_TYPE)
+		n2 := layoutgraph.NewNode(12, 80, 80)
+		n2.SetShape(shape.REAL_SQUARE_TYPE)
+		target := layoutgraph.NewNode(13, 60, 60)
+		g.AddNodeToContainer(c, n1)
+		g.AddNodeToContainer(c, n2)
+		g.AddNodeToContainer(c, target)
+
+		g.Connect(n1, target)
+		g.Connect(n2, target)
+
 		return rand.New(rand.NewSource(12345)), 42
 	})
 

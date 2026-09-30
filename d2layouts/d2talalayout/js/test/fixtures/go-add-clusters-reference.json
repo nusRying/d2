@@ -165,6 +165,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -184,6 +192,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -203,6 +219,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 15,
         "bottom": 15,
         "left": 15,
@@ -222,6 +246,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 74,
         "bottom": 74,
         "left": 74,
@@ -241,6 +273,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -260,6 +300,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -279,6 +327,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -298,6 +354,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -317,6 +381,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -336,6 +408,14 @@
         "considerChildren": false,
         "childHasIcon": false,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -355,6 +435,14 @@
         "considerChildren": true,
         "childHasIcon": true,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 74,
         "bottom": 74,
         "left": 74,
@@ -374,6 +462,14 @@
         "considerChildren": true,
         "childHasIcon": true,
         "childIconFixed": true,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 60,
         "bottom": 60,
         "left": 60,
@@ -393,10 +489,126 @@
         "considerChildren": true,
         "childHasIcon": true,
         "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
         "top": 74,
         "bottom": 74,
         "left": 74,
         "right": 74
+      },
+      {
+        "name": "child_margin_only",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": true,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "childMarginTop": 15,
+        "childMarginBottom": 25,
+        "childMarginLeft": 35,
+        "childMarginRight": 45,
+        "containerPadTop": 0,
+        "containerPadBottom": 0,
+        "containerPadLeft": 0,
+        "containerPadRight": 0,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "container_padding_only",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 12,
+        "containerPadBottom": 24,
+        "containerPadLeft": 36,
+        "containerPadRight": 48,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 60
+      },
+      {
+        "name": "child_margin_plus_container_padding",
+        "hasContainer": true,
+        "shape": "",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": true,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "childMarginTop": 10,
+        "childMarginBottom": 15,
+        "childMarginLeft": 20,
+        "childMarginRight": 25,
+        "containerPadTop": 30,
+        "containerPadBottom": 35,
+        "containerPadLeft": 40,
+        "containerPadRight": 45,
+        "top": 60,
+        "bottom": 60,
+        "left": 60,
+        "right": 70
+      },
+      {
+        "name": "circle_custom_padding",
+        "hasContainer": true,
+        "shape": "Circle",
+        "width": 200,
+        "height": 200,
+        "hasIcon": false,
+        "iconFixed": false,
+        "labelPosition": "",
+        "labelWidth": 0,
+        "labelHeight": 0,
+        "considerChildren": false,
+        "childHasIcon": false,
+        "childIconFixed": false,
+        "childMarginTop": 0,
+        "childMarginBottom": 0,
+        "childMarginLeft": 0,
+        "childMarginRight": 0,
+        "containerPadTop": 40,
+        "containerPadBottom": 40,
+        "containerPadLeft": 40,
+        "containerPadRight": 40,
+        "top": 40,
+        "bottom": 40,
+        "left": 40,
+        "right": 40
       }
     ],
     "distanceToCases": [
@@ -850,6 +1062,31 @@
     ]
   },
   "scenarios": {
+    "already_clustered_ineligible_node": {
+      "success": false,
+      "errorText": "TALA engine topology contains nil cluster vessel",
+      "workGuardUsed": 0,
+      "randomNextInt63": "7828158075477027098",
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "clusters": {},
+      "containers": {},
+      "edges": [
+        {
+          "id": "0",
+          "from": "1",
+          "to": "3"
+        },
+        {
+          "id": "0",
+          "from": "2",
+          "to": "3"
+        }
+      ]
+    },
     "basic_shared_adjacent_cluster": {
       "success": true,
       "errorText": null,
@@ -994,27 +1231,34 @@
       ]
     },
     "hierarchy_ineligible_nodes": {
-      "success": false,
-      "errorText": "TALA engine topology contains nil cluster vessel",
-      "workGuardUsed": 0,
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 114,
       "randomNextInt63": "7828158075477027098",
       "nodes": [
-        "1",
-        "2",
-        "3"
+        "10"
       ],
       "clusters": {},
-      "containers": {},
+      "containers": {
+        "10": [
+          "11",
+          "12",
+          "13"
+        ],
+        "null": [
+          "10"
+        ]
+      },
       "edges": [
         {
           "id": "0",
-          "from": "1",
-          "to": "3"
+          "from": "11",
+          "to": "13"
         },
         {
           "id": "0",
-          "from": "2",
-          "to": "3"
+          "from": "12",
+          "to": "13"
         }
       ]
     },
@@ -1137,6 +1381,70 @@
           "id": "0",
           "from": "2",
           "to": "3"
+        }
+      ]
+    },
+    "real_square_members_fixed_size": {
+      "success": true,
+      "errorText": null,
+      "workGuardUsed": 151,
+      "randomNextInt63": "5950071357434416446",
+      "nodes": [
+        "10",
+        "7828158075477027098"
+      ],
+      "clusters": {
+        "7828158075477027098": {
+          "vesselID": "7828158075477027098",
+          "arrangement": "Row",
+          "desiredArrangement": "Row",
+          "padding": 20,
+          "fixedSize": true,
+          "vesselWidth": 180,
+          "vesselHeight": 80,
+          "vesselTopLeft": null,
+          "memberIDs": [
+            "11",
+            "12"
+          ],
+          "container": "10",
+          "edgeAbductions": [
+            {
+              "edgeID": "0",
+              "originallyFrom": "11",
+              "originallyTo": null,
+              "currentFrom": "7828158075477027098",
+              "currentTo": "13"
+            },
+            {
+              "edgeID": "0",
+              "originallyFrom": "12",
+              "originallyTo": null,
+              "currentFrom": "7828158075477027098",
+              "currentTo": "13"
+            }
+          ]
+        }
+      },
+      "containers": {
+        "10": [
+          "13",
+          "7828158075477027098"
+        ],
+        "null": [
+          "10"
+        ]
+      },
+      "edges": [
+        {
+          "id": "0",
+          "from": "7828158075477027098",
+          "to": "13"
+        },
+        {
+          "id": "0",
+          "from": "7828158075477027098",
+          "to": "13"
         }
       ]
     },

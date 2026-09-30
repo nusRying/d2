@@ -39,7 +39,6 @@ export {
 export {
   // Slice 15 – atomic AddClusters orchestration
   averageClusterDimensions,
-  AverageClusterDimensions,
   assignArrangement,
   AssignArrangement,
   paddingBetween,

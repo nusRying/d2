@@ -12,13 +12,14 @@
 ## 2. Implemented Scope
 Slice 15 delivers the top-level transactional clustering stage `AddClusters` along with its supporting helper primitives and transaction guard machinery:
 
-- **`averageClusterDimensions` / `AverageClusterDimensions`** (`js/src/grouping/clusters-orchestration.js`):
+- **`averageClusterDimensions`** (`js/src/grouping/clusters-orchestration.js`):
   - Calculates rounded integer averages for node widths and heights using `goRound`.
-  - Empty cluster returns `[NaN, NaN]`.
+  - Empty cluster returns `[NaN, NaN]` as a plain two-element array (without extra `.width`/`.height` properties).
+  - Pinned Go helper is private, so no `AverageClusterDimensions` PascalCase alias is exported.
 - **`assignArrangement` / `AssignArrangement`** (`js/src/grouping/clusters-orchestration.js`):
   - Forces `Row` if `isConnectedToSequence` is true.
   - Chooses `Column` if `averageWidth > averageHeight`, `Row` if `averageWidth < averageHeight`.
-  - Consumes external RNG (`random.Float64() > 0.5 ? Column : Row`) only when dimensions are equal (or NaN).
+  - Consumes per-container RNG (`rnd.Float64() > 0.5 ? Column : Row`) only when dimensions are equal (or NaN).
 - **`paddingBetween` / `PaddingBetween`** (`js/src/grouping/clusters-orchestration.js`):
   - Spacing based on `averageWidth` (Row) or `averageHeight` (Column/other) with minimum 20.
   - Expands to accommodate icons and member labels.
@@ -29,39 +30,42 @@ Slice 15 delivers the top-level transactional clustering stage `AddClusters` alo
   - Establishes transaction guard via `ensureTransactionWorkGuard(context, "AddClustersTransactions")`.
   - Traverses containers in `ContainerRDFSOrder`.
   - Collects reserved entity IDs across `graph.Nodes`, `graph.Sequences`, and `graph.Trees` (LIFO stack order).
-  - Shuffles container candidates with local `new GoRand(randomSeed)`.
   - Evaluates size ratio (max 4.0x) and raw shape match (`Node.sameShape`).
-  - Charges quadratic cluster kernel: `len(Nodes) * len(Nodes) * 2`.
-  - Allocates unique vessel ID from external `random.Int63()`.
+  - Charges exact cluster kernel work: $n \times n$ Steps, plus for widths $1, 2, 4, \dots$ while $\text{width} < n$: $n$ Steps per pass, stopping after the pass where $\text{width} > \lfloor n/2 \rfloor$.
+  - Allocates unique vessel ID from external caller RNG `random.Int63()`. External RNG is used ONLY for vessel ID allocation.
   - Executes mutation primitives: `CreateVessel`, `AddCluster`, `abductClusterEdges`, `refreshAfterClusterAbduction`.
   - Updates container estimate via `refreshContainerEstimate` and `containerPadding`.
   - Full transactional rollback: snapshot taken before mutation, restored if any error or cancellation occurs.
   - External RNG state advances on consumption and is NOT rewound upon rollback.
 - **Node & Graph Primitives:**
   - `Node.sameShape(other)`: exact raw shape comparison matching Go (`"" != "Square"`).
-  - `Node.distanceTo(other, includeSizes)`: center and bounding distance calculation.
+  - `Node.distanceTo(other, includeSizes)`: shortest Euclidean distance between two closed axis-aligned node boxes (with zero-sized boxes when `includeSizes=false`).
   - `Graph.containerPadding(container, considerChildren)` and `Spacing` class.
 - **Limits & Transaction WorkGuard:**
   - `TransactionWorkContext`, `contextWithTransactionWorkGuard`, `existingTransactionWorkGuard`, `ensureTransactionWorkGuard`.
   - `MAX_TRANSACTION_WORK_UNITS = 1_000_000_000n`.
 
 ## 3. Real-Go Oracle and Verification Infrastructure
-- **Go Bridge:** `internal/grouping/add_clusters_oracle_bridge.go` (`//go:build tala_add_clusters_oracle`) exposing helper bridge.
+- **Go Bridges:**
+  - `internal/grouping/add_clusters_oracle_bridge.go` (`//go:build tala_add_clusters_oracle`)
+  - `internal/layoutgraph/container_padding_oracle_bridge.go` (`//go:build tala_add_clusters_oracle`)
 - **Oracle Generator:** `js/test/reference/go_add_clusters_oracle.go`
-  - Generates helper test cases and 20 comprehensive end-to-end `AddClusters` graph scenarios.
+  - Generates helper test cases and 22 comprehensive end-to-end `AddClusters` graph scenarios (including `already_clustered_ineligible_node`, `hierarchy_ineligible_nodes`, and `real_square_members_fixed_size`).
+  - Tests four container padding matrix cases: `child_margin_only`, `container_padding_only`, `child_margin_plus_container_padding`, `circle_custom_padding`.
   - Serializes 64-bit integers as decimal strings.
 - **Oracle Fixture:** `js/test/fixtures/go-add-clusters-reference.json`
-  - File Size: `30,313` bytes
-  - Deterministic SHA256: `53f351f93530d0279140ef80bbbaafa11b760290f10729aa833ac4f4d544f054`
-- **Oracle Replay Test:** `js/test/unit/add-clusters-oracle.test.js` (27 passing tests).
-- **Direct JS Unit Test:** `js/test/unit/add-clusters.test.js` (19 passing tests).
+  - File Size: `38,549` bytes
+  - Deterministic SHA256: `a76867b70da9e7f164bec08bb6634ed7b22775ae0f0187d6bf42e0993340b509`
+- **Oracle Replay Test:** `js/test/unit/add-clusters-oracle.test.js` (29 passing tests, 491 expect() assertions consuming all fixture fields).
+- **Direct JS Unit Test:** `js/test/unit/add-clusters.test.js` (25 passing tests, 1,428 expect() assertions with exact deep graph state capture and rollback proofs).
 
 ## 4. Test Results
-- **Oracle Replay Suite:** 27 passed, 0 failed.
-- **Direct Unit Suite:** 19 passed, 0 failed.
-- **Full JavaScript Test Suite:** 703 passed, 0 failed across 31 files.
+- **Oracle Replay Suite:** 29 passed, 0 failed.
+- **Direct Unit Suite:** 25 passed, 0 failed.
+- **Full JavaScript Test Suite:** 709 passed, 0 failed across 31 files.
 - **Go Unit Tests:** `go test ./d2layouts/d2talalayout/internal/grouping/...` passed.
 - **Go Oracle Build Tag:** `go test -tags tala_add_clusters_oracle ./d2layouts/d2talalayout/internal/grouping/...` passed.
+- **Go Layoutgraph Oracle Build Tag:** `go test -tags tala_add_clusters_oracle ./d2layouts/d2talalayout/internal/layoutgraph/...` passed.
 
 ## 5. Scope Boundary Compliance
 - No `Cleanup` or `ResetClusters` implemented or exported.

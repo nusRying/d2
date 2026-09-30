@@ -41,13 +41,8 @@ export function averageClusterDimensions(cluster) {
   const count = nodes.length;
   const w = goRound(width / count);
   const h = goRound(height / count);
-  const res = [w, h];
-  res.width = w;
-  res.height = h;
-  return res;
+  return [w, h];
 }
-
-export const AverageClusterDimensions = averageClusterDimensions;
 
 /**
  * Selects the cluster axis from node dimensions. Randomness is consumed

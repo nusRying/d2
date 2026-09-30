@@ -14,6 +14,7 @@ import {
 } from "../../src/limits/index.js";
 import { Cluster } from "../../src/graph/cluster.js";
 import { Sequence } from "../../src/graph/sequence.js";
+import { Hierarchy } from "../../src/graph/hierarchy.js";
 import {
   averageClusterDimensions,
   assignArrangement,
@@ -64,7 +65,12 @@ describe("AddClusters Oracle Reference Suite", () => {
           cluster.Nodes.push(n);
         }
 
-        const [w, h] = averageClusterDimensions(cluster);
+        const res = averageClusterDimensions(cluster);
+        expect(Array.isArray(res)).toBe(true);
+        expect(res.length).toBe(2);
+        expect(res.width).toBeUndefined();
+        expect(res.height).toBeUndefined();
+        const [w, h] = res;
         if (tc.isNaNW) {
           expect(Number.isNaN(w)).toBe(true);
         } else {
@@ -128,6 +134,9 @@ describe("AddClusters Oracle Reference Suite", () => {
           c = new Node(1, tc.width, tc.height);
           c.setShape(tc.shape);
           c.isContainer = true;
+          if (tc.containerPadTop > 0 || tc.containerPadBottom > 0 || tc.containerPadLeft > 0 || tc.containerPadRight > 0) {
+            c.padding = new Spacing(tc.containerPadTop, tc.containerPadBottom, tc.containerPadLeft, tc.containerPadRight);
+          }
           if (tc.hasIcon) {
             c.initIcon();
           }
@@ -138,11 +147,16 @@ describe("AddClusters Oracle Reference Suite", () => {
               Position: tc.labelPosition,
             };
           }
-          if (tc.childHasIcon) {
+          if (tc.considerChildren && (tc.childHasIcon || tc.childMarginTop > 0 || tc.childMarginBottom > 0 || tc.childMarginLeft > 0 || tc.childMarginRight > 0)) {
             const child = new Node(2, 50, 50);
-            child.initIcon();
-            if (tc.childIconFixed) {
-              child.Icon._positionFixed = true;
+            if (tc.childHasIcon) {
+              child.initIcon();
+              if (tc.childIconFixed) {
+                child.Icon._positionFixed = true;
+              }
+            }
+            if (tc.childMarginTop > 0 || tc.childMarginBottom > 0 || tc.childMarginLeft > 0 || tc.childMarginRight > 0) {
+              child.margin = new Spacing(tc.childMarginTop, tc.childMarginBottom, tc.childMarginLeft, tc.childMarginRight);
             }
             g.addNodeToContainer(c, child);
           }
@@ -170,13 +184,50 @@ describe("AddClusters Oracle Reference Suite", () => {
           g.connect(n2, target);
           return { g, seed: 12345n, containerSeed: 42n };
         }
-        case "hierarchy_ineligible_nodes": {
+        case "already_clustered_ineligible_node": {
           const n1 = g.addNode(new Node(1, 100, 50));
           const n2 = g.addNode(new Node(2, 100, 50));
           const target = g.addNode(new Node(3, 80, 80));
           g.connect(n1, target);
           g.connect(n2, target);
           n1.Cluster = new Cluster({});
+          return { g, seed: 12345n, containerSeed: 42n };
+        }
+        case "hierarchy_ineligible_nodes": {
+          const c = g.addNode(new Node(10, 300, 300));
+          c.isContainer = true;
+          g.addNodeToContainer(null, c);
+
+          const n1 = new Node(11, 80, 80);
+          const n2 = new Node(12, 80, 80);
+          const target = new Node(13, 60, 60);
+          g.addNodeToContainer(c, n1);
+          g.addNodeToContainer(c, n2);
+          g.addNodeToContainer(c, target);
+
+          g.connect(n1, target);
+          g.connect(n2, target);
+
+          n1.Hierarchy = new Hierarchy();
+          return { g, seed: 12345n, containerSeed: 42n };
+        }
+        case "real_square_members_fixed_size": {
+          const c = g.addNode(new Node(10, 300, 300));
+          c.isContainer = true;
+          g.addNodeToContainer(null, c);
+
+          const n1 = new Node(11, 80, 80);
+          n1.setShape("RealSquare");
+          const n2 = new Node(12, 80, 80);
+          n2.setShape("RealSquare");
+          const target = new Node(13, 60, 60);
+          g.addNodeToContainer(c, n1);
+          g.addNodeToContainer(c, n2);
+          g.addNodeToContainer(c, target);
+
+          g.connect(n1, target);
+          g.connect(n2, target);
+
           return { g, seed: 12345n, containerSeed: 42n };
         }
         case "inconsistent_multiple_shared_adjacency": {
@@ -450,13 +501,99 @@ describe("AddClusters Oracle Reference Suite", () => {
 
           const actualMemberIDs = found.Nodes.map((n) => n.ID.toString());
           expect(actualMemberIDs).toEqual(expCluster.memberIDs);
+
+          // Vessel geometry
+          expect(found.Vessel.Width).toBe(expCluster.vesselWidth);
+          expect(found.Vessel.Height).toBe(expCluster.vesselHeight);
+          if (expCluster.vesselTopLeft === null) {
+            expect(found.Vessel.TopLeft).toBeNull();
+          } else {
+            expect(found.Vessel.TopLeft).not.toBeNull();
+            expect(found.Vessel.TopLeft.X).toBe(expCluster.vesselTopLeft.x);
+            expect(found.Vessel.TopLeft.Y).toBe(expCluster.vesselTopLeft.y);
+          }
+
+          // Container
+          if (expCluster.container === null) {
+            expect(found.Container).toBeNull();
+          } else {
+            expect(found.Container).not.toBeNull();
+            expect(found.Container.ID.toString()).toBe(expCluster.container);
+          }
+
+          // Edge Abductions
+          if (expCluster.edgeAbductions === null) {
+            expect((found.EdgeAbductions || []).length).toBe(0);
+          } else {
+            expect(found.EdgeAbductions.length).toBe(expCluster.edgeAbductions.length);
+            for (let i = 0; i < expCluster.edgeAbductions.length; i++) {
+              const expAbd = expCluster.edgeAbductions[i];
+              const actAbd = found.EdgeAbductions[i];
+              expect(actAbd.Edge.ID.toString()).toBe(expAbd.edgeID);
+
+              if (expAbd.originallyFrom === null) {
+                expect(actAbd.OriginallyFrom).toBeNull();
+              } else {
+                expect(actAbd.OriginallyFrom).not.toBeNull();
+                expect(actAbd.OriginallyFrom.ID.toString()).toBe(expAbd.originallyFrom);
+              }
+
+              if (expAbd.originallyTo === null) {
+                expect(actAbd.OriginallyTo).toBeNull();
+              } else {
+                expect(actAbd.OriginallyTo).not.toBeNull();
+                expect(actAbd.OriginallyTo.ID.toString()).toBe(expAbd.originallyTo);
+              }
+
+              if (expAbd.currentFrom === null) {
+                expect(actAbd.CurrentFrom).toBeNull();
+              } else {
+                expect(actAbd.CurrentFrom).not.toBeNull();
+                expect(actAbd.CurrentFrom.ID.toString()).toBe(expAbd.currentFrom);
+              }
+
+              if (expAbd.currentTo === null) {
+                expect(actAbd.CurrentTo).toBeNull();
+              } else {
+                expect(actAbd.CurrentTo).not.toBeNull();
+                expect(actAbd.CurrentTo.ID.toString()).toBe(expAbd.currentTo);
+              }
+            }
+          }
         }
 
         // Verify graph.Nodes
         const actualNodeIDs = g.Nodes.map((n) => n.ID.toString());
         expect(actualNodeIDs).toEqual(expected.nodes);
 
-        // Verify graph.Edges
+        // Verify graph.Containers: every serialized container key and exact child ID order
+        const actualContainerKeys = new Set();
+        for (const [containerNode] of g.Containers.entries()) {
+          const key = containerNode ? containerNode.ID.toString() : "null";
+          actualContainerKeys.add(key);
+        }
+        expect(actualContainerKeys).toEqual(new Set(Object.keys(expected.containers)));
+
+        for (const [key, expChildIDs] of Object.entries(expected.containers)) {
+          let actualChildren = null;
+          if (key === "null") {
+            actualChildren = g.Containers.get(null) || [];
+          } else {
+            let cNode = null;
+            for (const containerNode of g.Containers.keys()) {
+              if (containerNode && containerNode.ID.toString() === key) {
+                cNode = containerNode;
+                break;
+              }
+            }
+            expect(cNode).not.toBeNull();
+            actualChildren = g.Containers.get(cNode) || [];
+          }
+          const actualChildIDs = actualChildren.map((c) => c.ID.toString());
+          expect(actualChildIDs).toEqual(expChildIDs);
+        }
+
+        // Verify graph.Edges: count, ID, From, To
         if (expected.edges === null) {
           expect(g.Edges.length).toBe(0);
         } else {
@@ -464,6 +601,7 @@ describe("AddClusters Oracle Reference Suite", () => {
           for (let i = 0; i < expected.edges.length; i++) {
             const expEdge = expected.edges[i];
             const actualEdge = g.Edges[i];
+            expect(actualEdge.ID.toString()).toBe(expEdge.id);
             expect(actualEdge.From.ID.toString()).toBe(expEdge.from);
             expect(actualEdge.To.ID.toString()).toBe(expEdge.to);
           }

@@ -23,7 +23,6 @@ import * as rootExports from "../../src/index.js";
 
 import {
   averageClusterDimensions,
-  AverageClusterDimensions,
   assignArrangement,
   AssignArrangement,
   paddingBetween,
@@ -38,10 +37,9 @@ import { Spacing } from "../../src/graph/graph.js";
 
 describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => {
   describe("API and Export Boundaries", () => {
-    test("grouping exports required orchestration primitives and aliases", () => {
+    test("grouping exports required orchestration primitives and aliases without private PascalCase alias", () => {
       expect(typeof averageClusterDimensions).toBe("function");
-      expect(typeof AverageClusterDimensions).toBe("function");
-      expect(averageClusterDimensions).toBe(AverageClusterDimensions);
+      expect(groupingExports.AverageClusterDimensions).toBeUndefined();
 
       expect(typeof assignArrangement).toBe("function");
       expect(typeof AssignArrangement).toBe("function");
@@ -113,9 +111,14 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       );
     });
 
-    test("averageClusterDimensions handles empty cluster returning NaN", () => {
+    test("averageClusterDimensions handles empty cluster returning NaN plain array", () => {
       const emptyCluster = new Cluster({ Nodes: [] });
-      const [w, h] = averageClusterDimensions(emptyCluster);
+      const res = averageClusterDimensions(emptyCluster);
+      expect(Array.isArray(res)).toBe(true);
+      expect(res.length).toBe(2);
+      expect(res.width).toBeUndefined();
+      expect(res.height).toBeUndefined();
+      const [w, h] = res;
       expect(Number.isNaN(w)).toBe(true);
       expect(Number.isNaN(h)).toBe(true);
     });
@@ -160,10 +163,10 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       const n2 = new Node(2, 100, 100);
       n2.TopLeft = new Point(300, 400);
 
-      // Centers are at (50, 50) and (350, 450) -> dx=300, dy=400 -> dist = 500
+      // Shortest Euclidean distance between zero-sized boxes at TopLeft (0, 0) and (300, 400) -> dx=300, dy=400 -> dist = 500
       expect(n1.distanceTo(n2, false)).toBe(500);
 
-      // With includeSizes=true
+      // With includeSizes=true (closed axis-aligned boxes)
       const distWithSizes = n1.distanceTo(n2, true);
       expect(distWithSizes).toBeGreaterThan(0);
     });
@@ -205,28 +208,253 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
     });
   });
 
+  describe("Transaction WorkGuard Helper Behavior", () => {
+    test("fresh guard created with 1_000_000_000n limit, correct location, and derived context", () => {
+      const ctx = new WorkContext();
+      const [derived, guard] = ensureTransactionWorkGuard(ctx, "AddClustersTransactions");
+
+      expect(guard.limit).toBe(1_000_000_000n);
+      expect(guard.location).toBe("AddClustersTransactions");
+      expect(derived).not.toBe(ctx);
+
+      const [existingGuard, exists] = existingTransactionWorkGuard(derived, "AddClustersTransactions");
+      expect(exists).toBe(true);
+      expect(existingGuard).toBe(guard);
+    });
+
+    test("existing guard reuse returns same context, same guard, preserved Used(), location, and limit", () => {
+      const parentCtx = new WorkContext();
+      const guard = new WorkGuard(parentCtx, "OriginalLocation", 500n);
+      guard.Step();
+      guard.Step();
+      const usedBefore = guard.Used();
+      expect(usedBefore).toBe(2n);
+
+      const wrapped = contextWithTransactionWorkGuard(parentCtx, guard);
+      const [outCtx, outGuard] = ensureTransactionWorkGuard(wrapped, "different-location");
+
+      expect(outCtx).toBe(wrapped);
+      expect(outGuard).toBe(guard);
+      expect(outGuard.Used()).toBe(usedBefore);
+      expect(outGuard.location).toBe("OriginalLocation");
+      expect(outGuard.limit).toBe(500n);
+    });
+
+    test("existing canceled guard throws typed WorkCanceledError from Finish() check", () => {
+      let cancelled = false;
+      const parentCtx = new WorkContext({ isCancelled: () => cancelled });
+      const guard = new WorkGuard(parentCtx, "AddClustersTransactions", 500n);
+      const wrapped = contextWithTransactionWorkGuard(parentCtx, guard);
+
+      cancelled = true;
+      expect(() => {
+        existingTransactionWorkGuard(wrapped, "AddClustersTransactions");
+      }).toThrow(WorkCanceledError);
+    });
+  });
+
   describe("Transaction WorkGuard and Atomic Rollback", () => {
-    function createClusterableGraph() {
+    // Exact AddClusters state-capture helper
+    function captureGraphDeepState(g) {
+      const captured = {
+        nodesArray: g.Nodes,
+        nodesOrder: [...g.Nodes],
+        edgesArray: g.Edges,
+        edgesOrder: [...g.Edges],
+
+        containersMap: g.Containers,
+        containersEntries: new Map(),
+
+        clustersMap: g.Clusters,
+        clustersEntries: new Map(g.Clusters),
+
+        sequencesMap: g.Sequences,
+        sequencesEntries: new Map(g.Sequences),
+
+        treesMap: g.Trees,
+        treesEntries: new Map(g.Trees),
+
+        nodeToTreeMap: g.NodeToTree,
+        nodeToTreeEntries: new Map(g.NodeToTree),
+
+        nodeStates: new Map(),
+        edgeStates: new Map(),
+      };
+
+      for (const [c, children] of g.Containers.entries()) {
+        captured.containersEntries.set(c, {
+          array: children,
+          order: [...children],
+        });
+      }
+
+      function recordNode(n) {
+        if (!n || captured.nodeStates.has(n)) return;
+        captured.nodeStates.set(n, {
+          box: n.Box,
+          topLeft: n.TopLeft,
+          tlX: n.TopLeft ? n.TopLeft.X : null,
+          tlY: n.TopLeft ? n.TopLeft.Y : null,
+          width: n.Width,
+          height: n.Height,
+          graph: n.Graph,
+          container: n.Container,
+          cluster: n.Cluster,
+          sequence: n.Sequence,
+          isClusterVessel: n.isClusterVessel,
+          edgesArray: n.Edges,
+          edgesOrder: [...n.Edges],
+        });
+      }
+
+      for (const n of g.Nodes) recordNode(n);
+      for (const [, children] of g.Containers.entries()) {
+        if (children) {
+          for (const ch of children) recordNode(ch);
+        }
+      }
+      for (const e of g.Edges) {
+        recordNode(e.From);
+        recordNode(e.To);
+        captured.edgeStates.set(e, {
+          from: e.From,
+          to: e.To,
+          pointsArray: e.Points,
+          points: e.Points ? e.Points.map((p) => ({ obj: p, x: p.X, y: p.Y })) : null,
+        });
+      }
+
+      return captured;
+    }
+
+    function assertGraphDeepStateRestored(g, captured) {
+      // Top-level arrays and maps identity and order
+      expect(g.Nodes).toBe(captured.nodesArray);
+      expect(g.Nodes.length).toBe(captured.nodesOrder.length);
+      for (let i = 0; i < captured.nodesOrder.length; i++) {
+        expect(g.Nodes[i]).toBe(captured.nodesOrder[i]);
+      }
+
+      expect(g.Edges).toBe(captured.edgesArray);
+      expect(g.Edges.length).toBe(captured.edgesOrder.length);
+      for (let i = 0; i < captured.edgesOrder.length; i++) {
+        expect(g.Edges[i]).toBe(captured.edgesOrder[i]);
+      }
+
+      expect(g.Containers).toBe(captured.containersMap);
+      expect(g.Containers.size).toBe(captured.containersEntries.size);
+      for (const [c, expectedEntry] of captured.containersEntries.entries()) {
+        const actualChildren = g.Containers.get(c);
+        expect(actualChildren).toBe(expectedEntry.array);
+        expect(actualChildren.length).toBe(expectedEntry.order.length);
+        for (let i = 0; i < expectedEntry.order.length; i++) {
+          expect(actualChildren[i]).toBe(expectedEntry.order[i]);
+        }
+      }
+
+      expect(g.Clusters).toBe(captured.clustersMap);
+      expect(g.Clusters.size).toBe(captured.clustersEntries.size);
+      for (const [k, v] of captured.clustersEntries.entries()) {
+        expect(g.Clusters.get(k)).toBe(v);
+      }
+
+      expect(g.Sequences).toBe(captured.sequencesMap);
+      expect(g.Sequences.size).toBe(captured.sequencesEntries.size);
+      for (const [k, v] of captured.sequencesEntries.entries()) {
+        expect(g.Sequences.get(k)).toBe(v);
+      }
+
+      expect(g.Trees).toBe(captured.treesMap);
+      expect(g.Trees.size).toBe(captured.treesEntries.size);
+      for (const [k, v] of captured.treesEntries.entries()) {
+        expect(g.Trees.get(k)).toBe(v);
+      }
+
+      expect(g.NodeToTree).toBe(captured.nodeToTreeMap);
+      expect(g.NodeToTree.size).toBe(captured.nodeToTreeEntries.size);
+      for (const [k, v] of captured.nodeToTreeEntries.entries()) {
+        expect(g.NodeToTree.get(k)).toBe(v);
+      }
+
+      // For every original Node:
+      for (const [n, expectedState] of captured.nodeStates.entries()) {
+        expect(n.Box).toBe(expectedState.box);
+        expect(n.TopLeft).toBe(expectedState.topLeft);
+        if (expectedState.topLeft) {
+          expect(n.TopLeft.X).toBe(expectedState.tlX);
+          expect(n.TopLeft.Y).toBe(expectedState.tlY);
+        }
+        expect(n.Width).toBe(expectedState.width);
+        expect(n.Height).toBe(expectedState.height);
+        expect(n.Graph).toBe(expectedState.graph);
+        expect(n.Container).toBe(expectedState.container);
+        expect(n.Cluster).toBe(expectedState.cluster);
+        expect(n.Sequence).toBe(expectedState.sequence);
+        expect(n.isClusterVessel).toBe(expectedState.isClusterVessel);
+
+        expect(n.Edges).toBe(expectedState.edgesArray);
+        expect(n.Edges.length).toBe(expectedState.edgesOrder.length);
+        for (let i = 0; i < expectedState.edgesOrder.length; i++) {
+          expect(n.Edges[i]).toBe(expectedState.edgesOrder[i]);
+        }
+      }
+
+      // For every original Edge:
+      for (const [e, expectedState] of captured.edgeStates.entries()) {
+        expect(e.From).toBe(expectedState.from);
+        expect(e.To).toBe(expectedState.to);
+        expect(e.Points).toBe(expectedState.pointsArray);
+        if (expectedState.points) {
+          expect(e.Points.length).toBe(expectedState.points.length);
+          for (let i = 0; i < expectedState.points.length; i++) {
+            expect(e.Points[i]).toBe(expectedState.points[i].obj);
+            expect(e.Points[i].X).toBe(expectedState.points[i].x);
+            expect(e.Points[i].Y).toBe(expectedState.points[i].y);
+          }
+        }
+      }
+    }
+
+    // Graph with enough work after first cluster publication for WorkGuard polling to occur
+    function createLateFailureGraph() {
       const g = new Graph();
-      const c = g.addNode(new Node(10, 300, 300));
-      c.isContainer = true;
-      g.addNodeToContainer(null, c);
 
-      const n1 = g.addNode(new Node(11, 80, 80));
-      const n2 = g.addNode(new Node(12, 80, 80));
-      const target = g.addNode(new Node(13, 60, 60));
-      g.addNodeToContainer(c, n1);
-      g.addNodeToContainer(c, n2);
-      g.addNodeToContainer(c, target);
+      // Container A: forms a cluster first with routed edges
+      const cA = g.addNode(new Node(10, 300, 300));
+      cA.isContainer = true;
+      g.addNodeToContainer(null, cA);
 
-      g.connect(n1, target);
-      g.connect(n2, target);
+      const n1 = new Node(11, 80, 80);
+      const n2 = new Node(12, 80, 80);
+      const target1 = new Node(13, 60, 60);
+      g.addNodeToContainer(cA, n1);
+      g.addNodeToContainer(cA, n2);
+      g.addNodeToContainer(cA, target1);
 
-      return { g, c, n1, n2, target };
+      const e1 = g.connect(n1, target1);
+      e1.Points = [new Point(10, 20), new Point(30, 40), new Point(50, 60)];
+      const e2 = g.connect(n2, target1);
+      e2.Points = [new Point(15, 25), new Point(35, 45)];
+
+      // Container B: contains 8 nodes so chargeKernel executes 64 steps, crossing polling stride
+      const cB = g.addNode(new Node(20, 300, 300));
+      cB.isContainer = true;
+      g.addNodeToContainer(null, cB);
+
+      const bNodes = [];
+      for (let i = 1; i <= 8; i++) {
+        const bn = new Node(20 + i, 50, 50);
+        g.addNodeToContainer(cB, bn);
+        bNodes.push(bn);
+      }
+      g.connect(bNodes[0], bNodes[2]);
+      g.connect(bNodes[1], bNodes[2]);
+
+      return { g, cA, cB, n1, n2, target1, e1, e2, bNodes };
     }
 
     test("successful transaction preserves graph.Clusters Map identity", () => {
-      const { g } = createClusterableGraph();
+      const { g } = createLateFailureGraph();
       const clustersMapRef = g.Clusters;
       const rnd = new GoRand(12345n);
       const ctx = backgroundWorkContext();
@@ -234,18 +462,122 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       addClusters(ctx, g, 42n, rnd);
 
       expect(g.Clusters).toBe(clustersMapRef);
-      expect(g.Clusters.size).toBe(1);
+      expect(g.Clusters.size).toBeGreaterThan(0);
     });
 
-    test("WorkLimitError triggers complete rollback and external RNG is NOT rewound", () => {
+    test("TestAddClustersCancellationAfterMutationRestoresExactWholeStageState equivalent - post-mutation cancellation restores exact state", () => {
+      const { g } = createLateFailureGraph();
+      const captured = captureGraphDeepState(g);
+      const rnd = new GoRand(12345n);
+
+      let observedMutation = false;
+      const ctx = new WorkContext({
+        isCancelled: () => {
+          if (g.Clusters.size > 0) {
+            observedMutation = true;
+            return true;
+          }
+          return false;
+        },
+        doneAvailable: false,
+      });
+
+      let caughtError = null;
+      try {
+        addClusters(ctx, g, 42n, rnd);
+      } catch (err) {
+        caughtError = err;
+      }
+
+      expect(observedMutation).toBe(true);
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      assertGraphDeepStateRestored(g, captured);
+    });
+
+    test("TestAddClustersPanicAfterMutationRestoresExactWholeStageState equivalent - post-mutation sentinel exception rethrows and restores exact state", () => {
+      const { g } = createLateFailureGraph();
+      const captured = captureGraphDeepState(g);
+      const rnd = new GoRand(12345n);
+      const sentinelError = new Error("SENTINEL_PANIC_POST_MUTATION");
+
+      let observedMutation = false;
+      const ctx = new WorkContext({
+        isCancelled: () => {
+          if (g.Clusters.size > 0) {
+            observedMutation = true;
+            throw sentinelError;
+          }
+          return false;
+        },
+        doneAvailable: false,
+      });
+
+      let caughtError = null;
+      try {
+        addClusters(ctx, g, 42n, rnd);
+      } catch (err) {
+        caughtError = err;
+      }
+
+      expect(observedMutation).toBe(true);
+      expect(caughtError).toBe(sentinelError);
+      assertGraphDeepStateRestored(g, captured);
+    });
+
+    test("routed-edge rollback alias proof preserves Points array, Point object identities, and coordinates", () => {
+      const { g, e1, n1, target1 } = createLateFailureGraph();
+      const originalPointsArray = e1.Points;
+      const originalP0 = e1.Points[0];
+      const originalP1 = e1.Points[1];
+      const originalP2 = e1.Points[2];
+      const originalN1Edges = n1.Edges;
+
+      const captured = captureGraphDeepState(g);
+      const rnd = new GoRand(12345n);
+
+      let observedMutation = false;
+      const ctx = new WorkContext({
+        isCancelled: () => {
+          if (g.Clusters.size > 0) {
+            observedMutation = true;
+            return true;
+          }
+          return false;
+        },
+        doneAvailable: false,
+      });
+
+      expect(() => {
+        addClusters(ctx, g, 42n, rnd);
+      }).toThrow(WorkCanceledError);
+
+      expect(observedMutation).toBe(true);
+      expect(e1.Points).toBe(originalPointsArray);
+      expect(e1.Points[0]).toBe(originalP0);
+      expect(e1.Points[1]).toBe(originalP1);
+      expect(e1.Points[2]).toBe(originalP2);
+      expect(e1.Points[0].X).toBe(10);
+      expect(e1.Points[0].Y).toBe(20);
+      expect(e1.Points[1].X).toBe(30);
+      expect(e1.Points[1].Y).toBe(40);
+      expect(e1.Points[2].X).toBe(50);
+      expect(e1.Points[2].Y).toBe(60);
+      expect(e1.From).toBe(n1);
+      expect(e1.To).toBe(target1);
+      expect(n1.Edges).toBe(originalN1Edges);
+
+      assertGraphDeepStateRestored(g, captured);
+    });
+
+    test("WorkLimit exactUsed - 1n triggers complete rollback, exact state restoration, and external RNG is NOT rewound", () => {
       // First run to get exact work units used
-      const { g: gSuccess } = createClusterableGraph();
+      const { g: gSuccess } = createLateFailureGraph();
       const rndSuccess = new GoRand(12345n);
       const parentCtxSuccess = new WorkContext();
       const guardSuccess = new WorkGuard(
         parentCtxSuccess,
         "AddClustersTransactions",
-        1_000_000_000
+        1_000_000_000n
       );
       const txCtxSuccess = contextWithTransactionWorkGuard(
         parentCtxSuccess,
@@ -253,19 +585,21 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       );
 
       addClusters(txCtxSuccess, gSuccess, 42n, rndSuccess);
-      const exactUsed = Number(guardSuccess.used);
-      expect(exactUsed).toBeGreaterThan(0);
+      const exactUsed = guardSuccess.used;
+      expect(typeof exactUsed).toBe("bigint");
+      expect(exactUsed).toBeGreaterThan(0n);
+      const expectedNextRnd = rndSuccess.Int63();
 
-      // Now run with limit = exactUsed - 1 to trigger rollback
-      const { g: gFail, n1, n2, target } = createClusterableGraph();
-      const clustersMapRef = gFail.Clusters;
+      // Now run with limit = exactUsed - 1n to trigger rollback
+      const { g: gFail } = createLateFailureGraph();
+      const captured = captureGraphDeepState(gFail);
       const rndFail = new GoRand(12345n);
 
       const parentCtxFail = new WorkContext();
       const guardFail = new WorkGuard(
         parentCtxFail,
         "AddClustersTransactions",
-        exactUsed - 1
+        exactUsed - 1n
       );
       const txCtxFail = contextWithTransactionWorkGuard(
         parentCtxFail,
@@ -276,22 +610,15 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
         addClusters(txCtxFail, gFail, 42n, rndFail);
       }).toThrow(WorkLimitError);
 
-      // Verify complete rollback of graph
-      expect(gFail.Clusters).toBe(clustersMapRef);
-      expect(gFail.Clusters.size).toBe(0);
-      expect(gFail.Nodes.length).toBe(4);
-      expect(gFail.Edges.length).toBe(2);
-      expect(n1.Cluster).toBeNull();
-      expect(n2.Cluster).toBeNull();
-      expect(target.Cluster).toBeNull();
+      assertGraphDeepStateRestored(gFail, captured);
 
-      // Verify external RNG was consumed and NOT rewound upon rollback
-      // It should match the successful run's external RNG state!
-      expect(rndFail.Int63()).toBe(rndSuccess.Int63());
+      // Verify external RNG remained advanced and was NOT rewound upon rollback
+      expect(rndFail.Int63()).toBe(expectedNextRnd);
     });
 
-    test("WorkCanceledError during transaction rolls back state", () => {
-      const { g, n1, n2, target } = createClusterableGraph();
+    test("pre-work cancellation aborts and leaves state unchanged", () => {
+      const { g } = createLateFailureGraph();
+      const captured = captureGraphDeepState(g);
       const controller = new AbortController();
       const parentCtx = abortSignalWorkContext(controller.signal);
 
@@ -304,15 +631,12 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
         addClusters(parentCtx, g, 42n, rnd);
       }).toThrow(WorkCanceledError);
 
-      expect(g.Clusters.size).toBe(0);
-      expect(g.Nodes.length).toBe(4);
-      expect(n1.Cluster).toBeNull();
-      expect(n2.Cluster).toBeNull();
-      expect(target.Cluster).toBeNull();
+      assertGraphDeepStateRestored(g, captured);
     });
 
-    test("synthetic error during transaction rethrows and restores snapshot", () => {
-      const { g } = createClusterableGraph();
+    test("malformed cluster vessel preflight error aborts before execution", () => {
+      const { g } = createLateFailureGraph();
+      const captured = captureGraphDeepState(g);
       const rnd = new GoRand(12345n);
       const ctx = backgroundWorkContext();
 
@@ -325,8 +649,9 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
         addClusters(ctx, g, 42n, rnd);
       }).toThrow("TALA engine cluster vessel 999 has no cluster record");
 
-      // Verify state was intact
-      expect(g.Clusters.size).toBe(0);
+      // Verify nil cluster vessel was removed and state was restored
+      g.Nodes.pop();
+      assertGraphDeepStateRestored(g, captured);
     });
 
     test("default shape vs square creates no cluster", () => {

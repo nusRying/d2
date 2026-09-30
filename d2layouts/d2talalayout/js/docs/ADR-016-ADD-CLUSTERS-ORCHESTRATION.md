@@ -45,35 +45,43 @@ To prevent candidate exploration from prematurely exhausting the primary engine 
 
 ### 4. Deterministic Randomness & RNG Isolation
 - **External Random Generator (`random`):**
-  - Passed by caller to provide vessel entity IDs via `random.Int63()`.
-  - Consumed during `assignArrangement` only when breaking ties for square clusters (`random.Float64() > 0.5`).
+  - Passed by caller and used ONLY by `maybeCreateCluster` -> `random.Int63()` for vessel IDs.
   - Consumed draws are irreversible: if a transaction rolls back, the external RNG state remains at its advanced position matching Go's exact behavior.
-- **Internal Container Shuffling (`randomSeed`):**
+- **Per-Container Random Generator (`randomSeed`):**
   - For each container traversed, a local generator is instantiated: `new GoRand(randomSeed)`.
-  - This ensures that candidate evaluation order within a container is completely decoupled from external RNG draws and stays reproducible across runs.
+  - Used by `assignArrangement` when breaking ties for square clusters (`rnd.Float64() > 0.5`).
+  - There is no container shuffling; candidate evaluation proceeds in deterministic order.
 
 ### 5. Reserved Entity ID Inventory
 When allocating new vessel node IDs:
 - All existing IDs from `graph.Nodes`, `graph.Sequences` (vessel and member nodes), and `graph.Trees` (root sentinel and tree nodes via LIFO stack traversal) are collected into a `reservedIDs` Set.
 - If a candidate ID drawn from `random.Int63()` collides with an existing ID, it linearly increments (wrapping around from `INT64_MAX` to `0n`) until an unreserved ID is located, charging `guard.Step()` on each collision step.
 
-### 6. Cluster Geometry & Arrangement Rules
-- `averageClusterDimensions(cluster)`: Calculates rounded integer averages for node widths and heights. An empty cluster produces `[NaN, NaN]`.
-- `assignArrangement(cluster, isConnectedToSequence, random)`:
+### 6. Work Accounting & Cluster Kernel Charge
+- Cluster kernel charges:
+  - $n \times n$ Steps, where $n = \text{len(Nodes)}$
+  - plus: for widths $1, 2, 4, \dots$ while $\text{width} < n$: $n$ Steps per pass, stopping after the pass where $\text{width} > \lfloor n / 2 \rfloor$.
+
+### 7. Cluster Geometry & Arrangement Rules
+- `averageClusterDimensions(cluster)`: Calculates rounded integer averages for node widths and heights. An empty cluster produces `[NaN, NaN]` as a plain two-element array. The PascalCase alias `AverageClusterDimensions` is not exported because the pinned Go helper is private.
+- `assignArrangement(cluster, isConnectedToSequence, rnd)`:
   - If `isConnectedToSequence` is true, forces `Row`.
   - If `width > height`, selects `Column`.
   - If `width < height`, selects `Row`.
-  - If `width === height`, draws `random.Float64() > 0.5 ? Column : Row`.
+  - If `width === height`, draws `rnd.Float64() > 0.5 ? Column : Row`.
 - `paddingBetween(cluster, considerPositions)`:
   - Base spacing is `Math.max(20, Math.ceil(dim) * 0.1)`.
   - If any cluster node has an icon, increases spacing to accommodate label and padding.
   - If `considerPositions` is true, computes average distance between adjacent members.
 - `Node.sameShape(other)`:
   - Raw shape string equality (`this._shapeType === other._shapeType`). Default `""` does NOT equal `"Square"`, reproducing Go layout semantics.
+- `Node.distanceTo(other, includeSizes)`:
+  - Shortest Euclidean distance between two closed axis-aligned node boxes.
+  - When `includeSizes = false`, zero-sized boxes at `TopLeft` coordinates are used.
 - `Graph.containerPadding(container, considerChildren)`:
   - Accounts for container labels, icons, shapes (circle divides by 4), and child margins/icons.
 
-### 7. Strict Stop Boundary
+### 8. Strict Stop Boundary
 This slice does NOT include:
 - Cluster cleanup (`Cleanup`, `ResetClusters`)
 - Cluster joining (`Join`, `JoinDistancedClusters`)
