@@ -1,0 +1,273 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/grouping",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "scenarios": {
+    "accessors": {
+      "connection_ab_exists": true,
+      "connection_ac_nil": true,
+      "container_is_container": true,
+      "ordinary_is_container": false,
+      "sequence_order_vessel_ids": [
+        100,
+        200,
+        300
+      ],
+      "square_is_sequence_step": false,
+      "step_is_sequence_step": true
+    },
+    "id_occupancy": {
+      "cluster_vessel_collision": {
+        "collidingID": 7490268378518980123,
+        "collidingIDStr": "7490268378518980123",
+        "expectedVesselID": 7490268378518980124,
+        "expectedVesselIDStr": "7490268378518980124",
+        "resolvedVesselID": 7490268378518980124,
+        "resolvedVesselIDStr": "7490268378518980124",
+        "seed": 23
+      },
+      "ordinary_node_collision": {
+        "collidingID": 5674494734864815533,
+        "collidingIDStr": "5674494734864815533",
+        "expectedVesselID": 5674494734864815534,
+        "expectedVesselIDStr": "5674494734864815534",
+        "nextDraw": 8867122987932565385,
+        "nextDrawStr": "6065253122432684137",
+        "probeNextDraw": 8867122987932565385,
+        "probeNextDrawStr": "6065253122432684137",
+        "resolvedVesselID": 5674494734864815534,
+        "resolvedVesselIDStr": "5674494734864815534",
+        "seed": 19
+      },
+      "tree_node_collision": {
+        "collidingID": 2131792501560531351,
+        "collidingIDStr": "2131792501560531351",
+        "expectedVesselID": 2131792501560531352,
+        "expectedVesselIDStr": "2131792501560531352",
+        "resolvedVesselID": 2131792501560531352,
+        "resolvedVesselIDStr": "2131792501560531352",
+        "seed": 47
+      },
+      "tree_sentinel_collision": {
+        "collidingID": 3096034203233537903,
+        "collidingIDStr": "3096034203233537903",
+        "expectedVesselID": 3096034203233537904,
+        "expectedVesselIDStr": "3096034203233537904",
+        "resolvedVesselID": 3096034203233537904,
+        "resolvedVesselIDStr": "3096034203233537904",
+        "seed": 31
+      }
+    },
+    "remembered_validity": {
+      "container_changed": {
+        "aSequenceRetained": false,
+        "bSequenceRetained": false,
+        "expectedValidRemembered": false,
+        "rebuiltSequencesCount": 0,
+        "success": true
+      },
+      "members_noncontiguous": {
+        "aSequenceRetained": false,
+        "bSequenceRetained": false,
+        "expectedValidRemembered": false,
+        "rebuiltSequencesCount": 0,
+        "success": true
+      },
+      "membership_cleared": {
+        "aSequenceRetained": false,
+        "bSequenceRetained": false,
+        "expectedValidRemembered": false,
+        "rebuiltSequencesCount": 0,
+        "success": true
+      },
+      "removed_graph_node": {
+        "aSequenceRetained": false,
+        "bSequenceRetained": false,
+        "expectedValidRemembered": false,
+        "rebuiltSequencesCount": 0,
+        "success": true
+      },
+      "shape_changed": {
+        "aSequenceRetained": false,
+        "bSequenceRetained": false,
+        "expectedValidRemembered": false,
+        "rebuiltSequencesCount": 0,
+        "success": true
+      },
+      "valid_reconstruction_without_defining_edge": {
+        "edgeSurvivesAfterCleanup": false,
+        "expectedValidRemembered": true,
+        "initialVesselID": 5577006791947779410,
+        "initialVesselIDStr": "5577006791947779410",
+        "rebuiltVesselID": 5577006791947779410,
+        "rebuiltVesselIDStr": "5577006791947779410",
+        "sequenceCount": 1,
+        "vesselIDPreserved": true
+      }
+    },
+    "sequence_defining_edges": {
+      "container_local_split": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 4,
+        "nodeCountBefore": 4,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "fixed_top_left_step_skipped": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "inactive_remembered_steps_skipped": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "interleaved_non_step_child": {
+        "definingEdgeIDs": [
+          100
+        ],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 3,
+        "nodeCountBefore": 3,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "nested_containers": {
+        "definingEdgeIDs": [
+          100,
+          101,
+          102
+        ],
+        "edgeCountAfter": 3,
+        "edgeCountBefore": 3,
+        "nodeCountAfter": 8,
+        "nodeCountBefore": 8,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "node_absent_graph_nodes_skipped": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 1,
+        "nodeCountBefore": 1,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "non_step_pair": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "parallel_edges_first_chosen": {
+        "definingEdgeIDs": [
+          200
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "reverse_directed_edge": {
+        "definingEdgeIDs": [
+          101
+        ],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "single_step": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 0,
+        "edgeCountBefore": 0,
+        "nodeCountAfter": 1,
+        "nodeCountBefore": 1,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "step_container_skipped": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "three_step_chain": {
+        "definingEdgeIDs": [
+          100,
+          101
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 3,
+        "nodeCountBefore": 3,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "two_connected_steps": {
+        "definingEdgeIDs": [
+          100
+        ],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "two_separate_runs": {
+        "definingEdgeIDs": [
+          100,
+          101
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 4,
+        "nodeCountBefore": 4,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      }
+    }
+  }
+}
