@@ -112,11 +112,18 @@ Within each container:
   state.UpdateWithWorkGuard(graph, guard)
   ```
 - No sequence mutation occurs before snapshot capture completes.
-- If cancellation or error occurs at any point before `guard.Finish()`, `RestoreGraphState(graph, state)` restores exact object references and values for:
-  - `graph.Nodes`, `graph.Edges`, and `graph.Containers` arrays and Map.
-  - `graph.Sequences` original Map reference and contents.
-  - Node dimensions, `TopLeft`, `Edges`, `Sequence`, `Container`, and `Graph`.
-  - Edge endpoints (`From`, `To`), routes (`Points`), and reconnection state.
+- **Phase-Calibrated Snapshot Cancellation:**
+  To prove that cancellation during snapshot capture precedes mutation, tests measure exact validation check counts with a counting probe and calibrate cancellation to trigger on the 2nd check after validation (inside `GraphState.updateWithWorkGuard()`). The graph remains completely untouched, `graph.Sequences` original Map is preserved, and caller PRNG consumes exactly **zero** random draws.
+- **Late-Cancellation Rollback with Real Edge Abduction & Route Identity:**
+  When cancellation fires after sequence installation and edge abduction (`outsideA -> step1 -> step2 -> outsideB` with defining edge `step1 -> step2`, abducted incoming `outsideA -> step1`, and abducted outgoing `step2 -> outsideB`), `RestoreGraphState(graph, state)` restores:
+  - `graph.Nodes`, `graph.Edges`, and `graph.Containers` arrays and Map by exact identity.
+  - Original container child arrays by exact identity.
+  - Defining edge restored to graph and original member endpoints (`From = step1, To = step2`).
+  - External edge endpoints restored from vessel back to original member steps (`From = outsideA, To = step1` and `From = step2, To = outsideB`).
+  - Edge `Points` route array by exact reference identity, and individual `Point` objects by exact reference identity.
+  - All `Node.Edges` arrays by exact identity.
+  - Member dimensions, `TopLeft`, `Sequence = null`, `Container = null`, and `Graph = g`.
+  - The newly installed sequence vessel is completely uninstalled from nodes, containers, and sequences.
 - **RNG Non-Rollback:** Callers' PRNG state is never rolled back on graph restore, matching Go standard behavior.
 
 ### 11. `graph.Sequences` Map Replacement
@@ -134,5 +141,7 @@ Within each container:
   - `BuildSequenceBridge`
   - `AddSequenceBridge`
   - `AbductSequenceEdgesBridge`
-- The Go reference oracle `test/reference/go_sequence_mutation_oracle.go` generates `test/fixtures/go-sequence-mutation-reference.json` containing canonical fingerprints for both direct helper tests and 18 comprehensive `AddSequences` scenarios.
+- The Go reference oracle `test/reference/go_sequence_mutation_oracle.go` generates `test/fixtures/go-sequence-mutation-reference.json` (SHA256: `c92fde1f7cd8187cf50aa7c068869712547897f98d33547c083562c8f0f4115b`) containing canonical fingerprints for direct helper tests and 20 comprehensive `AddSequences` scenarios, including:
+  - Stale remembered membership (where one step's membership was modified after cleanup; verified stale link cleared and sequence not reconstructed).
+  - Repeated deterministic reconstruction (verifying that rebuilding the same topology twice with the same seed produces identical fingerprints in both Go and JS: `fpA == fpB`).
 - The JS test suite replayed all scenarios and proved bit-for-bit parity against the Go oracle fixture.

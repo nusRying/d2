@@ -53,7 +53,7 @@ Public `grouping.AddSequences` is called directly by the reference oracle withou
   ```
 - **Determinism Check:** Generated twice to independent paths (`-a` and `-b`) and compared.
 - **Fixture SHA256:**
-  `3057b6629e8b46bb004341f6fab6d475d8f5fa61eeca9625b9364a7aeeadc5bf`
+  `c92fde1f7cd8187cf50aa7c068869712547897f98d33547c083562c8f0f4115b`
 
 ## 6. Parity Verification Results
 
@@ -80,7 +80,7 @@ Public `grouping.AddSequences` is called directly by the reference oracle withou
 - **`addSequence`**:
   - Direct installation verified (vessel in Nodes/Container, members removed from Nodes/Container, member.Sequence set, member.Container null, member.Graph intact)
 
-### Public `AddSequences` Oracle Scenarios (18/18 Passed)
+### Public `AddSequences` Oracle Scenarios (20/20 Passed)
 1. `simple_two_step`
 2. `three_step_chain`
 3. `two_separate_runs`
@@ -99,32 +99,44 @@ Public `grouping.AddSequences` is called directly by the reference oracle withou
 16. `removed_remembered_member` (does not resurrect removed node)
 17. `ordinary_id_collision_seed_19` (resolves to collidingID + 1 without extra RNG draw; caller continuation parity preserved)
 18. `remembered_ids_reserved_across_containers_seed_73` (fresh sequence does not collide with remembered sequence across containers)
+19. `stale_remembered_membership` (member membership manually cleared after cleanup; stale links cleared, sequence not reconstructed)
+20. `repeated_deterministic_reconstruction` (same topology rebuilt twice with seed 42; verified `fpA == fpB` in both Go and JS)
 
 ### Transaction and Atomicity Scenarios (5/5 Passed)
 - Pre-mutation validation rejects cycles/invalid topology before snapshot capture.
-- Cancellation during snapshot precedes mutation and leaves all graph topology and original `graph.Sequences` Map untouched.
-- Late cancellation after sequence installation restores exact object aliases:
-  - `graph.Nodes`, `graph.Edges`, and `graph.Containers` array and Map references.
-  - `graph.Sequences` original Map reference and contents.
-  - `step.Edges` array references and contents.
-  - `edge` references, endpoints (`From`, `To`), and routing points.
-  - Step dimensions, `TopLeft`, `Sequence`, `Container`, and `Graph` fields.
+- **Phase-Calibrated Snapshot Cancellation:**
+  Validation check count measured on the exact graph with a non-cancelling probe (`validationChecks = 16`). Context calibrated to cancel on check 18 (inside `GraphState.updateWithWorkGuard()`). Proves that cancellation during snapshot precedes sequence mutation:
+  - `WorkCanceledError.location === "AddSequences"`
+  - `graph.Sequences` remains exact original Map instance (size 0)
+  - `graph.Nodes`, `graph.Edges`, and `graph.Containers` remain exact original array and Map instances
+  - Step `Sequence` remains null
+  - **Caller RNG consumed zero draws!**
+- **Late-Cancellation Rollback with Real Edge Abduction & Route Identity:**
+  Context cancels when `graph.Sequences.size > 0` on topology `outsideA -> step1 -> step2 -> outsideB` (with defining edge `step1 -> step2`, abducted incoming `outsideA -> step1`, abducted outgoing `step2 -> outsideB`, and non-empty `Points` route `[p1, p2]`):
+  - Original array and Map references restored by exact identity (`Nodes`, `Edges`, `Containers`, root children, `Sequences`).
+  - Defining edge restored to graph and original endpoints (`From = step1, To = step2`).
+  - External edge endpoints restored from sequence vessel back to original steps (`From = outsideA, To = step1` and `From = step2, To = outsideB`).
+  - Edge `Points` route array restored by exact reference identity (`edgeIn.Points === originalRoutePoints`).
+  - Individual `Point` objects restored by exact reference identity (`p1`, `p2`).
+  - All `Node.Edges` arrays restored by exact identity.
+  - Member dimensions, `TopLeft`, `Sequence = null`, `Container = null`, and `Graph = g` restored.
+  - Newly created sequence vessel is completely uninstalled.
 - Callers' RNG state is NOT rolled back upon graph rollback.
 - Successful `AddSequences` replaces `graph.Sequences` with a new Map.
 
 ## 7. Test Suite Summary
 - **Targeted Unit Tests:**
-  `test/unit/sequence-mutation.test.js`: 20 pass, 0 fail (107 expect() calls)
+  `test/unit/sequence-mutation.test.js`: 20 pass, 0 fail (143 expect() calls)
 - **Targeted Oracle Tests:**
-  `test/unit/sequence-mutation-oracle.test.js`: 35 pass, 0 fail (112 expect() calls)
+  `test/unit/sequence-mutation-oracle.test.js`: 37 pass, 0 fail (119 expect() calls)
 - **Full Bun Test Suite:**
   ```text
-  522 pass
+  524 pass
   0 fail
-  9572 expect() calls
-  Ran 522 tests across 25 files. [1300.00ms]
+  9615 expect() calls
+  Ran 524 tests across 25 files. [1218.00ms]
   ```
-  (Net increase from Slice 11 baseline of 467 tests across 23 files: +55 tests, +2 test files).
+  (Net increase from Slice 11 baseline of 467 tests across 23 files: +57 tests, +2 test files).
 
 ## 8. Static Scans and Production Hygiene
 - **`git diff --check`:** Passed cleanly (0 whitespace or conflict errors).

@@ -44,6 +44,7 @@ function testCleanupSequences(graph) {
   for (const vessel of graph.sequenceOrder()) {
     const sequence = graph.Sequences.get(vessel);
     if (!sequence) continue;
+    sequence.arrangeSteps();
     for (const node of sequence.Nodes) {
       graph.addNewNodeToContainer(sequence.Container, node);
     }
@@ -985,6 +986,72 @@ describe("Slice 12 Go Sequence Mutation Reference Oracle Replay", () => {
 
       const allSteps = [...oldA, ...oldB, ...newA];
       expect(fingerprintGraph(g, allSteps, rng)).toEqual(expected.fingerprint);
+    });
+
+    test("stale_remembered_membership", () => {
+      const expected = addRef.stale_remembered_membership;
+      const g = new Graph();
+      const s1 = createStepNode(1);
+      const s2 = createStepNode(2);
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
+      connectWithID(g, 10, s1, s2);
+
+      addSequences(backgroundWorkContext(), g, new GoRand(1));
+
+      // Simulate Cleanup & clear s1.Sequence
+      testCleanupSequences(g);
+      s1.Sequence = null;
+
+      const rng = new GoRand(5);
+      addSequences(backgroundWorkContext(), g, rng);
+
+      expect(g.Sequences.size).toBe(expected.seqCount);
+      expect(s1.Sequence === null).toBe(expected.s1Seq);
+      expect(s2.Sequence === null).toBe(expected.s2Seq);
+      expect(fingerprintGraph(g, [s1, s2], rng)).toEqual(expected.fingerprint);
+    });
+
+    test("repeated_deterministic_reconstruction", () => {
+      const expected = addRef.repeated_deterministic_reconstruction;
+      const g = new Graph();
+      const s1 = createStepNode(1);
+      const s2 = createStepNode(2);
+      const s3 = createStepNode(3);
+      const ext = new Node(99, 50, 50);
+      s1.TopLeft = new Point(10, 20);
+      s2.TopLeft = new Point(60, 20);
+      s3.TopLeft = new Point(110, 20);
+      ext.TopLeft = new Point(200, 20);
+
+      g.addNewNodeToContainer(null, s1);
+      g.addNewNodeToContainer(null, s2);
+      g.addNewNodeToContainer(null, s3);
+      g.addNewNodeToContainer(null, ext);
+      connectWithID(g, 10, s1, s2);
+      connectWithID(g, 11, s2, s3);
+      connectWithID(g, 12, s3, ext);
+
+      const runSeed = 42;
+
+      // Initial creation
+      addSequences(backgroundWorkContext(), g, new GoRand(runSeed));
+
+      // First reconstruction: Cleanup + AddSequences
+      testCleanupSequences(g);
+      const rngA = new GoRand(runSeed);
+      addSequences(backgroundWorkContext(), g, rngA);
+      const fpA = fingerprintGraph(g, [s1, s2, s3, ext], rngA);
+
+      // Second reconstruction: Cleanup + AddSequences
+      testCleanupSequences(g);
+      const rngB = new GoRand(runSeed);
+      addSequences(backgroundWorkContext(), g, rngB);
+      const fpB = fingerprintGraph(g, [s1, s2, s3, ext], rngB);
+
+      expect(fpA).toEqual(expected.fingerprintA);
+      expect(fpB).toEqual(expected.fingerprintB);
+      expect(fpA).toEqual(fpB);
     });
   });
 });

@@ -26,9 +26,7 @@ export function clearRememberedSequenceMembership(sequence, guard) {
     return;
   }
   for (const node of sequence.Nodes) {
-    if (guard) {
-      guard.Step();
-    }
+    guard.Step();
     if (node != null && node.Sequence === sequence) {
       node.Sequence = null;
     }

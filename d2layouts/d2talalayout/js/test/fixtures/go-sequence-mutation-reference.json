@@ -944,6 +944,231 @@
         "s2InNodes": false,
         "seqCount": 0
       },
+      "repeated_deterministic_reconstruction": {
+        "areEqual": true,
+        "fingerprintA": {
+          "nodes": [
+            "99",
+            "3440579354231278675"
+          ],
+          "edges": [
+            {
+              "id": "12",
+              "from": "3440579354231278675",
+              "to": "99"
+            }
+          ],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "99",
+                "3440579354231278675"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "members": [
+                "1",
+                "2",
+                "3"
+              ],
+              "edgeAbductions": [
+                {
+                  "edgeID": "12",
+                  "originallyFrom": "3",
+                  "originallyTo": null,
+                  "currentFrom": "3440579354231278675",
+                  "currentTo": "99"
+                }
+              ]
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 15,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 20,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "99",
+              "width": 50,
+              "height": 50,
+              "topLeft": {
+                "x": 200,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "608747136543856411"
+        },
+        "fingerprintB": {
+          "nodes": [
+            "99",
+            "3440579354231278675"
+          ],
+          "edges": [
+            {
+              "id": "12",
+              "from": "3440579354231278675",
+              "to": "99"
+            }
+          ],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "99",
+                "3440579354231278675"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "members": [
+                "1",
+                "2",
+                "3"
+              ],
+              "edgeAbductions": [
+                {
+                  "edgeID": "12",
+                  "originallyFrom": "3",
+                  "originallyTo": null,
+                  "currentFrom": "3440579354231278675",
+                  "currentTo": "99"
+                }
+              ]
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 15,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 20,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "99",
+              "width": 50,
+              "height": 50,
+              "topLeft": {
+                "x": 200,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "608747136543856411"
+        }
+      },
       "simple_two_step": {
         "nodes": [
           "5577006791947779410"
@@ -1074,6 +1299,49 @@
           ],
           "nextInt63": "1543039099823358511"
         },
+        "seqCount": 0
+      },
+      "stale_remembered_membership": {
+        "fingerprint": {
+          "nodes": [
+            "1",
+            "2"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "7414159922357799360"
+        },
+        "s1Seq": true,
+        "s2Seq": true,
         "seqCount": 0
       },
       "stale_remembered_noncontiguous": {

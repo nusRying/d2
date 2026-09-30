@@ -13,6 +13,7 @@ import {
   WorkLimitError,
   WorkCanceledError,
   STEP_WEDGE_WIDTH,
+  Validate,
 } from "../../src/index.js";
 
 import {
@@ -374,20 +375,142 @@ describe("Slice 12 Sequence Mutation Unit Tests", () => {
 
     test("cancellation during snapshot precedes mutation and leaves graph untouched", () => {
       const g = new Graph();
-      const s1 = createStepNode(1);
-      const s2 = createStepNode(2);
+      const s1 = createStepNode(1, 20, 10);
+      const s2 = createStepNode(2, 20, 10);
       g.addNewNodeToContainer(null, s1);
       g.addNewNodeToContainer(null, s2);
       const edge = g.connect(s1, s2);
 
+      // Measure exact validation check count on the same graph using a non-cancelling probe
+      let validationChecks = 0;
+      const validationProbe = new WorkContext({
+        isCancelled: () => {
+          validationChecks++;
+          return false;
+        },
+        doneAvailable: false,
+      });
+
+      Validate(validationProbe, "AddSequences", g);
+      expect(validationChecks).toBeGreaterThan(0);
+
+      const originalNodes = g.Nodes;
+      const originalEdges = g.Edges;
+      const originalContainers = g.Containers;
+      const originalRootChildren = g.Containers.get(null);
       const originalSequencesMap = g.Sequences;
 
-      // Abort context after 2 checks so cancellation hits during snapshot capture
+      // Cancel only AFTER all validation checks plus the AddSequences stage-guard constructor check,
+      // so cancellation occurs in GraphState.updateWithWorkGuard()
       let checks = 0;
+      const cancelAt = validationChecks + 2;
       const ctx = new WorkContext({
         isCancelled: () => {
           checks++;
-          return checks >= 2;
+          return checks >= cancelAt;
+        },
+        doneAvailable: false,
+      });
+
+      const probeRng = new GoRand(1);
+      const probeFirstDraw = probeRng.Int63();
+
+      const rng = new GoRand(1);
+      let caughtError = null;
+      try {
+        addSequences(ctx, g, rng);
+      } catch (err) {
+        caughtError = err;
+      }
+
+      expect(caughtError).toBeInstanceOf(WorkCanceledError);
+      expect(caughtError.location).toBe("AddSequences");
+      expect(checks).toBeGreaterThanOrEqual(cancelAt);
+
+      // graph.Sequences is the exact original Map object
+      expect(g.Sequences).toBe(originalSequencesMap);
+      expect(g.Sequences.size).toBe(0);
+
+      // Graph.Nodes exact original reference and content
+      expect(g.Nodes).toBe(originalNodes);
+      expect(g.Nodes.length).toBe(2);
+      expect(g.Nodes[0]).toBe(s1);
+      expect(g.Nodes[1]).toBe(s2);
+
+      // Graph.Edges exact original reference and content
+      expect(g.Edges).toBe(originalEdges);
+      expect(g.Edges.length).toBe(1);
+      expect(g.Edges[0]).toBe(edge);
+      expect(edge.From).toBe(s1);
+      expect(edge.To).toBe(s2);
+
+      // Graph.Containers exact original Map and child array
+      expect(g.Containers).toBe(originalContainers);
+      expect(g.Containers.get(null)).toBe(originalRootChildren);
+      expect(g.Containers.get(null).length).toBe(2);
+
+      // node.Sequence unchanged
+      expect(s1.Sequence).toBeNull();
+      expect(s2.Sequence).toBeNull();
+
+      // RNG has consumed zero draws!
+      expect(rng.Int63()).toBe(probeFirstDraw);
+    });
+
+    test("late cancellation after sequence installation restores exact object aliases with edge abduction", () => {
+      const g = new Graph();
+      const outsideA = new Node(10, 50, 50);
+      const step1 = createStepNode(1, 20, 10);
+      const step2 = createStepNode(2, 20, 10);
+      const outsideB = new Node(20, 50, 50);
+
+      step1.TopLeft = new Point(100, 100);
+      step2.TopLeft = new Point(150, 100);
+      outsideA.TopLeft = new Point(10, 100);
+      outsideB.TopLeft = new Point(250, 100);
+
+      g.addNewNodeToContainer(null, outsideA);
+      g.addNewNodeToContainer(null, step1);
+      g.addNewNodeToContainer(null, step2);
+      g.addNewNodeToContainer(null, outsideB);
+
+      // outsideA -> step1 -> step2 -> outsideB
+      const edgeIn = g.connect(outsideA, step1);
+      const edgeDef = g.connect(step1, step2);
+      const edgeOut = g.connect(step2, outsideB);
+
+      // Give at least one external edge a non-empty Points route
+      const p1 = new Point(15, 105);
+      const p2 = new Point(95, 105);
+      const originalRoutePoints = [p1, p2];
+      edgeIn.Points = originalRoutePoints;
+
+      // Capture exact object references and aliases before mutation
+      const originalNodes = g.Nodes;
+      const originalEdges = g.Edges;
+      const originalContainers = g.Containers;
+      const originalRootChildren = g.Containers.get(null);
+      const originalSequencesMap = g.Sequences;
+
+      const outsideAEdges = outsideA.Edges;
+      const step1Edges = step1.Edges;
+      const step2Edges = step2.Edges;
+      const outsideBEdges = outsideB.Edges;
+
+      let capturedVessel = null;
+      let capturedSequence = null;
+
+      // Cancel only when a sequence has actually been installed in g.Sequences
+      const ctx = new WorkContext({
+        isCancelled: () => {
+          if (g.Sequences.size > 0) {
+            for (const [vessel, seq] of g.Sequences.entries()) {
+              capturedVessel = vessel;
+              capturedSequence = seq;
+            }
+            return true;
+          }
+          return false;
         },
         doneAvailable: false,
       });
@@ -395,71 +518,70 @@ describe("Slice 12 Sequence Mutation Unit Tests", () => {
       const rng = new GoRand(1);
       expect(() => addSequences(ctx, g, rng)).toThrow(WorkCanceledError);
 
-      expect(g.Sequences).toBe(originalSequencesMap);
-      expect(g.Sequences.size).toBe(0);
-      expect(s1.Sequence).toBeNull();
-      expect(s2.Sequence).toBeNull();
-      expect(g.Edges.includes(edge)).toBe(true);
-      expect(g.Nodes.length).toBe(2);
-    });
+      // Verify that sequence installation and edge abduction definitely occurred before cancellation
+      expect(capturedVessel).not.toBeNull();
+      expect(capturedSequence).not.toBeNull();
+      expect(capturedSequence.EdgeAbductions.length).toBeGreaterThan(0);
 
-    test("late cancellation after sequence installation restores exact object aliases", () => {
-      const g = new Graph();
-      const s1 = createStepNode(1, 20, 10);
-      const s2 = createStepNode(2, 20, 10);
-      s1.TopLeft = new Point(0, 0);
-      s2.TopLeft = new Point(20, 0);
-      g.addNewNodeToContainer(null, s1);
-      g.addNewNodeToContainer(null, s2);
-      const edge = g.connect(s1, s2);
-
-      // Capture exact object references before mutation
-      const originalNodes = g.Nodes;
-      const originalEdges = g.Edges;
-      const originalContainers = g.Containers;
-      const originalRootChildren = g.Containers.get(null);
-      const originalSequencesMap = g.Sequences;
-      const s1Edges = s1.Edges;
-      const s2Edges = s2.Edges;
-
-      // Cancel when a sequence has actually been installed in g.Sequences
-      const ctx = new WorkContext({
-        isCancelled: () => g.Sequences.size > 0,
-        doneAvailable: false,
-      });
-
-      const rng = new GoRand(1);
-      expect(() => addSequences(ctx, g, rng)).toThrow(WorkCanceledError);
-
-      // Verify exact aliases restored
+      // 1. Original graph arrays/maps restored by identity
       expect(g.Nodes).toBe(originalNodes);
       expect(g.Edges).toBe(originalEdges);
       expect(g.Containers).toBe(originalContainers);
       expect(g.Containers.get(null)).toBe(originalRootChildren);
       expect(g.Sequences).toBe(originalSequencesMap);
 
-      expect(s1.Edges).toBe(s1Edges);
-      expect(s2.Edges).toBe(s2Edges);
+      // 2. Original container child arrays restored by identity & content
+      expect(g.Containers.get(null).length).toBe(4);
+      expect(g.Containers.get(null)[0]).toBe(outsideA);
+      expect(g.Containers.get(null)[1]).toBe(step1);
+      expect(g.Containers.get(null)[2]).toBe(step2);
+      expect(g.Containers.get(null)[3]).toBe(outsideB);
 
-      // Content restored
-      expect(g.Nodes.length).toBe(2);
-      expect(g.Nodes[0]).toBe(s1);
-      expect(g.Nodes[1]).toBe(s2);
+      // 3. Defining edge restored to graph and original member endpoints
+      expect(g.Edges.includes(edgeDef)).toBe(true);
+      expect(edgeDef.From).toBe(step1);
+      expect(edgeDef.To).toBe(step2);
 
-      expect(g.Edges.length).toBe(1);
-      expect(g.Edges[0]).toBe(edge);
-      expect(edge.From).toBe(s1);
-      expect(edge.To).toBe(s2);
+      // 4. External edge endpoints restored from vessel -> original step
+      expect(edgeIn.From).toBe(outsideA);
+      expect(edgeIn.To).toBe(step1);
+      expect(edgeOut.From).toBe(step2);
+      expect(edgeOut.To).toBe(outsideB);
 
-      expect(s1.Sequence).toBeNull();
-      expect(s2.Sequence).toBeNull();
-      expect(s1.Container).toBeNull();
-      expect(s2.Container).toBeNull();
-      expect(s1.TopLeft.X).toBe(0);
-      expect(s1.TopLeft.Y).toBe(0);
-      expect(s2.TopLeft.X).toBe(20);
-      expect(s2.TopLeft.Y).toBe(0);
+      // 5. External edge objects are identical, Points array and Point objects are identical
+      expect(edgeIn.Points).toBe(originalRoutePoints);
+      expect(edgeIn.Points[0]).toBe(p1);
+      expect(edgeIn.Points[1]).toBe(p2);
 
+      // 6. All Node.Edges arrays are exact original arrays
+      expect(outsideA.Edges).toBe(outsideAEdges);
+      expect(step1.Edges).toBe(step1Edges);
+      expect(step2.Edges).toBe(step2Edges);
+      expect(outsideB.Edges).toBe(outsideBEdges);
+
+      // 7. Member dimensions / TopLeft restored
+      expect(step1.Width).toBe(20);
+      expect(step1.Height).toBe(10);
+      expect(step1.TopLeft.X).toBe(100);
+      expect(step1.TopLeft.Y).toBe(100);
+
+      expect(step2.Width).toBe(20);
+      expect(step2.Height).toBe(10);
+      expect(step2.TopLeft.X).toBe(150);
+      expect(step2.TopLeft.Y).toBe(100);
+
+      // 8. Member Sequence / Container / Graph restored
+      expect(step1.Sequence).toBeNull();
+      expect(step2.Sequence).toBeNull();
+      expect(step1.Container).toBeNull();
+      expect(step2.Container).toBeNull();
+      expect(step1.Graph).toBe(g);
+      expect(step2.Graph).toBe(g);
+
+      // 9. Graph contains no installed sequence vessel
+      expect(g.Nodes.includes(capturedVessel)).toBe(false);
+      expect(g.Containers.get(null).includes(capturedVessel)).toBe(false);
+      expect(g.Sequences.has(capturedVessel)).toBe(false);
       expect(g.Sequences.size).toBe(0);
     });
 

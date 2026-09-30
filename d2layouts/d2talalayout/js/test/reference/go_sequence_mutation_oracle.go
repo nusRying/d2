@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"reflect"
 	"runtime"
 	"sort"
 
@@ -976,7 +977,34 @@ func main() {
 		}
 	}
 
-	// 5.17 Ordinary ID collision with seed 19
+	// 5.17 Stale remembered membership cleared/changed
+	{
+		g := layoutgraph.NewGraph()
+		s1 := layoutgraph.NewNode(1, 40, 30)
+		s2 := layoutgraph.NewNode(2, 40, 30)
+		s1.SetShape(shape.STEP_TYPE)
+		s2.SetShape(shape.STEP_TYPE)
+		g.AddNewNodeToContainer(nil, s1)
+		g.AddNewNodeToContainer(nil, s2)
+		connectWithID(g, 10, s1, s2)
+
+		_ = grouping.AddSequences(ctx, g, rand.New(rand.NewSource(1)))
+		grouping.Cleanup(g)
+
+		// One member's Sequence membership is manually cleared
+		s1.Sequence = nil
+
+		rng := rand.New(rand.NewSource(5))
+		_ = grouping.AddSequences(ctx, g, rng)
+		addSequencesScenarios["stale_remembered_membership"] = map[string]interface{}{
+			"seqCount":    len(g.Sequences),
+			"s1Seq":       s1.Sequence == nil,
+			"s2Seq":       s2.Sequence == nil,
+			"fingerprint": fingerprintGraph(g, []*layoutgraph.Node{s1, s2}, rng),
+		}
+	}
+
+	// 5.18 Ordinary ID collision with seed 19
 	{
 		g := layoutgraph.NewGraph()
 		probe := rand.New(rand.NewSource(19))
@@ -1014,7 +1042,7 @@ func main() {
 		}
 	}
 
-	// 5.18 Remembered IDs reserved across containers with seed 73
+	// 5.19 Remembered IDs reserved across containers with seed 73
 	{
 		g := layoutgraph.NewGraph()
 		cB := layoutgraph.NewNode(100, 100, 100)
@@ -1064,6 +1092,53 @@ func main() {
 			"sequenceCount":    len(g.Sequences),
 			"allVesselIDs":     allVesselIDs,
 			"fingerprint":      fingerprintGraph(g, append(oldA, append(oldB, newA...)...), rng),
+		}
+	}
+
+	// 5.20 Repeated deterministic reconstruction
+	{
+		g := layoutgraph.NewGraph()
+		s1 := layoutgraph.NewNode(1, 40, 30)
+		s2 := layoutgraph.NewNode(2, 40, 30)
+		s3 := layoutgraph.NewNode(3, 40, 30)
+		ext := layoutgraph.NewNode(99, 50, 50)
+		s1.SetShape(shape.STEP_TYPE)
+		s2.SetShape(shape.STEP_TYPE)
+		s3.SetShape(shape.STEP_TYPE)
+		s1.TopLeft = geo.NewPoint(10, 20)
+		s2.TopLeft = geo.NewPoint(60, 20)
+		s3.TopLeft = geo.NewPoint(110, 20)
+		ext.TopLeft = geo.NewPoint(200, 20)
+
+		g.AddNewNodeToContainer(nil, s1)
+		g.AddNewNodeToContainer(nil, s2)
+		g.AddNewNodeToContainer(nil, s3)
+		g.AddNewNodeToContainer(nil, ext)
+		connectWithID(g, 10, s1, s2)
+		connectWithID(g, 11, s2, s3)
+		connectWithID(g, 12, s3, ext)
+
+		const runSeed int64 = 42
+
+		// Initial creation
+		_ = grouping.AddSequences(ctx, g, rand.New(rand.NewSource(runSeed)))
+
+		// First reconstruction: Cleanup + AddSequences
+		grouping.Cleanup(g)
+		rngA := rand.New(rand.NewSource(runSeed))
+		_ = grouping.AddSequences(ctx, g, rngA)
+		fpA := fingerprintGraph(g, []*layoutgraph.Node{s1, s2, s3, ext}, rngA)
+
+		// Second reconstruction: Cleanup + AddSequences
+		grouping.Cleanup(g)
+		rngB := rand.New(rand.NewSource(runSeed))
+		_ = grouping.AddSequences(ctx, g, rngB)
+		fpB := fingerprintGraph(g, []*layoutgraph.Node{s1, s2, s3, ext}, rngB)
+
+		addSequencesScenarios["repeated_deterministic_reconstruction"] = map[string]interface{}{
+			"fingerprintA": fpA,
+			"fingerprintB": fpB,
+			"areEqual":     reflect.DeepEqual(fpA, fpB),
 		}
 	}
 
