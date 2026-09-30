@@ -66,9 +66,17 @@ export class Graph {
     }
   }
 
+  AddNodeToContainer(container, node) {
+    return this.addNodeToContainer(container, node);
+  }
+
   addNewNodeToContainer(container, node) {
     this.addNodeUnchecked(node);
     this.addNodeToContainer(container, node);
+  }
+
+  AddNewNodeToContainer(container, node) {
+    return this.addNewNodeToContainer(container, node);
   }
 
   removeNode(node) {
@@ -76,6 +84,10 @@ export class Graph {
     if (idx !== -1) {
       this.Nodes.splice(idx, 1);
     }
+  }
+
+  RemoveNode(node) {
+    return this.removeNode(node);
   }
 
   AddEdge(edge) {

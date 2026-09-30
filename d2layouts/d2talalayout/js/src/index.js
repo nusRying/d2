@@ -20,3 +20,4 @@ export * from "./geometry/index.js";
 export * from "./placementcost/index.js";
 export * from "./placement/index.js";
 export * from "./limits/index.js";
+export * from "./grouping/index.js";
