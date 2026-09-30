@@ -4,7 +4,7 @@
 2026-09-30
 
 ## Status
-Implemented — awaiting Slice 10 review
+Accepted
 
 ## Context
 TALA engine mutations across all layout stages (most immediately `grouping.AddSequences`, and subsequently cluster formation, tree discovery, herding, and routing) operate on complex hierarchical graphs. An untrusted, cyclic, or maliciously oversized input graph could cause infinite loops, stack overflow, or memory exhaustion if allowed into mutation or speculative snapshot stages.
