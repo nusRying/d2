@@ -29,7 +29,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 12 — complete
 * Slice 13 — complete
 * Slice 14 — complete
-* Slice 15 — Atomic AddClusters Orchestration — implemented, awaiting review
+* Slice 15 — complete
+* Slice 16 — ResetClusters Lifecycle Retirement — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

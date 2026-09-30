@@ -4,7 +4,7 @@
 2026-10-01
 
 ## Status
-Implemented (awaiting Slice 15 review)
+Accepted
 
 ## Context
 In TALA's layout grouping pipeline, interchangeable sibling nodes are gathered into clusters and temporarily replaced by composite "vessel" nodes during layout calculation. Slices 13 and 14 ported read-only cluster discovery indexing and the low-level cluster mutation primitives (`Cluster.Resize`, `CreateVessel`, `AddCluster`, `abductClusterEdges`).

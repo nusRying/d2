@@ -72,11 +72,9 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
       expect(MAX_TRANSACTION_WORK_UNITS).toBe(1_000_000_000n);
     });
 
-    test("grouping index does NOT export Slice 16 functions", () => {
+    test("grouping index does NOT export future slice functions", () => {
       expect(groupingExports.cleanup).toBeUndefined();
       expect(groupingExports.Cleanup).toBeUndefined();
-      expect(groupingExports.resetClusters).toBeUndefined();
-      expect(groupingExports.ResetClusters).toBeUndefined();
       expect(groupingExports.join).toBeUndefined();
       expect(groupingExports.Join).toBeUndefined();
       expect(groupingExports.joinDistancedClusters).toBeUndefined();

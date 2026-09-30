@@ -46,3 +46,9 @@ export {
   addClusters,
   AddClusters,
 } from "./clusters-orchestration.js";
+
+export {
+  // Slice 16 – cluster lifecycle retirement
+  resetClusters,
+  ResetClusters,
+} from "./lifecycle.js";
