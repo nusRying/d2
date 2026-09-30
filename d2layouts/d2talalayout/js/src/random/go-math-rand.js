@@ -285,6 +285,37 @@ export class GoRand {
 		return v % n;
 	}
 
+	Int31() {
+		return Number(this.Int63() >> 32n);
+	}
+
+	Int31n(n) {
+		const num = typeof n === "bigint" ? Number(n) : n;
+		if (num <= 0 || !Number.isSafeInteger(num)) {
+			throw new Error("invalid argument to Int31n");
+		}
+		if ((num & (num - 1)) === 0) {
+			return this.Int31() & (num - 1);
+		}
+		const max = 2147483647 - (2147483648 % num);
+		let v = this.Int31();
+		while (v > max) {
+			v = this.Int31();
+		}
+		return v % num;
+	}
+
+	Intn(n) {
+		const num = typeof n === "bigint" ? Number(n) : n;
+		if (num <= 0 || !Number.isSafeInteger(num)) {
+			throw new Error("invalid argument to Intn");
+		}
+		if (num <= 0x7fffffff) {
+			return this.Int31n(num);
+		}
+		return Number(this.Int63n(BigInt(num)));
+	}
+
 	Float64() {
 		while (true) {
 			const int63val = this.Int63();

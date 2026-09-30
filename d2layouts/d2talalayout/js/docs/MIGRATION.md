@@ -26,7 +26,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 09 — complete
 * Slice 10 — complete
 * Slice 11 — complete
-* Slice 12 — Sequence Mutation and Atomic AddSequences — implemented, awaiting review
+* Slice 12 — complete
+* Slice 13 — Cluster Discovery Index and Classification — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

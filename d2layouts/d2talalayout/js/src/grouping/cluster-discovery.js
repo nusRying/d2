@@ -63,11 +63,11 @@ export class ClusterEdgeSignature {
       this.directed++;
     }
     if (edge.From === node) {
-      this.fromArrowheads.add(String(edge.SourceArrowhead));
-      this.toArrowheads.add(String(edge.TargetArrowhead));
+      this.fromArrowheads.add(edge.SourceArrowhead);
+      this.toArrowheads.add(edge.TargetArrowhead);
     } else {
-      this.fromArrowheads.add(String(edge.TargetArrowhead));
-      this.toArrowheads.add(String(edge.SourceArrowhead));
+      this.fromArrowheads.add(edge.TargetArrowhead);
+      this.toArrowheads.add(edge.SourceArrowhead);
     }
   }
 
@@ -351,7 +351,7 @@ export function clusterIsDescendantOfGuarded(descendant, ancestor, guard) {
  * @returns {boolean}
  */
 export function clusterHasLeakyEdgeGuarded(g, node, guard) {
-  if (!node.IsContainer()) {
+  if (!node.isContainer) {
     return false;
   }
   const descendants = g.allDescendantNodesWithWorkGuard(node, true, guard);

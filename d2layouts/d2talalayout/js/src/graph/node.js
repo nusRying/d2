@@ -247,14 +247,6 @@ export class Node {
     return this.adjacent(edge);
   }
 
-  isContainerNode() {
-    return this.isContainer;
-  }
-
-  IsContainer() {
-    return Boolean(this.isContainer);
-  }
-
   owningContainer() {
     if (this.Cluster != null && this.Cluster.isActive()) {
       return this.Cluster.Vessel.Container;

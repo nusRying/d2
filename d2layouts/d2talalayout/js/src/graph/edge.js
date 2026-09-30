@@ -43,10 +43,6 @@ export class Edge {
     return this.From === this.To;
   }
 
-  IsLoop() {
-    return this.isLoop();
-  }
-
   // HasSourceArrow reports whether the source end carries a visible arrowhead.
   // Pinned reference: layoutgraph/edge.go HasSourceArrow
   hasSourceArrow() {

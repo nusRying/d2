@@ -4,7 +4,7 @@
 2026-09-30
 
 ## Status
-Implemented — awaiting Slice 12 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, sequences of Step nodes are transformed into composite sequence vessels (`internal/grouping/sequences.go::AddSequences`). This transformation alters graph topology: step nodes are removed from their parent container child lists and from `graph.Nodes`, internal defining edges between steps are disconnected, external edges connected to individual steps are abducted to the vessel node, and a synthetic sequence vessel node is inserted into the container.

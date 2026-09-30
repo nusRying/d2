@@ -71,19 +71,11 @@ export class Graph {
     this.addNodeToContainer(container, node);
   }
 
-  AddNewNodeToContainer(container, node) {
-    this.addNewNodeToContainer(container, node);
-  }
-
   removeNode(node) {
     const idx = this.Nodes.indexOf(node);
     if (idx !== -1) {
       this.Nodes.splice(idx, 1);
     }
-  }
-
-  RemoveNode(node) {
-    this.removeNode(node);
   }
 
   AddEdge(edge) {
