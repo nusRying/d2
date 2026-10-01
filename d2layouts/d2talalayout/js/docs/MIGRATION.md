@@ -35,7 +35,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 19 — complete
 * Slice 20 — complete
 * Slice 21 — complete
-* Slice 22 — WrapChildren Composition — implemented, awaiting review
+* Slice 22 — complete
+* Slice 23 — FitToGraph — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

@@ -811,4 +811,16 @@ export class Node {
   WrapChildren() {
     this.wrapChildren();
   }
+
+  fitNodeToGraph(graph, padding) {
+    const [tl, br] = nodesFixedBounds(graph.Nodes);
+
+    this.expandForLabels(tl, br);
+
+    this.fitToBoundingBox(tl, br, padding);
+  }
+
+  FitToGraph(graph, padding) {
+    this.fitNodeToGraph(graph, padding);
+  }
 }

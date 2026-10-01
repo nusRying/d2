@@ -25,9 +25,8 @@ describe("Slice 20 — Container Child Positioning (Direct Unit Tests)", () => {
       const n = new Node(1, 100, 100);
       expect(n.setContainer).toBeUndefined();
       expect(n.SetContainer).toBeUndefined();
-      expect(n.fitNodeToGraph).toBeUndefined();
-      expect(n.FitToGraph).toBeUndefined();
       expect(g.SyncClusters).toBeUndefined();
+      expect(g.SyncNestedGeometry).toBeUndefined();
       expect(g.Cleanup).toBeUndefined();
       expect(g.cleanup).toBeUndefined();
     });

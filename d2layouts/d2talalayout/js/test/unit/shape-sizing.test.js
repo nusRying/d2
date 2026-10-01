@@ -26,11 +26,10 @@ describe("Slice 21 — Shape Sizing & FitToBoundingBox (Direct Unit Tests)", () 
       const n = new Node(1, 100, 100);
       expect(n.setContainer).toBeUndefined();
       expect(n.SetContainer).toBeUndefined();
-      expect(n.fitNodeToGraph).toBeUndefined();
-      expect(n.FitToGraph).toBeUndefined();
       expect(n.ArrangeClusterNodes).toBeUndefined();
       expect(n.arrangeNodesWithWork).toBeUndefined();
       expect(n.SyncClusters).toBeUndefined();
+      expect(n.SyncNestedGeometry).toBeUndefined();
       expect(n.Cleanup).toBeUndefined();
       expect(n.cleanup).toBeUndefined();
       expect(n.AddHubs).toBeUndefined();

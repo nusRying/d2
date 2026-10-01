@@ -1,7 +1,7 @@
 # ADR-023: WrapChildren Composition
 
 ## Status
-Implemented — awaiting Slice 22 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), container nodes enclose child nodes and clusters. During layout, containers must wrap tightly around their positioned children, accounting for shape-specific geometry, label expansions, and container padding.

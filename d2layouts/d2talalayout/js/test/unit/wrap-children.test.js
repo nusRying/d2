@@ -18,8 +18,6 @@ describe("Slice 22 — WrapChildren Composition (Direct Unit Tests)", () => {
       const n = new Node(1, 100, 100);
       expect(n.setContainer).toBeUndefined();
       expect(n.SetContainer).toBeUndefined();
-      expect(n.fitNodeToGraph).toBeUndefined();
-      expect(n.FitToGraph).toBeUndefined();
       expect(n.binPackWrapChildren).toBeUndefined();
       expect(n.ArrangeClusterNodes).toBeUndefined();
       expect(n.arrangeNodesWithWork).toBeUndefined();
