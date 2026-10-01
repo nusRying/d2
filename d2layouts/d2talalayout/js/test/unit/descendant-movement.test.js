@@ -36,8 +36,8 @@ describe("Slice 17 Direct Unit Tests - Descendant Traversal & Node Movement", ()
       const n = new Node(1, 10, 10);
       expect(n.fixedBounds).toBeUndefined();
       expect(n.FixedBoundingBox).toBeUndefined();
-      expect(n.wrapChildren).toBeUndefined();
-      expect(n.WrapChildren).toBeUndefined();
+      expect(n.fitNodeToGraph).toBeUndefined();
+      expect(n.FitToGraph).toBeUndefined();
       expect(g.SyncClusters).toBeUndefined();
       expect(g.Cleanup).toBeUndefined();
       expect(g.cleanup).toBeUndefined();

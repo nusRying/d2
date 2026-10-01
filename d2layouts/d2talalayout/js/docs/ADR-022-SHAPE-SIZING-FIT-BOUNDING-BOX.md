@@ -1,7 +1,7 @@
 # ADR-022: Shape Sizing & FitToBoundingBox
 
 ## Status
-Implemented — awaiting Slice 21 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), nodes require shape-specific sizing to fit arbitrary content bounding boxes and padding. When sizing containers or fitting nodes to their contents, two fundamental operations are used in Go:

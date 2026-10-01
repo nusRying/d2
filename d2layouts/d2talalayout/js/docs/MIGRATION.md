@@ -34,7 +34,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 17 — complete
 * Slice 19 — complete
 * Slice 20 — complete
-* Slice 21 — Shape Sizing & FitToBoundingBox — implemented, awaiting review
+* Slice 21 — complete
+* Slice 22 — WrapChildren Composition — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

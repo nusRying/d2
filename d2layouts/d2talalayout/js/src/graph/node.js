@@ -780,4 +780,35 @@ export class Node {
   FitToBoundingBox(tl, br, padding) {
     this.fitToBoundingBox(tl, br, padding);
   }
+
+  wrapChildren() {
+    if (!this.isContainer) {
+      return;
+    }
+
+    const children = this.Graph.Containers.get(this) ?? [];
+
+    const padding = this.Graph.containerPadding(this, false);
+
+    const [tl, br] = nodesFixedBounds(children);
+
+    this.expandForLabels(tl, br);
+
+    this.fitToBoundingBox(tl, br, padding);
+
+    const innerTL = this.InsidePlacement(
+      br.X - tl.X,
+      br.Y - tl.Y,
+      padding
+    );
+
+    this.translate(
+      tl.X - innerTL.X,
+      tl.Y - innerTL.Y
+    );
+  }
+
+  WrapChildren() {
+    this.wrapChildren();
+  }
 }
