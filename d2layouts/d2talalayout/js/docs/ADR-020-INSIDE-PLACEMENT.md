@@ -1,7 +1,7 @@
 # ADR-020: Shape Inner Geometry & Node InsidePlacement
 
 ## Status
-Accepted / Implemented (Slice 19)
+Implemented — awaiting Slice 19 review
 
 ## Context
 In D2's layout engine (specifically TALA), nodes require calculating how content fits inside a shape's usable inner area:
