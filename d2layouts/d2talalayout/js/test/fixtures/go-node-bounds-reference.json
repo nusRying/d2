@@ -201,14 +201,12 @@
       }
     },
     "nil_peer_top_left": {
-      "topLeft": {
-        "x": 20,
-        "y": 20
-      },
-      "bottomRight": {
-        "x": 80,
-        "y": 90
-      }
+      "topLeft": null,
+      "bottomRight": null,
+      "leftmost": true,
+      "topmost": true,
+      "rightmost": false,
+      "bottommost": false
     },
     "outside_icon": {
       "topLeft": {

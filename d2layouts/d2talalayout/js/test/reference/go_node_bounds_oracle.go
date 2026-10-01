@@ -31,6 +31,14 @@ type ScenarioResult struct {
 	ModifierAdjustments *ModifierAdjustmentsDTO `json:"modifierAdjustments,omitempty"`
 	LabelTopLeft        *PointDTO               `json:"labelTopLeft,omitempty"`
 	IconTopLeft         *PointDTO               `json:"iconTopLeft,omitempty"`
+	Leftmost            *bool                   `json:"leftmost,omitempty"`
+	Topmost             *bool                   `json:"topmost,omitempty"`
+	Rightmost           *bool                   `json:"rightmost,omitempty"`
+	Bottommost          *bool                   `json:"bottommost,omitempty"`
+}
+
+func boolPtr(b bool) *bool {
+	return &b
 }
 
 type OracleOutput struct {
@@ -550,22 +558,27 @@ func main() {
 
 	// 25. nil_peer_top_left
 	{
-		n1 := layoutgraph.NewNode(1, 50, 50)
-		n1.TopLeft = geo.NewPoint(30, 40)
-		n1.Label = &layoutgraph.Label{
-			Position: label.OutsideTopLeft,
-			Width:    20,
-			Height:   10,
-		}
-		nNil := layoutgraph.NewNode(2, 50, 50)
-		nNil.TopLeft = nil
+		target := layoutgraph.NewNode(1, 50, 50)
+		target.TopLeft = geo.NewPoint(30, 40)
 
-		// n1 bounds with allNodes containing nNil: nNil should be skipped in extremal check!
-		// Direct node.bounds(nodes) call:
-		tl, br := layoutgraph.Nodes{n1}.FixedBoundingBox()
+		nilPeer := layoutgraph.NewNode(2, 50, 50)
+		nilPeer.TopLeft = nil
+
+		otherPeer := layoutgraph.NewNode(3, 50, 50)
+		otherPeer.TopLeft = geo.NewPoint(100, 100)
+
+		nodes := layoutgraph.Nodes{target, nilPeer, otherPeer}
+
+		lm := nodes.Leftmost(target)
+		tm := nodes.Topmost(target)
+		rm := nodes.Rightmost(target)
+		bm := nodes.Bottommost(target)
+
 		out.Scenarios["nil_peer_top_left"] = ScenarioResult{
-			TopLeft:     pointToDTO(tl),
-			BottomRight: pointToDTO(br),
+			Leftmost:   boolPtr(lm),
+			Topmost:    boolPtr(tm),
+			Rightmost:  boolPtr(rm),
+			Bottommost: boolPtr(bm),
 		}
 	}
 
@@ -575,6 +588,9 @@ func main() {
 	}
 
 	fixturePath := "js/test/fixtures/go-node-bounds-reference.json"
+	if _, err := os.Stat("d2layouts/d2talalayout"); err == nil {
+		fixturePath = "d2layouts/d2talalayout/" + fixturePath
+	}
 	if err := os.WriteFile(fixturePath, data, 0644); err != nil {
 		panic(err)
 	}

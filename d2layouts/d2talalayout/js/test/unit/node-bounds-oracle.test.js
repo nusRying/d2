@@ -11,6 +11,10 @@ import {
   nodesFixedOrigin,
   nodesFixedBounds,
   FixedBoundingBox,
+  nodesLeftmost,
+  nodesTopmost,
+  nodesRightmost,
+  nodesBottommost,
 } from '../../src/graph/node-bounds.js';
 
 function parseDTOValue(v) {
@@ -70,6 +74,14 @@ describe('Slice 18 - Real-Go Node Bounds & Fixed-Origin Oracle Parity', () => {
       expect(s.topLeft.x).toBe(75);
       expect(s.topLeft.y).toBe(165);
       expect(s.bottomRight).toBeNull();
+    });
+
+    test('nil_peer_top_left: fixture records true for leftmost/topmost, false for rightmost/bottommost', () => {
+      const s = fixture.scenarios.nil_peer_top_left;
+      expect(s.leftmost).toBe(true);
+      expect(s.topmost).toBe(true);
+      expect(s.rightmost).toBe(false);
+      expect(s.bottommost).toBe(false);
     });
   });
 
@@ -528,21 +540,28 @@ describe('Slice 18 - Real-Go Node Bounds & Fixed-Origin Oracle Parity', () => {
       expect(br.Y).toBe(ref.bottomRight.y);
     });
 
-    test('nil_peer_top_left', () => {
-      const n1 = new Node(1, 50, 50);
-      n1.TopLeft = new Point(30, 40);
-      n1.Label = {
-        Position: LabelPosition.OutsideTopLeft,
-        Width: 20,
-        Height: 10,
-      };
-
-      const [tl, br] = FixedBoundingBox([n1]);
+    test('nil_peer_top_left: extremal helpers skip peer with null TopLeft', () => {
       const ref = fixture.scenarios.nil_peer_top_left;
-      expect(tl.X).toBe(ref.topLeft.x);
-      expect(tl.Y).toBe(ref.topLeft.y);
-      expect(br.X).toBe(ref.bottomRight.x);
-      expect(br.Y).toBe(ref.bottomRight.y);
+      expect(ref.leftmost).toBe(true);
+      expect(ref.topmost).toBe(true);
+      expect(ref.rightmost).toBe(false);
+      expect(ref.bottommost).toBe(false);
+
+      const target = new Node(1, 50, 50);
+      target.TopLeft = new Point(30, 40);
+
+      const nilPeer = new Node(2, 50, 50);
+      nilPeer.TopLeft = null;
+
+      const otherPeer = new Node(3, 50, 50);
+      otherPeer.TopLeft = new Point(100, 100);
+
+      const nodes = [target, nilPeer, otherPeer];
+
+      expect(nodesLeftmost(nodes, target)).toBe(ref.leftmost);
+      expect(nodesTopmost(nodes, target)).toBe(ref.topmost);
+      expect(nodesRightmost(nodes, target)).toBe(ref.rightmost);
+      expect(nodesBottommost(nodes, target)).toBe(ref.bottommost);
     });
   });
 });
