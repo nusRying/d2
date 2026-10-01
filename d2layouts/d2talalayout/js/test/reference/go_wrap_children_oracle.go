@@ -619,6 +619,86 @@ func main() {
 		}
 	}
 
+	// 13b. desired_height_larger
+	{
+		g := layoutgraph.NewGraph()
+		c := layoutgraph.NewNode(1, 40, 30)
+		c.SetShape(shape.SQUARE_TYPE)
+		c.SetContainer(true)
+		c.TopLeft = geo.NewPoint(0, 0)
+		c.Graph = g
+		dh := 500.0
+		c.DesiredHeight = &dh
+		g.AddNodeUnchecked(c)
+
+		ch := layoutgraph.NewNode(2, 50, 50)
+		ch.TopLeft = geo.NewPoint(10, 10)
+		ch.Graph = g
+		g.AddNodeUnchecked(ch)
+		g.Containers[c] = []*layoutgraph.Node{ch}
+
+		before := map[string]NodeStateDTO{
+			"1": captureNodeState(c),
+			"2": captureNodeState(ch),
+		}
+		panicked := runSafe(func() {
+			c.WrapChildren()
+		})
+		after := map[string]NodeStateDTO{
+			"1": captureNodeState(c),
+			"2": captureNodeState(ch),
+		}
+
+		out.Scenarios["desired_height_larger"] = ScenarioResult{
+			Name:         "desired_height_larger",
+			Panicked:     panicked,
+			ContainerID:  "1",
+			DirectOrder:  []string{"2"},
+			BeforeStates: before,
+			AfterStates:  after,
+		}
+	}
+
+	// 13c. desired_width_zero
+	{
+		g := layoutgraph.NewGraph()
+		c := layoutgraph.NewNode(1, 40, 30)
+		c.SetShape(shape.SQUARE_TYPE)
+		c.SetContainer(true)
+		c.TopLeft = geo.NewPoint(0, 0)
+		c.Graph = g
+		dw := 0.0
+		c.DesiredWidth = &dw
+		g.AddNodeUnchecked(c)
+
+		ch := layoutgraph.NewNode(2, 50, 50)
+		ch.TopLeft = geo.NewPoint(10, 10)
+		ch.Graph = g
+		g.AddNodeUnchecked(ch)
+		g.Containers[c] = []*layoutgraph.Node{ch}
+
+		before := map[string]NodeStateDTO{
+			"1": captureNodeState(c),
+			"2": captureNodeState(ch),
+		}
+		panicked := runSafe(func() {
+			c.WrapChildren()
+		})
+		after := map[string]NodeStateDTO{
+			"1": captureNodeState(c),
+			"2": captureNodeState(ch),
+		}
+
+		out.Scenarios["desired_width_zero"] = ScenarioResult{
+			Name:         "desired_width_zero",
+			Panicked:     panicked,
+			ContainerID:  "1",
+			DirectOrder:  []string{"2"},
+			BeforeStates: before,
+			AfterStates:  after,
+		}
+	}
+
 	// 14. empty_container_missing_key
 	{
 		g := layoutgraph.NewGraph()

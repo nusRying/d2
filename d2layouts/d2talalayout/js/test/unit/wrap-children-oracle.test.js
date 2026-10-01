@@ -89,6 +89,10 @@ function setupScenario(tc) {
     container.Label = { Width: 120, Height: 40, Position: 17 }; // InsideTopLeft
   } else if (tc.name === "desired_width_larger") {
     container.DesiredWidth = 500;
+  } else if (tc.name === "desired_height_larger") {
+    container.DesiredHeight = 500;
+  } else if (tc.name === "desired_width_zero") {
+    container.DesiredWidth = 0;
   } else if (tc.name === "detached_child_graph_still_succeeds") {
     const ch2 = nodesById.get("2");
     ch2.Graph = null;
@@ -260,6 +264,42 @@ describe("Slice 22 WrapChildren Oracle Replay", () => {
       expect(tc.panicked).toBe(false);
       expect(tc.beforeStates["2"].topLeft.x).toBe(tc.afterStates["2"].topLeft.x);
       expect(tc.beforeStates["2"].topLeft.y).toBe(tc.afterStates["2"].topLeft.y);
+    });
+
+    it("desired_width_larger: reflects non-nil desired width while child is unchanged", () => {
+      const tc = reference.scenarios.desired_width_larger;
+      expect(tc.panicked).toBe(false);
+      expect(parseNumberClass(tc.afterStates["1"].width)).toBe(500);
+      expect(parseNumberClass(tc.afterStates["1"].height)).toBe(170);
+      // Child unchanged
+      expect(tc.beforeStates["2"].topLeft.x).toBe(tc.afterStates["2"].topLeft.x);
+      expect(tc.beforeStates["2"].topLeft.y).toBe(tc.afterStates["2"].topLeft.y);
+      expect(tc.beforeStates["2"].width).toBe(tc.afterStates["2"].width);
+      expect(tc.beforeStates["2"].height).toBe(tc.afterStates["2"].height);
+    });
+
+    it("desired_height_larger: reflects non-nil desired height while child is unchanged", () => {
+      const tc = reference.scenarios.desired_height_larger;
+      expect(tc.panicked).toBe(false);
+      expect(parseNumberClass(tc.afterStates["1"].width)).toBe(170);
+      expect(parseNumberClass(tc.afterStates["1"].height)).toBe(500);
+      // Child unchanged
+      expect(tc.beforeStates["2"].topLeft.x).toBe(tc.afterStates["2"].topLeft.x);
+      expect(tc.beforeStates["2"].topLeft.y).toBe(tc.afterStates["2"].topLeft.y);
+      expect(tc.beforeStates["2"].width).toBe(tc.afterStates["2"].width);
+      expect(tc.beforeStates["2"].height).toBe(tc.afterStates["2"].height);
+    });
+
+    it("desired_width_zero: 0 is treated as non-null and container geometry matches Go", () => {
+      const tc = reference.scenarios.desired_width_zero;
+      expect(tc.panicked).toBe(false);
+      expect(parseNumberClass(tc.afterStates["1"].width)).toBe(170);
+      expect(parseNumberClass(tc.afterStates["1"].height)).toBe(170);
+      // Child unchanged
+      expect(tc.beforeStates["2"].topLeft.x).toBe(tc.afterStates["2"].topLeft.x);
+      expect(tc.beforeStates["2"].topLeft.y).toBe(tc.afterStates["2"].topLeft.y);
+      expect(tc.beforeStates["2"].width).toBe(tc.afterStates["2"].width);
+      expect(tc.beforeStates["2"].height).toBe(tc.afterStates["2"].height);
     });
   });
 });

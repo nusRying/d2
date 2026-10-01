@@ -127,20 +127,27 @@ describe("Slice 22 — WrapChildren Composition (Direct Unit Tests)", () => {
       other.TopLeft = new Point(300, 300);
       other.Graph = g;
 
-      const edge = new Edge("e1", container, other);
+      const edge = new Edge(container, other);
       const p1 = new Point(5, 5);
       const p2 = new Point(250, 250);
-      edge.Route = [p1, p2];
+      edge.Points = [p1, p2];
       container.Edges.push(edge);
+
+      const pointsArray = edge.Points;
 
       container.wrapChildren();
 
-      expect(edge.Route[0].X).toBe(5);
-      expect(edge.Route[0].Y).toBe(5);
-      expect(edge.Route[1].X).toBe(250);
-      expect(edge.Route[1].Y).toBe(250);
-      expect(edge.Route[0]).toBe(p1);
-      expect(edge.Route[1]).toBe(p2);
+      expect(edge.Points).toBe(pointsArray);
+      expect(edge.Points[0]).toBe(p1);
+      expect(edge.Points[1]).toBe(p2);
+
+      expect(p1.X).toBe(5);
+      expect(p1.Y).toBe(5);
+      expect(p2.X).toBe(250);
+      expect(p2.Y).toBe(250);
+
+      expect(edge.sourcePort()).toBe(p1);
+      expect(edge.targetPort()).toBe(p2);
     });
   });
 

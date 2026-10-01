@@ -320,6 +320,54 @@
         }
       }
     },
+    "desired_height_larger": {
+      "name": "desired_height_larger",
+      "panicked": false,
+      "containerId": "1",
+      "directOrder": [
+        "2"
+      ],
+      "beforeStates": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "30"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      },
+      "afterStates": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "-50",
+            "y": "-50"
+          },
+          "width": "170",
+          "height": "500"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      }
+    },
     "desired_width_larger": {
       "name": "desired_width_larger",
       "panicked": false,
@@ -355,6 +403,54 @@
             "y": "-50"
           },
           "width": "500",
+          "height": "170"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      }
+    },
+    "desired_width_zero": {
+      "name": "desired_width_zero",
+      "panicked": false,
+      "containerId": "1",
+      "directOrder": [
+        "2"
+      ],
+      "beforeStates": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "30"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      },
+      "afterStates": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "-50",
+            "y": "-50"
+          },
+          "width": "170",
           "height": "170"
         },
         "2": {
