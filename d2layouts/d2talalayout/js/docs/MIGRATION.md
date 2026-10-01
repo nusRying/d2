@@ -35,6 +35,7 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 19 — complete
 * Slice 20 — complete
 * Slice 21 — complete
+* Slice 22 — complete
 * Slice 23 — complete
 * Slice 24 — Cluster Geometry — implemented, awaiting review
 
