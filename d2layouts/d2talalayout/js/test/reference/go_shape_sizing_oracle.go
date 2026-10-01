@@ -134,7 +134,7 @@ func main() {
 		padX     float64
 		padY     float64
 	}{
-		{"oval_float32_regression", shape.OVAL_TYPE, 120, 70, 10, 10},
+		{"oval_float32_regression", shape.OVAL_TYPE, 16.2, 28.3, 6.5, 6.5},
 		{"oval_wide_limit", shape.OVAL_TYPE, 500, 50, 10, 10},
 		{"oval_tall_limit", shape.OVAL_TYPE, 50, 500, 10, 10},
 		{"cloud_wide", shape.CLOUD_TYPE, 300, 100, 10, 10},

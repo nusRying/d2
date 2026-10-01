@@ -64,16 +64,28 @@ describe("Slice 21 — Shape Sizing & FitToBoundingBox (Direct Unit Tests)", () 
 
   describe("Oval float32 atan2 precision", () => {
     test("float32 atan2 truncation differs from float64 and is used by Oval sizing", () => {
-      const w = 120;
-      const h = 70;
+      const w = 16.2;
+      const h = 28.3;
+      const padX = 6.5;
+      const padY = 6.5;
       const f64 = Math.atan2(h, w);
       const f32 = Math.fround(f64);
       expect(f32).not.toBe(f64);
 
-      // Verify shapeGetDimensionsToFit for Oval executes using f32
-      const [fitW, fitH] = shapeGetDimensionsToFit("Oval", w, h, 10, 10);
-      expect(fitW).toBeGreaterThan(0);
-      expect(fitH).toBeGreaterThan(0);
+      // Counterfactual float64 computation
+      const pw64 = w + padX * Math.cos(f64);
+      const ph64 = h + padY * Math.sin(f64);
+      const tw64 = Math.ceil(Math.SQRT2 * pw64);
+      const th64 = Math.ceil(Math.SQRT2 * ph64);
+
+      // Verify shapeGetDimensionsToFit for Oval executes using f32 and matches Go fixture
+      const [fitW, fitH] = shapeGetDimensionsToFit("Oval", w, h, padX, padY);
+      expect(fitW).toBe(28);
+      expect(fitH).toBe(49);
+
+      // Prove that counterfactual float64 calculation yields different height (48 vs 49)
+      expect(th64).toBe(48);
+      expect(fitH).not.toBe(th64);
     });
   });
 

@@ -248,12 +248,12 @@
     {
       "name": "oval_float32_regression",
       "shape": "Oval",
-      "width": 120,
-      "height": 70,
-      "paddingX": 10,
-      "paddingY": 10,
-      "fitWidth": 182,
-      "fitHeight": 107
+      "width": 16.2,
+      "height": 28.3,
+      "paddingX": 6.5,
+      "paddingY": 6.5,
+      "fitWidth": 28,
+      "fitHeight": 49
     },
     {
       "name": "oval_wide_limit",

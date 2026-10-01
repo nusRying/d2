@@ -26,7 +26,13 @@ This ADR documents the exact semantics, mathematical quirks, edge cases, and bou
 - **Circle**: Computes `length := Math.max(width + paddingX, height + paddingY)` and returns `diameter := Math.ceil(Math.SQRT2 * length)` for both dimensions.
 - **Oval**: Computes `theta := Math.fround(Math.atan2(height, width))`, padded dimensions `width + paddingX * Math.cos(theta)` and `height + paddingY * Math.sin(theta)`, scales by `Math.SQRT2`, takes `Math.ceil`, and limits aspect ratio via `limitAR(..., 3.0)`. Explicit `Math.fround` float32 truncation is required.
 - **LimitAR**: Internal helper implementing pinned Go `LimitAR(width, height, aspectRatio)`. Preserves strict `if (width > aspectRatio * height) ... else if (height > aspectRatio * width) ...` ordering. Uses `goRound` for `math.Round`.
-- **Cloud**: Uses Slice 19 constants (`CLOUD_WIDE_ASPECT_BOUNDARY = 1.3`, `CLOUD_TALL_ASPECT_BOUNDARY = 0.7692`, inner dimensions 0.72x0.54, 0.48x0.54, 0.6x0.54). Computes `(width + paddingX) / (height + paddingY)` and divides by appropriate inner dimensions before `Math.ceil`.
+- **Cloud**: Uses exact pinned constants:
+  - `CLOUD_WIDE_INNER_WIDTH = 0.819`, `CLOUD_WIDE_INNER_HEIGHT = 0.548`
+  - `CLOUD_TALL_INNER_WIDTH = 0.549`, `CLOUD_TALL_INNER_HEIGHT = 0.820`
+  - `CLOUD_SQUARE_INNER_WIDTH = 0.663`, `CLOUD_SQUARE_INNER_HEIGHT = 0.663`
+  - `CLOUD_WIDE_ASPECT_BOUNDARY = (1 + 0.819 / 0.548) / 2` (approximately 1.2472627737226276)
+  - `CLOUD_TALL_ASPECT_BOUNDARY = (1 + 0.549 / 0.820) / 2` (approximately 0.8347560975609756)
+  Computes `aspectRatio = (width + paddingX) / (height + paddingY)`: if `aspectRatio > CLOUD_WIDE_ASPECT_BOUNDARY`, divides by wide inner dimensions; else if `aspectRatio < CLOUD_TALL_ASPECT_BOUNDARY`, divides by tall inner dimensions; otherwise divides by square inner dimensions, returning `Math.ceil` on both axes.
 - **Page**: Computes `totalWidth := width + paddingX`, `totalHeight := height + paddingY`. If `totalHeight < 3 * PAGE_CORNER_HEIGHT` (strict `<`), adds `PAGE_CORNER_WIDTH` to `totalWidth`. Clamps with `Math.max(totalWidth, 2 * PAGE_CORNER_WIDTH)` and `Math.max(totalHeight, PAGE_CORNER_HEIGHT)`.
 - **Step**: Returns `[Math.ceil(width + paddingX + 2 * STEP_WEDGE_WIDTH), Math.ceil(height + paddingY)]` with `STEP_WEDGE_WIDTH = 35.0`.
 - **Queue**: Always adds `3 * DEFAULT_ARC_DEPTH = 72.0` to width before ceil. Does not use narrow-box `getArcWidth` clamp.

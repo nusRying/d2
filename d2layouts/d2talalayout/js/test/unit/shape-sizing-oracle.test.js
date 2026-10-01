@@ -231,27 +231,43 @@ describe('Slice 21 Shape Sizing & FitToBoundingBox Oracle Replay', () => {
 
   describe('Section 44 Oval float32 precision proof', () => {
     it('demonstrates float32 truncation differs from float64 and matches Go oracle', () => {
-      const width = 100.12345;
-      const height = 45.6789;
-      const f64Theta = Math.atan2(height, width);
+      const tc = reference.getDimensionsToFit.find(
+        (c) => c.name === 'oval_float32_regression'
+      );
+      expect(tc).toBeDefined();
+
+      const f64Theta = Math.atan2(tc.height, tc.width);
       const f32Theta = Math.fround(f64Theta);
 
       expect(f32Theta).not.toBe(f64Theta);
 
-      const ovalCase = reference.getDimensionsToFit.find(
-        (c) => c.name === 'oval_float32_regression'
-      );
-      expect(ovalCase).toBeDefined();
+      // Compute counterfactual incorrect float64 implementation
+      const paddedWidth64 = tc.width + tc.paddingX * Math.cos(f64Theta);
+      const paddedHeight64 = tc.height + tc.paddingY * Math.sin(f64Theta);
+      let totalWidth64 = Math.ceil(Math.SQRT2 * paddedWidth64);
+      let totalHeight64 = Math.ceil(Math.SQRT2 * paddedHeight64);
+      const arLimit = 3.0;
+      if (totalWidth64 > arLimit * totalHeight64) {
+        totalHeight64 = Math.round(totalWidth64 / arLimit);
+      } else if (totalHeight64 > arLimit * totalWidth64) {
+        totalWidth64 = Math.round(totalHeight64 / arLimit);
+      }
 
+      // Establish that counterfactual float64 final dimensions differ from the Go fixture
+      expect(
+        totalWidth64 !== tc.fitWidth || totalHeight64 !== tc.fitHeight
+      ).toBe(true);
+
+      // Verify that production implementation matches the Go fixture exactly
       const dims = shapeGetDimensionsToFit(
-        ovalCase.shape,
-        ovalCase.width,
-        ovalCase.height,
-        ovalCase.paddingX,
-        ovalCase.paddingY
+        tc.shape,
+        tc.width,
+        tc.height,
+        tc.paddingX,
+        tc.paddingY
       );
-      expect(dims[0]).toBe(ovalCase.fitWidth);
-      expect(dims[1]).toBe(ovalCase.fitHeight);
+      expect(dims[0]).toBe(tc.fitWidth);
+      expect(dims[1]).toBe(tc.fitHeight);
     });
   });
 });
