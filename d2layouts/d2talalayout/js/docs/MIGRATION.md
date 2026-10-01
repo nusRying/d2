@@ -32,7 +32,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 15 — complete
 * Slice 16 — complete
 * Slice 17 — complete
-* Slice 18 — Node-Set Bounds & Fixed-Origin Geometry — implemented, awaiting review
+* Slice 18 — complete
+* Slice 19 — Shape Inner Geometry & Node InsidePlacement — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

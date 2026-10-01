@@ -5,6 +5,18 @@ import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
 import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
 import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost } from './node-bounds.js';
+import { shapeGetInnerBox, shapeGetInsidePlacement } from '../shape/inner-geometry.js';
+
+function getPaddingValues(padding) {
+  if (!padding) {
+    return { top: 0, bottom: 0, left: 0, right: 0 };
+  }
+  const top = typeof padding.Top === 'function' ? padding.Top() : (padding.top ?? padding.Top ?? 0);
+  const bottom = typeof padding.Bottom === 'function' ? padding.Bottom() : (padding.bottom ?? padding.Bottom ?? 0);
+  const left = typeof padding.Left === 'function' ? padding.Left() : (padding.left ?? padding.Left ?? 0);
+  const right = typeof padding.Right === 'function' ? padding.Right() : (padding.right ?? padding.Right ?? 0);
+  return { top, bottom, left, right };
+}
 
 function getLoopOffset(node, orientation) {
   const offsets = node.LoopOffsets;
@@ -611,5 +623,50 @@ export class Node {
 
   ContainerLevel() {
     return this.containerLevel();
+  }
+
+  insidePlacement(width, height, padding) {
+    const pad = getPaddingValues(padding);
+    const padX = pad.left + pad.right;
+    const padY = pad.top + pad.bottom;
+
+    const p = shapeGetInsidePlacement(this._shapeType, this.Box, width, height, padX, padY);
+
+    if (this._shapeType === "Circle") {
+      const totalWidth = width + padX;
+      const totalHeight = height + padY;
+
+      const innerBox = shapeGetInnerBox(this._shapeType, this.Box);
+      if (innerBox.Width > totalWidth) {
+        p.X += (innerBox.Width - totalWidth) / 2.0;
+      }
+      if (innerBox.Height > totalHeight) {
+        p.Y += (innerBox.Height - totalHeight) / 2.0;
+      }
+    }
+
+    p.X = goRound(p.X);
+    p.Y = goRound(p.Y);
+    p.X -= goRound(padX / 2.0) - pad.left;
+    p.Y -= goRound(padY / 2.0) - pad.top;
+
+    return p;
+  }
+
+  InsidePlacement(width, height, padding) {
+    return this.insidePlacement(width, height, padding);
+  }
+
+  innerBox() {
+    const box = shapeGetInnerBox(this._shapeType, this.Box);
+    return new Box(
+      new Point(goRound(box.TopLeft.X), goRound(box.TopLeft.Y)),
+      goRound(box.Width),
+      goRound(box.Height)
+    );
+  }
+
+  InnerBox() {
+    return this.innerBox();
   }
 }
