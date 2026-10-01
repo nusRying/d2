@@ -347,6 +347,32 @@ export class Graph {
   }
 
   /**
+   * SyncClusters synchronizes every active cluster in nested graph order.
+   * Traverses graph.Nodes through rdfsWalk without sorting.
+   *
+   * Pinned reference: layoutgraph/cluster.go SyncClusters
+   */
+  syncClusters() {
+    if (!this.Clusters || this.Clusters.size === 0) {
+      return;
+    }
+
+    const sync = (node) => {
+      if (node.isClusterVessel) {
+        this.Clusters.get(node).SyncGeometry();
+      }
+    };
+
+    for (const node of this.Nodes) {
+      node.rdfsWalk(sync);
+    }
+  }
+
+  SyncClusters() {
+    this.syncClusters();
+  }
+
+  /**
    * allDescendantNodesGuarded collects every descendant node under `node`,
    * optionally including cluster member nodes. Iterative, never recursive.
    *

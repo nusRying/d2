@@ -36,7 +36,6 @@ describe("Slice 24 — Cluster Arrangement & SyncGeometry Direct Unit Tests", ()
       expect(c.binPackClusterGeometryWork).toBeUndefined();
 
       // Graph cluster sync methods
-      expect(g.SyncClusters).toBeUndefined();
       expect(g.SyncNestedGeometry).toBeUndefined();
       expect(g.syncNested).toBeUndefined();
 

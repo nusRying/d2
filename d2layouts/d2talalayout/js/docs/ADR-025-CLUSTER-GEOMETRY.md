@@ -1,7 +1,7 @@
 # ADR-025: Cluster Arrangement & SyncGeometry
 
 ## Status
-Implemented — awaiting Slice 24 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), cluster groupings arrange their member nodes linearly in a row or column within a vessel node. Cluster geometry management provides two primary public operations:

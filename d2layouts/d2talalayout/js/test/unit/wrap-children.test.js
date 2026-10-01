@@ -21,7 +21,6 @@ describe("Slice 22 — WrapChildren Composition (Direct Unit Tests)", () => {
       expect(n.binPackWrapChildren).toBeUndefined();
       expect(n.ArrangeClusterNodes).toBeUndefined();
       expect(n.arrangeNodesWithWork).toBeUndefined();
-      expect(g.SyncClusters).toBeUndefined();
       expect(g.SyncNestedGeometry).toBeUndefined();
       expect(g.Cleanup).toBeUndefined();
       expect(g.cleanup).toBeUndefined();

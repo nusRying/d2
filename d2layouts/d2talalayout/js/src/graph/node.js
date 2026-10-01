@@ -375,25 +375,21 @@ export class Node {
   }
 
   rdfsWalk(applyFunc) {
-    if (this.isContainer && this.Graph != null) {
-      const children = this.Graph.Containers.get(this);
-      if (children) {
-        for (const child of children) {
-          child.rdfsWalk(applyFunc);
-        }
+    if (this.isContainer) {
+      const children = this.Graph.Containers.get(this) ?? [];
+      for (const child of children) {
+        child.rdfsWalk(applyFunc);
       }
     }
 
-    if (this.isClusterVessel && this.Graph != null) {
+    if (this.isClusterVessel) {
       const cluster = this.Graph.Clusters.get(this);
-      if (cluster && cluster.Nodes) {
-        for (const cn of cluster.Nodes) {
-          cn.rdfsWalk(applyFunc);
-        }
+      for (const cn of cluster.Nodes) {
+        cn.rdfsWalk(applyFunc);
       }
-    } else if (this.Graph != null && this.Graph.Sequences.has(this)) {
+    } else {
       const sequence = this.Graph.Sequences.get(this);
-      if (sequence && sequence.Nodes) {
+      if (sequence !== undefined) {
         for (const step of sequence.Nodes) {
           step.rdfsWalk(applyFunc);
         }
