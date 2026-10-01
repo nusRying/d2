@@ -4,7 +4,7 @@
 2026-10-01
 
 ## Status
-Implemented — awaiting Slice 17 review
+Accepted
 
 ## Context
 In TALA's layout grouping pipeline, post-layout cleanup (`Cleanup`) arranges cluster members and sequence steps by moving vessels and composite child nodes (`work.MoveNodeWithChildren`, `work.PositionContainerChildren`).

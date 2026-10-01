@@ -1,6 +1,7 @@
 import { Node, sortNodesByID } from './node.js';
 import { Edge } from './edge.js';
 import { Orientation } from '../geometry/orientation.js';
+import { isOutsideLabelPosition } from './label-position.js';
 
 const noopWorkStepper = {
   Step() {},
@@ -76,6 +77,10 @@ export class Graph {
   addNewNodeToContainer(container, node) {
     this.addNodeUnchecked(node);
     this.addNodeToContainer(container, node);
+  }
+
+  AddNewNodeToContainer(container, node) {
+    this.addNewNodeToContainer(container, node);
   }
 
   removeNode(node) {
@@ -552,20 +557,6 @@ export class Spacing {
   Bottom() { return this.bottom; }
   Left() { return this.left; }
   Right() { return this.right; }
-}
-
-function isOutsideLabelPosition(pos) {
-  if (pos === null || pos === undefined) return false;
-  if (typeof pos === "object" && typeof pos.IsOutside === "function") {
-    return pos.IsOutside();
-  }
-  if (typeof pos === "number") {
-    return pos >= 1 && pos <= 12;
-  }
-  if (typeof pos === "string") {
-    return pos.toUpperCase().startsWith("OUTSIDE_");
-  }
-  return false;
 }
 
 function classifyInsidePosition(pos) {

@@ -1,6 +1,29 @@
 import { Box } from '../geometry/box.js';
-import { euclideanDistance } from '../geometry/math.js';
+import { euclideanDistance, goRound } from '../geometry/math.js';
+import { Point } from '../geometry/point.js';
+import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
+import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
+import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost } from './node-bounds.js';
+
+function getLoopOffset(node, orientation) {
+  const offsets = node.LoopOffsets;
+  if (!offsets) return 0;
+  if (offsets instanceof Map) {
+    if (offsets.has(orientation)) return offsets.get(orientation);
+    const name = orientationToString(orientation);
+    if (name && offsets.has(name)) return offsets.get(name);
+    return 0;
+  }
+  if (typeof offsets === "object") {
+    if (offsets[orientation] !== undefined) return offsets[orientation];
+    const name = orientationToString(orientation);
+    if (name && offsets[name] !== undefined) return offsets[name];
+    if (name && offsets[name.toLowerCase()] !== undefined) return offsets[name.toLowerCase()];
+    return 0;
+  }
+  return 0;
+}
 
 function intervalGap(aStart, aEnd, bStart, bEnd) {
   if (aEnd < bStart) {
@@ -448,5 +471,145 @@ export class Node {
 
   MoveAbsWithChildren(x, y) {
     this.moveNodeAbsWithChildren(x, y);
+  }
+
+  modifierElementAdjustments() {
+    let dx = 0;
+    let dy = 0;
+    if (this.Is3D) {
+      if (this._shapeType === "Hexagon") {
+        dy = 15 / 2;
+      } else {
+        dy = 15;
+      }
+      dx = 15;
+    } else if (this.IsMultiple) {
+      dx = 10;
+      dy = 10;
+    }
+    return [dx, dy];
+  }
+
+  ModifierElementAdjustments() {
+    return this.modifierElementAdjustments();
+  }
+
+  boundingBoxValues(allNodes, roundDimensions) {
+    const tl = new Point(this.TopLeft.X, this.TopLeft.Y);
+    const br = new Point(tl.X + this.Width, tl.Y + this.Height);
+
+    if (roundDimensions) {
+      br.X = goRound(br.X);
+      br.Y = goRound(br.Y);
+    }
+
+    const [dx, dy] = this.modifierElementAdjustments();
+    if (dx !== 0 || dy !== 0) {
+      tl.Y -= dy;
+      br.X += dx;
+    }
+
+    tl.X -= getLoopOffset(this, Orientation.Left);
+    tl.Y -= getLoopOffset(this, Orientation.Top);
+    br.X += getLoopOffset(this, Orientation.Right);
+    br.Y += getLoopOffset(this, Orientation.Bottom);
+
+    if (this.Label != null && isOutsideLabelPosition(this.Label.Position) && allNodes != null) {
+      const labelTL = getPointOnBox(this.Label.Position, this.Box, LABEL_PADDING, this.Label.Width, this.Label.Height);
+      const boundaryOutsidePadding = LABEL_PADDING;
+      const outsidePadding = 2 * LABEL_PADDING;
+
+      if (labelTL.X < tl.X) {
+        if (nodesLeftmost(allNodes, this)) {
+          tl.X = Math.floor(labelTL.X - boundaryOutsidePadding);
+        } else {
+          tl.X = Math.floor(labelTL.X - outsidePadding);
+        }
+      }
+      if (labelTL.Y < tl.Y) {
+        if (nodesTopmost(allNodes, this)) {
+          tl.Y = Math.floor(labelTL.Y - boundaryOutsidePadding);
+        } else {
+          tl.Y = Math.floor(labelTL.Y - outsidePadding);
+        }
+      }
+      if (labelTL.X > br.X) {
+        if (nodesRightmost(allNodes, this)) {
+          br.X = Math.ceil(labelTL.X + this.Label.Width + boundaryOutsidePadding);
+        } else {
+          br.X = Math.ceil(labelTL.X + this.Label.Width + outsidePadding);
+        }
+      }
+      if (labelTL.Y > br.Y) {
+        if (nodesBottommost(allNodes, this)) {
+          br.Y = Math.ceil(labelTL.Y + this.Label.Height + boundaryOutsidePadding);
+        } else {
+          br.Y = Math.ceil(labelTL.Y + this.Label.Height + outsidePadding);
+        }
+      }
+    }
+
+    if (this.Icon != null && this._shapeType !== "Image" && isOutsideLabelPosition(this.Icon.Position) && allNodes != null) {
+      const iconSize = 64;
+      const iconTL = getPointOnBox(this.Icon.Position, this.Box, LABEL_PADDING, iconSize, iconSize);
+      const outsidePadding = 2 * LABEL_PADDING;
+
+      const left = Math.floor(iconTL.X - outsidePadding);
+      if (left < tl.X) {
+        tl.X = left;
+      }
+      const top = Math.floor(iconTL.Y - outsidePadding);
+      if (top < tl.Y) {
+        tl.Y = top;
+      }
+      const right = Math.ceil(iconTL.X + iconSize + outsidePadding);
+      if (right > br.X) {
+        br.X = right;
+      }
+      const bottom = Math.ceil(iconTL.Y + iconSize + outsidePadding);
+      if (bottom > br.Y) {
+        br.Y = bottom;
+      }
+    }
+
+    return [tl, br];
+  }
+
+  boundsWithRounding(allNodes, roundDimensions) {
+    return this.boundingBoxValues(allNodes, roundDimensions);
+  }
+
+  bounds(allNodes) {
+    return this.boundsWithRounding(allNodes, true);
+  }
+
+  Bounds(allNodes) {
+    return this.bounds(allNodes);
+  }
+
+  fixedOrigin() {
+    if (this.TopLeft != null && this.FixedTopLeft != null) {
+      return new Point(
+        this.TopLeft.X - this.FixedTopLeft.X,
+        this.TopLeft.Y - this.FixedTopLeft.Y
+      );
+    }
+    return null;
+  }
+
+  FixedOrigin() {
+    return this.fixedOrigin();
+  }
+
+  containerLevel() {
+    let level = 0;
+    for (let curr = this; curr != null; curr = curr.owningContainer()) {
+      level++;
+    }
+    return level;
+  }
+
+  ContainerLevel() {
+    return this.containerLevel();
   }
 }

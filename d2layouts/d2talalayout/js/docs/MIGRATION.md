@@ -31,7 +31,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 14 — complete
 * Slice 15 — complete
 * Slice 16 — complete
-* Slice 17 — Descendant Traversal & Node Movement Primitives — implemented, awaiting review
+* Slice 17 — complete
+* Slice 18 — Node-Set Bounds & Fixed-Origin Geometry — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
