@@ -30,7 +30,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 13 — complete
 * Slice 14 — complete
 * Slice 15 — complete
-* Slice 16 — ResetClusters Lifecycle Retirement — implemented, awaiting review
+* Slice 16 — complete
+* Slice 17 — Descendant Traversal & Node Movement Primitives — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

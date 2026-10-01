@@ -407,4 +407,46 @@ export class Node {
   doesOverlapExact(node) {
     return this.Box.overlaps(node.Box);
   }
+
+  translate(dx, dy) {
+    this.TopLeft.X += dx;
+    this.TopLeft.Y += dy;
+  }
+
+  Translate(dx, dy) {
+    this.translate(dx, dy);
+  }
+
+  moveNodeWithChildren(dx, dy) {
+    if (dx === 0 && dy === 0) {
+      return;
+    }
+    this.translate(dx, dy);
+    for (const child of this.Graph.allDescendantNodes(this, true)) {
+      child.translate(dx, dy);
+    }
+  }
+
+  moveWithChildren(dx, dy) {
+    this.moveNodeWithChildren(dx, dy);
+  }
+
+  MoveWithChildren(dx, dy) {
+    this.moveNodeWithChildren(dx, dy);
+  }
+
+  moveNodeAbsWithChildren(x, y) {
+    if (this.TopLeft != null && this.TopLeft.X === x && this.TopLeft.Y === y) {
+      return;
+    }
+    this.moveNodeWithChildren(x - this.TopLeft.X, y - this.TopLeft.Y);
+  }
+
+  moveAbsWithChildren(x, y) {
+    this.moveNodeAbsWithChildren(x, y);
+  }
+
+  MoveAbsWithChildren(x, y) {
+    this.moveNodeAbsWithChildren(x, y);
+  }
 }

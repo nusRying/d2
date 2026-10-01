@@ -4,7 +4,7 @@
 2026-10-01
 
 ## Status
-Implemented — awaiting Slice 16 review
+Accepted
 
 ## Context
 In TALA's layout grouping pipeline, interchangeable sibling nodes are gathered into clusters and represented by composite "vessel" nodes during layout calculation. After layout completion (or during reset before subsequent passes), clusters must be torn down.

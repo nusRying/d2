@@ -2,6 +2,13 @@ import { Node, sortNodesByID } from './node.js';
 import { Edge } from './edge.js';
 import { Orientation } from '../geometry/orientation.js';
 
+const noopWorkStepper = {
+  Step() {},
+  step() {},
+  Finish() {},
+  finish() {},
+};
+
 export class Graph {
   constructor() {
     this.ID = "";
@@ -335,7 +342,7 @@ export class Graph {
   }
 
   /**
-   * allDescendantNodesWithWorkGuard collects every descendant node under `node`,
+   * allDescendantNodesGuarded collects every descendant node under `node`,
    * optionally including cluster member nodes. Iterative, never recursive.
    *
    * Pinned reference: layoutgraph/graph.go allDescendantNodesGuarded
@@ -345,10 +352,10 @@ export class Graph {
    *
    * @param {import('./node.js').Node | null} node
    * @param {boolean} includeClusterNodes
-   * @param {import('../limits/work-guard.js').WorkGuard} guard
+   * @param {import('../limits/work-guard.js').WorkGuard | { Step: Function, Finish: Function }} guard
    * @returns {Array<import('./node.js').Node>}
    */
-  allDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
+  allDescendantNodesGuarded(node, includeClusterNodes, guard) {
     const seen = new Set();
     if (node !== null && node !== undefined) {
       seen.add(node);
@@ -358,30 +365,40 @@ export class Graph {
     const stack = [];
 
     const pushChildren = (parent) => {
-      // Sequences: push members in reverse order
-      const sequence = this.Sequences.get(parent);
-      if (sequence != null) {
-        for (let i = sequence.Nodes.length - 1; i >= 0; i--) {
-          guard.Step();
-          stack.push({ node: sequence.Nodes[i], emit: includeClusterNodes });
-        }
-      }
-      // Clusters: push members in reverse order
-      if (parent != null && parent.isClusterVessel) {
-        const cluster = this.Clusters.get(parent);
-        if (cluster != null) {
-          for (let i = cluster.Nodes.length - 1; i >= 0; i--) {
+      // 1. Sequence members: push in reverse order
+      if (this.Sequences) {
+        const sequence = this.Sequences.get(parent);
+        if (sequence != null && sequence.Nodes != null) {
+          for (let i = sequence.Nodes.length - 1; i >= 0; i--) {
             guard.Step();
-            stack.push({ node: cluster.Nodes[i], emit: includeClusterNodes });
+            stack.push({ node: sequence.Nodes[i], emit: includeClusterNodes });
           }
         }
       }
-      // Container children: push in reverse order
+
+      // 2. Cluster members: push in reverse order
+      if (parent != null && parent.isClusterVessel) {
+        if (this.Clusters) {
+          const cluster = this.Clusters.get(parent);
+          if (cluster != null && cluster.Nodes != null) {
+            for (let i = cluster.Nodes.length - 1; i >= 0; i--) {
+              guard.Step();
+              stack.push({ node: cluster.Nodes[i], emit: includeClusterNodes });
+            }
+          }
+        }
+      }
+
+      // 3. Container children: push in reverse order
       if (parent === null || parent === undefined || parent.isContainer) {
-        const children = this.Containers.get(parent) || [];
-        for (let i = children.length - 1; i >= 0; i--) {
-          guard.Step();
-          stack.push({ node: children[i], emit: true });
+        if (this.Containers) {
+          const children = this.Containers.get(parent);
+          if (children != null) {
+            for (let i = children.length - 1; i >= 0; i--) {
+              guard.Step();
+              stack.push({ node: children[i], emit: true });
+            }
+          }
         }
       }
     };
@@ -403,6 +420,18 @@ export class Graph {
 
     guard.Finish();
     return descendants;
+  }
+
+  allDescendantNodes(node, includeClusterNodes) {
+    return this.allDescendantNodesGuarded(node, includeClusterNodes, noopWorkStepper);
+  }
+
+  AllDescendantNodes(node, includeClusterNodes) {
+    return this.allDescendantNodes(node, includeClusterNodes);
+  }
+
+  allDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
+    return this.allDescendantNodesGuarded(node, includeClusterNodes, guard);
   }
 
   AllDescendantNodesWithWorkGuard(node, includeClusterNodes, guard) {
