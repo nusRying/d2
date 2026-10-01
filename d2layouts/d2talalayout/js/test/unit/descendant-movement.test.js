@@ -31,14 +31,11 @@ describe("Slice 17 Direct Unit Tests - Descendant Traversal & Node Movement", ()
       expect(typeof n.MoveAbsWithChildren).toBe("function");
     });
 
-    test("Forbidden Slice 20 / later methods are absent", () => {
+    test("Forbidden Slice 21 / later methods are absent", () => {
       const g = new Graph();
       const n = new Node(1, 10, 10);
-      expect(n.positionContainerChildren).toBeUndefined();
-      expect(n.PositionContainerChildren).toBeUndefined();
       expect(n.fixedBounds).toBeUndefined();
       expect(n.FixedBoundingBox).toBeUndefined();
-      expect(n.expandForLabels).toBeUndefined();
       expect(n.wrapChildren).toBeUndefined();
       expect(n.fitToBoundingBox).toBeUndefined();
       expect(g.SyncClusters).toBeUndefined();

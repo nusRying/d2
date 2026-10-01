@@ -4,7 +4,7 @@ import { Point } from '../geometry/point.js';
 import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
 import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
-import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost } from './node-bounds.js';
+import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost, nodesFixedBounds } from './node-bounds.js';
 import { shapeGetInnerBox, shapeGetInsidePlacement } from '../shape/inner-geometry.js';
 
 function getPaddingValues(padding) {
@@ -154,6 +154,14 @@ export class Node {
 
   box() {
     return this.Box;
+  }
+
+  setContainer(value) {
+    this.isContainer = Boolean(value);
+  }
+
+  SetContainer(value) {
+    this.setContainer(value);
   }
 
   setClusterVessel(value) {
@@ -668,5 +676,68 @@ export class Node {
 
   InnerBox() {
     return this.innerBox();
+  }
+
+  expandForLabels(tl, br) {
+    const children = this.Graph.Containers.get(this) ?? [];
+
+    for (const child of children) {
+      if (
+        child.Label != null &&
+        (child.TopLeft.X === tl.X || child.TopLeft.X + child.Width === br.X)
+      ) {
+        if (child.Label.Width > child.Width) {
+          tl.X = Math.min(
+            tl.X,
+            Math.floor(
+              child.TopLeft.X + (child.Width / 2.0 - child.Label.Width / 2.0)
+            )
+          );
+
+          br.X = Math.max(
+            br.X,
+            Math.ceil(
+              child.TopLeft.X + child.Width - (child.Width / 2.0 - child.Label.Width / 2.0)
+            )
+          );
+        }
+      }
+    }
+  }
+
+  positionContainerChildren(withPadding) {
+    if (!this.isContainer) {
+      return;
+    }
+
+    const children = this.Graph.Containers.get(this) ?? [];
+
+    let padding;
+    if (withPadding) {
+      padding = this.Graph.containerPadding(this, false);
+    } else {
+      padding = { top: 0, bottom: 0, left: 0, right: 0 };
+    }
+
+    const [tl, br] = nodesFixedBounds(children);
+
+    this.expandForLabels(tl, br);
+
+    const innerTL = this.InsidePlacement(
+      br.X - tl.X,
+      br.Y - tl.Y,
+      padding
+    );
+
+    const dx = innerTL.X - tl.X;
+    const dy = innerTL.Y - tl.Y;
+
+    for (const childN of children) {
+      childN.moveNodeWithChildren(dx, dy);
+    }
+  }
+
+  PositionContainerChildren(withPadding) {
+    this.positionContainerChildren(withPadding);
   }
 }
