@@ -23,6 +23,8 @@ describe("Slice 20 — Container Child Positioning (Direct Unit Tests)", () => {
     test("forbidden future methods remain absent", () => {
       const g = new Graph();
       const n = new Node(1, 100, 100);
+      expect(n.setContainer).toBeUndefined();
+      expect(n.SetContainer).toBeUndefined();
       expect(n.wrapChildren).toBeUndefined();
       expect(n.WrapChildren).toBeUndefined();
       expect(n.fitToBoundingBox).toBeUndefined();
@@ -98,7 +100,7 @@ describe("Slice 20 — Container Child Positioning (Direct Unit Tests)", () => {
       const c = new Node(1, 400, 400);
       c.TopLeft = new Point(0, 0);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const ch1 = new Node(2, 20, 20);
       ch1.TopLeft = new Point(100, 100);
@@ -133,7 +135,7 @@ describe("Slice 20 — Container Child Positioning (Direct Unit Tests)", () => {
       const c = new Node(1, 500, 300);
       c.TopLeft = new Point(0, 0);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const left = new Node(2, 40, 40);
       left.TopLeft = new Point(50, 50);

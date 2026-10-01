@@ -33,7 +33,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const sc = fixture.scenarios.true_container_nil_graph_panics;
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
-      c.setContainer(true);
+      c.isContainer = true;
       c.Graph = null;
 
       let panicked = false;
@@ -374,7 +374,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       let panicked = false;
       try {
@@ -395,7 +395,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
       g.Containers.set(c, []);
 
       let panicked = false;
@@ -417,7 +417,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const ch = new Node(2, sc.beforeStates["2"].width, sc.beforeStates["2"].height);
       ch.TopLeft = new Point(sc.beforeStates["2"].topLeft.x, sc.beforeStates["2"].topLeft.y);
@@ -445,7 +445,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const ch1 = new Node(2, sc.beforeStates["2"].width, sc.beforeStates["2"].height);
       ch1.TopLeft = new Point(sc.beforeStates["2"].topLeft.x, sc.beforeStates["2"].topLeft.y);
@@ -473,7 +473,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const ch1 = new Node(2, sc.beforeStates["2"].width, sc.beforeStates["2"].height);
       ch1.TopLeft = new Point(sc.beforeStates["2"].topLeft.x, sc.beforeStates["2"].topLeft.y);
@@ -540,7 +540,7 @@ describe("Slice 20 — Real-Go PositionContainerChildren Oracle Parity", () => {
       const c = new Node(1, sc.container.width, sc.container.height);
       c.TopLeft = new Point(sc.container.topLeft.x, sc.container.topLeft.y);
       g.addNode(c);
-      c.setContainer(true);
+      c.isContainer = true;
 
       const ch = new Node(2, sc.beforeStates["2"].width, sc.beforeStates["2"].height);
       ch.TopLeft = new Point(sc.beforeStates["2"].topLeft.x, sc.beforeStates["2"].topLeft.y);

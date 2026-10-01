@@ -156,14 +156,6 @@ export class Node {
     return this.Box;
   }
 
-  setContainer(value) {
-    this.isContainer = Boolean(value);
-  }
-
-  SetContainer(value) {
-    this.setContainer(value);
-  }
-
   setClusterVessel(value) {
     this.isClusterVessel = Boolean(value);
   }
