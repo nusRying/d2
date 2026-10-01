@@ -33,7 +33,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 16 — complete
 * Slice 17 — complete
 * Slice 19 — complete
-* Slice 20 — Container Child Positioning — implemented, awaiting review
+* Slice 20 — complete
+* Slice 21 — Shape Sizing & FitToBoundingBox — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

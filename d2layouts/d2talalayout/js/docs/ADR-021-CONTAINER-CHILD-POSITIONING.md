@@ -1,7 +1,7 @@
 # ADR-021: Container Child Positioning
 
 ## Status
-Implemented — awaiting Slice 20 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), containers host child nodes and clusters. Once children bounds are computed, container children must be positioned inside the container shape according to shape inner geometry and optional container padding.

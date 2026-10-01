@@ -1,5 +1,6 @@
 import { Box } from "../geometry/box.js";
 import { Point } from "../geometry/point.js";
+import { goRound } from "../geometry/math.js";
 import { STEP_WEDGE_WIDTH } from "./constants.js";
 export const PARALLEL_WEDGE_WIDTH = 26.0;
 export const STORED_DATA_WEDGE_WIDTH = 15.0;
@@ -15,6 +16,10 @@ export const BODY_TOP_FACTOR = 0.8;
 
 export const PACKAGE_TOP_MAX_HEIGHT = 55.0;
 export const PACKAGE_VERTICAL_SCALAR = 0.2;
+
+export const OVAL_AR_LIMIT = 3.0;
+export const PERSON_AR_LIMIT = 1.5;
+export const C4_PERSON_AR_LIMIT = 1.5;
 
 export const CLOUD_WIDE_INNER_X = 0.085;
 export const CLOUD_WIDE_INNER_Y = 0.409;
@@ -260,6 +265,157 @@ export function shapeGetInsidePlacement(shapeType, box, width, height, paddingX,
         innerBox.TopLeft.X + paddingX / 2.0,
         innerBox.TopLeft.Y + paddingY / 2.0
       );
+    }
+  }
+}
+
+/**
+ * Limits aspect ratio of (width, height) to not exceed aspectRatio.
+ * Pinned reference: lib/shape/shape.go LimitAR
+ *
+ * @param {number} width
+ * @param {number} height
+ * @param {number} aspectRatio
+ * @returns {[number, number]}
+ */
+export function limitAR(width, height, aspectRatio) {
+  if (width > aspectRatio * height) {
+    height = goRound(width / aspectRatio);
+  } else if (height > aspectRatio * width) {
+    width = goRound(height / aspectRatio);
+  }
+  return [width, height];
+}
+
+/**
+ * Returns the minimum shape dimensions needed to fit content (width x height)
+ * in the shape's innerBox with padding.
+ * Pinned reference: lib/shape/shape_*.go GetDimensionsToFit
+ *
+ * @param {string} shapeType
+ * @param {number} width
+ * @param {number} height
+ * @param {number} paddingX
+ * @param {number} paddingY
+ * @returns {[number, number]} [fitWidth, fitHeight]
+ */
+export function shapeGetDimensionsToFit(shapeType, width, height, paddingX, paddingY) {
+  switch (shapeType) {
+    case "RealSquare": {
+      const sideLength = Math.ceil(Math.max(width + paddingX, height + paddingY));
+      return [sideLength, sideLength];
+    }
+    case "Circle": {
+      const length = Math.max(width + paddingX, height + paddingY);
+      const diameter = Math.ceil(Math.SQRT2 * length);
+      return [diameter, diameter];
+    }
+    case "Oval": {
+      const theta = Math.fround(Math.atan2(height, width));
+      const paddedWidth = width + paddingX * Math.cos(theta);
+      const paddedHeight = height + paddingY * Math.sin(theta);
+      let totalWidth = Math.ceil(Math.SQRT2 * paddedWidth);
+      let totalHeight = Math.ceil(Math.SQRT2 * paddedHeight);
+      [totalWidth, totalHeight] = limitAR(totalWidth, totalHeight, OVAL_AR_LIMIT);
+      return [totalWidth, totalHeight];
+    }
+    case "Cloud": {
+      const w = width + paddingX;
+      const h = height + paddingY;
+      const aspectRatio = w / h;
+      if (aspectRatio > CLOUD_WIDE_ASPECT_BOUNDARY) {
+        return [Math.ceil(w / CLOUD_WIDE_INNER_WIDTH), Math.ceil(h / CLOUD_WIDE_INNER_HEIGHT)];
+      } else if (aspectRatio < CLOUD_TALL_ASPECT_BOUNDARY) {
+        return [Math.ceil(w / CLOUD_TALL_INNER_WIDTH), Math.ceil(h / CLOUD_TALL_INNER_HEIGHT)];
+      } else {
+        return [Math.ceil(w / CLOUD_SQUARE_INNER_WIDTH), Math.ceil(h / CLOUD_SQUARE_INNER_HEIGHT)];
+      }
+    }
+    case "Page": {
+      let totalWidth = width + paddingX;
+      let totalHeight = height + paddingY;
+      if (totalHeight < 3 * PAGE_CORNER_HEIGHT) {
+        totalWidth += PAGE_CORNER_WIDTH;
+      }
+      totalWidth = Math.max(totalWidth, 2 * PAGE_CORNER_WIDTH);
+      totalHeight = Math.max(totalHeight, PAGE_CORNER_HEIGHT);
+      return [Math.ceil(totalWidth), Math.ceil(totalHeight)];
+    }
+    case "Step": {
+      const totalWidth = width + paddingX + 2 * STEP_WEDGE_WIDTH;
+      return [Math.ceil(totalWidth), Math.ceil(height + paddingY)];
+    }
+    case "Queue": {
+      const totalWidth = 3 * DEFAULT_ARC_DEPTH + width + paddingX;
+      return [Math.ceil(totalWidth), Math.ceil(height + paddingY)];
+    }
+    case "Hexagon": {
+      const totalWidth = 1.5 * (width + paddingX);
+      const totalHeight = 1.5 * (height + paddingY);
+      return [Math.ceil(totalWidth), Math.ceil(totalHeight)];
+    }
+    case "Diamond": {
+      const totalWidth = 2 * (width + paddingX);
+      const totalHeight = 2 * (height + paddingY);
+      return [Math.ceil(totalWidth), Math.ceil(totalHeight)];
+    }
+    case "Document": {
+      const baseHeight = ((height + paddingY) * DOC_PATH_HEIGHT) / DOC_PATH_INNER_BOTTOM;
+      return [Math.ceil(width + paddingX), Math.ceil(baseHeight)];
+    }
+    case "Cylinder": {
+      const totalHeight = height + paddingY + 3 * DEFAULT_ARC_DEPTH;
+      return [Math.ceil(width + paddingX), Math.ceil(totalHeight)];
+    }
+    case "StoredData": {
+      const totalWidth = width + paddingX + 2 * STORED_DATA_WEDGE_WIDTH;
+      return [Math.ceil(totalWidth), Math.ceil(height + paddingY)];
+    }
+    case "Parallelogram": {
+      const totalWidth = width + paddingX + 2 * PARALLEL_WEDGE_WIDTH;
+      return [Math.ceil(totalWidth), Math.ceil(height + paddingY)];
+    }
+    case "Callout": {
+      let baseHeight = height + paddingY;
+      if (baseHeight < DEFAULT_TIP_HEIGHT) {
+        baseHeight *= 2;
+      } else {
+        baseHeight += DEFAULT_TIP_HEIGHT;
+      }
+      return [Math.ceil(width + paddingX), Math.ceil(baseHeight)];
+    }
+    case "Person": {
+      let totalWidth = width + paddingX;
+      const shoulderWidth = (totalWidth * PERSON_SHOULDER_WIDTH_FACTOR) / (1 - 2 * PERSON_SHOULDER_WIDTH_FACTOR);
+      totalWidth += 2 * shoulderWidth;
+      let totalHeight = height + paddingY;
+      [totalWidth, totalHeight] = limitAR(totalWidth, totalHeight, PERSON_AR_LIMIT);
+      return [Math.ceil(totalWidth), Math.ceil(totalHeight)];
+    }
+    case "C4Person": {
+      const contentWidth = width + paddingX;
+      const contentHeight = height + paddingY;
+      let totalWidth = contentWidth / 0.9;
+      const headRadius = totalWidth * HEAD_RADIUS_FACTOR;
+      const headCenterY = headRadius;
+      const bodyTop = headCenterY + headRadius * BODY_TOP_FACTOR;
+      const verticalPadding = totalWidth * 0.06;
+      let totalHeight = contentHeight + bodyTop + verticalPadding;
+      const minHeight = totalWidth * 0.95;
+      if (totalHeight < minHeight) {
+        totalHeight = minHeight;
+      }
+      [totalWidth, totalHeight] = limitAR(totalWidth, totalHeight, C4_PERSON_AR_LIMIT);
+      return [Math.ceil(totalWidth), Math.ceil(totalHeight)];
+    }
+    case "Package": {
+      const innerHeight = height + paddingY;
+      const topHeight = (innerHeight * PACKAGE_VERTICAL_SCALAR) / (1 - PACKAGE_VERTICAL_SCALAR);
+      const totalHeight = innerHeight + Math.min(topHeight, PACKAGE_TOP_MAX_HEIGHT);
+      return [Math.ceil(width + paddingX), Math.ceil(totalHeight)];
+    }
+    default: {
+      return [Math.ceil(width + paddingX), Math.ceil(height + paddingY)];
     }
   }
 }

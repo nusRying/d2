@@ -5,7 +5,7 @@ import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
 import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
 import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost, nodesFixedBounds } from './node-bounds.js';
-import { shapeGetInnerBox, shapeGetInsidePlacement } from '../shape/inner-geometry.js';
+import { shapeGetInnerBox, shapeGetInsidePlacement, shapeGetDimensionsToFit } from '../shape/inner-geometry.js';
 
 function getPaddingValues(padding) {
   if (!padding) {
@@ -731,5 +731,53 @@ export class Node {
 
   PositionContainerChildren(withPadding) {
     this.positionContainerChildren(withPadding);
+  }
+
+  getDimensionsToFit(width, height, paddingX, paddingY) {
+    return shapeGetDimensionsToFit(this._shapeType, width, height, paddingX, paddingY);
+  }
+
+  GetDimensionsToFit(width, height, paddingX, paddingY) {
+    return this.getDimensionsToFit(width, height, paddingX, paddingY);
+  }
+
+  fitToBoundingBox(tl, br, padding) {
+    let width = br.X - tl.X;
+    let height = br.Y - tl.Y;
+    const pad = getPaddingValues(padding);
+
+    if (this.Label != null && !isOutsideLabelPosition(this.Label.Position)) {
+      const minWidth = this.Label.Width - pad.left - pad.right + LABEL_PADDING * 4;
+      const minHeight = this.Label.Height - pad.top - pad.bottom + LABEL_PADDING * 4;
+      if (this.DesiredWidth == null) {
+        width = Math.max(width, minWidth);
+      }
+      if (this.DesiredHeight == null) {
+        height = Math.max(height, minHeight);
+      }
+    }
+
+    const [fitWidth, fitHeight] = this.GetDimensionsToFit(
+      width,
+      height,
+      pad.left + pad.right,
+      pad.top + pad.bottom
+    );
+
+    if (this.DesiredWidth != null) {
+      this.Width = Math.max(fitWidth, this.DesiredWidth);
+    } else {
+      this.Width = fitWidth;
+    }
+
+    if (this.DesiredHeight != null) {
+      this.Height = Math.max(fitHeight, this.DesiredHeight);
+    } else {
+      this.Height = fitHeight;
+    }
+  }
+
+  FitToBoundingBox(tl, br, padding) {
+    this.fitToBoundingBox(tl, br, padding);
   }
 }
