@@ -1,0 +1,1744 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGoVersion": "go1.27.0",
+    "slice": "Slice 24 — Cluster Arrangement \u0026 SyncGeometry"
+  },
+  "scenarios": {
+    "arrange_idempotent": {
+      "name": "arrange_idempotent",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "40",
+          "height": "60"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "80",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "220"
+          },
+          "width": "40",
+          "height": "60"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "150",
+            "y": "230"
+          },
+          "width": "80",
+          "height": "40"
+        }
+      ]
+    },
+    "arrange_nil_vessel_panics": {
+      "name": "arrange_nil_vessel_panics",
+      "operation": "ArrangeClusterNodes",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": null,
+      "vesselAfter": null,
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "40",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "40",
+          "height": "40"
+        }
+      ]
+    },
+    "column_basic": {
+      "name": "column_basic",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Column",
+      "padding": 15,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "100",
+        "height": "400"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "100",
+        "height": "400"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "60",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "20",
+            "y": "20"
+          },
+          "width": "40",
+          "height": "80"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "120",
+            "y": "200"
+          },
+          "width": "60",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "130",
+            "y": "255"
+          },
+          "width": "40",
+          "height": "80"
+        }
+      ]
+    },
+    "column_negative_half_round": {
+      "name": "column_negative_half_round",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Column",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "100"
+        },
+        "width": "50",
+        "height": "300"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "100"
+        },
+        "width": "50",
+        "height": "300"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "105",
+            "y": "10"
+          },
+          "width": "41",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "104",
+            "y": "100"
+          },
+          "width": "41",
+          "height": "40"
+        }
+      ]
+    },
+    "detached_member_nonzero_partial_move": {
+      "name": "detached_member_nonzero_partial_move",
+      "operation": "ArrangeClusterNodes",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "detached_member_zero_delta_succeeds": {
+      "name": "detached_member_zero_delta_succeeds",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "duplicate_member_occurrence": {
+      "name": "duplicate_member_occurrence",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "160",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "160",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "negative_padding": {
+      "name": "negative_padding",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": -10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "140",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "nil_member_panics": {
+      "name": "nil_member_panics",
+      "operation": "ArrangeClusterNodes",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": true
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": true
+        }
+      ]
+    },
+    "non_monotonic_member_order": {
+      "name": "non_monotonic_member_order",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "99",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        {
+          "index": 2,
+          "isNil": false,
+          "id": "50",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "99",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "140",
+            "y": "230"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        {
+          "index": 2,
+          "isNil": false,
+          "id": "50",
+          "topLeft": {
+            "x": "190",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "row_basic": {
+      "name": "row_basic",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "40",
+          "height": "60"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "80",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "220"
+          },
+          "width": "40",
+          "height": "60"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "150",
+            "y": "230"
+          },
+          "width": "80",
+          "height": "40"
+        }
+      ]
+    },
+    "row_fractional_padding": {
+      "name": "row_fractional_padding",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 7.5,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100.25",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100.25",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10.125",
+            "y": "50"
+          },
+          "width": "30.5",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "20.25",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100.25",
+            "y": "230"
+          },
+          "width": "30.5",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "138.25",
+            "y": "230"
+          },
+          "width": "20.25",
+          "height": "40"
+        }
+      ]
+    },
+    "row_positioned_container_with_descendant": {
+      "name": "row_positioned_container_with_descendant",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "100",
+          "height": "80"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "210"
+          },
+          "width": "100",
+          "height": "80"
+        }
+      ],
+      "descendantsBefore": {
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "20",
+            "y": "20"
+          },
+          "width": "40",
+          "height": "30"
+        }
+      },
+      "descendantsAfter": {
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "110",
+            "y": "220"
+          },
+          "width": "40",
+          "height": "30"
+        }
+      }
+    },
+    "row_positive_half_round": {
+      "name": "row_positive_half_round",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "100"
+        },
+        "width": "300",
+        "height": "50"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "100"
+        },
+        "width": "300",
+        "height": "50"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "104"
+          },
+          "width": "40",
+          "height": "41"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "105"
+          },
+          "width": "40",
+          "height": "41"
+        }
+      ]
+    },
+    "row_unplaced_container_member": {
+      "name": "row_unplaced_container_member",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "120",
+          "height": "80"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "210"
+          },
+          "width": "120",
+          "height": "80"
+        }
+      ],
+      "descendantsBefore": {
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "30"
+        }
+      },
+      "descendantsAfter": {
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "100",
+            "y": "210"
+          },
+          "width": "40",
+          "height": "30"
+        }
+      }
+    },
+    "second_nil_member_partial_mutation": {
+      "name": "second_nil_member_partial_mutation",
+      "operation": "ArrangeClusterNodes",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": true
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": true
+        }
+      ]
+    },
+    "sync_column_normalizes_sizes": {
+      "name": "sync_column_normalizes_sizes",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Column",
+      "padding": 15,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "40",
+        "height": "135"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "40",
+          "height": "30"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "20",
+          "height": "60"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "200"
+          },
+          "width": "40",
+          "height": "60"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "100",
+            "y": "275"
+          },
+          "width": "40",
+          "height": "60"
+        }
+      ]
+    },
+    "sync_empty_column": {
+      "name": "sync_empty_column",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Column",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "-10"
+      },
+      "membersBefore": [],
+      "membersAfter": []
+    },
+    "sync_empty_row": {
+      "name": "sync_empty_row",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "-10",
+        "height": "0"
+      },
+      "membersBefore": [],
+      "membersAfter": []
+    },
+    "sync_fixed_size_heterogeneous_column": {
+      "name": "sync_fixed_size_heterogeneous_column",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Column",
+      "padding": 10,
+      "fixedSize": true,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "40",
+        "height": "130"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "40",
+          "height": "30"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "20",
+          "height": "60"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "200"
+          },
+          "width": "40",
+          "height": "30"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "110",
+            "y": "240"
+          },
+          "width": "20",
+          "height": "60"
+        }
+      ]
+    },
+    "sync_fixed_size_heterogeneous_row": {
+      "name": "sync_fixed_size_heterogeneous_row",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": true,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "110",
+        "height": "40"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "20"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "200"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "140",
+            "y": "210"
+          },
+          "width": "50",
+          "height": "20"
+        }
+      ]
+    },
+    "sync_nil_member_panics_before_resize_mutation": {
+      "name": "sync_nil_member_panics_before_resize_mutation",
+      "operation": "SyncGeometry",
+      "panicked": true,
+      "panicMessage": "layout invariant violated: cluster contains a nil node",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "100",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "100",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": true
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": true
+        }
+      ]
+    },
+    "sync_nil_vessel_panics": {
+      "name": "sync_nil_vessel_panics",
+      "operation": "SyncGeometry",
+      "panicked": true,
+      "panicMessage": "layout invariant violated: cluster is missing its vessel",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": null,
+      "vesselAfter": null,
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "40",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "40",
+          "height": "40"
+        }
+      ]
+    },
+    "sync_resize_then_arrange_partial_failure": {
+      "name": "sync_resize_then_arrange_partial_failure",
+      "operation": "SyncGeometry",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "30",
+        "height": "40"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "200"
+          },
+          "width": "30",
+          "height": "40"
+        }
+      ]
+    },
+    "sync_row_normalizes_sizes": {
+      "name": "sync_row_normalizes_sizes",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "110",
+        "height": "40"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "20"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "200"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "160",
+            "y": "200"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "sync_unknown_arrangement": {
+      "name": "sync_unknown_arrangement",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Grid",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "999",
+        "height": "888"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "999",
+        "height": "888"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "20"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "sync_unplaced_vessel_resizes_only": {
+      "name": "sync_unplaced_vessel_resizes_only",
+      "operation": "SyncGeometry",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": null,
+        "width": "0",
+        "height": "0"
+      },
+      "vesselAfter": {
+        "topLeft": null,
+        "width": "110",
+        "height": "40"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "30",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "20"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "40"
+        },
+        {
+          "index": 1,
+          "isNil": false,
+          "id": "2",
+          "topLeft": {
+            "x": "50",
+            "y": "50"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "unknown_arrangement_noop": {
+      "name": "unknown_arrangement_noop",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Diagonal",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "unplaced_plain_node": {
+      "name": "unplaced_plain_node",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": {
+          "x": "100",
+          "y": "200"
+        },
+        "width": "300",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "width": "50",
+          "height": "40"
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": false,
+          "id": "1",
+          "topLeft": {
+            "x": "100",
+            "y": "230"
+          },
+          "width": "50",
+          "height": "40"
+        }
+      ]
+    },
+    "vessel_unplaced_nil_member_noop": {
+      "name": "vessel_unplaced_nil_member_noop",
+      "operation": "ArrangeClusterNodes",
+      "panicked": false,
+      "arrangement": "Row",
+      "padding": 10,
+      "fixedSize": false,
+      "vesselBefore": {
+        "topLeft": null,
+        "width": "100",
+        "height": "100"
+      },
+      "vesselAfter": {
+        "topLeft": null,
+        "width": "100",
+        "height": "100"
+      },
+      "membersBefore": [
+        {
+          "index": 0,
+          "isNil": true
+        }
+      ],
+      "membersAfter": [
+        {
+          "index": 0,
+          "isNil": true
+        }
+      ]
+    }
+  }
+}

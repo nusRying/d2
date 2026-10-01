@@ -1,7 +1,7 @@
 # ADR-024: FitToGraph
 
 ## Status
-Implemented — awaiting Slice 23 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), nodes (both container and non-container) can be sized to enclose a layout graph footprint via `Node.fitNodeToGraph(graph, padding)` and its public alias `Node.FitToGraph(graph, padding)`.

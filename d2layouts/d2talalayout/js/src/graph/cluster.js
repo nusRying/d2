@@ -1,3 +1,6 @@
+import { Point } from '../geometry/point.js';
+import { goRound } from '../geometry/math.js';
+
 /**
  * Cluster represents a grouping of nodes arranged in a row or column.
  *
@@ -102,6 +105,82 @@ export class Cluster {
       maxHeight = Math.max(maxHeight, node.Height);
     }
     return [maxWidth, maxHeight];
+  }
+
+  /**
+   * arrangeClusterNodes moves the inner cluster nodes to their respective positions within the cluster.
+   * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/cluster.go
+   */
+  arrangeClusterNodes() {
+    const vessel = this.Vessel;
+
+    if (vessel.TopLeft == null) {
+      return;
+    }
+
+    const nodes = this.Nodes ?? [];
+    const padding = typeof this.Padding === 'number' ? this.Padding : 0;
+
+    if (this.Arrangement === ClusterArrangement.Row) {
+      let position = vessel.TopLeft.X;
+      const vesselCenter = vessel.TopLeft.Y + vessel.Height / 2;
+
+      for (const node of nodes) {
+        if (node.TopLeft != null) {
+          const dx = position - node.TopLeft.X;
+          const dy = goRound(vesselCenter - (node.TopLeft.Y + node.Height / 2));
+          node.moveNodeWithChildren(dx, dy);
+        } else {
+          node.TopLeft = new Point(
+            position,
+            goRound(vesselCenter - node.Height / 2)
+          );
+          node.positionContainerChildren(false);
+        }
+        position += node.Width + padding;
+      }
+    }
+
+    if (this.Arrangement === ClusterArrangement.Column) {
+      let position = vessel.TopLeft.Y;
+      const vesselCenter = vessel.TopLeft.X + vessel.Width / 2;
+
+      for (const node of nodes) {
+        if (node.TopLeft != null) {
+          const dx = goRound(vesselCenter - (node.TopLeft.X + node.Width / 2));
+          const dy = position - node.TopLeft.Y;
+          node.moveNodeWithChildren(dx, dy);
+        } else {
+          node.TopLeft = new Point(
+            goRound(vesselCenter - node.Width / 2),
+            position
+          );
+          node.positionContainerChildren(false);
+        }
+        position += node.Height + padding;
+      }
+    }
+  }
+
+  ArrangeClusterNodes() {
+    this.arrangeClusterNodes();
+  }
+
+  /**
+   * syncGeometry resizes the cluster vessel and arranges its visible members.
+   * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/cluster.go
+   */
+  syncGeometry() {
+    if (this.Vessel == null) {
+      throw new Error('cluster is missing its vessel');
+    }
+
+    this.resize(this.Vessel);
+    this.arrangeClusterNodes();
+  }
+
+  SyncGeometry() {
+    this.syncGeometry();
   }
 
   /**
