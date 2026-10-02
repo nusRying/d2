@@ -10,7 +10,7 @@ export function commonUncleSiblings(graph) {
       const edges = node.Edges ?? []
       for (const edge of edges) {
         const adjacent = node.Adjacent(edge)
-        if (adjacent && adjacent.Container === container.Container) {
+        if (adjacent.Container === container.Container) {
           if (!uncleToCousins.has(adjacent)) {
             orderedUncles.push(adjacent)
             uncleToCousins.set(adjacent, [])

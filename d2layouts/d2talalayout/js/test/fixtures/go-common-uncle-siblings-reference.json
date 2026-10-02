@@ -183,6 +183,21 @@
           "2"
         ]
       }
+    },
+    "S_repeated_call": {
+      "common": {
+        "1": [
+          "1",
+          "2"
+        ],
+        "2": [
+          "1",
+          "2"
+        ]
+      }
+    },
+    "T_nil_adjacent_endpoint": {
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
     }
   }
 }

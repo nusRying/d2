@@ -3,6 +3,7 @@ import { readFileSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
 import { Graph, Node, Edge } from '../../src/index.js'
+import { Sequence } from '../../src/graph/sequence.js'
 import { CommonUncleSiblings } from '../../src/proximity/index.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))
@@ -227,20 +228,34 @@ describe('CommonUncleSiblings Oracle Replay', () => {
   it('J_raw_vs_owning', () => {
     checkOracle('J_raw_vs_owning', () => {
       const g = new Graph()
-      const container = new Node('10')
-      const seqVessel = new Node('99')
-      seqVessel.Container = null
+      const parent = new Node('1000')
+      const innerContainer = new Node('10')
+      innerContainer.Container = parent
+      const child1 = new Node('1')
+      const child2 = new Node('2')
+      child1.Container = innerContainer
+      child2.Container = innerContainer
+
+      const vessel = new Node('99')
+      vessel.Container = parent
+      vessel.Graph = g
+
+      const seq = new Sequence({
+        Vessel: vessel,
+        Graph: g,
+      })
       const uncle = new Node('100')
-      uncle.Container = seqVessel
-      
-      const c1 = new Node('1')
-      const c2 = new Node('2')
-      c1.Container = container; c2.Container = container
-      g.addNodeToContainer(null, container)
-      g.addNodeToContainer(container, c1)
-      g.addNodeToContainer(container, c2)
-      c1.Edges = [new Edge(c1, uncle)]
-      c2.Edges = [new Edge(c2, uncle)]
+      uncle.Sequence = seq
+      uncle.Container = null
+      seq.Nodes = [uncle]
+
+      g.addNodeToContainer(null, parent)
+      g.addNodeToContainer(parent, innerContainer)
+      g.addNodeToContainer(innerContainer, child1)
+      g.addNodeToContainer(innerContainer, child2)
+
+      child1.Edges = [new Edge(child1, uncle)]
+      child2.Edges = [new Edge(child2, uncle)]
       return g
     })
   })
@@ -360,6 +375,50 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       c2.Edges = [new Edge(c2, uncle)]
       
       g.CommonUncleSiblings = new Map()
+      return g
+    })
+  })
+
+  it('S_repeated_call', () => {
+    checkOracle('S_repeated_call', () => {
+      const g = new Graph()
+      const container = new Node('10')
+      const uncle = new Node('100')
+      const c1 = new Node('1')
+      const c2 = new Node('2')
+      c1.Container = container
+      c2.Container = container
+      g.addNodeToContainer(null, container)
+      g.addNodeToContainer(container, c1)
+      g.addNodeToContainer(container, c2)
+      c1.Edges = [new Edge(c1, uncle)]
+      c2.Edges = [new Edge(c2, uncle)]
+
+      // Verify repeated calls in JS produce equivalent contents and distinct map instances
+      const first = CommonUncleSiblings(g)
+      const second = CommonUncleSiblings(g)
+      expect(first).not.toBe(second)
+      expect(first.size).toBe(second.size)
+      for (const [k, v] of first.entries()) {
+        expect(second.has(k)).toBe(true)
+        expect(second.get(k)).toEqual(v)
+      }
+
+      return g
+    })
+  })
+
+  it('T_nil_adjacent_endpoint', () => {
+    checkOracle('T_nil_adjacent_endpoint', () => {
+      const g = new Graph()
+      const container = new Node('10')
+      const child = new Node('1')
+      child.Container = container
+      g.addNodeToContainer(null, container)
+      g.addNodeToContainer(container, child)
+
+      const edge = new Edge(child, null)
+      child.Edges = [edge]
       return g
     })
   })

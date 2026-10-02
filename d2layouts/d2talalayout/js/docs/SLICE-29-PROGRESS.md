@@ -19,12 +19,12 @@ Implement `proximity.commonUncleSiblings` and its PascalCase alias `CommonUncleS
 ## Progress
 - [x] Implement JS `commonUncleSiblings` and `CommonUncleSiblings` in `src/proximity/common-uncle.js`.
 - [x] Export `commonUncleSiblings` and `CommonUncleSiblings` from `src/proximity/index.js`.
-- [x] Create Go Oracle script for all 16 scenarios (`go_common_uncle_siblings_oracle.go`).
-- [x] Generate reference fixture `go-common-uncle-siblings-reference.json` (16 scenarios).
-- [x] Create oracle replay test `common-uncle-siblings-oracle.test.js` (16 pass).
-- [x] Create direct unit tests `common-uncle-siblings.test.js` (4 pass).
-- [x] Pass all targeted tests (20 pass across 2 files).
-- [x] Pass full JS regression suite (1371 pass, 0 fail, 60 files).
+- [x] Create Go Oracle script for all 18 scenarios (`go_common_uncle_siblings_oracle.go`).
+- [x] Generate reference fixture `go-common-uncle-siblings-reference.json` (18 scenarios).
+- [x] Create oracle replay test `common-uncle-siblings-oracle.test.js` (18 pass).
+- [x] Create direct unit tests `common-uncle-siblings.test.js` (10 pass).
+- [x] Pass all targeted tests (28 pass across 2 files).
+- [x] Pass full JS regression suite.
 
 ## Artifacts
 - `docs/ADR-030-COMMON-UNCLE-SIBLINGS.md`

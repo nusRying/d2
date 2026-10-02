@@ -1,7 +1,7 @@
 # ADR-029: Proximity Hub Discovery (`AddHubs`) (Slice 28)
 
 ## Status
-Implemented — awaiting Slice 28 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.AddHubs(ctx, graph)` identifies "hubs" — nodes that have both a leaf spoke (degree 1) and at least one other non-leaf connection (degree != 1) within the same layout group (same `OwningContainer`). Discovered hubs and their ordered leaf spokes are recorded in `graph.Hubs`.

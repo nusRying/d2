@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph"
 	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/proximity"
@@ -202,19 +203,30 @@ func main() {
 	// J. raw Container versus OwningContainer
 	runScenario("J_raw_vs_owning", func() (*layoutgraph.Graph, func()) {
 		g := layoutgraph.NewGraph()
-		container := &layoutgraph.Node{ID: 10}
-		seq := &layoutgraph.Sequence{Vessel: &layoutgraph.Node{ID: 99, Container: nil}}
-		uncle := &layoutgraph.Node{ID: 100, Sequence: seq, Container: seq.Vessel}
-		// In this setup: uncle.Container != container.Container (which is nil)
-		// But in a real graph, if the Sequence itself is root, OwningContainer would climb past it.
-		// Let's just make it have a different Container directly to be sure it's rejected by RAW check.
-		c1 := &layoutgraph.Node{ID: 1, Container: container}
-		c2 := &layoutgraph.Node{ID: 2, Container: container}
-		g.AddNodeToContainer(nil, container)
-		g.AddNodeToContainer(container, c1)
-		g.AddNodeToContainer(container, c2)
-		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle}}
-		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle}}
+		parent := &layoutgraph.Node{ID: 1000}
+		innerContainer := &layoutgraph.Node{ID: 10, Container: parent}
+		child1 := &layoutgraph.Node{ID: 1, Container: innerContainer}
+		child2 := &layoutgraph.Node{ID: 2, Container: innerContainer}
+
+		vessel := &layoutgraph.Node{ID: 99, Container: parent, Graph: g}
+		seq := &layoutgraph.Sequence{
+			Vessel: vessel,
+			Graph:  g,
+		}
+		uncle := &layoutgraph.Node{
+			ID:        100,
+			Sequence:  seq,
+			Container: nil,
+		}
+		seq.Nodes = []*layoutgraph.Node{uncle}
+
+		g.AddNodeToContainer(nil, parent)
+		g.AddNodeToContainer(parent, innerContainer)
+		g.AddNodeToContainer(innerContainer, child1)
+		g.AddNodeToContainer(innerContainer, child2)
+
+		child1.Edges = []*layoutgraph.Edge{{From: child1, To: uncle}}
+		child2.Edges = []*layoutgraph.Edge{{From: child2, To: uncle}}
 		return g, nil
 	})
 
@@ -329,6 +341,72 @@ func main() {
 		}
 	})
 
+	// S. repeated call produces equivalent contents on unchanged graph
+	runScenario("S_repeated_call", func() (*layoutgraph.Graph, func()) {
+		g := layoutgraph.NewGraph()
+		container := &layoutgraph.Node{ID: 10}
+		uncle := &layoutgraph.Node{ID: 100}
+		c1 := &layoutgraph.Node{ID: 1, Container: container}
+		c2 := &layoutgraph.Node{ID: 2, Container: container}
+		g.AddNodeToContainer(nil, container)
+		g.AddNodeToContainer(container, c1)
+		g.AddNodeToContainer(container, c2)
+		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle}}
+		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle}}
+
+		first := proximity.CommonUncleSiblings(g)
+		second := proximity.CommonUncleSiblings(g)
+		if len(first) != len(second) {
+			panic("repeated call length mismatch in Go")
+		}
+		for k, v := range first {
+			v2, ok := second[k]
+			if !ok || len(v) != len(v2) {
+				panic("repeated call content mismatch in Go")
+			}
+			for i := range v {
+				if v[i] != v2[i] {
+					panic("repeated call element mismatch in Go")
+				}
+			}
+		}
+		return g, nil
+	})
+
+	// T. nil adjacent endpoint panics in Go due to adjacent.Container dereference
+	runScenario("T_nil_adjacent_endpoint", func() (*layoutgraph.Graph, func()) {
+		g := layoutgraph.NewGraph()
+		container := &layoutgraph.Node{ID: 10}
+		child := &layoutgraph.Node{ID: 1, Container: container}
+		g.AddNodeToContainer(nil, container)
+		g.AddNodeToContainer(container, child)
+
+		edge := &layoutgraph.Edge{
+			From: child,
+			To:   nil,
+		}
+		child.Edges = []*layoutgraph.Edge{edge}
+		return g, nil
+	})
+
 	outBytes, _ := json.MarshalIndent(out, "", "  ")
-	os.WriteFile("go-common-uncle-siblings-reference.json", outBytes, 0644)
+
+	targetPath := "go-common-uncle-siblings-reference.json"
+	if len(os.Args) > 1 {
+		targetPath = os.Args[1]
+	} else if _, err := os.Stat("d2layouts/d2talalayout/js/test/fixtures"); err == nil {
+		targetPath = "d2layouts/d2talalayout/js/test/fixtures/go-common-uncle-siblings-reference.json"
+	} else if _, err := os.Stat("../fixtures"); err == nil {
+		targetPath = filepath.Join("..", "fixtures", "go-common-uncle-siblings-reference.json")
+	} else if _, err := os.Stat("test/fixtures"); err == nil {
+		targetPath = "test/fixtures/go-common-uncle-siblings-reference.json"
+	}
+
+	if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+		panic(err)
+	}
+	if err := os.WriteFile(targetPath, outBytes, 0644); err != nil {
+		panic(err)
+	}
+	fmt.Printf("Generated %d scenarios at %s (%d bytes)\n", len(out.Scenarios), targetPath, len(outBytes))
 }
