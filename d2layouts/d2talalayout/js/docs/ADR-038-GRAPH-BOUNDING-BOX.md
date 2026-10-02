@@ -142,5 +142,5 @@ func (e *Edge) boundingBoxValues() (geo.Point, geo.Point) {
 - Real Go oracle program: `test/reference/go_graph_bounding_box_oracle.go` (56 scenarios).
 - Generated oracle fixtures: `test/fixtures/go-graph-bounding-box-reference.json`.
 - Oracle replay test: `test/unit/graph-bounding-box-oracle.test.js` (56/56 PASS).
-- Direct unit tests: `test/unit/graph-bounding-box.test.js` (30/30 PASS).
-- Full suite: 1903 passed, 0 failed across 75 test files.
+- Direct unit tests: `test/unit/graph-bounding-box.test.js` (33/33 PASS).
+- Full suite: 1906 passed, 0 failed across 75 test files.

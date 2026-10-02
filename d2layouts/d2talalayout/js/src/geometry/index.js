@@ -1,4 +1,4 @@
-export { PRECISION, truncateDecimals, sign, goRound, euclideanDistance, precisionCompare, chopPrecision } from './math.js';
+export { PRECISION, truncateDecimals, sign, goRound, euclideanDistance, precisionCompare } from './math.js';
 export { Orientation, orientationToString, sameSide, isDiagonal, isHorizontal, isVertical, getOpposite } from './orientation.js';
 export { Point, intersectionPoint, getMedianPoint } from './point.js';
 export { Vector } from './vector.js';

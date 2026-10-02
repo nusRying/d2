@@ -9,6 +9,8 @@ import { LabelPosition, getPointOnRoute, routeLength, routeGetPointAtDistance, g
 import { Point } from '../../src/geometry/point.js';
 import { goRound, chopPrecision } from '../../src/geometry/math.js';
 import { nodesFixedBounds, nodesUnroundedFixedBounds } from '../../src/graph/node-bounds.js';
+import * as rootIndex from '../../src/index.js';
+import * as geometryIndex from '../../src/geometry/index.js';
 
 describe('Slice 37 Direct Graph & Edge BoundingBox Tests', () => {
   it('1. Graph.boundingBox exists', () => {
@@ -338,5 +340,20 @@ describe('Slice 37 Direct Graph & Edge BoundingBox Tests', () => {
     assert.throws(() => {
       g.BoundingBox();
     }, TypeError);
+  });
+
+  it('31. Root API does not export chopPrecision', () => {
+    assert.equal('chopPrecision' in rootIndex, false);
+    assert.equal(rootIndex.chopPrecision, undefined);
+  });
+
+  it('32. Geometry barrel does not export chopPrecision', () => {
+    assert.equal('chopPrecision' in geometryIndex, false);
+    assert.equal(geometryIndex.chopPrecision, undefined);
+  });
+
+  it('33. chopPrecision remains available internally from geometry/math.js', () => {
+    assert.equal(typeof chopPrecision, 'function');
+    assert.equal(chopPrecision(12.34567), 12);
   });
 });
