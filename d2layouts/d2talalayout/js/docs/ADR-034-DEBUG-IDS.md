@@ -1,7 +1,7 @@
 # ADR-034: LayoutGraph Diagnostic IDs (`DebugID` Parity) (Slice 33)
 
 ## Status
-Implemented — awaiting Slice 33 review
+Accepted
 
 ## Context
 In TALA's layout graph data structures, diagnostic string representations (`DebugID()`) are used for logging, tracing, error formatting, and test diagnostics. In particular, subsequent proximity operations such as `proximity.ApplyVirally` rely on `node.DebugID()` for consistent conflict and assertion messaging.

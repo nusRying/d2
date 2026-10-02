@@ -1,4 +1,11 @@
 export { addHubs, AddHubs } from "./hubs.js";
 export { commonUncleSiblings, CommonUncleSiblings } from "./common-uncle.js";
 export { assignNears, AssignNears } from "./nears.js";
-export { groupSheep, GroupSheep, canUseBothSides, CanUseBothSides } from "./herding.js";
+export {
+  groupSheep,
+  GroupSheep,
+  canUseBothSides,
+  CanUseBothSides,
+  applyVirally,
+  ApplyVirally,
+} from "./herding.js";

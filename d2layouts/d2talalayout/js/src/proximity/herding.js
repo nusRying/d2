@@ -1,5 +1,5 @@
 import { WorkCanceledError } from "../limits/work-guard.js";
-import { Orientation } from "../geometry/orientation.js";
+import { Orientation, orientationToString } from "../geometry/orientation.js";
 
 /**
  * GroupSheep groups root's children by their external uncle and records the
@@ -175,3 +175,70 @@ export function canUseBothSides(node, orientation) {
 }
 
 export const CanUseBothSides = canUseBothSides;
+
+/**
+ * ApplyVirally propagates each known herd orientation through its ordered groups.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {any} context
+ * @param {Array<import("../graph/node.js").Node>} herdOrder
+ * @param {Map<import("../graph/node.js").Node, Array<import("../graph/node.js").Node>>} herds
+ */
+export function applyVirally(context, herdOrder, herds) {
+  const orderedHerds = herdOrder ?? [];
+
+  for (;;) {
+    checkAssignHerdsCancellation(context);
+
+    let end = true;
+
+    for (const uncle of orderedHerds) {
+      checkAssignHerdsCancellation(context);
+
+      const nodes =
+        herds == null
+          ? []
+          : (herds.get ? (herds.get(uncle) ?? []) : (herds[uncle] ?? []));
+
+      let assignment = null;
+
+      for (const node of nodes) {
+        if (
+          node.HerdAssignment != null &&
+          node.HerdAssignment.Orientation !== Orientation.NONE
+        ) {
+          assignment = node.HerdAssignment;
+          break;
+        }
+      }
+
+      if (assignment != null) {
+        for (const node of nodes) {
+          if (node.HerdAssignment == null) {
+            end = false;
+            node.HerdAssignment = assignment.Copy();
+          } else if (
+            node.HerdAssignment.Orientation !== Orientation.NONE &&
+            node.HerdAssignment.Orientation !== assignment.Orientation
+          ) {
+            throw new Error(
+              "layout invariant violated: node " +
+                node.DebugID() +
+                " has herd orientation " +
+                orientationToString(node.HerdAssignment.Orientation) +
+                "; expected " +
+                orientationToString(assignment.Orientation)
+            );
+          }
+        }
+      }
+    }
+
+    if (end) {
+      return;
+    }
+  }
+}
+
+export const ApplyVirally = applyVirally;

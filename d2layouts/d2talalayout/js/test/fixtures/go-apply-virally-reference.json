@@ -1,0 +1,505 @@
+{
+  "scenarios": {
+    "AA_chained_virality_multiple_passes": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "c": {
+          "id": 30,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "AB_same_pass_chaining": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "c": {
+          "id": 30,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "AC_group_with_nil_node": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AD_null_uncle_key_present": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "AE_duplicate_uncle_in_order": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        }
+      }
+    },
+    "AF_duplicate_node_in_herd": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "AG_empty_node_slice_for_uncle": {
+      "success": true
+    },
+    "AH_repeated_invocation_stable": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "b": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "A_empty_herd_order": {
+      "success": true
+    },
+    "B_nil_herd_order": {
+      "success": true
+    },
+    "C_precanceled_empty_order": {
+      "success": false,
+      "error": "AssignHerds: context canceled"
+    },
+    "D_nil_context_empty_order": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "E_nil_herds_map_one_uncle": {
+      "success": true,
+      "nodeStates": {
+        "uncle": {
+          "id": 1,
+          "hasAssignment": false
+        }
+      }
+    },
+    "F_missing_uncle_key": {
+      "success": true,
+      "nodeStates": {
+        "uncle": {
+          "id": 1,
+          "hasAssignment": false
+        }
+      }
+    },
+    "G_nil_uncle_missing_key": {
+      "success": true
+    },
+    "H_all_nodes_nil_assignment": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": false
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": false
+        }
+      }
+    },
+    "I_all_nodes_none_assignment": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientationInt": 8
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientationInt": 8
+        }
+      }
+    },
+    "J_mixed_nil_and_none": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": false
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientationInt": 8
+        }
+      }
+    },
+    "K_simple_propagation": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "L_propagation_copies_val": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 123.456
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 123.456
+        }
+      }
+    },
+    "M_propagation_copies_same_side_pairs": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "sameSidePairCount": 1
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "sameSidePairCount": 1
+        }
+      }
+    },
+    "N_propagation_copies_opposite_side_pairs": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "O_two_nil_targets_get_independent_copies": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "c": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "P_existing_same_orientation_unchanged": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 100
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 200
+        }
+      }
+    },
+    "Q_existing_none_remains_none": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientationInt": 8
+        }
+      }
+    },
+    "R_default_new_assignment_topleft_source": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "TopLeft"
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "TopLeft"
+        }
+      }
+    },
+    "S_diagonal_known_orientation": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "TopRight",
+          "orientationInt": 1
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "TopRight",
+          "orientationInt": 1
+        }
+      }
+    },
+    "T_unknown_orientation_int": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientationInt": 99
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientationInt": 99
+        }
+      }
+    },
+    "U_direct_conflicting_orientations": {
+      "success": false,
+      "error": "layout invariant violated: node 3 has herd orientation Right; expected Left",
+      "nodeStates": {
+        "left": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "right": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "V_conflict_uses_d2id": {
+      "success": false,
+      "error": "layout invariant violated: node conflict.node has herd orientation Right; expected Left",
+      "nodeStates": {
+        "left": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "right": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "W_reversed_conflicting_node_order": {
+      "success": false,
+      "error": "layout invariant violated: node 2 has herd orientation Left; expected Right",
+      "nodeStates": {
+        "left": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "right": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "X_nil_target_before_later_conflict": {
+      "success": false,
+      "error": "layout invariant violated: node 30 has herd orientation Right; expected Left",
+      "nodeStates": {
+        "left": {
+          "id": 20,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "nilTarget": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "right": {
+          "id": 30,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "Y_partial_mutation_before_cancellation": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "c": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "d": {
+          "id": 6,
+          "hasAssignment": false
+        }
+      }
+    },
+    "Z_cancellation_after_propagation_before_stability": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    }
+  }
+}
