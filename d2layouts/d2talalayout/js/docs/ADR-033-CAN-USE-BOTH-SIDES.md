@@ -1,7 +1,7 @@
 # ADR-033: Herd Side Eligibility (`CanUseBothSides`) (Slice 32)
 
 ## Status
-Implemented — awaiting Slice 32 review
+Accepted
 
 ## Context
 In TALA's proximity and herding pipeline, `proximity.CanUseBothSides(node, orientation)` checks whether a layout graph node has the necessary aspect ratio to allow placement on both sides of a herd boundary under the given orientation.

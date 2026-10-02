@@ -1,5 +1,6 @@
 import { Point } from '../geometry/point.js';
 import { goRound } from '../geometry/math.js';
+import { nodeDebugID } from './node.js';
 
 /**
  * Cluster represents a grouping of nodes arranged in a row or column.
@@ -194,4 +195,27 @@ export class Cluster {
   IsActive() {
     return this.isActive();
   }
+
+  debugID() {
+    return clusterDebugID(this);
+  }
+
+  DebugID() {
+    return clusterDebugID(this);
+  }
+}
+
+/**
+ * clusterDebugID formats a diagnostic ID for a cluster, preserving Go TALA semantics.
+ * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/cluster.go
+ *
+ * @param {Cluster} cluster
+ * @returns {string}
+ */
+export function clusterDebugID(cluster) {
+  const nodeIDs = [];
+  for (const n of (cluster.Nodes ?? [])) {
+    nodeIDs.push(nodeDebugID(n));
+  }
+  return "[" + nodeIDs.join(", ") + "]; Arrangement: " + (cluster.Arrangement ?? "");
 }

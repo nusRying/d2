@@ -1,6 +1,7 @@
 import { Point } from '../geometry/point.js';
 import { STEP_WEDGE_WIDTH } from '../shape/constants.js';
 import { unmeteredGroupGeometry } from './group-geometry.js';
+import { nodeDebugID } from './node.js';
 
 /**
  * SequenceAdvance is the horizontal distance from one step's top-left to
@@ -230,4 +231,27 @@ export class Sequence {
   PlaceVessel() {
     this.placeVessel();
   }
+
+  debugID() {
+    return sequenceDebugID(this);
+  }
+
+  DebugID() {
+    return sequenceDebugID(this);
+  }
+}
+
+/**
+ * sequenceDebugID formats a diagnostic ID for a sequence, preserving Go TALA semantics.
+ * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/sequence.go
+ *
+ * @param {Sequence} sequence
+ * @returns {string}
+ */
+export function sequenceDebugID(sequence) {
+  const nodeIDs = [];
+  for (const n of (sequence.Nodes ?? [])) {
+    nodeIDs.push(nodeDebugID(n));
+  }
+  return "[" + nodeIDs.join(", ") + "]";
 }

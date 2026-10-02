@@ -819,4 +819,45 @@ export class Node {
   FitToGraph(graph, padding) {
     this.fitNodeToGraph(graph, padding);
   }
+
+  debugID() {
+    return nodeDebugID(this);
+  }
+
+  DebugID() {
+    return nodeDebugID(this);
+  }
+}
+
+/**
+ * nodeDebugID formats a diagnostic ID for a node, preserving Go TALA semantics.
+ * Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/node.go
+ *
+ * @param {Node|null|undefined} node
+ * @returns {string}
+ */
+export function nodeDebugID(node) {
+  if (node == null) {
+    return "nil";
+  }
+  if (node.D2ID != null) {
+    return node.D2ID;
+  }
+  if (node.isClusterVessel) {
+    const cluster = node.Graph.Clusters instanceof Map
+      ? node.Graph.Clusters.get(node)
+      : node.Graph.Clusters[node];
+    return "Cluster vessel of: " + (typeof cluster.DebugID === "function" ? cluster.DebugID() : cluster.debugID());
+  }
+  if (node.Graph != null && node.Graph.Sequences != null) {
+    const seqs = node.Graph.Sequences;
+    const hasSeq = seqs instanceof Map
+      ? (seqs.size > 0 && seqs.has(node))
+      : (typeof seqs === "object" && Object.keys(seqs).length > 0 && node in seqs);
+    if (hasSeq) {
+      const s = seqs instanceof Map ? seqs.get(node) : seqs[node];
+      return "Sequence vessel of: " + (typeof s.DebugID === "function" ? s.DebugID() : s.debugID());
+    }
+  }
+  return BigInt(node.ID != null ? node.ID : 0).toString(10);
 }
