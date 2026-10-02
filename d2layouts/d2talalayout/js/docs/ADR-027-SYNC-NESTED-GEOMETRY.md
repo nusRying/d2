@@ -1,7 +1,7 @@
 # ADR-027: Nested Geometry Synchronization (Slice 26)
 
 ## Status
-Implemented — awaiting Slice 26 review
+Accepted
 
 ## Context
 TALA orchestrates geometry nested updates through `Graph.SyncNestedGeometry()`. This iterates through every node in `Graph.Nodes` in source order and applies independent sync stages for Container Positioning, Cluster Synchronization (and associated padding correction), and Sequence Synchronization. 

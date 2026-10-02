@@ -27,8 +27,6 @@ describe("Slice 16 Direct Unit Tests - ResetClusters Lifecycle Retirement", () =
     });
 
     test("grouping index does NOT export forbidden Slice 17 functions", () => {
-      expect(groupingExports.cleanup).toBeUndefined();
-      expect(groupingExports.Cleanup).toBeUndefined();
       expect(groupingExports.join).toBeUndefined();
       expect(groupingExports.Join).toBeUndefined();
       expect(groupingExports.joinDistancedClusters).toBeUndefined();

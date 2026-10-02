@@ -176,3 +176,92 @@ export function resetClusters(graph) {
  * Pinned PascalCase alias.
  */
 export const ResetClusters = resetClusters;
+
+/**
+ * Cleanup restores cluster and sequence members after node placement and
+ * retires the temporary vessels while retaining rediscovery metadata.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/grouping/lifecycle.go
+ *
+ * @param {import("../graph/graph.js").Graph} graph
+ */
+export function cleanup(graph) {
+  for (const key of graph.ClusterOrder()) {
+    const cluster = graph.Clusters.get(key);
+    cluster.ArrangeClusterNodes();
+    for (const node of cluster.Nodes ?? []) {
+      graph.AddNewNodeToContainer(cluster.Container, node);
+    }
+    for (const abduction of cluster.EdgeAbductions ?? []) {
+      if (abduction.OriginallyFrom != null) {
+        abduction.Edge.Reconnect(abduction.OriginallyFrom, false);
+      }
+      if (abduction.OriginallyTo != null) {
+        abduction.Edge.Reconnect(abduction.OriginallyTo, true);
+      }
+    }
+    if (cluster.Vessel.Nears != null && cluster.Vessel.Nears.size !== 0) {
+      for (const near of cluster.Vessel.OrderedNears()) {
+        near.Nears.delete(cluster.Vessel);
+        for (const node of cluster.Nodes ?? []) {
+          near.AddNear(node);
+        }
+      }
+      cluster.Vessel.Nears = new Set();
+    }
+    graph.removeNode(cluster.Vessel);
+    const updated = [];
+    for (const child of graph.Containers.get(cluster.Container) ?? []) {
+      if (child !== cluster.Vessel) {
+        updated.push(child);
+      }
+    }
+    graph.Containers.set(cluster.Container, updated);
+    cluster.Vessel.Container = null;
+    cluster.Vessel.Graph = null;
+  }
+
+  for (const vessel of graph.SequenceOrder()) {
+    const sequence = graph.Sequences.get(vessel);
+    sequence.ArrangeSteps();
+    for (const node of sequence.Nodes ?? []) {
+      graph.AddNewNodeToContainer(sequence.Container, node);
+    }
+    for (const abduction of sequence.EdgeAbductions ?? []) {
+      if (abduction.OriginallyFrom != null) {
+        abduction.Edge.Reconnect(abduction.OriginallyFrom, false);
+      }
+      if (abduction.OriginallyTo != null) {
+        abduction.Edge.Reconnect(abduction.OriginallyTo, true);
+      }
+    }
+    if (sequence.Vessel.Nears != null && sequence.Vessel.Nears.size !== 0) {
+      for (const near of sequence.Vessel.OrderedNears()) {
+        near.Nears.delete(sequence.Vessel);
+        for (const node of sequence.Nodes ?? []) {
+          near.AddNear(node);
+        }
+      }
+      sequence.Vessel.Nears = new Set();
+    }
+    graph.removeNode(vessel);
+    const updated = [];
+    for (const child of graph.Containers.get(sequence.Container) ?? []) {
+      if (child !== vessel) {
+        updated.push(child);
+      }
+    }
+    graph.Containers.set(sequence.Container, updated);
+    sequence.Vessel.Container = null;
+    sequence.Vessel.Graph = null;
+  }
+
+  for (const node of graph.Nodes) {
+    node.HerdAssignment = null;
+  }
+}
+
+/**
+ * Pinned PascalCase alias.
+ */
+export const Cleanup = cleanup;

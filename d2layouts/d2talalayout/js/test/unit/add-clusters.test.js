@@ -73,8 +73,6 @@ describe("Slice 15 Direct Unit Tests - Atomic AddClusters Orchestration", () => 
     });
 
     test("grouping index does NOT export future slice functions", () => {
-      expect(groupingExports.cleanup).toBeUndefined();
-      expect(groupingExports.Cleanup).toBeUndefined();
       expect(groupingExports.join).toBeUndefined();
       expect(groupingExports.Join).toBeUndefined();
       expect(groupingExports.joinDistancedClusters).toBeUndefined();

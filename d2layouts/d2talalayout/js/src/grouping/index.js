@@ -51,4 +51,7 @@ export {
   // Slice 16 – cluster lifecycle retirement
   resetClusters,
   ResetClusters,
+  // Slice 27 – grouping cleanup
+  cleanup,
+  Cleanup,
 } from "./lifecycle.js";
