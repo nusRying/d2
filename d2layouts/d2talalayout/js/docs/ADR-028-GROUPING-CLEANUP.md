@@ -1,7 +1,7 @@
 # ADR-028: Grouping Cleanup (Slice 27)
 
 ## Status
-Implemented — awaiting Slice 27 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, `grouping.Cleanup(graph)` restores cluster members and sequence steps back into the active graph after node placement, and retires the temporary cluster/sequence vessels.
