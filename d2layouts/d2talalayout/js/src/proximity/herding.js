@@ -1,4 +1,5 @@
 import { WorkCanceledError } from "../limits/work-guard.js";
+import { Orientation } from "../geometry/orientation.js";
 
 /**
  * GroupSheep groups root's children by their external uncle and records the
@@ -145,3 +146,32 @@ function descendantOf(node, ancestor) {
   }
   return ancestor == null;
 }
+
+/**
+ * CanUseBothSides reports whether node is long enough perpendicular to
+ * orientation to host herd members on both parallel sides.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {import("../graph/node.js").Node} node
+ * @param {number} orientation
+ * @returns {boolean}
+ */
+export function canUseBothSides(node, orientation) {
+  const isWide = node.Width >= 2 * node.Height;
+  const isTall = node.Height >= 2 * node.Width;
+
+  return (
+    (
+      orientation === Orientation.Top ||
+      orientation === Orientation.Bottom
+    ) && isWide
+  ) || (
+    (
+      orientation === Orientation.Left ||
+      orientation === Orientation.Right
+    ) && isTall
+  );
+}
+
+export const CanUseBothSides = canUseBothSides;

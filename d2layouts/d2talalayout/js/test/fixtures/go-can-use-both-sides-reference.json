@@ -1,0 +1,485 @@
+{
+  "scenarios": {
+    "AA_bottom_left": {
+      "success": true,
+      "width": 10,
+      "height": 100,
+      "orientation": "BottomLeft",
+      "orientationInt": 2,
+      "result": false
+    },
+    "AB_bottom_right": {
+      "success": true,
+      "width": 10,
+      "height": 100,
+      "orientation": "BottomRight",
+      "orientationInt": 3,
+      "result": false
+    },
+    "AC_none": {
+      "success": true,
+      "width": 100,
+      "height": 10,
+      "orientation": "NONE",
+      "orientationInt": 8,
+      "result": false
+    },
+    "AD_nil_node": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "width": 0,
+      "height": 0,
+      "orientation": "",
+      "orientationInt": 0,
+      "result": false
+    },
+    "A_normal_wide_top": {
+      "success": true,
+      "width": 30,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "B_normal_wide_bottom": {
+      "success": true,
+      "width": 30,
+      "height": 10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "C_normal_wide_left": {
+      "success": true,
+      "width": 30,
+      "height": 10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "D_normal_wide_right": {
+      "success": true,
+      "width": 30,
+      "height": 10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": false
+    },
+    "E_normal_tall_left": {
+      "success": true,
+      "width": 10,
+      "height": 30,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "F_normal_tall_right": {
+      "success": true,
+      "width": 10,
+      "height": 30,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "G_normal_tall_top": {
+      "success": true,
+      "width": 10,
+      "height": 30,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "H_normal_tall_bottom": {
+      "success": true,
+      "width": 10,
+      "height": 30,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": false
+    },
+    "I_square_bottom": {
+      "success": true,
+      "width": 10,
+      "height": 10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": false
+    },
+    "I_square_left": {
+      "success": true,
+      "width": 10,
+      "height": 10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "I_square_right": {
+      "success": true,
+      "width": 10,
+      "height": 10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": false
+    },
+    "I_square_top": {
+      "success": true,
+      "width": 10,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "J_exact_wide_boundary_bottom": {
+      "success": true,
+      "width": 20,
+      "height": 10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "J_exact_wide_boundary_left": {
+      "success": true,
+      "width": 20,
+      "height": 10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "J_exact_wide_boundary_right": {
+      "success": true,
+      "width": 20,
+      "height": 10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": false
+    },
+    "J_exact_wide_boundary_top": {
+      "success": true,
+      "width": 20,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "K_exact_tall_boundary_bottom": {
+      "success": true,
+      "width": 10,
+      "height": 20,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": false
+    },
+    "K_exact_tall_boundary_left": {
+      "success": true,
+      "width": 10,
+      "height": 20,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "K_exact_tall_boundary_right": {
+      "success": true,
+      "width": 10,
+      "height": 20,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "K_exact_tall_boundary_top": {
+      "success": true,
+      "width": 10,
+      "height": 20,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "L_just_under_wide_boundary_top": {
+      "success": true,
+      "width": 19.999999,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "M_just_over_wide_boundary_top": {
+      "success": true,
+      "width": 20.000001,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "N_just_under_tall_boundary_left": {
+      "success": true,
+      "width": 10,
+      "height": 19.999999,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "O_just_over_tall_boundary_left": {
+      "success": true,
+      "width": 10,
+      "height": 20.000001,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "P_zero_zero_bottom": {
+      "success": true,
+      "width": 0,
+      "height": 0,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "P_zero_zero_left": {
+      "success": true,
+      "width": 0,
+      "height": 0,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "P_zero_zero_right": {
+      "success": true,
+      "width": 0,
+      "height": 0,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "P_zero_zero_top": {
+      "success": true,
+      "width": 0,
+      "height": 0,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "Q_positive_width_zero_height_bottom": {
+      "success": true,
+      "width": 10,
+      "height": 0,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "Q_positive_width_zero_height_left": {
+      "success": true,
+      "width": 10,
+      "height": 0,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "Q_positive_width_zero_height_right": {
+      "success": true,
+      "width": 10,
+      "height": 0,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": false
+    },
+    "Q_positive_width_zero_height_top": {
+      "success": true,
+      "width": 10,
+      "height": 0,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "R_zero_width_positive_height_bottom": {
+      "success": true,
+      "width": 0,
+      "height": 10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": false
+    },
+    "R_zero_width_positive_height_left": {
+      "success": true,
+      "width": 0,
+      "height": 10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "R_zero_width_positive_height_right": {
+      "success": true,
+      "width": 0,
+      "height": 10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "R_zero_width_positive_height_top": {
+      "success": true,
+      "width": 0,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "S_negative_case1_bottom": {
+      "success": true,
+      "width": -10,
+      "height": -5,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "S_negative_case1_left": {
+      "success": true,
+      "width": -10,
+      "height": -5,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "S_negative_case1_right": {
+      "success": true,
+      "width": -10,
+      "height": -5,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "S_negative_case1_top": {
+      "success": true,
+      "width": -10,
+      "height": -5,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "T_negative_case2_bottom": {
+      "success": true,
+      "width": -5,
+      "height": -10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "T_negative_case2_left": {
+      "success": true,
+      "width": -5,
+      "height": -10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "T_negative_case2_right": {
+      "success": true,
+      "width": -5,
+      "height": -10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "T_negative_case2_top": {
+      "success": true,
+      "width": -5,
+      "height": -10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "U_mixed_sign_bottom": {
+      "success": true,
+      "width": 10,
+      "height": -5,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": true
+    },
+    "U_mixed_sign_left": {
+      "success": true,
+      "width": 10,
+      "height": -5,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": false
+    },
+    "U_mixed_sign_right": {
+      "success": true,
+      "width": 10,
+      "height": -5,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": false
+    },
+    "U_mixed_sign_top": {
+      "success": true,
+      "width": 10,
+      "height": -5,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "V_mixed_sign_reverse_bottom": {
+      "success": true,
+      "width": -5,
+      "height": 10,
+      "orientation": "Bottom",
+      "orientationInt": 6,
+      "result": false
+    },
+    "V_mixed_sign_reverse_left": {
+      "success": true,
+      "width": -5,
+      "height": 10,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "V_mixed_sign_reverse_right": {
+      "success": true,
+      "width": -5,
+      "height": 10,
+      "orientation": "Right",
+      "orientationInt": 5,
+      "result": true
+    },
+    "V_mixed_sign_reverse_top": {
+      "success": true,
+      "width": -5,
+      "height": 10,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": false
+    },
+    "W_fractional_wide_threshold": {
+      "success": true,
+      "width": 2.5,
+      "height": 1.25,
+      "orientation": "Top",
+      "orientationInt": 4,
+      "result": true
+    },
+    "X_fractional_tall_threshold": {
+      "success": true,
+      "width": 1.25,
+      "height": 2.5,
+      "orientation": "Left",
+      "orientationInt": 7,
+      "result": true
+    },
+    "Y_top_left": {
+      "success": true,
+      "width": 100,
+      "height": 10,
+      "orientation": "TopLeft",
+      "orientationInt": 0,
+      "result": false
+    },
+    "Z_top_right": {
+      "success": true,
+      "width": 100,
+      "height": 10,
+      "orientation": "TopRight",
+      "orientationInt": 1,
+      "result": false
+    }
+  }
+}

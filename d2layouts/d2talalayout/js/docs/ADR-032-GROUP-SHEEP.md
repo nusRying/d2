@@ -1,7 +1,7 @@
 # ADR-032: Herd Discovery (`GroupSheep`) (Slice 31)
 
 ## Status
-Implemented — awaiting Slice 31 review
+Accepted
 
 ## Context
 In TALA's proximity and herding pipeline, `proximity.GroupSheep(ctx, graph, root, abductions)` groups the direct children of a root container by their external uncle and records the cousin connections that define each group. It is the discovery kernel underlying `AssignHerds`, establishing which sibling nodes share external connections into sibling containers.
