@@ -1,7 +1,7 @@
 # ADR-030: Proximity Common-Uncle Sibling Discovery (`CommonUncleSiblings`) (Slice 29)
 
 ## Status
-Implemented — awaiting Slice 29 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.CommonUncleSiblings(graph)` identifies sibling nodes that share an external connection to the same "uncle" — a node at the parent container's peer level. The largest group of such siblings becomes a proximity hint for the placement stage.
