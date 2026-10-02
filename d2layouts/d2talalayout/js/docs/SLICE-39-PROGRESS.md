@@ -19,9 +19,10 @@
    - Ordered connected components by least-degree starting node (breaking ties by source order) and BFS scanning `edgeAbductions`.
    - Maintained reference identity for node set/map tracking.
 2. **`src/placement/index.js`**:
-   - Re-exported `* from "./node-placement.js"`.
+   - Intentionally does NOT export `node-placement.js`.
 3. **`src/index.js`**:
-   - Re-exports `* from "./placement/index.js"`.
+   - Intentionally does NOT expose `placeChildrenOrder` / `PlaceChildrenOrder`.
+   - Helper is direct-module export only (`src/placement/node-placement.js`).
 
 ## Test & Verification Results
 - **Go Oracle**: `test/reference/go_place_children_order_oracle.go` covering 45 scenarios (A–AS).
@@ -29,5 +30,10 @@
 - **Oracle Replay Tests**: `test/unit/place-children-order-oracle.test.js` (45/45 PASS).
 - **Direct Review-Gate Tests**: `test/unit/place-children-order.test.js` (57/57 PASS).
 - **Total Slice 39 Tests**: 102/102 PASS.
-- **Go Packages**:
+- **Targeted JS Regressions**: 278/278 PASS across 8 files.
+- **Full JS Suite (`npm run test`)**: 2087 pass, 0 fail, 49657 expect() calls across 79 files.
+- **Go Regression Packages**:
   - `placement`: PASS
+  - `proximity`: PASS
+  - `layoutgraph`: PASS
+  - `grouping`: PASS

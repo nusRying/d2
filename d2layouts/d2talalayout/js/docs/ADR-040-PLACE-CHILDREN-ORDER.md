@@ -145,9 +145,10 @@ func PlaceChildrenOrder(ctx context.Context, nodes []*layoutgraph.Node, edgeAbdu
    - `edgeAbduction == null`: throws `"layout invariant violated: child ordering has a nil edge abduction"`.
    - unresolvable ordering: throws `"layout invariant violated: could not order all container children"`.
 9. **Exports & Barrel Structure**:
-   - Implemented in `src/placement/node-placement.js` with `placeChildrenOrder` and alias `PlaceChildrenOrder`.
-   - Re-exported via `src/placement/index.js`.
-   - Re-exported via `src/index.js` (transitively through `placement/index.js`).
+   - Implemented and exported directly from `src/placement/node-placement.js` (`placeChildrenOrder` and alias `PlaceChildrenOrder`).
+   - NOT re-exported from `src/placement/index.js`.
+   - NOT exposed from root `src/index.js`.
+   - This avoids widening the public package API before placement orchestration is migrated.
 
 ## Verification
 - Real Go oracle program: `test/reference/go_place_children_order_oracle.go` covering 45 scenarios (A–AS).

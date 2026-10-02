@@ -1,7 +1,7 @@
 # ADR-039: Herd Fence Synchronization (`SyncHerdFences`) (Slice 38)
 
 ## Status
-Implemented — awaiting Slice 38 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, `proximity.SyncHerdFences(graph)` updates the coordinate constraint (`node.HerdAssignment.Val`) for every assigned herd member to match the diagram's current outer boundary (`graph.BoundingBox()`).

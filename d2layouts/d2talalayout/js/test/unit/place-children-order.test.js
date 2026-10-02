@@ -7,6 +7,8 @@ import {
   placeChildrenOrder,
   PlaceChildrenOrder,
 } from '../../src/placement/node-placement.js';
+import * as placementIndex from '../../src/placement/index.js';
+import * as rootIndex from '../../src/index.js';
 import { WorkCanceledError } from '../../src/limits/work-guard.js';
 
 // ---------------------------------------------------------------------------
@@ -65,20 +67,14 @@ describe('PlaceChildrenOrder review gates', () => {
     );
   });
 
-  it('placeChildrenOrder exported from placement barrel', async () => {
-    const placement = await import('../../src/placement/index.js');
-    assert.strictEqual(typeof placement.placeChildrenOrder, 'function');
-    assert.strictEqual(typeof placement.PlaceChildrenOrder, 'function');
-    assert.strictEqual(
-      placement.PlaceChildrenOrder,
-      placement.placeChildrenOrder
-    );
+  it('placeChildrenOrder and PlaceChildrenOrder absent from placement barrel', () => {
+    assert.strictEqual('placeChildrenOrder' in placementIndex, false);
+    assert.strictEqual('PlaceChildrenOrder' in placementIndex, false);
   });
 
-  it('placeChildrenOrder exported from root barrel', async () => {
-    const root = await import('../../src/index.js');
-    assert.strictEqual(typeof root.placeChildrenOrder, 'function');
-    assert.strictEqual(typeof root.PlaceChildrenOrder, 'function');
+  it('placeChildrenOrder and PlaceChildrenOrder absent from root barrel', () => {
+    assert.strictEqual('placeChildrenOrder' in rootIndex, false);
+    assert.strictEqual('PlaceChildrenOrder' in rootIndex, false);
   });
 
   it('entry cancellation throws WorkCanceledError before any work', () => {
