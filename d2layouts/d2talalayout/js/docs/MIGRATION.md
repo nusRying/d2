@@ -42,7 +42,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 25 — complete
 * Slice 26 — complete
 * Slice 27 — complete
-* Slice 28 — implemented, awaiting review
+* Slice 28 — complete
+* Slice 29 — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
