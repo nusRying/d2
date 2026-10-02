@@ -175,7 +175,7 @@ func main() {
 	member := layoutgraph.NewNode(2, 20, 20)
 	member.Graph = g
 	member.TopLeft = &geo.Point{X: 0, Y: 0}
-	c := &layoutgraph.Cluster{Vessel: vessel, Nodes: []*layoutgraph.Node{member}, Graph: g, Arrangement: layoutgraph.ClusterArrangement(1)} // ArrangeLeftRight = 1
+	c := &layoutgraph.Cluster{Vessel: vessel, Nodes: []*layoutgraph.Node{member}, Graph: g, Arrangement: layoutgraph.Row}
 	g.Clusters[vessel] = c
 	addScenario(out, "cluster_vessel_only_node", g, []*layoutgraph.Node{vessel, member}, false)
 
@@ -239,7 +239,7 @@ func main() {
 	gc2.Graph = g
 	gc2.TopLeft = &geo.Point{X: 1, Y: 1}
 	g.Containers[cm2] = []*layoutgraph.Node{gc2}
-	c3 := &layoutgraph.Cluster{Vessel: vessel3, Nodes: []*layoutgraph.Node{cm1, cm2}, Graph: g, Arrangement: layoutgraph.ClusterArrangement(1)}
+	c3 := &layoutgraph.Cluster{Vessel: vessel3, Nodes: []*layoutgraph.Node{cm1, cm2}, Graph: g, Arrangement: layoutgraph.Row}
 	g.Clusters[vessel3] = c3
 	addScenario(out, "multiple_cluster_container_members", g, []*layoutgraph.Node{vessel3, cm1, gc1, cm2, gc2}, false)
 
@@ -362,7 +362,17 @@ func main() {
 		panic(err)
 	}
 
-	targetPath := filepath.Join("..", "fixtures", "go-sync-nested-geometry-reference.json")
+	targetPath := "test/fixtures/go-sync-nested-geometry-reference.json"
+	if len(os.Args) > 1 {
+		targetPath = os.Args[1]
+	} else if _, err := os.Stat("d2layouts/d2talalayout/js"); err == nil {
+		targetPath = "d2layouts/d2talalayout/js/test/fixtures/go-sync-nested-geometry-reference.json"
+	} else if _, err := os.Stat("../fixtures"); err == nil {
+		targetPath = filepath.Join("..", "fixtures", "go-sync-nested-geometry-reference.json")
+	}
+	if err := os.MkdirAll(filepath.Dir(targetPath), 0755); err != nil {
+		panic(err)
+	}
 	if err := os.WriteFile(targetPath, bytes, 0644); err != nil {
 		panic(err)
 	}

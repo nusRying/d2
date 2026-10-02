@@ -83,7 +83,7 @@ describe("Slice 26 — SyncNestedGeometry Oracle Replay", () => {
         c.Vessel = vessel;
         c.Nodes = [member];
         c.Graph = g;
-        c.Arrangement = ClusterArrangement.ArrangeLeftRight;
+        c.Arrangement = ClusterArrangement.Row;
         g.Clusters.set(vessel, c);
         allNodes = [vessel, member];
       } else if (scenarioName === "sequence_only_node") {
@@ -151,7 +151,7 @@ describe("Slice 26 — SyncNestedGeometry Oracle Replay", () => {
         c3.Vessel = vessel3;
         c3.Nodes = [cm1, cm2];
         c3.Graph = g;
-        c3.Arrangement = ClusterArrangement.ArrangeLeftRight;
+        c3.Arrangement = ClusterArrangement.Row;
         g.Clusters.set(vessel3, c3);
         allNodes = [vessel3, cm1, gc1, cm2, gc2];
       } else if (scenarioName === "multiple_graph_nodes_source_order") {
