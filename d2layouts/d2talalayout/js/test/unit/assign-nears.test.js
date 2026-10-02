@@ -396,25 +396,41 @@ describe('AssignNears Direct Semantics', () => {
   // 16. commit order is node-ID sorted
   it('16. commits replacements in ascending node-ID order', () => {
     const g = new Graph()
-    const root = new Node(10)
+    const root = new Node(1)
     const c20 = new Node(20)
     const c10 = new Node(10)
     const ext = new Node(100)
     g.addNodeToContainer(null, root)
+    // Container children and abductions are staged c20 first, then c10
     g.addNodeToContainer(root, c20)
     g.addNodeToContainer(root, c10)
 
-    const commitLog = []
-    const origDescriptor = Object.getOwnPropertyDescriptor(Node.prototype, 'Nears')
-    // We observe the order of Nears property assignments
+    const orig10 = c10.Nears
+    const orig20 = c20.Nears
+
     const abductions = [
       new EdgeAbduction({ OriginallyFrom: c20, CurrentTo: ext }),
       new EdgeAbduction({ OriginallyFrom: c10, CurrentTo: ext }),
     ]
 
-    assignNears(BackgroundWorkContext(), g, root, abductions)
-    expect(c10.Nears.has(c20)).toBe(true)
-    expect(c20.Nears.has(c10)).toBe(true)
+    let firstCommitted = null
+
+    const ctx = PollingWorkContext(() => {
+      if (c10.Nears !== orig10) {
+        firstCommitted ??= c10
+        return true
+      }
+      if (c20.Nears !== orig20) {
+        firstCommitted ??= c20
+        return true
+      }
+      return false
+    })
+
+    expect(() => assignNears(ctx, g, root, abductions)).toThrow('context canceled')
+    expect(firstCommitted).toBe(c10)
+    expect(c10.Nears).toBe(orig10)
+    expect(c20.Nears).toBe(orig20)
   })
 
   // 17. Finish occurs after each live assignment
@@ -429,21 +445,29 @@ describe('AssignNears Direct Semantics', () => {
     g.addNodeToContainer(root, c2)
 
     let finishes = 0
-    const ctx = PollingWorkContext(() => false)
+    const ctx = BackgroundWorkContext()
     const origFinish = WorkGuard.prototype.Finish
-    spyOn(WorkGuard.prototype, 'Finish').mockImplementation(function () {
+    const spy = spyOn(WorkGuard.prototype, 'Finish').mockImplementation(function () {
       finishes++
       return origFinish.call(this)
     })
 
-    const abductions = [
-      new EdgeAbduction({ OriginallyFrom: c1, CurrentTo: ext }),
-      new EdgeAbduction({ OriginallyFrom: c2, CurrentTo: ext }),
-    ]
+    try {
+      const abductions = [
+        new EdgeAbduction({ OriginallyFrom: c1, CurrentTo: ext }),
+        new EdgeAbduction({ OriginallyFrom: c2, CurrentTo: ext }),
+      ]
 
-    assignNears(ctx, g, root, abductions)
-    // Constructor Finish + pre-commit Finish + commit c1 Finish + commit c2 Finish = at least 4
-    expect(finishes).toBeGreaterThanOrEqual(4)
+      assignNears(ctx, g, root, abductions)
+      // Exactly 4 Finish calls:
+      // 1. WorkGuard constructor Finish
+      // 2. pre-commit Finish
+      // 3. Finish after first committed node (c1)
+      // 4. Finish after second committed node (c2)
+      expect(finishes).toBe(4)
+    } finally {
+      spy.mockRestore()
+    }
   })
 
   // 18. cancellation during commit restores EXACT original Set references

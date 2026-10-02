@@ -18,11 +18,11 @@ Port `proximity.AssignNears` and its work-limited kernel `assignNearsWithWorkLim
 ## Progress
 - [x] Implement JS `assignNears` and `assignNearsWithWorkLimit` in `src/proximity/nears.js`.
 - [x] Export `assignNears` and `AssignNears` from `src/proximity/index.js`.
-- [x] Create Go Oracle script for 25 scenarios (`go_assign_nears_oracle.go`).
-- [x] Generate reference fixture `go-assign-nears-reference.json` (25 scenarios).
-- [x] Create oracle replay test `assign-nears-oracle.test.js` (25 pass).
+- [x] Create Go Oracle script for 26 scenarios (`go_assign_nears_oracle.go`).
+- [x] Generate reference fixture `go-assign-nears-reference.json` (26 scenarios).
+- [x] Create oracle replay test `assign-nears-oracle.test.js` (26 pass).
 - [x] Create direct unit tests `assign-nears.test.js` (23 pass).
-- [x] Pass all targeted tests (48 pass across 2 files).
+- [x] Pass all targeted tests (49 pass across 2 files).
 - [x] Pass full JS regression suite.
 - [x] Pass Go proximity, layoutgraph, and grouping test suites.
 

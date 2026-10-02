@@ -47,7 +47,7 @@ export function assignNearsWithWorkLimit(context, graph, root, abductions, workL
     const originallyTo = groupVessel(abduction.OriginallyTo);
     let uncle = null;
     let connected = null;
-    const children = graph?.Containers?.get(root) ?? [];
+    const children = graph.Containers?.get(root) ?? [];
     for (const node of children) {
       guard.Step();
       const fromDescendant = isDescendantOf(originallyFrom, node, guard);

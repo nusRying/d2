@@ -729,6 +729,18 @@ func main() {
 		return context.Background(), g, root, abductions, []*layoutgraph.Node{first, second}
 	})
 
+	// AB. nil graph with non-empty abduction panics in Go when evaluating graph.Containers[root]
+	runScenario("AB_nil_graph_nonempty_abduction", func() (context.Context, *layoutgraph.Graph, *layoutgraph.Node, []*layoutgraph.EdgeAbduction, []*layoutgraph.Node) {
+		first := layoutgraph.NewNode(1, 10, 10)
+		second := layoutgraph.NewNode(2, 10, 10)
+		root := layoutgraph.NewNode(10, 100, 100)
+		ext := layoutgraph.NewNode(100, 10, 10)
+		abductions := []*layoutgraph.EdgeAbduction{
+			{OriginallyFrom: first, CurrentTo: ext},
+		}
+		return context.Background(), nil, root, abductions, []*layoutgraph.Node{first, second}
+	})
+
 	outBytes, _ := json.MarshalIndent(out, "", "  ")
 
 	targetPath := "go-assign-nears-reference.json"

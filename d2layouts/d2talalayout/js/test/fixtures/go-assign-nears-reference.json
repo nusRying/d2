@@ -14,6 +14,10 @@
         }
       }
     },
+    "AB_nil_graph_nonempty_abduction": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
     "A_empty_abductions": {
       "success": true,
       "nodes": {

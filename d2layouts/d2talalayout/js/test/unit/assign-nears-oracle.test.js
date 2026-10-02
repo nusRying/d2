@@ -49,7 +49,7 @@ function checkOracle(name, setup) {
     }
   }
 
-  for (const [nodeIdStr, expectedState] of Object.entries(goRes.nodes)) {
+  for (const [nodeIdStr, expectedState] of Object.entries(goRes.nodes || {})) {
     const node = trackedNodes.find(n => String(n.ID) === nodeIdStr)
     expect(node).toBeDefined()
 
@@ -754,6 +754,25 @@ describe('AssignNears Oracle Replay', () => {
       return {
         context: BackgroundWorkContext(),
         graph: g,
+        root,
+        abductions,
+        trackedNodes: [first, second],
+      }
+    })
+  })
+
+  it('AB_nil_graph_nonempty_abduction', () => {
+    checkOracle('AB_nil_graph_nonempty_abduction', () => {
+      const first = new Node(1)
+      const second = new Node(2)
+      const root = new Node(10)
+      const ext = new Node(100)
+      const abductions = [
+        new EdgeAbduction({ OriginallyFrom: first, CurrentTo: ext }),
+      ]
+      return {
+        context: BackgroundWorkContext(),
+        graph: null,
         root,
         abductions,
         trackedNodes: [first, second],
