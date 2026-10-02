@@ -90,6 +90,33 @@ export class Graph {
     this.Nodes = this.Nodes.filter((n) => n !== node);
   }
 
+  fixedNodes() {
+    const fixed = [];
+    for (const n of this.Nodes) {
+      if (n.FixedTopLeft != null) {
+        fixed.push(n);
+      }
+    }
+    return fixed;
+  }
+
+  FixedNodes() {
+    return this.fixedNodes();
+  }
+
+  hasFixedNode() {
+    for (const n of this.Nodes) {
+      if (n.FixedTopLeft != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  HasFixedNode() {
+    return this.hasFixedNode();
+  }
+
   AddEdge(edge) {
     if (this.Edges.includes(edge)) {
       return;

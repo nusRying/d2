@@ -1,7 +1,7 @@
 # ADR-040: Placement Child Ordering (`PlaceChildrenOrder`) (Slice 39)
 
 ## Status
-Implemented — awaiting Slice 39 review
+Accepted
 
 ## Context
 During container layout in TALA's placement stage, container children must be placed in a deterministic topological and component-connected order so that subsequent orthogonal layout and cluster sizing operate predictably.

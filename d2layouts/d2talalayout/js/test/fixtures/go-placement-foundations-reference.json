@@ -1,0 +1,750 @@
+{
+  "axis": {
+    "axis_0": {
+      "valid": false,
+      "isHorizontal": false,
+      "opposite": 0
+    },
+    "axis_1": {
+      "valid": true,
+      "isHorizontal": true,
+      "opposite": 2
+    },
+    "axis_2": {
+      "valid": true,
+      "isHorizontal": false,
+      "opposite": 1
+    },
+    "axis_3": {
+      "valid": false,
+      "isHorizontal": false,
+      "opposite": 0
+    },
+    "axis_99": {
+      "valid": false,
+      "isHorizontal": false,
+      "opposite": 0
+    }
+  },
+  "axisArrangement": {
+    "\u003cempty\u003e": 2,
+    "Column": 1,
+    "Row": 2,
+    "unknown": 2
+  },
+  "direction": {
+    "dir_0": {
+      "valid": false,
+      "isForward": false,
+      "opposite": 0
+    },
+    "dir_1": {
+      "valid": true,
+      "isForward": true,
+      "opposite": 2
+    },
+    "dir_2": {
+      "valid": true,
+      "isForward": false,
+      "opposite": 1
+    },
+    "dir_3": {
+      "valid": false,
+      "isForward": false,
+      "opposite": 0
+    },
+    "dir_99": {
+      "valid": false,
+      "isForward": false,
+      "opposite": 0
+    }
+  },
+  "fixedNodes": {
+    "all_fixed_order": {
+      "success": true,
+      "hasFixed": true,
+      "fixed": [
+        "3",
+        "1"
+      ]
+    },
+    "distinct_same_id": {
+      "success": true,
+      "hasFixed": true,
+      "fixed": [
+        "5",
+        "5"
+      ]
+    },
+    "empty_graph": {
+      "success": true,
+      "hasFixed": false,
+      "fixed": null
+    },
+    "mixed_fixed": {
+      "success": true,
+      "hasFixed": true,
+      "fixed": [
+        "2"
+      ]
+    },
+    "none_fixed": {
+      "success": true,
+      "hasFixed": false,
+      "fixed": null
+    },
+    "null_node": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "hasFixed": false,
+      "fixed": null
+    }
+  },
+  "validateCellSize": {
+    "invalid_0": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size 0"
+    },
+    "invalid_10_5": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size 10.5"
+    },
+    "invalid_half": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size 0.5"
+    },
+    "invalid_nan": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size NaN"
+    },
+    "invalid_neg1": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size -1"
+    },
+    "invalid_neg_inf": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size -Inf"
+    },
+    "invalid_pos_inf": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size +Inf"
+    },
+    "valid_1": {
+      "success": true
+    },
+    "valid_10": {
+      "success": true
+    },
+    "valid_1000": {
+      "success": true
+    },
+    "valid_2": {
+      "success": true
+    }
+  },
+  "validateGridAlignment": {
+    "fixed_node_exempt_misaligned": {
+      "success": true
+    },
+    "fixed_node_exempt_unpositioned": {
+      "success": true
+    },
+    "invalid_cell_size_wins": {
+      "success": false,
+      "error": "layout invariant violated: invalid cell size 0"
+    },
+    "misaligned_fractional": {
+      "success": false,
+      "error": "layout invariant violated: node 1 at (20.5, 30) is not aligned to cell size 10"
+    },
+    "misaligned_x": {
+      "success": false,
+      "error": "layout invariant violated: node 1 at (21, 30) is not aligned to cell size 10"
+    },
+    "misaligned_y": {
+      "success": false,
+      "error": "layout invariant violated: node 1 at (20, 35) is not aligned to cell size 10"
+    },
+    "nonfixed_unpositioned": {
+      "success": false,
+      "error": "layout invariant violated: node 42 has no position"
+    },
+    "valid_negative_aligned": {
+      "success": true
+    },
+    "valid_positive_aligned": {
+      "success": true
+    }
+  },
+  "validatePlacedNodes": {
+    "all_placed": {
+      "success": true
+    },
+    "empty_nodes": {
+      "success": true
+    },
+    "first_unplaced_wins": {
+      "success": false,
+      "error": "layout invariant violated: node 1 was not placed under container 10"
+    },
+    "nil_node_in_slice": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "unplaced_with_nil_root": {
+      "success": false,
+      "error": "layout invariant violated: node 7 was not placed under container 0"
+    },
+    "unplaced_with_root": {
+      "success": false,
+      "error": "layout invariant violated: node 2 was not placed under container 100"
+    }
+  },
+  "graphDistance": {
+    "12_node_path": {
+      "success": true,
+      "applied": true,
+      "checks": 90,
+      "positions": {
+        "0": {
+          "x": 18,
+          "y": 16
+        },
+        "1": {
+          "x": 16,
+          "y": 17
+        },
+        "10": {
+          "x": 13,
+          "y": 6
+        },
+        "11": {
+          "x": 15,
+          "y": 6
+        },
+        "2": {
+          "x": 14,
+          "y": 17
+        },
+        "3": {
+          "x": 12,
+          "y": 17
+        },
+        "4": {
+          "x": 10,
+          "y": 16
+        },
+        "5": {
+          "x": 9,
+          "y": 14
+        },
+        "6": {
+          "x": 8,
+          "y": 12
+        },
+        "7": {
+          "x": 8,
+          "y": 10
+        },
+        "8": {
+          "x": 9,
+          "y": 8
+        },
+        "9": {
+          "x": 11,
+          "y": 6
+        }
+      }
+    },
+    "5_node_star": {
+      "success": true,
+      "applied": true,
+      "checks": 68,
+      "positions": {
+        "0": {
+          "x": 5,
+          "y": 5
+        },
+        "1": {
+          "x": 7,
+          "y": 6
+        },
+        "2": {
+          "x": 4,
+          "y": 7
+        },
+        "3": {
+          "x": 3,
+          "y": 4
+        },
+        "4": {
+          "x": 6,
+          "y": 3
+        }
+      }
+    },
+    "6_node_cycle": {
+      "success": true,
+      "applied": true,
+      "checks": 71,
+      "positions": {
+        "0": {
+          "x": 8,
+          "y": 6
+        },
+        "1": {
+          "x": 7,
+          "y": 8
+        },
+        "2": {
+          "x": 5,
+          "y": 8
+        },
+        "3": {
+          "x": 4,
+          "y": 6
+        },
+        "4": {
+          "x": 5,
+          "y": 4
+        },
+        "5": {
+          "x": 7,
+          "y": 4
+        }
+      }
+    },
+    "boundary_3_nodes": {
+      "success": true,
+      "applied": false,
+      "checks": 7
+    },
+    "boundary_4_nodes": {
+      "success": true,
+      "applied": true,
+      "checks": 65,
+      "positions": {
+        "0": {
+          "x": 6,
+          "y": 5
+        },
+        "1": {
+          "x": 4,
+          "y": 5
+        },
+        "2": {
+          "x": 3,
+          "y": 4
+        },
+        "3": {
+          "x": 3,
+          "y": 2
+        }
+      }
+    },
+    "boundary_64_nodes": {
+      "success": true,
+      "applied": true,
+      "checks": 253,
+      "positions": {
+        "0": {
+          "x": 85,
+          "y": 64
+        },
+        "1": {
+          "x": 85,
+          "y": 66
+        },
+        "10": {
+          "x": 76,
+          "y": 82
+        },
+        "11": {
+          "x": 74,
+          "y": 83
+        },
+        "12": {
+          "x": 72,
+          "y": 84
+        },
+        "13": {
+          "x": 70,
+          "y": 84
+        },
+        "14": {
+          "x": 68,
+          "y": 85
+        },
+        "15": {
+          "x": 66,
+          "y": 85
+        },
+        "16": {
+          "x": 64,
+          "y": 85
+        },
+        "17": {
+          "x": 62,
+          "y": 85
+        },
+        "18": {
+          "x": 60,
+          "y": 84
+        },
+        "19": {
+          "x": 58,
+          "y": 84
+        },
+        "2": {
+          "x": 85,
+          "y": 68
+        },
+        "20": {
+          "x": 56,
+          "y": 83
+        },
+        "21": {
+          "x": 54,
+          "y": 82
+        },
+        "22": {
+          "x": 52,
+          "y": 81
+        },
+        "23": {
+          "x": 51,
+          "y": 80
+        },
+        "24": {
+          "x": 49,
+          "y": 79
+        },
+        "25": {
+          "x": 48,
+          "y": 77
+        },
+        "26": {
+          "x": 47,
+          "y": 76
+        },
+        "27": {
+          "x": 46,
+          "y": 74
+        },
+        "28": {
+          "x": 45,
+          "y": 72
+        },
+        "29": {
+          "x": 44,
+          "y": 70
+        },
+        "3": {
+          "x": 84,
+          "y": 70
+        },
+        "30": {
+          "x": 44,
+          "y": 68
+        },
+        "31": {
+          "x": 43,
+          "y": 66
+        },
+        "32": {
+          "x": 43,
+          "y": 64
+        },
+        "33": {
+          "x": 43,
+          "y": 62
+        },
+        "34": {
+          "x": 44,
+          "y": 60
+        },
+        "35": {
+          "x": 44,
+          "y": 58
+        },
+        "36": {
+          "x": 45,
+          "y": 56
+        },
+        "37": {
+          "x": 46,
+          "y": 54
+        },
+        "38": {
+          "x": 47,
+          "y": 52
+        },
+        "39": {
+          "x": 48,
+          "y": 51
+        },
+        "4": {
+          "x": 83,
+          "y": 72
+        },
+        "40": {
+          "x": 49,
+          "y": 49
+        },
+        "41": {
+          "x": 51,
+          "y": 48
+        },
+        "42": {
+          "x": 52,
+          "y": 47
+        },
+        "43": {
+          "x": 54,
+          "y": 46
+        },
+        "44": {
+          "x": 56,
+          "y": 45
+        },
+        "45": {
+          "x": 58,
+          "y": 44
+        },
+        "46": {
+          "x": 60,
+          "y": 44
+        },
+        "47": {
+          "x": 62,
+          "y": 43
+        },
+        "48": {
+          "x": 64,
+          "y": 43
+        },
+        "49": {
+          "x": 66,
+          "y": 43
+        },
+        "5": {
+          "x": 82,
+          "y": 74
+        },
+        "50": {
+          "x": 68,
+          "y": 43
+        },
+        "51": {
+          "x": 70,
+          "y": 44
+        },
+        "52": {
+          "x": 72,
+          "y": 44
+        },
+        "53": {
+          "x": 74,
+          "y": 45
+        },
+        "54": {
+          "x": 75,
+          "y": 46
+        },
+        "55": {
+          "x": 77,
+          "y": 48
+        },
+        "56": {
+          "x": 79,
+          "y": 49
+        },
+        "57": {
+          "x": 80,
+          "y": 50
+        },
+        "58": {
+          "x": 81,
+          "y": 52
+        },
+        "59": {
+          "x": 82,
+          "y": 54
+        },
+        "6": {
+          "x": 81,
+          "y": 76
+        },
+        "60": {
+          "x": 83,
+          "y": 56
+        },
+        "61": {
+          "x": 84,
+          "y": 58
+        },
+        "62": {
+          "x": 84,
+          "y": 60
+        },
+        "63": {
+          "x": 85,
+          "y": 62
+        },
+        "7": {
+          "x": 80,
+          "y": 78
+        },
+        "8": {
+          "x": 79,
+          "y": 79
+        },
+        "9": {
+          "x": 77,
+          "y": 80
+        }
+      }
+    },
+    "boundary_65_nodes": {
+      "success": true,
+      "applied": false,
+      "checks": 78
+    },
+    "cancellation_at_assignment": {
+      "success": false,
+      "applied": false,
+      "error": "context canceled",
+      "checks": 56
+    },
+    "cancellation_at_final": {
+      "success": false,
+      "applied": false,
+      "error": "context canceled",
+      "checks": 62
+    },
+    "cancellation_at_floyd": {
+      "success": false,
+      "applied": false,
+      "error": "GraphDistanceInitialization: context canceled",
+      "checks": 2
+    },
+    "cancellation_at_relaxation": {
+      "success": false,
+      "applied": false,
+      "error": "GraphDistanceInitialization: context canceled",
+      "checks": 8
+    },
+    "disconnected_fallback": {
+      "success": true,
+      "applied": false,
+      "checks": 20
+    },
+    "fixed_node_fallback": {
+      "success": true,
+      "applied": false,
+      "checks": 13
+    }
+  },
+  "normalize": {
+    "edge_minima_dominates": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "x": 15,
+          "y": 42
+        }
+      },
+      "edgePoints": [
+        [
+          {
+            "x": 0.20000000000000018,
+            "y": 0.9000000000000004
+          },
+          {
+            "x": 20,
+            "y": 52
+          }
+        ]
+      ]
+    },
+    "empty_graph": {
+      "success": true
+    },
+    "fixed_node_forced_1000": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "x": 500,
+          "y": 200
+        }
+      },
+      "edgePoints": [
+        [
+          {
+            "x": 500,
+            "y": 200
+          }
+        ]
+      ]
+    },
+    "node_minima": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "x": 0,
+          "y": 20
+        },
+        "2": {
+          "x": 20,
+          "y": 0
+        }
+      }
+    }
+  },
+  "pad": {
+    "pad_empty": {
+      "success": true
+    },
+    "pad_nodes_only": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "x": 1020,
+          "y": 1050
+        }
+      },
+      "edgePoints": [
+        [
+          {
+            "x": 100,
+            "y": 200
+          }
+        ]
+      ]
+    }
+  },
+  "clusterExternalConnection": {
+    "basic_both_cases": {
+      "success": true,
+      "external": [
+        "101",
+        "102"
+      ]
+    },
+    "deduplication_first_seen_order": {
+      "success": true,
+      "external": [
+        "102",
+        "101"
+      ]
+    },
+    "unpositioned_ignored": {
+      "success": true,
+      "external": null
+    },
+    "wrong_graph_ignored": {
+      "success": true,
+      "external": null
+    }
+  }
+}
