@@ -1,7 +1,7 @@
 # ADR-036: Connected Herd Components (`connectedHerds`) (Slice 35)
 
 ## Status
-Implemented — awaiting Slice 35 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.connectedHerds(ctx, herdOrder, herds)` joins uncle groups that share at least one node into connected components, retaining deterministic source order.

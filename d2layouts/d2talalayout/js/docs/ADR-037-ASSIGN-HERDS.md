@@ -1,7 +1,7 @@
 # ADR-037: Herd Assignment Orchestration (`AssignHerds`) (Slice 36)
 
 ## Status
-Accepted — Implemented in Slice 36
+Implemented — awaiting Slice 36 review
 
 ## Context
 In TALA's proximity pipeline, `proximity.AssignHerds(ctx, graph, root, edgeAbductions)` orchestrates herd discovery, singleton filtering, uncle sorting, connected component partitioning, side eligibility and preference negotiation, mutual pair recording, viral orientation propagation, and cluster vessel arrangement adjustment.
@@ -30,13 +30,20 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 			uncleOrder = append(uncleOrder, uncle)
 		}
 	}
-	sortNodesByID(uncleOrder)
+	slices.SortFunc(uncleOrder, func(a, b *layoutgraph.Node) int {
+		return cmp.Compare(a.ID, b.ID)
+	})
+
 	components, err := connectedHerds(ctx, uncleOrder, grouped)
 	if err != nil {
 		return err
 	}
 	unbiasedSide := 0
 	for _, component := range components {
+		// Overlapping groups describe a single equality constraint: every member
+		// must use the same side. Choose that side only after intersecting all
+		// placed cousins' available sides, so a later uncle cannot change one
+		// member and invalidate an earlier group.
 		sides := []geo.Orientation{geo.Top, geo.Right, geo.Bottom, geo.Left}
 		preferred := geo.NONE
 		for _, uncle := range component.uncles {
@@ -61,16 +68,11 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 						return invariant.Errorf("cousin %s has an invalid herd orientation", cousin.DebugID())
 					}
 					bothSides := CanUseBothSides(uncle, orientation)
-					opposite := orientation.Opposite()
-					var nextSides []geo.Orientation
-					for _, side := range sides {
-						if side == opposite || bothSides && side == orientation {
-							nextSides = append(nextSides, side)
-						}
-					}
-					sides = nextSides
+					sides = slices.DeleteFunc(sides, func(side geo.Orientation) bool {
+						return side != orientation.GetOpposite() && !(bothSides && side == orientation)
+					})
 					if preferred == geo.NONE {
-						preferred = opposite
+						preferred = orientation.GetOpposite()
 						if bothSides && assignment.SameSidePairCount() < assignment.OppositeSidePairCount() {
 							preferred = orientation
 						}
@@ -79,6 +81,9 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 			}
 		}
 		if len(sides) == 0 {
+			// Herding is a placement preference. Cousins on incompatible sides
+			// can make that preference impossible for a valid graph; in that
+			// case leave the entire connected herd free to place normally.
 			for _, node := range component.nodes {
 				node.HerdAssignment = nil
 			}
@@ -94,21 +99,22 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 			node.HerdAssignment = layoutgraph.NewHerdAssignment()
 			node.HerdAssignment.Orientation = preferred
 		}
+		// Pair counts influence later herds, so record only the final choice.
 		for _, uncle := range component.uncles {
-			children := graph.Containers[uncle]
-			if children[0].TopLeft == nil {
+			if graph.Containers[uncle][0].TopLeft == nil {
 				continue
 			}
 			for _, node := range grouped[uncle] {
 				for _, cousin := range cousins[uncle][node] {
-					if cousin.HerdAssignment != nil {
-						if preferred == cousin.HerdAssignment.Orientation {
-							node.HerdAssignment.PairSameSide(cousin)
-							cousin.HerdAssignment.PairSameSide(node)
-						} else {
-							node.HerdAssignment.PairOppositeSide(cousin)
-							cousin.HerdAssignment.PairOppositeSide(node)
-						}
+					if cousin.HerdAssignment == nil {
+						continue
+					}
+					if preferred == cousin.HerdAssignment.Orientation {
+						node.HerdAssignment.PairSameSide(uncle)
+						cousin.HerdAssignment.PairSameSide(uncle)
+					} else {
+						node.HerdAssignment.PairOppositeSide(uncle)
+						cousin.HerdAssignment.PairOppositeSide(uncle)
 					}
 				}
 			}
@@ -117,15 +123,14 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 	if err := ApplyVirally(ctx, uncleOrder, grouped); err != nil {
 		return err
 	}
-	for _, n := range herdOrder {
-		for _, node := range grouped[n] {
-			if node.IsClusterVessel() && node.HerdAssignment != nil {
+
+	for _, uncle := range uncleOrder {
+		for _, node := range grouped[uncle] {
+			if node.HerdAssignment != nil && node.IsClusterVessel() {
 				cluster := graph.Clusters[node]
-				if (node.HerdAssignment.Orientation == geo.Top || node.HerdAssignment.Orientation == geo.Bottom) &&
-					cluster.Arrangement == layoutgraph.Column {
+				if (node.HerdAssignment.Orientation == geo.Top || node.HerdAssignment.Orientation == geo.Bottom) && cluster.Arrangement == layoutgraph.Column {
 					cluster.Arrangement = layoutgraph.Row
-				} else if (node.HerdAssignment.Orientation == geo.Left || node.HerdAssignment.Orientation == geo.Right) &&
-					cluster.Arrangement == layoutgraph.Row {
+				} else if (node.HerdAssignment.Orientation == geo.Left || node.HerdAssignment.Orientation == geo.Right) && cluster.Arrangement == layoutgraph.Row {
 					cluster.Arrangement = layoutgraph.Column
 				}
 			}
