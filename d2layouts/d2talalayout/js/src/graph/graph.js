@@ -1,6 +1,9 @@
 import { Node, sortNodesByID } from './node.js';
 import { Edge } from './edge.js';
 import { Orientation } from '../geometry/orientation.js';
+import { Point } from '../geometry/point.js';
+import { goRound } from '../geometry/math.js';
+import { nodesFixedBounds, nodesUnroundedFixedBounds } from './node-bounds.js';
 import { isOutsideLabelPosition } from './label-position.js';
 
 const noopWorkStepper = {
@@ -598,7 +601,50 @@ export class Graph {
   ContainerPadding(container, considerChildren = false) {
     return this.containerPadding(container, considerChildren);
   }
+
+  boundingBox(roundNodeDimensions = true) {
+    const [tl, br] = roundNodeDimensions
+      ? nodesFixedBounds(this.Nodes)
+      : nodesUnroundedFixedBounds(this.Nodes);
+
+    if (tl == null || br == null) {
+      return [null, null];
+    }
+
+    let minX = tl.X;
+    let minY = tl.Y;
+    let maxX = br.X;
+    let maxY = br.Y;
+
+    for (const edge of this.Edges) {
+      const [edgeTL, edgeBR] = edge.boundingBoxValues();
+      if (edgeTL.X !== Infinity && edgeTL.X !== -Infinity) {
+        minX = Math.min(minX, edgeTL.X);
+        minY = Math.min(minY, edgeTL.Y);
+        maxX = Math.max(maxX, edgeBR.X);
+        maxY = Math.max(maxY, edgeBR.Y);
+      }
+    }
+
+    return [new Point(minX, minY), new Point(maxX, maxY)];
+  }
+
+  bounds() {
+    const [tl, br] = this.boundingBox(true);
+    if (tl == null || br == null) {
+      return [null, null];
+    }
+    return [
+      new Point(goRound(tl.X), goRound(tl.Y)),
+      new Point(goRound(br.X), goRound(br.Y))
+    ];
+  }
+
+  BoundingBox() {
+    return this.bounds();
+  }
 }
+
 
 export class Spacing {
   constructor(top = 0, bottom = 0, left = 0, right = 0) {

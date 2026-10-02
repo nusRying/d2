@@ -48,3 +48,13 @@ export function goRound(v) {
   }
   return r === 0 && v < 0 ? -0 : r;
 }
+
+export function chopPrecision(f) {
+  // Bring down to float32 precision before rounding for consistency across architectures
+  const result = goRound(Math.fround(f * 10000) / 10000);
+  // Ensure negative zero becomes positive zero
+  if (result === 0) {
+    return 0;
+  }
+  return result;
+}

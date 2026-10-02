@@ -1,7 +1,7 @@
 # ADR-037: Herd Assignment Orchestration (`AssignHerds`) (Slice 36)
 
 ## Status
-Implemented — awaiting Slice 36 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.AssignHerds(ctx, graph, root, edgeAbductions)` orchestrates herd discovery, singleton filtering, uncle sorting, connected component partitioning, side eligibility and preference negotiation, mutual pair recording, viral orientation propagation, and cluster vessel arrangement adjustment.

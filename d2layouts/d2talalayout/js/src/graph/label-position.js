@@ -1,4 +1,8 @@
+import { Point } from '../geometry/point.js';
+import { euclideanDistance, chopPrecision } from '../geometry/math.js';
+
 export const LABEL_PADDING = 5;
+
 
 export const LabelPosition = Object.freeze({
   Unset: 0,
@@ -292,4 +296,148 @@ export function getPointOnBox(position, box, padding, width, height) {
   }
 
   return p;
+}
+
+export function routeLength(route) {
+  let l = 0;
+  for (let i = 0; i < route.length - 1; i++) {
+    l += euclideanDistance(
+      route[i].X, route[i].Y,
+      route[i + 1].X, route[i + 1].Y
+    );
+  }
+  return l;
+}
+
+export function routeGetPointAtDistance(route, distance) {
+  let remaining = distance;
+  let curr = null;
+  let next = null;
+  let length = 0;
+
+  for (let i = 0; i < route.length - 1; i++) {
+    curr = route[i];
+    next = route[i + 1];
+    length = euclideanDistance(curr.X, curr.Y, next.X, next.Y);
+
+    if (remaining <= length) {
+      const t = remaining / length;
+      return [curr.interpolate(next, t), i];
+    }
+    remaining -= length;
+  }
+
+  // distance > length, continue along last segment
+  return [curr.interpolate(next, 1 + remaining / length), route.length - 2];
+}
+
+export function getUnitNormalVector(x1, y1, x2, y2) {
+  const normalX = y1 - y2;
+  const normalY = x2 - x1;
+  const length = euclideanDistance(x1, y1, x2, y2);
+  return [normalX / length, normalY / length];
+}
+
+export function getPointOnRoute(position, route, strokeWidth, labelPercentage, width, height) {
+  const totalLength = routeLength(route);
+  const leftPosition = 0.25 * totalLength;
+  const centerPosition = 0.50 * totalLength;
+  const rightPosition = 0.75 * totalLength;
+  const unlockedPosition = labelPercentage * totalLength;
+
+  function getOffsetLabelPosition(basePoint, normStart, normEnd, flip) {
+    let [normalX, normalY] = getUnitNormalVector(
+      normStart.X,
+      normStart.Y,
+      normEnd.X,
+      normEnd.Y
+    );
+    if (flip) {
+      normalX *= -1;
+      normalY *= -1;
+    }
+
+    const offsetX = strokeWidth / 2 + LABEL_PADDING + width / 2;
+    const offsetY = strokeWidth / 2 + LABEL_PADDING + height / 2;
+
+    return new Point(basePoint.X + normalX * offsetX, basePoint.Y + normalY * offsetY);
+  }
+
+  const pos = normalizeLabelPosition(position);
+  let labelCenter = null;
+  let index = -1;
+
+  switch (pos) {
+    case LabelPosition.InsideMiddleLeft:
+      [labelCenter, index] = routeGetPointAtDistance(route, leftPosition);
+      break;
+    case LabelPosition.InsideMiddleCenter:
+      [labelCenter, index] = routeGetPointAtDistance(route, centerPosition);
+      break;
+    case LabelPosition.InsideMiddleRight:
+      [labelCenter, index] = routeGetPointAtDistance(route, rightPosition);
+      break;
+
+    case LabelPosition.OutsideTopLeft: {
+      const [basePoint, i] = routeGetPointAtDistance(route, leftPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], true);
+      break;
+    }
+    case LabelPosition.OutsideTopCenter: {
+      const [basePoint, i] = routeGetPointAtDistance(route, centerPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], true);
+      break;
+    }
+    case LabelPosition.OutsideTopRight: {
+      const [basePoint, i] = routeGetPointAtDistance(route, rightPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], true);
+      break;
+    }
+
+    case LabelPosition.OutsideBottomLeft: {
+      const [basePoint, i] = routeGetPointAtDistance(route, leftPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], false);
+      break;
+    }
+    case LabelPosition.OutsideBottomCenter: {
+      const [basePoint, i] = routeGetPointAtDistance(route, centerPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], false);
+      break;
+    }
+    case LabelPosition.OutsideBottomRight: {
+      const [basePoint, i] = routeGetPointAtDistance(route, rightPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], false);
+      break;
+    }
+
+    case LabelPosition.UnlockedTop: {
+      const [basePoint, i] = routeGetPointAtDistance(route, unlockedPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], true);
+      break;
+    }
+    case LabelPosition.UnlockedMiddle:
+      [labelCenter, index] = routeGetPointAtDistance(route, unlockedPosition);
+      break;
+    case LabelPosition.UnlockedBottom: {
+      const [basePoint, i] = routeGetPointAtDistance(route, unlockedPosition);
+      index = i;
+      labelCenter = getOffsetLabelPosition(basePoint, route[index], route[index + 1], false);
+      break;
+    }
+
+    default:
+      return [null, -1];
+  }
+
+  // convert from center to top left
+  labelCenter.X = chopPrecision(labelCenter.X - width / 2);
+  labelCenter.Y = chopPrecision(labelCenter.Y - height / 2);
+  return [labelCenter, index];
 }

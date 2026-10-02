@@ -111,8 +111,21 @@ export function nodesFixedOrigin(nodes) {
   return null;
 }
 
+export function nodesUnroundedBounds(nodes) {
+  return nodesBoundingBox(nodes, false);
+}
+
 export function nodesFixedBounds(nodes) {
   let [tl, br] = nodesBounds(nodes);
+  const fixedOrigin = nodesFixedOrigin(nodes);
+  if (fixedOrigin != null) {
+    tl = fixedOrigin;
+  }
+  return [tl, br];
+}
+
+export function nodesUnroundedFixedBounds(nodes) {
+  let [tl, br] = nodesUnroundedBounds(nodes);
   const fixedOrigin = nodesFixedOrigin(nodes);
   if (fixedOrigin != null) {
     tl = fixedOrigin;
