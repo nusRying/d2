@@ -903,6 +903,30 @@ func main() {
 		return context.Background(), g, container, edgeAbductions
 	})
 
+	// AF. nil context with root child -> natural panic on ctx.Err()
+	runScenario("AF_nil_context_with_child", func() (context.Context, *layoutgraph.Graph, *layoutgraph.Node, []*layoutgraph.EdgeAbduction) {
+		g := layoutgraph.NewGraph()
+		container := layoutgraph.NewNode(0, 1000, 1000)
+		child := layoutgraph.NewNode(1, 5, 5)
+		child.Container = container
+		g.Containers = map[*layoutgraph.Node][]*layoutgraph.Node{
+			container: {child},
+		}
+		container.SetContainer(true)
+		return nil, g, container, nil
+	})
+
+	// AG. nil context with no root children -> succeeds with empty maps (ctx.Err() never reached)
+	runScenario("AG_nil_context_no_children", func() (context.Context, *layoutgraph.Graph, *layoutgraph.Node, []*layoutgraph.EdgeAbduction) {
+		g := layoutgraph.NewGraph()
+		container := layoutgraph.NewNode(0, 1000, 1000)
+		g.Containers = map[*layoutgraph.Node][]*layoutgraph.Node{
+			container: {},
+		}
+		container.SetContainer(true)
+		return nil, g, container, nil
+	})
+
 	outBytes, _ := json.MarshalIndent(out, "", "  ")
 
 	targetPath := "go-group-sheep-reference.json"

@@ -31,7 +31,9 @@ export function groupSheep(context, graph, root, abductions) {
 
       const abduction = sourceAbductions[i];
       if (abduction == null) {
-        throw new Error("herding has a nil edge abduction");
+        throw new Error(
+          "layout invariant violated: herding has a nil edge abduction"
+        );
       }
 
       const from = groupVessel(abduction.OriginallyFrom);
@@ -104,9 +106,10 @@ export function groupSheep(context, graph, root, abductions) {
 export const GroupSheep = groupSheep;
 
 function checkAssignHerdsCancellation(context) {
-  const isCancelled = typeof context?.isCancelled === "function"
-    ? context.isCancelled()
-    : Boolean(context?.aborted);
+  const isCancelled =
+    typeof context.isCancelled === "function"
+      ? context.isCancelled()
+      : Boolean(context.aborted);
   if (isCancelled) {
     throw new WorkCanceledError("AssignHerds");
   }

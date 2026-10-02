@@ -41,6 +41,13 @@
         }
       }
     },
+    "AF_nil_context_with_child": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AG_nil_context_no_children": {
+      "success": true
+    },
     "A_empty_graph_empty_children": {
       "success": true
     },

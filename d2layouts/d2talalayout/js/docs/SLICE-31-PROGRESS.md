@@ -24,12 +24,12 @@ Port `proximity.GroupSheep` from Go to browser-safe JavaScript, matching Go TALA
 ## Progress
 - [x] Implement JS `groupSheep` and `GroupSheep` in `src/proximity/herding.js`.
 - [x] Export `groupSheep` and `GroupSheep` from `src/proximity/index.js`.
-- [x] Create Go Oracle script for 31 scenarios (`go_group_sheep_oracle.go`).
-- [x] Generate reference fixture `go-group-sheep-reference.json` (31 scenarios).
-- [x] Create oracle replay test `group-sheep-oracle.test.js` (31 pass).
+- [x] Create Go Oracle script for 33 scenarios (`go_group_sheep_oracle.go`).
+- [x] Generate reference fixture `go-group-sheep-reference.json` (33 scenarios).
+- [x] Create oracle replay test `group-sheep-oracle.test.js` (33 pass).
 - [x] Create direct unit tests `group-sheep.test.js` (23 pass).
-- [x] Pass all targeted tests (54 pass across 2 files).
-- [x] Pass full JS regression suite (1482 pass across 63 files).
+- [x] Pass all targeted tests (56 pass across 2 files).
+- [x] Pass full JS regression suite.
 - [x] Pass Go proximity, layoutgraph, and grouping test suites.
 
 ## Artifacts

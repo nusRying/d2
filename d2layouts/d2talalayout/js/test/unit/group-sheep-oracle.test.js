@@ -57,7 +57,7 @@ function checkOracle(name, setup) {
       if (goRes.errorMessage.includes('context canceled')) {
         expect(jsErr.message).toContain('AssignHerds: context canceled')
       } else if (goRes.errorMessage.includes('nil edge abduction')) {
-        expect(jsErr.message).toContain('herding has a nil edge abduction')
+        expect(jsErr.message).toBe(goRes.errorMessage)
       }
     }
   }
@@ -1017,6 +1017,40 @@ describe('GroupSheep Oracle Replay', () => {
         graph: g,
         root: container,
         abductions,
+      }
+    })
+  })
+
+  it('AF_nil_context_with_child', () => {
+    checkOracle('AF_nil_context_with_child', () => {
+      const g = new Graph()
+      const container = new Node(0)
+      const child = new Node(1)
+      child.Container = container
+      g.Containers = new Map([[container, [child]]])
+      container.isContainer = true
+
+      return {
+        context: null,
+        graph: g,
+        root: container,
+        abductions: null,
+      }
+    })
+  })
+
+  it('AG_nil_context_no_children', () => {
+    checkOracle('AG_nil_context_no_children', () => {
+      const g = new Graph()
+      const container = new Node(0)
+      g.Containers = new Map([[container, []]])
+      container.isContainer = true
+
+      return {
+        context: null,
+        graph: g,
+        root: container,
+        abductions: [],
       }
     })
   })

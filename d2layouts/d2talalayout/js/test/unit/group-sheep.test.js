@@ -1,4 +1,6 @@
 import { expect, describe, it, spyOn } from 'bun:test'
+import { readFileSync } from 'fs'
+import { fileURLToPath } from 'url'
 import {
   Graph,
   Node,
@@ -21,17 +23,43 @@ describe('GroupSheep Direct Semantics', () => {
 
   // 2. no WorkGuard construction
   it('2. does not construct or use WorkGuard', () => {
-    let constructed = false
-    const origGuard = WorkGuard.prototype.constructor
-    // We can spy on WorkGuard
-    const g = new Graph()
-    const root = new Node(0)
-    g.Containers = new Map([[root, []]])
+    let stepCalled = false
+    const origStep = WorkGuard.prototype.Step
+    const spy = spyOn(WorkGuard.prototype, 'Step').mockImplementation(function () {
+      stepCalled = true
+      return origStep.apply(this, arguments)
+    })
 
-    // Call groupSheep
-    const res = groupSheep(BackgroundWorkContext(), g, root, [])
-    expect(res.byUncle).toBeInstanceOf(Map)
-    expect(res.toCousin).toBeInstanceOf(Map)
+    try {
+      const g = new Graph()
+      const root = new Node(0)
+      const child = new Node(1)
+      const cousin = new Node(6)
+      const uncle = new Node(60)
+      cousin.Container = uncle
+      uncle.isContainer = true
+
+      g.Containers = new Map([
+        [root, [child]],
+        [uncle, [cousin]],
+      ])
+
+      const abductions = [
+        new EdgeAbduction({ OriginallyFrom: child, OriginallyTo: cousin, CurrentTo: uncle }),
+      ]
+
+      const res = groupSheep(BackgroundWorkContext(), g, root, abductions)
+      expect(res.byUncle).toBeInstanceOf(Map)
+      expect(stepCalled).toBe(false)
+    } finally {
+      spy.mockRestore()
+    }
+
+    const source = readFileSync(
+      fileURLToPath(new URL('../../src/proximity/herding.js', import.meta.url)),
+      'utf8'
+    )
+    expect(source).not.toContain('new WorkGuard')
   })
 
   // 3. exact child cancellation check count
