@@ -1,0 +1,340 @@
+{
+  "scenarios": {
+    "AA_cancellation_before_used": {
+      "success": false,
+      "errorMessage": "AssignHerds: context canceled"
+    },
+    "AB_nil_graph": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AC_nil_containers": {
+      "success": true
+    },
+    "AD_nil_root": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "AE_repeated_call": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "A_empty_graph_empty_children": {
+      "success": true
+    },
+    "B_upstream_canonical": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1",
+          "2"
+        ],
+        "70": [
+          "2"
+        ],
+        "80": [
+          "3",
+          "4"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ],
+          "2": [
+            "6"
+          ]
+        },
+        "70": {
+          "2": [
+            "7"
+          ]
+        },
+        "80": {
+          "3": [
+            "8"
+          ],
+          "4": [
+            "8"
+          ]
+        }
+      }
+    },
+    "C_upstream_nested_sheep": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "D_upstream_cluster_sheep": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1",
+          "4"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ],
+          "4": [
+            "6"
+          ]
+        }
+      }
+    },
+    "E_sequence_sheep": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "4"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "4": [
+            "6"
+          ]
+        }
+      }
+    },
+    "F_cluster_and_sequence": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "4"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "4": [
+            "6"
+          ]
+        }
+      }
+    },
+    "G_reverse_direction": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "H_both_branches_qualify": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "I_current_endpoint_non_container": {
+      "success": true
+    },
+    "J_current_endpoint_nil": {
+      "success": true
+    },
+    "K_cousin_owning_container_nil": {
+      "success": true
+    },
+    "L_final_uncle_nil": {
+      "success": true
+    },
+    "M_final_uncle_non_container": {
+      "success": true
+    },
+    "N_used_abduction_consumption": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6"
+          ]
+        }
+      }
+    },
+    "O_skipped_before_used": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "2"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "2": [
+            "6"
+          ]
+        }
+      }
+    },
+    "P_root_child_source_order": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "20",
+          "10"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "10": [
+            "6"
+          ],
+          "20": [
+            "6"
+          ]
+        }
+      }
+    },
+    "Q_multiple_cousins_same_node": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6",
+            "7"
+          ]
+        }
+      }
+    },
+    "R_duplicate_cousins": {
+      "success": true,
+      "byUncle": {
+        "60": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "60": {
+          "1": [
+            "6",
+            "6"
+          ]
+        }
+      }
+    },
+    "S_cluster_climb": {
+      "success": true,
+      "byUncle": {
+        "600": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "600": {
+          "1": [
+            "60"
+          ]
+        }
+      }
+    },
+    "T_sequence_climb": {
+      "success": true,
+      "byUncle": {
+        "600": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "600": {
+          "1": [
+            "60"
+          ]
+        }
+      }
+    },
+    "U_direct_owning_container_climb": {
+      "success": true,
+      "byUncle": {
+        "600": [
+          "1"
+        ]
+      },
+      "toCousin": {
+        "600": {
+          "1": [
+            "60"
+          ]
+        }
+      }
+    },
+    "V_nil_abduction_with_child": {
+      "success": false,
+      "errorMessage": "layout invariant violated: herding has a nil edge abduction"
+    },
+    "W_nil_abduction_no_children": {
+      "success": true
+    },
+    "X_precanceled_with_child": {
+      "success": false,
+      "errorMessage": "AssignHerds: context canceled"
+    },
+    "Y_precanceled_no_children": {
+      "success": true
+    },
+    "Z_cancellation_during_abduction_scan": {
+      "success": false,
+      "errorMessage": "AssignHerds: context canceled"
+    }
+  }
+}

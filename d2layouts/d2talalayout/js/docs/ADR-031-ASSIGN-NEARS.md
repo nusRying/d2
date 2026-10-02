@@ -1,7 +1,7 @@
 # ADR-031: Proximity Near Assignment (`AssignNears`) (Slice 30)
 
 ## Status
-Implemented — awaiting Slice 30 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.AssignNears(ctx, graph, root, abductions)` marks otherwise unconnected siblings that share an external neighbor (uncle) so placement keeps them close together. It discovers uncle relationships from edge abductions, identifies direct children of the root container that are ancestors of the original abduction endpoints, groups connected siblings by external uncle, and records mutual `Near` relationships on eligible sibling pairs.

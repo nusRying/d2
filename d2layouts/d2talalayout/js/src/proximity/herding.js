@@ -1,0 +1,144 @@
+import { WorkCanceledError } from "../limits/work-guard.js";
+
+/**
+ * GroupSheep groups root's children by their external uncle and records the
+ * cousin connections that define each group.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {any} context
+ * @param {import("../graph/graph.js").Graph} graph
+ * @param {import("../graph/node.js").Node} root
+ * @param {Array<import("../graph/edge-abduction.js").EdgeAbduction>} abductions
+ * @returns {{ byUncle: Map<import("../graph/node.js").Node, import("../graph/node.js").Node[]>, toCousin: Map<import("../graph/node.js").Node, Map<import("../graph/node.js").Node, import("../graph/node.js").Node[]>> }}
+ */
+export function groupSheep(context, graph, root, abductions) {
+  const byUncle = new Map();
+  const toCousin = new Map();
+  const sourceAbductions = abductions ?? [];
+  const used = new Array(sourceAbductions.length).fill(false);
+  const children = graph.Containers?.get(root) ?? [];
+
+  for (const node of children) {
+    checkAssignHerdsCancellation(context);
+
+    for (let i = 0; i < sourceAbductions.length; i++) {
+      checkAssignHerdsCancellation(context);
+
+      if (used[i]) {
+        continue;
+      }
+
+      const abduction = sourceAbductions[i];
+      if (abduction == null) {
+        throw new Error("herding has a nil edge abduction");
+      }
+
+      const from = groupVessel(abduction.OriginallyFrom);
+      const to = groupVessel(abduction.OriginallyTo);
+      let cousin = null;
+      let current = null;
+
+      if (abduction.OriginallyTo != null && (from === node || descendantOf(from, node))) {
+        if (abduction.CurrentTo != null && !abduction.CurrentTo.isContainer) {
+          continue;
+        }
+        if (to == null || to.OwningContainer() == null) {
+          continue;
+        }
+        cousin = to;
+        current = abduction.CurrentTo;
+      } else if (abduction.OriginallyFrom != null && (to === node || descendantOf(to, node))) {
+        if (abduction.CurrentFrom != null && !abduction.CurrentFrom.isContainer) {
+          continue;
+        }
+        if (from == null || from.OwningContainer() == null) {
+          continue;
+        }
+        cousin = from;
+        current = abduction.CurrentFrom;
+      }
+
+      if (cousin == null) {
+        continue;
+      }
+
+      used[i] = true;
+
+      while (cousin.OwningContainer() !== current) {
+        if (cousin.Cluster != null) {
+          cousin = cousin.Cluster.Vessel;
+        } else if (cousin.Sequence != null) {
+          cousin = cousin.Sequence.Vessel;
+        } else {
+          cousin = cousin.OwningContainer();
+        }
+      }
+
+      const uncle = cousin.OwningContainer();
+      if (uncle == null || !uncle.isContainer) {
+        continue;
+      }
+
+      if (!toCousin.has(uncle)) {
+        toCousin.set(uncle, new Map());
+      }
+      const uncleCousins = toCousin.get(uncle);
+      if (!uncleCousins.has(node)) {
+        uncleCousins.set(node, []);
+        if (!byUncle.has(uncle)) {
+          byUncle.set(uncle, []);
+        }
+        byUncle.get(uncle).push(node);
+      }
+      uncleCousins.get(node).push(cousin);
+    }
+  }
+
+  return {
+    byUncle,
+    toCousin,
+  };
+}
+
+export const GroupSheep = groupSheep;
+
+function checkAssignHerdsCancellation(context) {
+  const isCancelled = typeof context?.isCancelled === "function"
+    ? context.isCancelled()
+    : Boolean(context?.aborted);
+  if (isCancelled) {
+    throw new WorkCanceledError("AssignHerds");
+  }
+}
+
+function groupVessel(node) {
+  if (node == null) {
+    return null;
+  }
+  if (node.Cluster != null) {
+    return node.Cluster.Vessel;
+  }
+  if (node.Sequence != null) {
+    return node.Sequence.Vessel;
+  }
+  return node;
+}
+
+function descendantOf(node, ancestor) {
+  while (node != null) {
+    if (node === ancestor) {
+      return true;
+    }
+    if (node.Container != null) {
+      node = node.Container;
+    } else if (node.Cluster != null) {
+      node = node.Cluster.Vessel;
+    } else if (node.Sequence != null) {
+      node = node.Sequence.Vessel;
+    } else {
+      node = null;
+    }
+  }
+  return ancestor == null;
+}
