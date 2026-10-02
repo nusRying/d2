@@ -1,5 +1,8 @@
 # Slice 36: Herd Assignment Orchestration (`AssignHerds`)
 
+## Status
+Implemented — awaiting Slice 36 review
+
 ## Objective
 Port `proximity.AssignHerds` from Go to browser-safe JavaScript, matching Go TALA semantics for herd discovery, singleton filtering, uncle sorting, connected component partitioning, side eligibility and preference negotiation, mutual pair recording, viral orientation propagation, and cluster vessel arrangement adjustment.
 
@@ -28,20 +31,23 @@ Port `proximity.AssignHerds` from Go to browser-safe JavaScript, matching Go TAL
 - Go oracle program at `test/reference/go_assign_herds_oracle.go`
 - Reference fixture at `test/fixtures/go-assign-herds-reference.json` (40 scenarios)
 - Oracle replay test at `test/unit/assign-herds-oracle.test.js` (40 passing tests)
-- Unit tests at `test/unit/assign-herds.test.js` (11 passing tests)
+- Unit tests at `test/unit/assign-herds.test.js` (41 passing tests)
 - ADR at `docs/ADR-037-ASSIGN-HERDS.md`
 
-## Progress
+## Progress & Verification
 - [x] Implement `assignHerds` / `AssignHerds` in `src/proximity/herding.js`.
 - [x] Export `assignHerds` and `AssignHerds` from `src/proximity/index.js`.
 - [x] Create Go oracle program `test/reference/go_assign_herds_oracle.go`.
 - [x] Run Go oracle to generate `test/fixtures/go-assign-herds-reference.json` (40 scenarios).
-- [x] Implement JS oracle replay test `test/unit/assign-herds-oracle.test.js` (40 passing tests).
-- [x] Implement JS unit tests `test/unit/assign-herds.test.js` mirroring Go `herding_test.go` (11 passing tests).
-- [x] Create ADR at `docs/ADR-037-ASSIGN-HERDS.md`.
-- [x] Update `docs/MIGRATION.md` for Slice 36.
-- [x] Pass all JS tests (`npm test`: 1787 passed, 0 failed).
-- [x] Pass Go proximity tests (`go test -v ./d2layouts/d2talalayout/internal/proximity/...`: passed).
+- [x] Implement JS oracle replay test `test/unit/assign-herds-oracle.test.js` (40 / 40 PASS).
+- [x] Implement JS unit tests `test/unit/assign-herds.test.js` covering review gates and Go parity (41 / 41 PASS).
+- [x] Full JS test suite (`npm run test`): 1817 passed, 0 failed across 73 files.
+- [x] Go proximity test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/proximity/...`): PASS.
+- [x] Go layoutgraph test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/layoutgraph/...`): PASS.
+- [x] Go grouping test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/grouping/...`): PASS.
+- [x] Verification check (`git diff --check`): PASS.
+- [x] Create and synchronize ADR at `docs/ADR-037-ASSIGN-HERDS.md`.
+- [x] Update `docs/MIGRATION.md` for Slice 36 (`implemented, awaiting review`).
 
 ## Artifacts
 - `src/proximity/herding.js`

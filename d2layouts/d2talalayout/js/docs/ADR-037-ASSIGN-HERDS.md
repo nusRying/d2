@@ -179,7 +179,10 @@ func AssignHerds(ctx context.Context, graph *layoutgraph.Graph, root *layoutgrap
 ## Verification
 - Comprehensive 40-scenario Go oracle program `test/reference/go_assign_herds_oracle.go` run against pinned Go implementation.
 - Fixture generated at `test/fixtures/go-assign-herds-reference.json`.
-- Full JS oracle replay test at `test/unit/assign-herds-oracle.test.js` validating all 40 scenarios (100% pass).
-- Unit tests at `test/unit/assign-herds.test.js` reproducing Go `herding_test.go` test cases (`TestAssignHerdVirality`, `TestUseBothSides`, `TestRandomHerdVirality`, `TestAssignHerdsRejectsUnindexedUncleChildren`, `TestAssignHerdsReconcilesOverlappingGroups`, and cluster arrangement flips).
-- Full JS test suite: 1787 tests passing, 0 failures.
-- Full Go proximity test suite: all tests passing.
+- Full JS oracle replay test at `test/unit/assign-herds-oracle.test.js`: 40/40 PASS.
+- Direct JS unit tests at `test/unit/assign-herds.test.js`: 41/41 PASS.
+- Full JS test suite (`npm run test`): 1817 tests passing, 0 failures across 73 files.
+- Go proximity test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/proximity/...`): PASS.
+- Go layoutgraph test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/layoutgraph/...`): PASS.
+- Go grouping test suite (`go test -count=1 ./d2layouts/d2talalayout/internal/grouping/...`): PASS.
+- Validation check (`git diff --check`): PASS.
