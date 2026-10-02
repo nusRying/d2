@@ -1,5 +1,14 @@
 import { WorkCanceledError } from "../limits/work-guard.js";
-import { Orientation, orientationToString } from "../geometry/orientation.js";
+import {
+  Orientation,
+  orientationToString,
+  isHorizontal,
+  isVertical,
+  getOpposite,
+} from "../geometry/orientation.js";
+import { HerdAssignment } from "../graph/herd-assignment.js";
+import { sortNodesByID } from "../graph/node.js";
+import { ClusterArrangement } from "../graph/cluster.js";
 
 /**
  * GroupSheep groups root's children by their external uncle and records the
@@ -330,3 +339,183 @@ export function connectedHerds(context, herdOrder, herds) {
 
   return components;
 }
+
+/**
+ * assignHerds chooses a shared container side for siblings whose external
+ * cousins should remain mutually accessible during placement.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {any} context
+ * @param {import("../graph/graph.js").Graph} graph
+ * @param {import("../graph/node.js").Node} root
+ * @param {Array<import("../graph/edge-abduction.js").EdgeAbduction>} abductions
+ */
+export function assignHerds(context, graph, root, abductions) {
+  checkAssignHerdsCancellation(context);
+
+  const { byUncle: grouped, toCousin: cousins } = groupSheep(
+    context,
+    graph,
+    root,
+    abductions
+  );
+
+  const uncleOrder = [];
+
+  for (const [uncle, nodes] of grouped) {
+    if (nodes.length <= 1) {
+      grouped.delete(uncle);
+      cousins.delete(uncle);
+    } else {
+      uncleOrder.push(uncle);
+    }
+  }
+
+  sortNodesByID(uncleOrder);
+
+  const components = connectedHerds(context, uncleOrder, grouped);
+
+  let unbiasedSide = 0;
+
+  for (const component of components ?? []) {
+    let sides = [
+      Orientation.Top,
+      Orientation.Right,
+      Orientation.Bottom,
+      Orientation.Left,
+    ];
+
+    let preferred = Orientation.NONE;
+
+    for (const uncle of component.uncles) {
+      checkAssignHerdsCancellation(context);
+
+      const children = graph.Containers?.get(uncle) ?? [];
+
+      if (children.length === 0) {
+        throw new Error(
+          "layout invariant violated: herding uncle " +
+            uncle.DebugID() +
+            " has no children"
+        );
+      }
+
+      if (children[0].TopLeft == null) {
+        continue;
+      }
+
+      const nodes = grouped.get(uncle) ?? [];
+      const uncleCousins = cousins.get(uncle);
+
+      for (const node of nodes) {
+        for (const cousin of (uncleCousins?.get(node) ?? [])) {
+          const assignment = cousin.HerdAssignment;
+
+          if (assignment == null) {
+            continue;
+          }
+
+          const orientation = assignment.Orientation;
+
+          if (!isHorizontal(orientation) && !isVertical(orientation)) {
+            throw new Error(
+              "layout invariant violated: cousin " +
+                cousin.DebugID() +
+                " has an invalid herd orientation"
+            );
+          }
+
+          const bothSides = canUseBothSides(uncle, orientation);
+          const opposite = getOpposite(orientation);
+
+          sides = sides.filter(
+            (side) =>
+              side === opposite || (bothSides && side === orientation)
+          );
+
+          if (preferred === Orientation.NONE) {
+            preferred = opposite;
+
+            if (
+              bothSides &&
+              assignment.SameSidePairCount() <
+                assignment.OppositeSidePairCount()
+            ) {
+              preferred = orientation;
+            }
+          }
+        }
+      }
+    }
+
+    if (sides.length === 0) {
+      for (const node of component.nodes ?? []) {
+        node.HerdAssignment = null;
+      }
+      continue;
+    }
+
+    if (preferred === Orientation.NONE) {
+      preferred = sides[unbiasedSide % sides.length];
+      unbiasedSide++;
+    } else if (!sides.includes(preferred)) {
+      preferred = sides[0];
+    }
+
+    for (const node of component.nodes ?? []) {
+      node.HerdAssignment = new HerdAssignment();
+      node.HerdAssignment.Orientation = preferred;
+    }
+
+    for (const uncle of component.uncles) {
+      const children = graph.Containers?.get(uncle) ?? [];
+
+      if (children[0].TopLeft == null) {
+        continue;
+      }
+
+      for (const node of (grouped.get(uncle) ?? [])) {
+        for (const cousin of (cousins.get(uncle)?.get(node) ?? [])) {
+          if (cousin.HerdAssignment == null) {
+            continue;
+          }
+
+          if (preferred === cousin.HerdAssignment.Orientation) {
+            node.HerdAssignment.PairSameSide(uncle);
+            cousin.HerdAssignment.PairSameSide(uncle);
+          } else {
+            node.HerdAssignment.PairOppositeSide(uncle);
+            cousin.HerdAssignment.PairOppositeSide(uncle);
+          }
+        }
+      }
+    }
+  }
+
+  applyVirally(context, uncleOrder, grouped);
+
+  for (const uncle of uncleOrder) {
+    for (const node of (grouped.get(uncle) ?? [])) {
+      if (node.HerdAssignment != null && node.isClusterVessel) {
+        const cluster = graph.Clusters.get(node);
+
+        if (
+          (node.HerdAssignment.Orientation === Orientation.Top ||
+            node.HerdAssignment.Orientation === Orientation.Bottom) &&
+          cluster.Arrangement === ClusterArrangement.Column
+        ) {
+          cluster.Arrangement = ClusterArrangement.Row;
+        } else if (
+          (node.HerdAssignment.Orientation === Orientation.Left ||
+            node.HerdAssignment.Orientation === Orientation.Right) &&
+          cluster.Arrangement === ClusterArrangement.Row
+        ) {
+          cluster.Arrangement = ClusterArrangement.Column;
+        }
+      }
+    }
+  }
+}
+
+export const AssignHerds = assignHerds;

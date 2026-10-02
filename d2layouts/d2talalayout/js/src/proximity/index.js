@@ -8,4 +8,6 @@ export {
   CanUseBothSides,
   applyVirally,
   ApplyVirally,
+  assignHerds,
+  AssignHerds,
 } from "./herding.js";
