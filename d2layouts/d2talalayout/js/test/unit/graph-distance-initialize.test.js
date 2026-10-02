@@ -150,9 +150,6 @@ describe("initializeByGraphDistance Direct Tests", () => {
         this.checks++;
         return this.checks >= this.cancelAt;
       }
-      Err() {
-        return this.isCancelled() ? new Error("context canceled") : null;
-      }
     }
 
     const ctx = new CountingCtx(4);
@@ -163,6 +160,70 @@ describe("initializeByGraphDistance Direct Tests", () => {
     expect(nodes[0].TopLeft.X).toBe(999);
     expect(nodes[0].TopLeft.Y).toBe(888);
     // Other nodes must not be assigned
+    for (let i = 1; i < nodes.length; i++) {
+      expect(nodes[i].TopLeft).toBeNull();
+    }
+  });
+
+  it("throws exact 'context canceled' at assignment-stage cancellation and preserves geometry", () => {
+    const { g, nodes } = buildPathGraph(6);
+    const priorPoint = new Point(123, 456);
+    nodes[0].TopLeft = priorPoint;
+
+    class CountingCtx {
+      constructor(cancelAt) {
+        this.cancelAt = cancelAt;
+        this.checks = 0;
+      }
+      isCancelled() {
+        this.checks++;
+        return this.checks >= this.cancelAt;
+      }
+    }
+
+    // Cancel during cell assignment (after Floyd-Warshall + relaxation)
+    const ctx = new CountingCtx(56);
+    let caught = null;
+    try {
+      initializeByGraphDistance(ctx, g);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).not.toBeNull();
+    expect(caught.message).toBe("context canceled");
+    expect(nodes[0].TopLeft).toBe(priorPoint);
+    for (let i = 1; i < nodes.length; i++) {
+      expect(nodes[i].TopLeft).toBeNull();
+    }
+  });
+
+  it("throws exact 'context canceled' at final cancellation check and preserves geometry", () => {
+    const { g, nodes } = buildPathGraph(6);
+    const priorPoint = new Point(123, 456);
+    nodes[0].TopLeft = priorPoint;
+
+    class CountingCtx {
+      constructor(cancelAt) {
+        this.cancelAt = cancelAt;
+        this.checks = 0;
+      }
+      isCancelled() {
+        this.checks++;
+        return this.checks >= this.cancelAt;
+      }
+    }
+
+    // Cancel at final check (after all cells assigned, before commit)
+    const ctx = new CountingCtx(62);
+    let caught = null;
+    try {
+      initializeByGraphDistance(ctx, g);
+    } catch (err) {
+      caught = err;
+    }
+    expect(caught).not.toBeNull();
+    expect(caught.message).toBe("context canceled");
+    expect(nodes[0].TopLeft).toBe(priorPoint);
     for (let i = 1; i < nodes.length; i++) {
       expect(nodes[i].TopLeft).toBeNull();
     }

@@ -67,6 +67,9 @@ Slice 40 encompasses exactly seven dependency-closed placement foundation compon
 ## Design Decisions and Parity Highlights
 - **First Larger Migration Slice**: Moving beyond micro-slices allows closely coupled placement foundations to land together with full cross-verification while strictly preserving pinned Go observable behavior.
 - **Internal Placement Scope Only**: None of the new helpers are exported from `src/placement/index.js` or `src/index.js`. The public API boundary remains intact.
+- **Case-Sensitive Axis Arrangement**: `axisForArrangement` compares strictly against `ClusterArrangement.Column` ("Column"). Lowercase "column" or any other non-Column variant returns `LayoutAxis.Vertical`.
+- **Distinct Cancellation Semantics**: Graph-distance initialization cancellation occurring during topology preflight carries the preflight location prefix (`"GraphDistanceInitialization: context canceled"`), whereas subsequent direct cancellation checks during Floyd–Warshall, relaxation sweeps, ring search, and final commit return raw `"context canceled"` matching pinned Go `ctx.Err()`.
+- **Natural Malformed Failure**: In `clusterExternalConnectedNodes`, candidate endpoints are accessed directly (`candidate.TopLeft`) without synthetic nil-checks, naturally throwing `TypeError` when `CurrentFrom` or `CurrentTo` is null matching Go nil-pointer panics.
 - **Normalize Fixed-Node Oddity**: When any fixed node exists, `Normalize` unconditionally shifts all nodes and edge points by `(-1000, -1000)`. Composing `Normalize` followed by `Pad` restores node coordinates to their original positions, but edge points remain shifted by `-1000`.
 - **Graph-Distance Atomicity**: Cancellation or fallback during graph-distance stress initialization never leaves partially mutated node coordinates.
-- **Deterministic Numerical Parity**: Verified against real Go oracle output across 69 scenario groups, including exact coordinates for path, star, and cycle graphs.
+- **Deterministic Numerical Parity**: Verified against real Go oracle output across 79 scenario groups, including exact coordinates for path, star, and cycle graphs and comprehensive malformed cluster cases.

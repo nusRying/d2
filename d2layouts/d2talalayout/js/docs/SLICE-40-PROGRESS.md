@@ -35,18 +35,18 @@
 - **Go Reference Fixtures & Oracle**:
   - `test/reference/go_placement_foundations_oracle.go`
   - `test/fixtures/go-placement-foundations-reference.json`
-  - `test/unit/placement-foundations-oracle.test.js`: 69/69 PASS across 10 fixture groups.
+  - `test/unit/placement-foundations-oracle.test.js`: 79/79 PASS across 10 fixture groups (including lowercase arrangement and 13 cluster scenarios).
 - **Direct Unit Tests**:
-  - `test/unit/placement-axis.test.js`: 10/10 PASS
+  - `test/unit/placement-axis.test.js`: 10/10 PASS (including strict case-sensitive Column vs column/COLUMN)
   - `test/unit/placement-validation.test.js`: 17/17 PASS
-  - `test/unit/graph-distance-initialize.test.js`: 9/9 PASS
+  - `test/unit/graph-distance-initialize.test.js`: 11/11 PASS (including raw "context canceled" late cancellation and geometry preservation)
   - `test/unit/placement-stage-geometry.test.js`: 10/10 PASS
-  - `test/unit/cluster-connections.test.js`: 9/9 PASS
-  - Total Slice 40 unit + oracle tests: 124/124 PASS (285 expect() assertions).
+  - `test/unit/cluster-connections.test.js`: 12/12 PASS (including natural TypeError failures on null current endpoints and null abductions)
+  - Total Slice 40 unit + oracle tests: 139/139 PASS (304 expect() assertions).
 - **Targeted JS Regressions**:
-  - 871/871 PASS across 28 files (1917 expect() calls).
+  - 886/886 PASS across 28 files (1936 expect() calls).
 - **Full JS Suite (`npm run test`)**:
-  - 2211 pass, 0 fail, 49942 expect() calls across 85 files.
+  - 2226 pass, 0 fail, 49961 expect() calls across 85 files.
 - **Go Regression Packages**:
   - `d2layouts/d2talalayout/internal/placement`: PASS (including all 5 named tests)
   - `d2layouts/d2talalayout/internal/layoutgraph`: PASS

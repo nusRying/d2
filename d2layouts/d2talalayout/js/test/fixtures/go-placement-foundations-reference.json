@@ -30,6 +30,7 @@
     "\u003cempty\u003e": 2,
     "Column": 1,
     "Row": 2,
+    "column": 2,
     "unknown": 2
   },
   "direction": {
@@ -731,12 +732,54 @@
         "102"
       ]
     },
+    "both_originals_nil_ignored": {
+      "success": true,
+      "external": null
+    },
+    "both_originals_nonnil_ignored": {
+      "success": true,
+      "external": null
+    },
+    "case_a_nil_current_from": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "external": null
+    },
+    "case_b_nil_current_to": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "external": null
+    },
     "deduplication_first_seen_order": {
       "success": true,
       "external": [
         "102",
         "101"
       ]
+    },
+    "empty_cluster_nodes": {
+      "success": false,
+      "panic": "runtime error: index out of range [0] with length 0",
+      "external": null
+    },
+    "nil_edge_abduction": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "external": null
+    },
+    "nil_edge_abductions_slice": {
+      "success": true,
+      "external": null
+    },
+    "nil_first_cluster_node": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "external": null
+    },
+    "null_cluster": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "external": null
     },
     "unpositioned_ignored": {
       "success": true,

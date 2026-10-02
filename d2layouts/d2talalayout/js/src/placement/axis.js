@@ -67,7 +67,7 @@ export function oppositeAxis(axis) {
  * @returns {number}
  */
 export function axisForArrangement(arrangement) {
-  if (arrangement === ClusterArrangement.Column || arrangement === "column" || arrangement === "Column") {
+  if (arrangement === ClusterArrangement.Column) {
     return LayoutAxis.Horizontal;
   }
   return LayoutAxis.Vertical;

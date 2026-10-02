@@ -4,18 +4,20 @@ import { validateEngineGraph } from "../graph/topology-preflight.js";
 import { WorkCanceledError } from "../limits/work-guard.js";
 
 /**
- * Checks context cancellation matching Go's ctx.Err() semantics.
+ * Checks direct context cancellation matching Go's ctx.Err() semantics.
  *
  * @param {any} context
  */
-function checkCancellation(context) {
+function checkDirectCancellation(context) {
   if (context != null) {
     const isCancelled =
       typeof context.isCancelled === "function"
         ? context.isCancelled()
         : Boolean(context.aborted);
     if (isCancelled) {
-      throw new WorkCanceledError("GraphDistanceInitialization");
+      const error = new Error("context canceled");
+      error.name = "AbortError";
+      throw error;
     }
   }
 }
@@ -61,7 +63,7 @@ export function initializeByGraphDistance(context, g) {
 
   // Floyd-Warshall shortest paths with cancellation checked once per k iteration.
   for (let k = 0; k < n; k++) {
-    checkCancellation(context);
+    checkDirectCancellation(context);
     for (let i = 0; i < n; i++) {
       for (let j = 0; j < n; j++) {
         d[i][j] = Math.min(d[i][j], d[i][k] + d[k][j]);
@@ -87,7 +89,7 @@ export function initializeByGraphDistance(context, g) {
 
   // Pairwise relaxation of sum ((EuclideanDistance - graphDistance) / graphDistance)^2.
   for (let sweep = 0; sweep < 48; sweep++) {
-    checkCancellation(context);
+    checkDirectCancellation(context);
     const eta = 0.7 * Math.pow(0.02 / 0.7, sweep / 47);
     for (let p = 0; p < n; p++) {
       const i = (p + sweep) % n;
@@ -119,7 +121,7 @@ export function initializeByGraphDistance(context, g) {
   const points = new Array(n);
 
   for (const i of order) {
-    checkCancellation(context);
+    checkDirectCancellation(context);
     const tx = x[i] * 2 + n;
     const ty = y[i] * 2 + n;
     const cx = goRound(tx);
@@ -161,7 +163,7 @@ export function initializeByGraphDistance(context, g) {
   }
 
   // Final cancellation check before committing changes to nodes.
-  checkCancellation(context);
+  checkDirectCancellation(context);
 
   for (let i = 0; i < n; i++) {
     g.Nodes[i].TopLeft = points[i];

@@ -19,7 +19,7 @@ export function clusterExternalConnectedNodes(cluster) {
   for (const edgeAbduction of abductions) {
     if (edgeAbduction.OriginallyFrom == null && edgeAbduction.OriginallyTo != null) {
       const candidate = edgeAbduction.CurrentFrom;
-      if (candidate && candidate.TopLeft != null && candidate.Graph === currentGraph) {
+      if (candidate.TopLeft != null && candidate.Graph === currentGraph) {
         if (!set.has(candidate)) {
           externalNodes.push(candidate);
           set.add(candidate);
@@ -27,7 +27,7 @@ export function clusterExternalConnectedNodes(cluster) {
       }
     } else if (edgeAbduction.OriginallyTo == null && edgeAbduction.OriginallyFrom != null) {
       const candidate = edgeAbduction.CurrentTo;
-      if (candidate && candidate.TopLeft != null && candidate.Graph === currentGraph) {
+      if (candidate.TopLeft != null && candidate.Graph === currentGraph) {
         if (!set.has(candidate)) {
           externalNodes.push(candidate);
           set.add(candidate);

@@ -29,7 +29,7 @@ import { Edge } from '../../src/graph/edge.js';
 import { Cluster, ClusterArrangement } from '../../src/graph/cluster.js';
 import { EdgeAbduction } from '../../src/graph/edge-abduction.js';
 import { Point } from '../../src/geometry/point.js';
-import { WorkCanceledError } from '../../src/limits/work-guard.js';
+import { WorkCanceledError, isWorkCanceledError } from '../../src/limits/work-guard.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -430,7 +430,11 @@ describe('Placement Foundations Go Oracle Replay', () => {
         if (!exp.success) {
           assert.throws(
             () => initializeByGraphDistance(ctx, g),
-            (err) => err instanceof WorkCanceledError
+            (err) => {
+              assert.equal(err.message, exp.error, `${name}: error message mismatch`);
+              assert.ok(isWorkCanceledError(err), `${name}: should be recognized as work cancellation`);
+              return true;
+            }
           );
           return;
         }
@@ -647,6 +651,97 @@ describe('Placement Foundations Go Oracle Replay', () => {
             ];
             break;
           }
+          case 'null_cluster':
+            cluster = null;
+            break;
+          case 'empty_cluster_nodes': {
+            const dummy = new Node(1n);
+            cluster = new Cluster(dummy);
+            cluster.Nodes = [];
+            break;
+          }
+          case 'nil_first_cluster_node': {
+            const dummy = new Node(1n);
+            cluster = new Cluster(dummy);
+            cluster.Nodes = [null];
+            break;
+          }
+          case 'nil_edge_abduction': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            cluster.EdgeAbductions = [null];
+            break;
+          }
+          case 'case_a_nil_current_from': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            const dummy = new Node(999n, 10, 10);
+            cluster.EdgeAbductions = [
+              new EdgeAbduction({ OriginallyFrom: null, OriginallyTo: dummy, CurrentFrom: null }),
+            ];
+            break;
+          }
+          case 'case_b_nil_current_to': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            const dummy = new Node(999n, 10, 10);
+            cluster.EdgeAbductions = [
+              new EdgeAbduction({ OriginallyFrom: dummy, OriginallyTo: null, CurrentTo: null }),
+            ];
+            break;
+          }
+          case 'nil_edge_abductions_slice': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            cluster.EdgeAbductions = null;
+            break;
+          }
+          case 'both_originals_nil_ignored': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            const ext = new Node(101n, 10, 10);
+            ext.TopLeft = new Point(0, 0);
+            g.addNode(ext);
+            cluster.EdgeAbductions = [
+              new EdgeAbduction({ OriginallyFrom: null, OriginallyTo: null, CurrentFrom: ext, CurrentTo: ext }),
+            ];
+            break;
+          }
+          case 'both_originals_nonnil_ignored': {
+            const g = new Graph();
+            const cNode = new Node(1n, 10, 10);
+            g.addNode(cNode);
+            cluster = new Cluster(cNode);
+            cluster.Nodes = [cNode];
+            const ext = new Node(101n, 10, 10);
+            ext.TopLeft = new Point(0, 0);
+            g.addNode(ext);
+            const dummy = new Node(999n, 10, 10);
+            cluster.EdgeAbductions = [
+              new EdgeAbduction({ OriginallyFrom: dummy, OriginallyTo: dummy, CurrentFrom: ext, CurrentTo: ext }),
+            ];
+            break;
+          }
+        }
+
+        if (!exp.success) {
+          assert.throws(() => clusterExternalConnectedNodes(cluster), TypeError);
+          return;
         }
 
         const nodes = clusterExternalConnectedNodes(cluster);

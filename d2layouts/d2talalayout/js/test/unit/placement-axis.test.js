@@ -55,6 +55,8 @@ describe('Placement Axis and Direction Primitives', () => {
   it('axisForArrangement returns Horizontal for Column, Vertical for everything else', () => {
     assert.equal(axisForArrangement(ClusterArrangement.Column), LayoutAxis.Horizontal);
     assert.equal(axisForArrangement('Column'), LayoutAxis.Horizontal);
+    assert.equal(axisForArrangement('column'), LayoutAxis.Vertical);
+    assert.equal(axisForArrangement('COLUMN'), LayoutAxis.Vertical);
     assert.equal(axisForArrangement(ClusterArrangement.Row), LayoutAxis.Vertical);
     assert.equal(axisForArrangement('Row'), LayoutAxis.Vertical);
     assert.equal(axisForArrangement(''), LayoutAxis.Vertical);

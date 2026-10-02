@@ -210,6 +210,45 @@ describe("clusterExternalConnectedNodes Direct Tests", () => {
     expect(() => clusterExternalConnectedNodes(emptyCluster)).toThrow(TypeError);
   });
 
+  it("throws TypeError when Case A edge abduction has null CurrentFrom", () => {
+    const g = new Graph();
+    const clusterNode = new Node(10n);
+    clusterNode.Graph = g;
+
+    const cluster = new Node(100n);
+    cluster.Nodes = [clusterNode];
+    const dummy = new Node(999n);
+    cluster.EdgeAbductions = [
+      { OriginallyFrom: null, OriginallyTo: dummy, CurrentFrom: null, CurrentTo: clusterNode },
+    ];
+    expect(() => clusterExternalConnectedNodes(cluster)).toThrow(TypeError);
+  });
+
+  it("throws TypeError when Case B edge abduction has null CurrentTo", () => {
+    const g = new Graph();
+    const clusterNode = new Node(10n);
+    clusterNode.Graph = g;
+
+    const cluster = new Node(100n);
+    cluster.Nodes = [clusterNode];
+    const dummy = new Node(999n);
+    cluster.EdgeAbductions = [
+      { OriginallyFrom: dummy, OriginallyTo: null, CurrentFrom: clusterNode, CurrentTo: null },
+    ];
+    expect(() => clusterExternalConnectedNodes(cluster)).toThrow(TypeError);
+  });
+
+  it("throws TypeError when an edgeAbduction element is null", () => {
+    const g = new Graph();
+    const clusterNode = new Node(10n);
+    clusterNode.Graph = g;
+
+    const cluster = new Node(100n);
+    cluster.Nodes = [clusterNode];
+    cluster.EdgeAbductions = [null];
+    expect(() => clusterExternalConnectedNodes(cluster)).toThrow(TypeError);
+  });
+
   it("exposes ClusterExternalConnectedNodes as identical alias", () => {
     expect(ClusterExternalConnectedNodes).toBe(clusterExternalConnectedNodes);
   });

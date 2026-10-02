@@ -133,6 +133,7 @@ func TestGeneratePlacementFoundationsOracle(t *testing.T) {
 		layoutgraph.ClusterArrangement(""),
 		layoutgraph.Row,
 		layoutgraph.Column,
+		layoutgraph.ClusterArrangement("column"),
 		layoutgraph.ClusterArrangement("unknown"),
 	} {
 		name := string(arr)
@@ -718,6 +719,109 @@ func TestGeneratePlacementFoundationsOracle(t *testing.T) {
 		ab := &layoutgraph.EdgeAbduction{OriginallyFrom: nil, OriginallyTo: dummy, CurrentFrom: extUnpos}
 		cluster.EdgeAbductions = []*layoutgraph.EdgeAbduction{ab}
 		return cluster
+	})
+
+	runClusterConn("null_cluster", func() *layoutgraph.Cluster {
+		return nil
+	})
+
+	runClusterConn("empty_cluster_nodes", func() *layoutgraph.Cluster {
+		return &layoutgraph.Cluster{Nodes: []*layoutgraph.Node{}}
+	})
+
+	runClusterConn("nil_first_cluster_node", func() *layoutgraph.Cluster {
+		return &layoutgraph.Cluster{Nodes: []*layoutgraph.Node{nil}}
+	})
+
+	runClusterConn("nil_edge_abduction", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: []*layoutgraph.EdgeAbduction{nil},
+		}
+	})
+
+	runClusterConn("case_a_nil_current_from", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		dummy := layoutgraph.NewNode(999, 10, 10)
+		ab := &layoutgraph.EdgeAbduction{
+			OriginallyFrom: nil,
+			OriginallyTo:   dummy,
+			CurrentFrom:    nil,
+		}
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: []*layoutgraph.EdgeAbduction{ab},
+		}
+	})
+
+	runClusterConn("case_b_nil_current_to", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		dummy := layoutgraph.NewNode(999, 10, 10)
+		ab := &layoutgraph.EdgeAbduction{
+			OriginallyFrom: dummy,
+			OriginallyTo:   nil,
+			CurrentTo:      nil,
+		}
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: []*layoutgraph.EdgeAbduction{ab},
+		}
+	})
+
+	runClusterConn("nil_edge_abductions_slice", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: nil,
+		}
+	})
+
+	runClusterConn("both_originals_nil_ignored", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		ext := layoutgraph.NewNode(101, 10, 10)
+		ext.TopLeft = geo.NewPoint(0, 0)
+		g.AddNode(ext)
+		ab := &layoutgraph.EdgeAbduction{
+			OriginallyFrom: nil,
+			OriginallyTo:   nil,
+			CurrentFrom:    ext,
+			CurrentTo:      ext,
+		}
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: []*layoutgraph.EdgeAbduction{ab},
+		}
+	})
+
+	runClusterConn("both_originals_nonnil_ignored", func() *layoutgraph.Cluster {
+		g := layoutgraph.NewGraph()
+		cNode := layoutgraph.NewNode(1, 10, 10)
+		g.AddNode(cNode)
+		ext := layoutgraph.NewNode(101, 10, 10)
+		ext.TopLeft = geo.NewPoint(0, 0)
+		g.AddNode(ext)
+		dummy := layoutgraph.NewNode(999, 10, 10)
+		ab := &layoutgraph.EdgeAbduction{
+			OriginallyFrom: dummy,
+			OriginallyTo:   dummy,
+			CurrentFrom:    ext,
+			CurrentTo:      ext,
+		}
+		return &layoutgraph.Cluster{
+			Nodes:          []*layoutgraph.Node{cNode},
+			EdgeAbductions: []*layoutgraph.EdgeAbduction{ab},
+		}
 	})
 
 	// WRITE OUTPUT TO FIXTURE
