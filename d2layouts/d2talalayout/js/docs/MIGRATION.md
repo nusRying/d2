@@ -38,7 +38,8 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 22 — complete
 * Slice 23 — complete
 * Slice 24 — complete
-* Slice 25 — RDFS Parity & Graph SyncClusters — implemented, awaiting review
+* Slice 25 — complete
+* Slice 26 — implemented, awaiting review
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:

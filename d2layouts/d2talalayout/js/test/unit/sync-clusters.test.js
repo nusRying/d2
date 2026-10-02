@@ -24,7 +24,7 @@ describe("Slice 25 — RDFS Traversal & Graph SyncClusters Unit Tests", () => {
       const n = new Node(1, 10, 10);
 
       // Graph future orchestration methods
-      expect(g.SyncNestedGeometry).toBeUndefined();
+
       expect(g.syncNested).toBeUndefined();
       expect(g.binPackSyncClusters).toBeUndefined();
       expect(g.Cleanup).toBeUndefined();

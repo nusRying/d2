@@ -372,6 +372,35 @@ export class Graph {
     this.syncClusters();
   }
 
+  syncNestedGeometry() {
+    for (const node of this.Nodes) {
+      if (node.isContainer) {
+        node.positionContainerChildren(true);
+      }
+      if (node.isClusterVessel) {
+        const c = this.Clusters.get(node);
+        c.SyncGeometry();
+        for (const cn of c.Nodes) {
+          if (cn.isContainer) {
+            const padding = this.containerPadding(cn, true);
+            const children = this.Containers.get(cn) ?? [];
+            for (const child of children) {
+              child.moveNodeWithChildren(padding.left, padding.top);
+            }
+          }
+        }
+      }
+      const seq = this.Sequences.get(node);
+      if (seq !== undefined) {
+        seq.SyncGeometry();
+      }
+    }
+  }
+
+  SyncNestedGeometry() {
+    this.syncNestedGeometry();
+  }
+
   /**
    * allDescendantNodesGuarded collects every descendant node under `node`,
    * optionally including cluster member nodes. Iterative, never recursive.

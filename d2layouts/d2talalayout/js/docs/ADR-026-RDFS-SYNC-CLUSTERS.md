@@ -1,7 +1,7 @@
 # ADR-026: RDFS Traversal Parity & Graph SyncClusters
 
 ## Status
-Implemented — awaiting Slice 25 review
+Accepted
 
 ## Context
 In D2's layout engine (specifically TALA), tree structures, cluster groups, sequence groups, and containers form a hierarchical layout topology. Two fundamental operations govern this hierarchy:
