@@ -1,0 +1,341 @@
+{
+  "scenarios": {
+    "AA_duplicate_child_invariant": {
+      "success": false,
+      "error": "layout invariant violated: container has duplicate child dupNode",
+      "checks": 3,
+      "ordered": null
+    },
+    "AB_nil_edge_abduction_invariant": {
+      "success": false,
+      "error": "layout invariant violated: child ordering has a nil edge abduction",
+      "checks": 3,
+      "ordered": null
+    },
+    "AC_cancellation_before_work": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 1,
+      "ordered": null
+    },
+    "AD_cancellation_during_initial_node_scan": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 2,
+      "ordered": null
+    },
+    "AE_cancellation_wins_over_nil_child": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 2,
+      "ordered": null
+    },
+    "AF_cancellation_during_abduction_scan": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 3,
+      "ordered": null
+    },
+    "AG_cancellation_wins_over_nil_abduction": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 3,
+      "ordered": null
+    },
+    "AH_cancellation_during_isolated_scan": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 3,
+      "ordered": null
+    },
+    "AI_cancellation_at_outer_component_check": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 6,
+      "ordered": null
+    },
+    "AJ_cancellation_on_first_bfs_queue_item": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 7,
+      "ordered": null
+    },
+    "AK_cancellation_on_later_bfs_queue_item": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 8,
+      "ordered": null
+    },
+    "AL_cancellation_on_duplicate_queue_item": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 9,
+      "ordered": null
+    },
+    "AM_cancellation_at_final_check": {
+      "success": false,
+      "error": "PlaceChildrenOrder: context canceled",
+      "checks": 10,
+      "ordered": null
+    },
+    "AN_empty_nodes_exact_checks": {
+      "success": true,
+      "checks": 2,
+      "ordered": []
+    },
+    "AO_one_isolated_node_exact_checks": {
+      "success": true,
+      "checks": 4,
+      "ordered": [
+        "a"
+      ]
+    },
+    "AP_connected_two_node_exact_checks": {
+      "success": true,
+      "checks": 11,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "AQ_repeated_invocation_deterministic": {
+      "success": true,
+      "checks": 16,
+      "ordered": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "AR_input_arrays_unchanged": {
+      "success": true,
+      "checks": 11,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "AS_metadata_fields_do_not_affect_ordering": {
+      "success": true,
+      "checks": 11,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "A_nil_nodes_nil_abductions": {
+      "success": true,
+      "checks": 2,
+      "ordered": []
+    },
+    "B_empty_nodes": {
+      "success": true,
+      "checks": 2,
+      "ordered": []
+    },
+    "C_one_isolated_child": {
+      "success": true,
+      "checks": 4,
+      "ordered": [
+        "a"
+      ]
+    },
+    "D_multiple_isolated_children": {
+      "success": true,
+      "checks": 8,
+      "ordered": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "E_upstream_fixture": {
+      "success": true,
+      "checks": 19,
+      "ordered": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    },
+    "F_isolated_child_last": {
+      "success": true,
+      "checks": 13,
+      "ordered": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "G_two_node_connected": {
+      "success": true,
+      "checks": 11,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "H_three_node_chain": {
+      "success": true,
+      "checks": 16,
+      "ordered": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "I_four_node_chain": {
+      "success": true,
+      "checks": 21,
+      "ordered": [
+        "a",
+        "b",
+        "c",
+        "d"
+      ]
+    },
+    "J_star_graph_abduction_order_1": {
+      "success": true,
+      "checks": 21,
+      "ordered": [
+        "leaf1",
+        "center",
+        "leaf2",
+        "leaf3"
+      ]
+    },
+    "K_star_graph_abduction_order_2": {
+      "success": true,
+      "checks": 21,
+      "ordered": [
+        "leaf1",
+        "center",
+        "leaf3",
+        "leaf2"
+      ]
+    },
+    "L_cycle_equal_degrees": {
+      "success": true,
+      "checks": 19,
+      "ordered": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "M_multiple_connected_components_degree": {
+      "success": true,
+      "checks": 28,
+      "ordered": [
+        "e1",
+        "e2",
+        "t1",
+        "t2",
+        "t3"
+      ]
+    },
+    "N_component_degree_tie": {
+      "success": true,
+      "checks": 20,
+      "ordered": [
+        "b1",
+        "b2",
+        "a1",
+        "a2"
+      ]
+    },
+    "O_duplicate_abductions_degree": {
+      "success": true,
+      "checks": 17,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "P_duplicate_abductions_output_stable": {
+      "success": true,
+      "checks": 14,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "Q_self_loop_not_isolated": {
+      "success": true,
+      "checks": 8,
+      "ordered": [
+        "a"
+      ]
+    },
+    "R_self_loop_plus_isolated": {
+      "success": true,
+      "checks": 10,
+      "ordered": [
+        "isoNode",
+        "loopNode"
+      ]
+    },
+    "S_external_endpoint_ignored": {
+      "success": true,
+      "checks": 7,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "T_current_from_nil_ignored": {
+      "success": true,
+      "checks": 5,
+      "ordered": [
+        "a"
+      ]
+    },
+    "U_current_to_nil_ignored": {
+      "success": true,
+      "checks": 5,
+      "ordered": [
+        "a"
+      ]
+    },
+    "V_both_endpoints_nil_ignored": {
+      "success": true,
+      "checks": 5,
+      "ordered": [
+        "a"
+      ]
+    },
+    "W_reversed_abduction_symmetric": {
+      "success": true,
+      "checks": 11,
+      "ordered": [
+        "a",
+        "b"
+      ]
+    },
+    "X_distinct_nodes_same_id": {
+      "success": true,
+      "checks": 6,
+      "ordered": [
+        "a1",
+        "a2"
+      ]
+    },
+    "Y_scrambled_ids_not_id_sorted": {
+      "success": true,
+      "checks": 10,
+      "ordered": [
+        "n99",
+        "n10",
+        "n50",
+        "n1"
+      ]
+    },
+    "Z_nil_child_invariant": {
+      "success": false,
+      "error": "layout invariant violated: container has a nil child",
+      "checks": 3,
+      "ordered": null
+    }
+  }
+}
