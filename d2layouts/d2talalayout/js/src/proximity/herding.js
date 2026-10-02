@@ -242,3 +242,91 @@ export function applyVirally(context, herdOrder, herds) {
 }
 
 export const ApplyVirally = applyVirally;
+
+function herdNodes(herds, uncle) {
+  if (herds == null) {
+    return [];
+  }
+  return herds.get(uncle) ?? [];
+}
+
+/**
+ * connectedHerds joins groups that share a node, retaining deterministic order.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {any} context
+ * @param {Array<import("../graph/node.js").Node>} herdOrder
+ * @param {Map<import("../graph/node.js").Node, Array<import("../graph/node.js").Node>>} herds
+ * @returns {Array<{ nodes: Array<import("../graph/node.js").Node>|null, uncles: Array<import("../graph/node.js").Node> }>|null}
+ */
+export function connectedHerds(context, herdOrder, herds) {
+  const order = herdOrder ?? [];
+
+  const byNode = new Map();
+
+  for (const uncle of order) {
+    const nodes = herdNodes(herds, uncle);
+
+    for (const node of nodes) {
+      let related = byNode.get(node);
+      if (related == null) {
+        related = [];
+        byNode.set(node, related);
+      }
+      related.push(uncle);
+    }
+  }
+
+  const seenUncles = new Set();
+  const seenNodes = new Set();
+
+  let components = null;
+
+  for (const uncle of order) {
+    if (seenUncles.has(uncle)) {
+      continue;
+    }
+
+    const component = {
+      nodes: null,
+      uncles: [uncle],
+    };
+
+    seenUncles.add(uncle);
+
+    for (let i = 0; i < component.uncles.length; i++) {
+      checkAssignHerdsCancellation(context);
+
+      const nodes = herdNodes(herds, component.uncles[i]);
+
+      for (const node of nodes) {
+        if (seenNodes.has(node)) {
+          continue;
+        }
+
+        seenNodes.add(node);
+
+        if (component.nodes == null) {
+          component.nodes = [];
+        }
+        component.nodes.push(node);
+
+        const relatedUncles = byNode.get(node) ?? [];
+        for (const related of relatedUncles) {
+          if (!seenUncles.has(related)) {
+            seenUncles.add(related);
+            component.uncles.push(related);
+          }
+        }
+      }
+    }
+
+    if (components == null) {
+      components = [];
+    }
+    components.push(component);
+  }
+
+  return components;
+}

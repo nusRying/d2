@@ -1,7 +1,7 @@
 # ADR-035: Viral Herd Orientation Propagation (`ApplyVirally`) (Slice 34)
 
 ## Status
-Implemented — awaiting Slice 34 review
+Accepted
 
 ## Context
 In TALA's proximity pipeline, `proximity.ApplyVirally(ctx, herdOrder, herds)` propagates known herd orientations across uncle-grouped sibling sets until reaching fixed-point stability. It ensures that related nodes across shared uncle groupings adopt matching orientations, detecting conflicting orientations with precise invariant error reporting.
