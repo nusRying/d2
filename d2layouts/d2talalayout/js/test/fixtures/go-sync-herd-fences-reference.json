@@ -1,0 +1,1198 @@
+{
+  "scenarios": {
+    "AA_assignment_pair_counts_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 30,
+          "sameSidePairCount": 2,
+          "oppositeSidePairCount": 1,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "AB_repeated_invocation_after_geometry_change": {
+      "success": true,
+      "graphTL": {
+        "x": 100,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 110,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 110,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 100,
+            "y": 30
+          }
+        }
+      }
+    },
+    "AC_unplaced_node_all_unassigned": {
+      "success": true,
+      "nodeStates": {
+        "placed": {
+          "id": 2,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AD_unplaced_node_fixed_cardinal": {
+      "success": true,
+      "nodeStates": {
+        "fixed": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 333,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": true,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AE_unplaced_node_diagonal_assignment": {
+      "success": true,
+      "nodeStates": {
+        "diag": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "TopLeft",
+          "orientationInt": 0,
+          "val": 444,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AF_unplaced_node_none_assignment": {
+      "success": true,
+      "nodeStates": {
+        "noneNode": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "",
+          "orientationInt": 8,
+          "val": 777,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AG_unplaced_graph_eligible_top_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "nodeStates": {
+        "top": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 555,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AH_unplaced_graph_eligible_bottom_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "nodeStates": {
+        "bottom": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "val": 666,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AI_unplaced_graph_eligible_left_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "nodeStates": {
+        "left": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 777,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AJ_unplaced_graph_eligible_right_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "nodeStates": {
+        "right": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 888,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "unplaced": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false
+        }
+      }
+    },
+    "AK_graph_nodes_contains_nil": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 999,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "AL_multiple_assigned_nodes_identity_and_pairs": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 60,
+        "y": 70
+      },
+      "nodeStates": {
+        "n1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 30,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "n2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "val": 70,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 1,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 60
+          }
+        }
+      }
+    },
+    "AM_edge_label_graph_bound_plus_opposite_orientation": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 40
+      },
+      "graphBR": {
+        "x": 120,
+        "y": 80
+      },
+      "nodeStates": {
+        "left": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 20,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 50
+          }
+        },
+        "right": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 120,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 80,
+            "y": 50
+          }
+        }
+      }
+    },
+    "AN_repeated_call_stable_when_geometry_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 30,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "A_empty_graph": {
+      "success": true,
+      "graphTL": {
+        "x": "-Infinity",
+        "y": "-Infinity"
+      },
+      "graphBR": {
+        "x": "Infinity",
+        "y": "Infinity"
+      }
+    },
+    "B_nil_graph": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "C_one_placed_node_no_assignment": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "D_one_top_assignment": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 30,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "E_one_bottom_assignment": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "val": 40,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "F_one_left_assignment": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 20,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "G_one_right_assignment": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 30,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "H_mixed_cardinal_nodes": {
+      "success": true,
+      "graphTL": {
+        "x": 10,
+        "y": 20
+      },
+      "graphBR": {
+        "x": 130,
+        "y": 110
+      },
+      "nodeStates": {
+        "bottom": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "val": 110,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 100
+          }
+        },
+        "left": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 10,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 10,
+            "y": 50
+          }
+        },
+        "right": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 130,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 120,
+            "y": 50
+          }
+        },
+        "top": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 20,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 20
+          }
+        }
+      }
+    },
+    "I_multiple_right_assigned_nodes": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 70,
+        "y": 60
+      },
+      "nodeStates": {
+        "r1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 70,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        },
+        "r2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 70,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 40
+          }
+        }
+      }
+    },
+    "J_existing_nonzero_val_overwritten": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 30,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "K_assigned_fixed_top_node_skipped": {
+      "success": true,
+      "graphTL": {
+        "x": 0,
+        "y": 0
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 777,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": true,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "L_assigned_fixed_right_node_skipped": {
+      "success": true,
+      "graphTL": {
+        "x": 0,
+        "y": 0
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": -888,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": true,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "M_fixed_node_influences_other_fence": {
+      "success": true,
+      "graphTL": {
+        "x": 0,
+        "y": 0
+      },
+      "graphBR": {
+        "x": 60,
+        "y": 60
+      },
+      "nodeStates": {
+        "fixed": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 111,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": true,
+          "topLeft": {
+            "x": 10,
+            "y": 10
+          }
+        },
+        "nonFixed": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 50
+          }
+        }
+      }
+    },
+    "N_unassigned_faraway_node_affects_bounds": {
+      "success": true,
+      "graphTL": {
+        "x": 0,
+        "y": 0
+      },
+      "graphBR": {
+        "x": 110,
+        "y": 110
+      },
+      "nodeStates": {
+        "assigned": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 100,
+            "y": 100
+          }
+        },
+        "unassigned": {
+          "id": 1,
+          "hasAssignment": false,
+          "orientation": "",
+          "orientationInt": 0,
+          "val": 0,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 0,
+            "y": 0
+          }
+        }
+      }
+    },
+    "O_routed_edge_extends_left": {
+      "success": true,
+      "graphTL": {
+        "x": 10,
+        "y": 50
+      },
+      "graphBR": {
+        "x": 60,
+        "y": 60
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "val": 10,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 50
+          }
+        }
+      }
+    },
+    "P_routed_edge_extends_right": {
+      "success": true,
+      "graphTL": {
+        "x": 50,
+        "y": 50
+      },
+      "graphBR": {
+        "x": 200,
+        "y": 60
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 200,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 50
+          }
+        }
+      }
+    },
+    "Q_routed_edge_extends_top_bottom": {
+      "success": true,
+      "graphTL": {
+        "x": 50,
+        "y": 10
+      },
+      "graphBR": {
+        "x": 60,
+        "y": 150
+      },
+      "nodeStates": {
+        "bottom": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "val": 150,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 60
+          }
+        },
+        "top": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 10,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 50
+          }
+        }
+      }
+    },
+    "R_edge_label_expands_bound": {
+      "success": true,
+      "graphTL": {
+        "x": 25,
+        "y": 45
+      },
+      "graphBR": {
+        "x": 105,
+        "y": 75
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 105,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50,
+            "y": 50
+          }
+        }
+      }
+    },
+    "S_fractional_geometry_rounded": {
+      "success": true,
+      "graphTL": {
+        "x": 10,
+        "y": 21
+      },
+      "graphBR": {
+        "x": 60,
+        "y": 60
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "val": 21,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 10.4,
+            "y": 20.6
+          }
+        },
+        "r": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "val": 60,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 50.3,
+            "y": 50
+          }
+        }
+      }
+    },
+    "T_top_left_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "TopLeft",
+          "orientationInt": 0,
+          "val": 123.4,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "U_top_right_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "TopRight",
+          "orientationInt": 1,
+          "val": 234.5,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "V_bottom_left_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "BottomLeft",
+          "orientationInt": 2,
+          "val": 345.6,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "W_bottom_right_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "BottomRight",
+          "orientationInt": 3,
+          "val": 456.7,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "X_none_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "",
+          "orientationInt": 8,
+          "val": 567.8,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "Y_unknown_orientation_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "",
+          "orientationInt": 999,
+          "val": 678.9,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    },
+    "Z_fresh_herd_assignment_top_left_unchanged": {
+      "success": true,
+      "graphTL": {
+        "x": 20,
+        "y": 30
+      },
+      "graphBR": {
+        "x": 30,
+        "y": 40
+      },
+      "nodeStates": {
+        "n": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "TopLeft",
+          "orientationInt": 0,
+          "val": 99,
+          "sameSidePairCount": 0,
+          "oppositeSidePairCount": 0,
+          "hasFixedTopLeft": false,
+          "topLeft": {
+            "x": 20,
+            "y": 30
+          }
+        }
+      }
+    }
+  }
+}

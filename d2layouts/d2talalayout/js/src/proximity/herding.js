@@ -519,3 +519,41 @@ export function assignHerds(context, graph, root, abductions) {
 }
 
 export const AssignHerds = assignHerds;
+
+/**
+ * syncHerdFences updates the coordinate constraint for every assigned herd to
+ * the current graph boundary.
+ *
+ * Pinned reference: d2layouts/d2talalayout/internal/proximity/herding.go
+ *
+ * @param {import("../graph/graph.js").Graph} graph
+ */
+export function syncHerdFences(graph) {
+  const [topLeft, bottomRight] = graph.BoundingBox();
+
+  for (const node of graph.Nodes) {
+    if (node.HerdAssignment == null || node.FixedTopLeft != null) {
+      continue;
+    }
+
+    switch (node.HerdAssignment.Orientation) {
+      case Orientation.Top:
+        node.HerdAssignment.Val = topLeft.Y;
+        break;
+
+      case Orientation.Bottom:
+        node.HerdAssignment.Val = bottomRight.Y;
+        break;
+
+      case Orientation.Left:
+        node.HerdAssignment.Val = topLeft.X;
+        break;
+
+      case Orientation.Right:
+        node.HerdAssignment.Val = bottomRight.X;
+        break;
+    }
+  }
+}
+
+export const SyncHerdFences = syncHerdFences;

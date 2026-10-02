@@ -1,7 +1,7 @@
 # ADR-038: Graph & Edge Bounding Box Kernel (Slice 37)
 
 ## Status
-Implemented — awaiting Slice 37 review
+Accepted
 
 ## Context
 In TALA's layout pipeline, `graph.BoundingBox()` computes the bounding box encompassing all nodes and routed edges. It is a critical kernel consumed by diagram framing, coordinate normalization, and hierarchy containment.

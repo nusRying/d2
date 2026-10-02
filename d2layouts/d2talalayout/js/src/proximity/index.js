@@ -10,4 +10,6 @@ export {
   ApplyVirally,
   assignHerds,
   AssignHerds,
+  syncHerdFences,
+  SyncHerdFences,
 } from "./herding.js";
