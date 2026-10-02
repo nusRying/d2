@@ -32,6 +32,7 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 * Slice 15 — complete
 * Slice 16 — complete
 * Slice 17 — complete
+* Slice 18 — complete
 * Slice 19 — complete
 * Slice 20 — complete
 * Slice 21 — complete

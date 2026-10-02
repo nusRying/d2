@@ -11,11 +11,19 @@
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "50",
           "height": "50"
         },
@@ -41,11 +49,19 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "50",
           "height": "50"
         },
@@ -88,17 +104,51 @@
         }
       }
     },
+    "cluster_vessel_nil_nodes": {
+      "name": "cluster_vessel_nil_nodes",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        }
+      }
+    },
     "cluster_vessel_only_node": {
       "name": "cluster_vessel_only_node",
       "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         }
@@ -106,11 +156,19 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         }
@@ -118,11 +176,14 @@
     },
     "container_missing_child_list_key": {
       "name": "container_missing_child_list_key",
-      "panicked": true,
-      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         }
@@ -130,6 +191,10 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         }
@@ -137,11 +202,14 @@
     },
     "container_only_node": {
       "name": "container_only_node",
-      "panicked": true,
-      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
@@ -158,14 +226,18 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
           "topLeft": {
-            "x": "10",
-            "y": "10"
+            "x": "60",
+            "y": "60"
           },
           "width": "20",
           "height": "20"
@@ -196,11 +268,14 @@
     },
     "multi_role_node": {
       "name": "multi_role_node",
-      "panicked": true,
-      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
@@ -215,11 +290,19 @@
         },
         "3": {
           "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
         "4": {
           "id": "4",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "30",
           "height": "30"
         }
@@ -227,25 +310,37 @@
       "nodesAfter": {
         "1": {
           "id": "1",
-          "width": "10",
-          "height": "10"
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "30",
+          "height": "30"
         },
         "2": {
           "id": "2",
           "topLeft": {
-            "x": "10",
-            "y": "10"
+            "x": "60",
+            "y": "60"
           },
           "width": "20",
           "height": "20"
         },
         "3": {
           "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
         "4": {
           "id": "4",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "30",
           "height": "30"
         }
@@ -257,11 +352,19 @@
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
@@ -276,6 +379,10 @@
         },
         "4": {
           "id": "4",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
@@ -292,11 +399,19 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
@@ -311,6 +426,10 @@
         },
         "4": {
           "id": "4",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
@@ -327,11 +446,14 @@
     },
     "multiple_graph_nodes_source_order": {
       "name": "multiple_graph_nodes_source_order",
-      "panicked": true,
-      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
@@ -346,11 +468,19 @@
         },
         "12": {
           "id": "12",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         }
@@ -358,25 +488,37 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         },
         "11": {
           "id": "11",
           "topLeft": {
-            "x": "10",
-            "y": "10"
+            "x": "60",
+            "y": "60"
           },
           "width": "10",
           "height": "10"
         },
         "12": {
           "id": "12",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "20",
           "height": "20"
         }
@@ -393,6 +535,10 @@
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         }
@@ -400,6 +546,10 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         }
@@ -424,17 +574,116 @@
         }
       }
     },
+    "repeated_call_behavior": {
+      "name": "repeated_call_behavior",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "5",
+            "y": "5"
+          },
+          "width": "10",
+          "height": "10"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "65",
+            "y": "65"
+          },
+          "width": "10",
+          "height": "10"
+        }
+      },
+      "nodesAfter2": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "125",
+            "y": "125"
+          },
+          "width": "10",
+          "height": "10"
+        }
+      }
+    },
     "sequence_only_node": {
       "name": "sequence_only_node",
       "panicked": false,
       "nodesBefore": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "10",
           "height": "10"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "30",
           "height": "30"
         }
@@ -442,11 +691,19 @@
       "nodesAfter": {
         "1": {
           "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "30",
           "height": "30"
         },
         "2": {
           "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
           "width": "30",
           "height": "30"
         }

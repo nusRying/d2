@@ -96,4 +96,13 @@ describe("Slice 26 — SyncNestedGeometry Unit Tests", () => {
     // No sequence in g.Sequences
     expect(() => g.SyncNestedGeometry()).not.toThrow();
   });
+
+  it("panics on present sequence key with undefined value", () => {
+    const g = new Graph();
+    const n = new Node(1, 10, 10);
+    n.Graph = g;
+    g.Nodes = [n];
+    g.Sequences.set(n, undefined);
+    expect(() => g.SyncNestedGeometry()).toThrow(TypeError);
+  });
 });

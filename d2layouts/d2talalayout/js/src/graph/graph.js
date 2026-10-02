@@ -380,7 +380,7 @@ export class Graph {
       if (node.isClusterVessel) {
         const c = this.Clusters.get(node);
         c.SyncGeometry();
-        for (const cn of c.Nodes) {
+        for (const cn of c.Nodes ?? []) {
           if (cn.isContainer) {
             const padding = this.containerPadding(cn, true);
             const children = this.Containers.get(cn) ?? [];
@@ -390,8 +390,8 @@ export class Graph {
           }
         }
       }
-      const seq = this.Sequences.get(node);
-      if (seq !== undefined) {
+      if (this.Sequences.has(node)) {
+        const seq = this.Sequences.get(node);
         seq.SyncGeometry();
       }
     }
