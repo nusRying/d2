@@ -548,6 +548,26 @@ func main() {
 		}
 	}
 
+	// U. nil_node_edges
+	{
+		g := layoutgraph.NewGraph()
+		node := layoutgraph.NewNode(1, 10, 10)
+		g.AddNodeUnchecked(node)
+		node.Edges = nil
+
+		// Pre-populate old Hubs to verify replacement semantics
+		g.Hubs[node] = []*layoutgraph.Node{node}
+		oldPtr := reflect.ValueOf(g.Hubs).Pointer()
+
+		panicked, panicMsg := runSafe(func() {
+			err := proximity.AddHubs(context.Background(), g)
+			out.Scenarios["nil_node_edges"] = captureScenario("nil_node_edges", g, oldPtr, node, err, false, "")
+		})
+		if panicked {
+			out.Scenarios["nil_node_edges"] = captureScenario("nil_node_edges", g, oldPtr, node, nil, true, panicMsg)
+		}
+	}
+
 	// Generate JSON
 	bytes, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {

@@ -200,23 +200,32 @@ describe("Slice 28 — Proximity AddHubs Direct Unit Tests", () => {
     g.Connect(conn, other);
 
     const oldHubs = g.Hubs;
-    let finishCalled = false;
-    let hubsAtFinishTime = null;
+    let finalFinishCount = 0;
+    let hubsRefAtFinalFinish = null;
 
     const origFinish = WorkGuard.prototype.Finish;
     WorkGuard.prototype.Finish = function () {
-      if (this.location === "AddHubs" && this.limit === MAX_ENGINE_WORK_UNITS) {
-        finishCalled = true;
-        hubsAtFinishTime = g.Hubs;
+      // Distinguish the explicit final AddHubs Finish from:
+      // 1. Preflight constructor Finish (location "AddHubs", used == 0n)
+      // 2. Preflight final Finish (limit changed to MAX_PREFLIGHT_WORK)
+      // 3. AddHubs constructor Finish (location "AddHubs", used == 0n)
+      // The explicit final Finish occurs after all node and edge steps, so used > 0n.
+      if (
+        this.location === "AddHubs" &&
+        this.limit === MAX_ENGINE_WORK_UNITS &&
+        this.used > 0n
+      ) {
+        finalFinishCount++;
+        hubsRefAtFinalFinish = g.Hubs;
       }
       return origFinish.apply(this, arguments);
     };
 
     try {
       addHubs(backgroundWorkContext(), g);
-      expect(finishCalled).toBe(true);
-      // At the moment finish was called, g.Hubs must still be oldHubs
-      expect(hubsAtFinishTime).toBe(oldHubs);
+      expect(finalFinishCount).toBe(1);
+      // At the moment the explicit final finish was called, g.Hubs must still be oldHubs
+      expect(hubsRefAtFinalFinish).toBe(oldHubs);
       // After completion, g.Hubs was replaced
       expect(g.Hubs).not.toBe(oldHubs);
     } finally {

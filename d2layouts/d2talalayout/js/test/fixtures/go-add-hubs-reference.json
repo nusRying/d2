@@ -353,6 +353,16 @@
       "hubs": [],
       "nodes": []
     },
+    "nil_node_edges": {
+      "name": "nil_node_edges",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "1"
+      ]
+    },
     "non_leaf_connections_only": {
       "name": "non_leaf_connections_only",
       "success": true,
@@ -515,7 +525,7 @@
     "validation_failure_atomicity": {
       "name": "validation_failure_atomicity",
       "success": false,
-      "errorMessage": "TALA engine container parent cycle detected at node 1",
+      "errorMessage": "TALA engine container parent cycle detected at node 2",
       "panicked": false,
       "sameHubsMap": true,
       "hubs": [

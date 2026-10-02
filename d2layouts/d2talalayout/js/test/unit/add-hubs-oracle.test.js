@@ -275,6 +275,12 @@ describe("Slice 28 — Proximity AddHubs Oracle Replay", () => {
         oldHubKey = n1;
       } else if (scenarioName === "nil_graph_nodes") {
         g.Nodes = null;
+      } else if (scenarioName === "nil_node_edges") {
+        const node = new Node(1, 10, 10);
+        g.AddNodeUnchecked(node);
+        node.Edges = null;
+        g.Hubs.set(node, [node]);
+        oldHubKey = node;
       }
 
       const oldHubsRef = g.Hubs;
