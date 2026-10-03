@@ -1,0 +1,18 @@
+{
+  "segmentsCross": [
+    {
+      "name": "intersecting_diagonals",
+      "expected": true
+    },
+    {
+      "name": "parallel_horizontal",
+      "expected": false
+    }
+  ],
+  "overlapsExact": true,
+  "commitSuccess": {
+    "finalX": 50,
+    "finalY": 50
+  },
+  "commitOverlapRejected": true
+}

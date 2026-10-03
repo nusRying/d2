@@ -18,6 +18,10 @@ export class WorkContext {
   isCancelled() {
     return this._isCancelled();
   }
+
+  Err() {
+    return this.isCancelled() ? new Error('context canceled') : null;
+  }
 }
 
 /**

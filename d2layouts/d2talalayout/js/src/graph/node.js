@@ -366,6 +366,16 @@ export class Node {
     );
   }
 
+  allReachableNodesContext(includeContainers, includeNears, traverseTrees, ignore, guard) {
+    return this.allReachableNodesGuarded(
+      includeContainers,
+      includeNears,
+      traverseTrees,
+      ignore,
+      guard
+    );
+  }
+
   reachableNodesGuarded(shouldVisit, includeContainers, includeNears, traverseTrees, ignore, guard) {
     const reachableNodes = [];
     const visitQueue = [this];
@@ -1160,6 +1170,10 @@ export class Node {
     return level;
   }
 
+  ContainerLevel() {
+    return this.containerLevel();
+  }
+
   // nearestSharedAncestor returns the most-nested container that is an ancestor
   // of both this node and otherNode.
   // Pinned Go: layoutgraph.Node.nearestSharedAncestor (node.go:2380)
@@ -1321,8 +1335,110 @@ export class Node {
     return Math.min(horizontalDelta, verticalDelta);
   }
 
+  deltaToGuarded(other, atPoint, guard) {
+    if (other == null || atPoint == null) {
+      throw new Error("layout invariant violated: spacing check received incomplete nodes");
+    }
+    let maxEdgeWidth = Number.MIN_SAFE_INTEGER;
+    let maxEdgeHeight = Number.MIN_SAFE_INTEGER;
+    let isConnected = false;
+    for (const edge of this.Edges) {
+      if (guard != null) {
+        guard.Step();
+      }
+      if (edge == null || edge.From == null || edge.To == null) {
+        throw new Error("layout invariant violated: spacing check encountered an incomplete edge");
+      }
+      if (this.adjacent(edge) === other) {
+        isConnected = true;
+        maxEdgeWidth = Math.max(maxEdgeWidth, Number(edge.MinWidth ?? 0));
+        maxEdgeHeight = Math.max(maxEdgeHeight, Number(edge.MinHeight ?? 0));
+      }
+    }
+    let horizontalDelta = isConnected ? 60 : 20;
+    let verticalDelta = isConnected ? 60 : 20;
+    if (this._shapeType === "Table" || other._shapeType === "Table") {
+      horizontalDelta = 120;
+    }
+    if (maxEdgeHeight > verticalDelta) verticalDelta = maxEdgeHeight;
+    if (maxEdgeWidth > horizontalDelta) horizontalDelta = maxEdgeWidth;
+
+    const m1 = this._margin ?? {};
+    const m2 = other._margin ?? {};
+    const hasMargin = [m1.top, m1.right, m1.bottom, m1.left, m2.top, m2.right, m2.bottom, m2.left]
+      .some((v) => Number(v ?? 0) !== 0);
+    const hasLoops =
+      (this.LoopOffsets instanceof Map ? this.LoopOffsets.size > 0 : this.LoopOffsets != null && Object.keys(this.LoopOffsets).length > 0) ||
+      (other.LoopOffsets instanceof Map ? other.LoopOffsets.size > 0 : other.LoopOffsets != null && Object.keys(other.LoopOffsets).length > 0);
+    if (horizontalDelta === verticalDelta && !hasLoops && !hasMargin) {
+      return horizontalDelta;
+    }
+
+    const o = this.orientationAtPoint(other, atPoint);
+    if (hasLoops) {
+      let loopDelta = 20;
+      loopDelta += Number(getLoopOffset(this, getOpposite(o)) || 0);
+      loopDelta += Number(getLoopOffset(other, o) || 0);
+      horizontalDelta = Math.max(horizontalDelta, loopDelta);
+      verticalDelta = Math.max(verticalDelta, loopDelta);
+    }
+
+    let n1LabelWidth = 0, n1LabelHeight = 0, n2LabelWidth = 0, n2LabelHeight = 0;
+    const applyMargin = (node, orientation, first) => {
+      let w = 0, h = 0;
+      switch (orientation) {
+        case Orientation.Bottom: h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.Top: h = nodeSpacingSide(node, "top"); break;
+        case Orientation.Right: w = nodeSpacingSide(node, "right"); break;
+        case Orientation.Left: w = nodeSpacingSide(node, "left"); break;
+        case Orientation.BottomLeft: w = nodeSpacingSide(node, "left"); h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.BottomRight: w = nodeSpacingSide(node, "right"); h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.TopLeft: w = nodeSpacingSide(node, "left"); h = nodeSpacingSide(node, "top"); break;
+        case Orientation.TopRight: w = nodeSpacingSide(node, "right"); h = nodeSpacingSide(node, "top"); break;
+      }
+      if (first) { n1LabelWidth = Math.trunc(w); n1LabelHeight = Math.trunc(h); }
+      else { n2LabelWidth = Math.trunc(w); n2LabelHeight = Math.trunc(h); }
+    };
+    applyMargin(this, getOpposite(o), true);
+    applyMargin(other, o, false);
+    horizontalDelta = Math.max(horizontalDelta, n1LabelWidth + n2LabelWidth);
+    verticalDelta = Math.max(verticalDelta, n1LabelHeight + n2LabelHeight);
+
+    if (o === Orientation.Top || o === Orientation.Bottom) return verticalDelta;
+    if (o === Orientation.Left || o === Orientation.Right) return horizontalDelta;
+    return Math.min(horizontalDelta, verticalDelta);
+  }
+
+  DeltaToGuarded(other, atPoint, guard) {
+    return this.deltaToGuarded(other, atPoint, guard);
+  }
+
   DeltaTo(other, atPoint) {
     return this.deltaTo(other, atPoint);
+  }
+
+  doesOverlapCalc(n2, delta) {
+    if (this.TopLeft == null || n2 == null || n2.TopLeft == null) return false;
+    const b1 = { TopLeft: this.TopLeft, Width: this.Width, Height: this.Height };
+    const b2 = { TopLeft: n2.TopLeft, Width: n2.Width, Height: n2.Height };
+    return boxesOverlapWithPadding(b1, b2, delta);
+  }
+
+  doesOverlapExact(n2) {
+    return this.doesOverlapCalc(n2, 0);
+  }
+
+  DoesOverlapExact(n2) {
+    return this.doesOverlapExact(n2);
+  }
+
+  doesOverlap(n2) {
+    const delta = Number(this.deltaTo(n2, this.TopLeft));
+    return this.doesOverlapCalc(n2, delta);
+  }
+
+  DoesOverlap(n2) {
+    return this.doesOverlap(n2);
   }
 
   doesOverlapAt(other, point) {
@@ -1336,6 +1452,404 @@ export class Node {
 
   DoesOverlapAt(other, point) {
     return this.doesOverlapAt(other, point);
+  }
+
+  ancestryParent() {
+    if (this.Container != null) {
+      return this.Container;
+    }
+    if (this.Cluster != null && this.Cluster.Vessel != null) {
+      return this.Cluster.Vessel;
+    }
+    if (this.Sequence != null && this.Sequence.Vessel != null) {
+      return this.Sequence.Vessel;
+    }
+    return null;
+  }
+
+  AncestryParent() {
+    return this.ancestryParent();
+  }
+
+  isDescendantOf(maybeAncestor) {
+    if (maybeAncestor === this) {
+      return true;
+    }
+    if (this.Container != null) {
+      return this.Container.isDescendantOf(maybeAncestor);
+    }
+    if (this.Cluster != null && this.Cluster.Vessel != null) {
+      return this.Cluster.Vessel.isDescendantOf(maybeAncestor);
+    }
+    if (this.Sequence != null && this.Sequence.Vessel != null) {
+      return this.Sequence.Vessel.isDescendantOf(maybeAncestor);
+    }
+    return maybeAncestor == null;
+  }
+
+  IsDescendantOf(maybeAncestor) {
+    return this.isDescendantOf(maybeAncestor);
+  }
+
+
+  surrounds(other, withPadding = 0) {
+    if (other == null || other.TopLeft == null) return true;
+    if (this.TopLeft == null) return false;
+    return (
+      this.TopLeft.X + withPadding < other.TopLeft.X &&
+      this.TopLeft.X + this.Width - withPadding > other.TopLeft.X + other.Width &&
+      this.TopLeft.Y + withPadding < other.TopLeft.Y &&
+      this.TopLeft.Y + this.Height - withPadding > other.TopLeft.Y + other.Height
+    );
+  }
+
+  Surrounds(other, withPadding = 0) {
+    return this.surrounds(other, withPadding);
+  }
+
+  area() {
+    return this.Width * this.Height;
+  }
+
+  Area() {
+    return this.area();
+  }
+
+  center() {
+    if (this.TopLeft == null) return null;
+    return new Point(this.TopLeft.X + this.Width / 2, this.TopLeft.Y + this.Height / 2);
+  }
+
+  Center() {
+    return this.center();
+  }
+
+  overlapsAlongDimension(n2, isHorizontal, includeSizes) {
+    if (n2 == null || this.TopLeft == null || n2.TopLeft == null) return false;
+    if (isHorizontal) {
+      if (includeSizes) {
+        if (this.TopLeft.Y > n2.TopLeft.Y + n2.Height) return false;
+        if (this.TopLeft.Y + this.Height < n2.TopLeft.Y) return false;
+      } else {
+        if (this.TopLeft.Y > n2.TopLeft.Y) return false;
+        if (this.TopLeft.Y < n2.TopLeft.Y) return false;
+      }
+    } else {
+      if (includeSizes) {
+        if (this.TopLeft.X > n2.TopLeft.X + n2.Width) return false;
+        if (this.TopLeft.X + this.Width < n2.TopLeft.X) return false;
+      } else {
+        if (this.TopLeft.X > n2.TopLeft.X) return false;
+        if (this.TopLeft.X < n2.TopLeft.X) return false;
+      }
+    }
+    return true;
+  }
+
+  OverlapsAlongDimension(n2, isHorizontal, includeSizes) {
+    return this.overlapsAlongDimension(n2, isHorizontal, includeSizes);
+  }
+
+  connectionTo(otherNode) {
+    if (this.Edges) {
+      for (const e of this.Edges) {
+        if (this.adjacent(e) === otherNode) {
+          return e;
+        }
+      }
+    }
+    return null;
+  }
+
+  ConnectionTo(otherNode) {
+    return this.connectionTo(otherNode);
+  }
+
+  isBlocked(nodeA, nodeB, includeSizes, isHorizontal) {
+    return this.IsBlocked(nodeA, nodeB, includeSizes, isHorizontal);
+  }
+
+  connectedNodes(excludedNodes = [], mainGraph = this.Graph) {
+    const nodes = [];
+    const queue = [this];
+    const inQueue = new Set([this]);
+    const excludedSet = new Set(excludedNodes);
+
+    const addQueue = (n) => {
+      if (n == null) return;
+      if (!inQueue.has(n)) {
+        queue.push(n);
+        inQueue.add(n);
+      }
+    };
+
+    while (queue.length > 0) {
+      const curr = queue.shift();
+      let isAncestorOrDescendantOfExcluded = false;
+      for (const excluded of excludedNodes) {
+        if (curr.isDescendantOf(excluded)) {
+          isAncestorOrDescendantOfExcluded = true;
+          break;
+        }
+        if (excluded.isDescendantOf(curr) && !this.isDescendantOf(curr)) {
+          isAncestorOrDescendantOfExcluded = true;
+          break;
+        }
+      }
+      if (isAncestorOrDescendantOfExcluded) {
+        continue;
+      }
+      nodes.push(curr);
+      if (curr.Edges) {
+        for (const e of curr.Edges) {
+          const connected = curr.adjacent(e);
+          if (excludedSet.has(connected)) {
+            continue;
+          }
+          addQueue(connected);
+        }
+      }
+
+      if (curr.isClusterVessel && mainGraph?.Clusters) {
+        const cluster = mainGraph.Clusters.get ? mainGraph.Clusters.get(curr) : mainGraph.Clusters[curr];
+        if (cluster?.Nodes) {
+          for (const n of cluster.Nodes) {
+            if (n.isContainer && mainGraph.Containers) {
+              const children = mainGraph.Containers.get ? mainGraph.Containers.get(n) : mainGraph.Containers[n];
+              if (children) {
+                for (const child of children) {
+                  addQueue(child);
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if (mainGraph?.Clusters) {
+        const clusters = mainGraph.Clusters instanceof Map ? mainGraph.Clusters.entries() : Object.entries(mainGraph.Clusters);
+        for (const [vessel, cluster] of clusters) {
+          if (!cluster?.Nodes) continue;
+          for (const n of cluster.Nodes) {
+            if (n.isContainer && mainGraph.Containers) {
+              let nodeIsChild = false;
+              let excludedNodeIsChild = false;
+              const children = mainGraph.Containers.get ? mainGraph.Containers.get(n) : mainGraph.Containers[n];
+              if (children) {
+                for (const child of children) {
+                  if (child === curr) {
+                    nodeIsChild = true;
+                  }
+                  if (excludedSet.has(child)) {
+                    excludedNodeIsChild = true;
+                    break;
+                  }
+                }
+              }
+              if (excludedNodeIsChild) {
+                continue;
+              }
+              if (nodeIsChild) {
+                addQueue(vessel);
+              }
+            }
+          }
+        }
+      }
+
+      if (mainGraph?.Containers) {
+        const containers = mainGraph.Containers instanceof Map ? mainGraph.Containers.entries() : Object.entries(mainGraph.Containers);
+        for (const [container, children] of containers) {
+          if (container == null) continue;
+          if (excludedSet.has(container)) continue;
+
+          let nodeIsChild = false;
+          let excludedNodeIsChild = false;
+          if (children) {
+            for (const child of children) {
+              if (child === curr) {
+                nodeIsChild = true;
+              }
+              if (excludedSet.has(child)) {
+                excludedNodeIsChild = true;
+                break;
+              }
+            }
+          }
+          if (excludedNodeIsChild) {
+            continue;
+          }
+          if (nodeIsChild) {
+            addQueue(container);
+          }
+
+          if (curr === container && children) {
+            for (const child of children) {
+              addQueue(child);
+            }
+          }
+        }
+      }
+    }
+
+    return nodes;
+  }
+
+  ConnectedNodes(excludedNodes, mainGraph) {
+    return this.connectedNodes(excludedNodes, mainGraph);
+  }
+
+  connectedNodeSet(excludedNodes = [], graph = this.Graph) {
+    if (
+      graph.Nodes.length < 32 ||
+      ((!graph.Clusters || (graph.Clusters.size ?? Object.keys(graph.Clusters).length) === 0) &&
+       (!graph.Containers || (graph.Containers.size ?? Object.keys(graph.Containers).length) <= 1))
+    ) {
+      return this.connectedNodes(excludedNodes, graph);
+    }
+    const excluded = new Set(excludedNodes);
+    const excludedChildren = new Set();
+    const ownersFirst = new Map();
+    const ownersMore = new Map();
+    const addOwner = (child, parent) => {
+      if (!ownersFirst.has(child)) {
+        ownersFirst.set(child, parent);
+        return;
+      }
+      let more = ownersMore.get(child);
+      if (!more) {
+        more = [];
+        ownersMore.set(child, more);
+      }
+      more.push(parent);
+    };
+
+    if (graph.Containers) {
+      const entries = graph.Containers instanceof Map ? graph.Containers.entries() : Object.entries(graph.Containers);
+      for (const [container, children] of entries) {
+        if (container == null) continue;
+        let blocked = false;
+        if (children) {
+          for (const child of children) {
+            if (excluded.has(child)) {
+              blocked = true;
+              break;
+            }
+          }
+        }
+        if (blocked) {
+          excludedChildren.add(container);
+        }
+        if (blocked || excluded.has(container)) {
+          continue;
+        }
+        if (children) {
+          for (const child of children) {
+            addOwner(child, container);
+          }
+        }
+      }
+    }
+
+    if (graph.Clusters) {
+      const entries = graph.Clusters instanceof Map ? graph.Clusters.entries() : Object.entries(graph.Clusters);
+      for (const [vessel, cluster] of entries) {
+        if (!cluster?.Nodes) continue;
+        for (const member of cluster.Nodes) {
+          if (!member.isContainer || excludedChildren.has(member)) {
+            continue;
+          }
+          if (graph.Containers) {
+            const children = graph.Containers.get ? graph.Containers.get(member) : graph.Containers[member];
+            if (children) {
+              for (const child of children) {
+                addOwner(child, vessel);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const nodes = [];
+    const queue = [this];
+    const seen = new Set([this]);
+    const add = (n) => {
+      if (n == null) return;
+      if (!seen.has(n)) {
+        seen.add(n);
+        queue.push(n);
+      }
+    };
+
+    for (let head = 0; head < queue.length; head++) {
+      const current = queue[head];
+      let blocked = false;
+      for (const e of excludedNodes) {
+        if (current.isDescendantOf(e) || (e.isDescendantOf(current) && !this.isDescendantOf(current))) {
+          blocked = true;
+          break;
+        }
+      }
+      if (blocked) {
+        continue;
+      }
+      nodes.push(current);
+      if (current.Edges) {
+        for (const edge of current.Edges) {
+          const adjacent = current.adjacent(edge);
+          if (!excluded.has(adjacent)) {
+            add(adjacent);
+          }
+        }
+      }
+      if (current.isClusterVessel && graph.Clusters) {
+        const cluster = graph.Clusters.get ? graph.Clusters.get(current) : graph.Clusters[current];
+        if (cluster?.Nodes) {
+          for (const member of cluster.Nodes) {
+            if (member.isContainer && graph.Containers) {
+              const children = graph.Containers.get ? graph.Containers.get(member) : graph.Containers[member];
+              if (children) {
+                for (const child of children) {
+                  add(child);
+                }
+              }
+            }
+          }
+        }
+      }
+      const firstOwner = ownersFirst.get(current);
+      if (firstOwner != null) {
+        add(firstOwner);
+      }
+      const moreOwners = ownersMore.get(current);
+      if (moreOwners != null) {
+        for (const owner of moreOwners) {
+          add(owner);
+        }
+      }
+      if (current != null && !excluded.has(current) && !excludedChildren.has(current) && graph.Containers) {
+        const children = graph.Containers.get ? graph.Containers.get(current) : graph.Containers[current];
+        if (children) {
+          for (const child of children) {
+            add(child);
+          }
+        }
+      }
+    }
+    return nodes;
+  }
+
+  ConnectedNodeSet(excludedNodes, graph) {
+    return this.connectedNodeSet(excludedNodes, graph);
+  }
+
+  IsClusterVessel() {
+    return Boolean(this.isClusterVessel);
+  }
+
+  IsContainer() {
+    return Boolean(this.isContainer);
   }
 
   visibilityGraphCandidate(isHorizontal, checkSide, includeSizes, otherNode, padding) {

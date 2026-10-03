@@ -18,10 +18,31 @@ import {
 import { captureOptimizerCandidateMovement } from '../../src/placement/candidate-movement.js';
 import { compaction, candidateMoves, visibilityEdges } from '../../src/placement/compaction.js';
 import { moveNodeToBest } from '../../src/placement/moves.js';
+import { transpose, rotateAround } from '../../src/placement/transpose.js';
+import {
+  alignConnectedNodes,
+  alignVessel,
+  optimizeCluster,
+  optimizeClusters,
+} from '../../src/placement/cluster-optimization.js';
+import {
+  gapNormalization,
+  reduceGapToNeighbors,
+  isBetween,
+  nearestBetween,
+  nearestConnectedAhead,
+} from '../../src/placement/gap-reduction.js';
+import {
+  OptimizerSpatialIndex,
+  indexedCanMove,
+  indexedIsOccupied,
+  indexedDoesOverlap,
+} from '../../src/placement/optimizer-spatial-index.js';
 
-describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
+describe('Slices 42–44 — Placement Optimizer API Boundary', () => {
   it('does not export internal placement optimizer functions in placement index or root index', () => {
     const forbidden = [
+      // Slice 42-43
       'SizelessOptimizer',
       'newSizelessOptimizer',
       'NewSizelessOptimizer',
@@ -45,6 +66,43 @@ describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
       'visibilityEdges',
       'candidateMoves',
       'compaction',
+      // Slice 44
+      'Transaction',
+      'TransactionOptions',
+      'InvalidCandidateError',
+      'NonImprovingCandidateError',
+      'ErrInvalidCandidate',
+      'ErrNonImprovingCandidate',
+      'transpose',
+      'Transpose',
+      'rotateAround',
+      'RotateAround',
+      'alignConnectedNodes',
+      'AlignConnectedNodes',
+      'alignVessel',
+      'AlignVessel',
+      'optimizeCluster',
+      'OptimizeCluster',
+      'optimizeClusters',
+      'OptimizeClusters',
+      'gapNormalization',
+      'GapNormalization',
+      'reduceGapToNeighbors',
+      'ReduceGapToNeighbors',
+      'isBetween',
+      'IsBetween',
+      'nearestBetween',
+      'NearestBetween',
+      'nearestConnectedAhead',
+      'NearestConnectedAhead',
+      'OptimizerSpatialIndex',
+      'indexedCanMove',
+      'indexedIsOccupied',
+      'indexedDoesOverlap',
+      // Slice 45 deferred
+      'SizedOptimizer',
+      'sizedOptimizer',
+      'medianPointGuarded',
     ];
 
     for (const name of forbidden) {
@@ -53,7 +111,7 @@ describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
     }
   });
 
-  it('allows direct imports of placement optimizer functions', () => {
+  it('allows direct imports of placement optimizer and Slice 44 functions', () => {
     assert.strictEqual(typeof SizelessOptimizer, 'function');
     assert.strictEqual(typeof newSizelessOptimizer, 'function');
     assert.strictEqual(typeof initializeNodes, 'function');
@@ -72,5 +130,21 @@ describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
     assert.strictEqual(typeof candidateMoves, 'function');
     assert.strictEqual(typeof visibilityEdges, 'function');
     assert.strictEqual(typeof moveNodeToBest, 'function');
+    // Slice 44 direct imports
+    assert.strictEqual(typeof transpose, 'function');
+    assert.strictEqual(typeof rotateAround, 'function');
+    assert.strictEqual(typeof alignConnectedNodes, 'function');
+    assert.strictEqual(typeof alignVessel, 'function');
+    assert.strictEqual(typeof optimizeCluster, 'function');
+    assert.strictEqual(typeof optimizeClusters, 'function');
+    assert.strictEqual(typeof gapNormalization, 'function');
+    assert.strictEqual(typeof reduceGapToNeighbors, 'function');
+    assert.strictEqual(typeof isBetween, 'function');
+    assert.strictEqual(typeof nearestBetween, 'function');
+    assert.strictEqual(typeof nearestConnectedAhead, 'function');
+    assert.strictEqual(typeof OptimizerSpatialIndex, 'function');
+    assert.strictEqual(typeof indexedCanMove, 'function');
+    assert.strictEqual(typeof indexedIsOccupied, 'function');
+    assert.strictEqual(typeof indexedDoesOverlap, 'function');
   });
 });

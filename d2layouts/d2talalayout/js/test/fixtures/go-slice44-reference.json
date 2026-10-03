@@ -1,0 +1,20 @@
+{
+  "rotateAround": {
+    "x1": 0,
+    "y1": 50,
+    "x2": 50,
+    "y2": 0
+  },
+  "transpose": {
+    "fixedRejected": true,
+    "threeEdgesRejected": true
+  },
+  "gapReduction": {
+    "isBetweenMid": true,
+    "isBetweenOutside": false
+  },
+  "spatialIndex": {
+    "occupied": true,
+    "candidateCount": 4
+  }
+}
