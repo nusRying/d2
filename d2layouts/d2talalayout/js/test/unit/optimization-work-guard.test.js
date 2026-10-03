@@ -312,20 +312,20 @@ describe('Slice 42 — OptimizationWorkGuard', () => {
       return new Error('must not be observed');
     };
 
-    const guard = new OptimizationWorkGuard(ctx, 'overflowNoBoundary', 100n);
+    const guard = new OptimizationWorkGuard(ctx, 'overflowNoBoundary', 10n);
     assert.strictEqual(errCalls, 1);
 
-    // Rejected charge from used=0 to first-rejected=101 does not satisfy
-    // previous/stride != limit/stride, so Go returns the work-limit error directly.
+    // With limit 10, both previous=0 and limit=10 are in stride bucket 0,
+    // so the rejected charge does not poll the context and returns WorkLimitError.
     assert.throws(
-      () => guard.Add(101n),
+      () => guard.Add(11n),
       (err) => {
         assert(err instanceof WorkLimitError);
-        assert.strictEqual(err.message, 'TALA overflowNoBoundary work exceeds limit 100');
+        assert.strictEqual(err.message, 'TALA overflowNoBoundary work exceeds limit 10');
         return true;
       }
     );
-    assert.strictEqual(guard.Used(), 101n);
+    assert.strictEqual(guard.Used(), 11n);
     assert.strictEqual(errCalls, 1);
   });
 
