@@ -513,7 +513,7 @@ function captureGraph(graph) {
   };
 }
 
-function collectRuntimeObjectsContext(graph, guard, scope) {
+export function collectRuntimeObjectsContext(graph, guard, scope) {
   const nodes = new Set();
   const edges = new Set();
   const clusters = new Set();
