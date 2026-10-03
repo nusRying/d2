@@ -7,7 +7,7 @@
  */
 
 import { MAX_TRANSACTION_WORK_UNITS } from "./constants.js";
-import { WorkContext } from "./work-context.js";
+import { WorkContext, getContextError } from "./work-context.js";
 import { WorkGuard } from "./work-guard.js";
 
 export class TransactionWorkContext extends WorkContext {
@@ -24,7 +24,7 @@ export class TransactionWorkContext extends WorkContext {
         if (typeof parentContext?.aborted === "boolean") {
           return parentContext.aborted;
         }
-        return false;
+        return getContextError(parentContext) != null;
       },
       doneAvailable: Boolean(
         parentContext?.doneAvailable ?? (typeof parentContext?.aborted === "boolean")
@@ -32,6 +32,14 @@ export class TransactionWorkContext extends WorkContext {
     });
     this._parent = parentContext;
     this._transactionWorkGuard = guard;
+  }
+
+  /**
+   * Go context.WithValue forwards the parent's Err unchanged, so cancellation
+   * identity survives the derived transaction context.
+   */
+  Err() {
+    return getContextError(this._parent);
   }
 }
 

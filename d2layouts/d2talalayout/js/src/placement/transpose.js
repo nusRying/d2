@@ -1,3 +1,13 @@
+/**
+ * Transpose — rotate a one- or two-edge node's side of the graph around its
+ * neighbor when that shortens edges.
+ *
+ * Pinned Go: d2layouts/d2talalayout/internal/placement/transpose.go
+ * Pinned Go authority: 01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579
+ *
+ * BROWSER-SAFE: No fs, path, crypto, process, Math.random, node: imports.
+ */
+
 import { ensureTransactionWorkGuard } from '../limits/transaction-guard.js';
 import { WorkGuard } from '../limits/work-guard.js';
 import { MAX_ENGINE_WORK_UNITS } from '../limits/constants.js';
@@ -12,12 +22,6 @@ import { optimizeCluster } from './cluster-optimization.js';
 /**
  * rotateAround rotates a node 90 degrees counterclockwise around a center node.
  * Pinned Go: placement.rotateAround
- *
- * @param {import('../graph/node.js').Node} n
- * @param {import('../graph/graph.js').Graph} g
- * @param {import('../graph/node.js').Node} centerNode
- * @param {number} times
- * @param {boolean} round
  */
 export function rotateAround(n, g, centerNode, times, round) {
   for (let i = 0; i < times; i++) {
@@ -55,58 +59,47 @@ export function rotateAround(n, g, centerNode, times, round) {
 export const RotateAround = rotateAround;
 
 /**
- * transpose attempts to rotate a 1- or 2-edge node around its neighbor to improve symmetry.
- * Pinned Go: placement.transpose
+ * transpose attempts to rotate a 1- or 2-edge node around its neighbor to
+ * improve symmetry. All nested work (reachability, scoring, transactions and
+ * nested cluster optimization) runs under the context returned by
+ * EnsureTransactionWorkGuard, so the whole stage shares one transaction budget.
  *
- * @param {object} ctx
- * @param {import('../graph/graph.js').Graph} g
- * @param {import('../graph/node.js').Node} node
- * @param {import('../graph/edge.js').EdgeAbduction[]} [edgeAbductions]
- * @returns {Promise<boolean>|boolean}
+ * Pinned Go: placement.transpose
+ * @returns {boolean} whether a rotation was committed. Errors throw.
  */
 export function transpose(ctx, g, node, edgeAbductions = null) {
-  const [txnCtx] = ensureTransactionWorkGuard(ctx, 'TransposeTransactions');
-
+  [ctx] = ensureTransactionWorkGuard(ctx, 'TransposeTransactions');
   if (node.Hierarchy != null) {
     return false;
   }
-  if (g.NodeToTree && (g.NodeToTree instanceof Map ? g.NodeToTree.has(node) : g.NodeToTree[node] != null)) {
+  if (g.NodeToTree.has(node)) {
     return false;
   }
-  if (g.isTreeSentinel ? g.isTreeSentinel(node) : (g.IsTreeSentinel && g.IsTreeSentinel(node))) {
+  if (g.isTreeSentinel(node)) {
     return false;
   }
   if (node.FixedTopLeft != null) {
     return false;
   }
-
-  if (edgeAbductions) {
-    for (let i = 0; i < edgeAbductions.length; i++) {
-      const e = edgeAbductions[i];
-      if (e.OriginallyFrom === node || e.OriginallyTo === node) {
-        return false;
-      }
-      if (e.CurrentFrom === node || e.CurrentTo === node) {
-        return false;
-      }
+  // Maybe re-enable when I see a use case
+  for (const e of edgeAbductions ?? []) {
+    if (e.OriginallyFrom === node || e.OriginallyTo === node) {
+      return false;
+    }
+    if (e.CurrentFrom === node || e.CurrentTo === node) {
+      return false;
     }
   }
-
-  const edgeCount = node.Edges ? node.Edges.length : 0;
-  if (edgeCount !== 2 && edgeCount !== 1) {
+  if (node.Edges.length !== 2 && node.Edges.length !== 1) {
     return false;
   }
-
   const reachabilityGuard = new WorkGuard(ctx, 'TransposeReachability', MAX_ENGINE_WORK_UNITS);
+  const reachableFrom = (start, includeContainers, ignore) =>
+    start.allReachableNodesContext(includeContainers, false, true, ignore, reachabilityGuard);
 
-  const reachableFrom = (start, includeContainers, ignore) => {
-    return start.allReachableNodesContext(includeContainers, false, true, ignore, reachabilityGuard);
-  };
-
-  let transposeNodes = [];
-  let centerNode = null;
-
-  if (edgeCount === 1) {
+  let transposeNodes;
+  let centerNode;
+  if (node.Edges.length === 1) {
     const nodeA = node.adjacent(node.Edges[0]);
     if (nodeA.isDescendantOf(node) || node.isDescendantOf(nodeA)) {
       return false;
@@ -115,16 +108,14 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
       return false;
     }
     const ancestor = node.nearestSharedAncestor(nodeA);
-    centerNode = nodeA;
 
+    centerNode = nodeA;
     if (edgeAbductions == null) {
       let curr = node;
       while (curr.owningContainer() !== ancestor) {
         curr = curr.owningContainer();
       }
-
-      const ignoreMap = new Set([nodeA]);
-      transposeNodes = reachableFrom(curr, false, ignoreMap);
+      transposeNodes = reachableFrom(curr, false, new Set([nodeA]));
       if (transposeNodes.some((n) => nodeA.isDescendantOf(n))) {
         return false;
       }
@@ -152,7 +143,6 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
 
     const nodeAOrientation = node.orientation(nodeA);
     const nodeBOrientation = node.orientation(nodeB);
-
     if (isDiagonal(nodeAOrientation) || isDiagonal(nodeBOrientation)) {
       return false;
     }
@@ -167,7 +157,6 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
         while (curr.owningContainer() !== ancestorB) {
           curr = curr.owningContainer();
         }
-
         transposeNodes = reachableFrom(curr, false, new Set([nodeA]));
         if (transposeNodes.some((n) => nodeA.isDescendantOf(n))) {
           return false;
@@ -182,7 +171,6 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
         while (curr.owningContainer() !== ancestorA) {
           curr = curr.owningContainer();
         }
-
         transposeNodes = reachableFrom(curr, false, new Set([nodeB]));
         if (transposeNodes.some((n) => nodeB.isDescendantOf(n))) {
           return false;
@@ -193,42 +181,27 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
       centerNode = nodeB;
     }
   }
+  reachabilityGuard.Finish();
 
-  const finishErr = reachabilityGuard.finish();
-  if (finishErr != null) {
-    throw finishErr;
-  }
-
-  for (let i = 0; i < transposeNodes.length; i++) {
-    if (transposeNodes[i].fixedOrigin() != null) {
+  for (const n of transposeNodes) {
+    if (n.fixedOrigin() != null) {
       return false;
     }
   }
 
+  const scoringOptions = {
+    EdgeAbductions: edgeAbductions,
+    IncludeNodeSizes: true,
+    EnforceMinimumGap: false,
+    PenalizeDirection: true,
+  };
   const calcLength = () => {
     if (edgeAbductions == null) {
-      return edgeLength(ctx, g, {
-        EdgeAbductions: null,
-        IncludeNodeSizes: true,
-        EnforceMinimumGap: false,
-        PenalizeDirection: true,
-      });
+      return edgeLength(ctx, g, { ...scoringOptions, EdgeAbductions: null });
     }
-    let sum = nodeEdgeLength(ctx, node, {
-      EdgeAbductions: edgeAbductions,
-      IncludeNodeSizes: true,
-      EnforceMinimumGap: false,
-      PenalizeDirection: true,
-    });
-    for (let i = 0; i < node.Edges.length; i++) {
-      const e = node.Edges[i];
-      const length = nodeEdgeLength(ctx, node.adjacent(e), {
-        EdgeAbductions: edgeAbductions,
-        IncludeNodeSizes: true,
-        EnforceMinimumGap: false,
-        PenalizeDirection: true,
-      });
-      sum += length;
+    let sum = nodeEdgeLength(ctx, node, scoringOptions);
+    for (const e of node.Edges) {
+      sum += nodeEdgeLength(ctx, node.adjacent(e), scoringOptions);
     }
     return sum;
   };
@@ -236,35 +209,40 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
   let bestLength = calcLength();
   let bestRotations = -1;
 
-  const [txn, txnErr] = g.newRequestTransaction(txnCtx, { affectContainers: true });
+  const [txn, txnErr] = g.newRequestTransaction(ctx, { AffectContainers: true });
   if (txnErr != null) {
     throw txnErr;
   }
 
+  const rotateAll = (times) => () => {
+    for (const n of transposeNodes) {
+      rotateAround(n, g, centerNode, times, edgeAbductions != null);
+      if (n.IsClusterVessel()) {
+        optimizeCluster(ctx, g.Clusters.get(n), true);
+      }
+    }
+    return null;
+  };
+
   // Rotate all around
   for (let i = 0; i < 3; i++) {
-    txn.addOp(() => {
-      for (let j = 0; j < transposeNodes.length; j++) {
-        const n = transposeNodes[j];
-        rotateAround(n, g, centerNode, i + 1, edgeAbductions != null);
-        if (typeof n.isClusterVessel === 'function' ? n.isClusterVessel() : Boolean(n.isClusterVessel)) {
-          const cluster = g.Clusters instanceof Map ? g.Clusters.get(n) : g.Clusters?.[n];
-          if (cluster) {
-            optimizeCluster(ctx, cluster, true);
-          }
-        }
+    txn.addOp(rotateAll(i + 1));
+    const err = txn.commit(ctx);
+    if (err == null) {
+      let length;
+      try {
+        length = calcLength();
+      } catch (scoreErr) {
+        txn.rollback();
+        txn.clear();
+        throw scoreErr;
       }
-    });
-
-    const commitErr = txn.commit(ctx);
-    if (commitErr == null) {
-      const length = calcLength();
       if (precisionCompare(length, bestLength, PRECISION) < 0) {
         bestLength = length;
         bestRotations = i + 1;
       }
-    } else if (!isCandidateRejection(commitErr)) {
-      throw commitErr;
+    } else if (!isCandidateRejection(err)) {
+      throw err;
     }
 
     txn.rollback();
@@ -272,21 +250,10 @@ export function transpose(ctx, g, node, edgeAbductions = null) {
   }
 
   if (bestRotations !== -1) {
-    txn.addOp(() => {
-      for (let j = 0; j < transposeNodes.length; j++) {
-        const n = transposeNodes[j];
-        rotateAround(n, g, centerNode, bestRotations, edgeAbductions != null);
-        if (typeof n.isClusterVessel === 'function' ? n.isClusterVessel() : Boolean(n.isClusterVessel)) {
-          const cluster = g.Clusters instanceof Map ? g.Clusters.get(n) : g.Clusters?.[n];
-          if (cluster) {
-            optimizeCluster(ctx, cluster, true);
-          }
-        }
-      }
-    });
-    const commitErr = txn.commit(ctx);
-    if (commitErr != null) {
-      throw commitErr;
+    txn.addOp(rotateAll(bestRotations));
+    const err = txn.commit(ctx);
+    if (err != null) {
+      throw err;
     }
     return true;
   }

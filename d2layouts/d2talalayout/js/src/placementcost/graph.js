@@ -287,8 +287,8 @@ export function edgeLength(ctx, graph, options = {}) {
   }
 
   const crossings = graphEdgeCrossings(ctx, graph);
-  const crossingCost = typeof graph.crossingCost === 'function' ? graph.crossingCost() : (graph.crossingCost ?? 0);
-  totalSum += crossingCost * crossings;
+  // Go: graph.CrossingCost() lazily computes and caches the crossing penalty.
+  totalSum += graph.CrossingCost() * crossings;
 
   const finalErr = checkScoringCancellation(ctx);
   if (finalErr != null) {

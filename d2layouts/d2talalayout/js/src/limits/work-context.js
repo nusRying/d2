@@ -19,8 +19,16 @@ export class WorkContext {
     return this._isCancelled();
   }
 
+  /**
+   * Err returns null until cancellation, then the same error on every call
+   * (Go context.Canceled identity).
+   */
   Err() {
-    return this.isCancelled() ? new Error('context canceled') : null;
+    if (!this.isCancelled()) return null;
+    if (this._canceledError == null) {
+      this._canceledError = new Error('context canceled');
+    }
+    return this._canceledError;
   }
 }
 

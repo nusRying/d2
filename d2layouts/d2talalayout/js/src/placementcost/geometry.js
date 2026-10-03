@@ -14,7 +14,7 @@ export const IDEAL_GAP_SIZE = 2.5 * CONNECTED_NODE_GAP; // 150.0
 export function checkScoringCancellation(ctx) {
   const err = ctx.Err();
   if (err != null) {
-    return new Error(`EdgeLength: ${err.message ?? String(err)}`);
+    return new Error(`EdgeLength: ${err.message ?? String(err)}`, { cause: err });
   }
   return null;
 }

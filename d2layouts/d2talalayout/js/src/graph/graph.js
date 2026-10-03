@@ -5,17 +5,10 @@ import { Point } from '../geometry/point.js';
 import { goRound } from '../geometry/math.js';
 import { nodesFixedBounds, nodesUnroundedFixedBounds } from './node-bounds.js';
 import { isOutsideLabelPosition } from './label-position.js';
+import { MAX_ENGINE_NODES } from '../limits/constants.js';
 import {
-  Transaction,
-  TransactionOptions,
   newRequestTransaction as _newRequestTransaction,
-  newTransactionWithOptionsContext as _newTransactionWithOptionsContext,
-  ErrInvalidCandidate,
-  ErrNonImprovingCandidate,
-  InvalidCandidateError,
-  NonImprovingCandidateError,
-  isCandidateRejection,
-  restoreGraphState,
+  newRequestTransactionWithGuard as _newRequestTransactionWithGuard,
 } from './transaction.js';
 
 const noopWorkStepper = {
@@ -258,6 +251,21 @@ export class Graph {
 
   TurnCost() {
     return this.turnCostValue();
+  }
+
+  // crossingCostValue returns the lazily-computed crossing penalty and caches
+  // it in the graph-owned routing cost (observable through routingCosts()).
+  // Pinned Go: layoutgraph.Graph.crossingCostValue (graph.go:599)
+  crossingCostValue() {
+    const CROSSING_COST_WEIGHT = 0.48 * 0.48 * 0.48;
+    if (this.crossingCost !== 0) return this.crossingCost;
+    const cost = CROSSING_COST_WEIGHT * this.Edges.length * this.maxEdgeLength();
+    this.crossingCost = cost;
+    return cost;
+  }
+
+  CrossingCost() {
+    return this.crossingCostValue();
   }
 
   // resetTurnCost resets the lazily-cached turn cost so it is recomputed on
@@ -840,10 +848,9 @@ export class Graph {
   // ── Transaction factory ────────────────────────────────────────────────────
 
   /**
-   * newRequestTransaction creates a geometry transaction for this graph.
-   * Mirrors: Go Graph.newRequestTransaction / NewRequestTransaction
-   * @param {object} ctx
-   * @param {TransactionOptions|object} options
+   * newRequestTransaction creates a geometry transaction charged to the
+   * context's shared transaction work guard.
+   * Mirrors: Go Graph.NewRequestTransaction
    * @returns {[Transaction, null]|[null, Error]}
    */
   newRequestTransaction(ctx, options) {
@@ -857,97 +864,84 @@ export class Graph {
   /**
    * newRequestTransactionWithGuard creates a transaction with a shared work guard.
    * Mirrors: Go Graph.newRequestTransactionWithGuard
-   * @param {object} ctx
-   * @param {object} guard
-   * @param {TransactionOptions|object} options
    * @returns {[Transaction, null]|[null, Error]}
    */
   newRequestTransactionWithGuard(ctx, guard, options) {
-    if (guard == null) return [null, new Error('TALA transaction requires a shared work guard')];
-    const opts = options instanceof TransactionOptions ? options : new TransactionOptions(options || {});
-    return _newTransactionWithOptionsContext(this, ctx, opts, guard);
+    return _newRequestTransactionWithGuard(this, ctx, guard, options);
   }
 
   NewRequestTransactionWithWorkGuard(ctx, guard, options) {
     return this.newRequestTransactionWithGuard(ctx, guard, options);
   }
 
-  // ── Validation helpers ─────────────────────────────────────────────────────
+  // ── Transaction validation helpers (Go graph.go) ───────────────────────────
+  // Returned errors mirror Go's returned invariant errors; WorkGuard failures
+  // throw.
 
   /**
-   * isBadStateContext combines structural and overlap checks.
    * Mirrors: Go Graph.isBadStateContext
+   * @returns {[boolean, Error|null]}
    */
   isBadStateContext(node, graphState, ignoreContainerEscape, guard) {
     const [bad, skipOverlapCheck, err] = this.isStructurallyBadStateContext(node, graphState, ignoreContainerEscape, guard);
     if (err != null || bad) return [bad, err];
-    if (skipOverlapCheck) return [false, null];
+    if (skipOverlapCheck) {
+      guard.Finish();
+      return [false, null];
+    }
     return this.hasBadOverlapStateContext(node, graphState, guard);
   }
 
-  /**
-   * isStructurallyBadStateContext checks containment and fixed-position invariants.
-   * Mirrors: Go Graph.isStructurallyBadStateContext
-   */
+  /** Mirrors: Go Graph.isStructurallyBadStateContext */
   isStructurallyBadStateContext(node, graphState, ignoreContainerEscape, guard) {
     return this.isStructurallyBadStateWithFixedOriginContext(node, graphState, ignoreContainerEscape, null, false, guard);
   }
 
   /**
-   * isStructurallyBadStateWithFixedOriginContext is the full structural check.
    * Mirrors: Go Graph.isStructurallyBadStateWithFixedOriginContext
-   * @returns {[bad: boolean, skipOverlapCheck: boolean, err: null|Error]}
+   * @returns {[boolean, boolean, Error|null]} [bad, skipOverlapCheck, err]
    */
   isStructurallyBadStateWithFixedOriginContext(node, graphState, ignoreContainerEscape, fixedOrigin, fixedOriginCached, guard) {
     if (node == null || node.TopLeft == null) {
-      return [true, false, new Error('transaction bad-state check received an incomplete node')];
+      return [true, false, new Error('layout invariant violated: transaction bad-state check received an incomplete node')];
     }
-    if (guard) { const e = guard.Step(); if (e) return [false, false, e]; }
-
-    // Cluster nodes skip overlap — vessel covers them
+    guard.Step();
+    // The vessel covers cluster nodes.
     if (node.Cluster != null) return [false, true, null];
-
     if (!ignoreContainerEscape) {
-      const c = typeof node.container === 'function' ? node.container() : node.Container;
-      if (c != null && c.TopLeft != null && node.TopLeft != null) {
-        const surrounds = typeof c.surrounds === 'function' ? c.surrounds(node, 0) : c.Surrounds(node, 0);
-        if (!surrounds) return [true, false, null];
+      const c = node.container();
+      if (c != null && c.TopLeft != null && node.TopLeft != null && !c.surrounds(node, 0)) {
+        return [true, false, null];
       }
       if (node.isContainer) {
-        const children = this.Containers ? this.Containers.get(node) : null;
-        if (children) {
-          for (const child of children) {
-            if (guard) { const e = guard.Step(); if (e) return [false, false, e]; }
-            if (child == null || child.TopLeft == null) {
-              return [false, false, new Error('transaction container has an incomplete child')];
-            }
-            const surrounds = typeof node.surrounds === 'function' ? node.surrounds(child, 0) : node.Surrounds(child, 0);
-            if (!surrounds) return [true, false, null];
+        for (const child of this.Containers.get(node) ?? []) {
+          guard.Step();
+          if (child == null || child.TopLeft == null) {
+            return [false, false, new Error('layout invariant violated: transaction container has an incomplete child')];
           }
+          if (!node.surrounds(child, 0)) return [true, false, null];
         }
       }
     }
 
-    // Fixed-origin check
-    let pastFixedOrigin = false;
+    let pastFixedOrigin;
     if (fixedOriginCached) {
       pastFixedOrigin = fixedOrigin != null &&
         (node.TopLeft.X < fixedOrigin.X || node.TopLeft.Y < fixedOrigin.Y);
     } else {
-      pastFixedOrigin = typeof node.isPointPastFixedOrigin === 'function'
-        ? node.isPointPastFixedOrigin(node.TopLeft.X, node.TopLeft.Y, true)
-        : false;
+      pastFixedOrigin = node.isPointPastFixedOrigin(node.TopLeft.X, node.TopLeft.Y, true);
     }
     if (pastFixedOrigin) return [true, false, null];
 
-    // FixedTopLeft invariant
     if (node.FixedTopLeft != null && graphState != null) {
-      let originalPoint = { X: 0, Y: 0 };
-      const geometry = graphState.nodeGeometry ? graphState.nodeGeometry.get(node) : null;
-      if (geometry && geometry.topLeft && geometry.topLeft.pointer != null) {
-        originalPoint = { X: geometry.topLeft.x, Y: geometry.topLeft.y };
+      let originalX = 0;
+      let originalY = 0;
+      const original = graphState.nodeGeometry.get(node);
+      if (original !== undefined && original.topLeft != null) {
+        originalX = original.topLeft.x;
+        originalY = original.topLeft.y;
       }
-      if (node.TopLeft.X !== originalPoint.X || node.TopLeft.Y !== originalPoint.Y) {
+      if (node.TopLeft.X !== originalX || node.TopLeft.Y !== originalY) {
         return [true, false, null];
       }
     }
@@ -955,72 +949,95 @@ export class Graph {
   }
 
   /**
-   * hasBadOverlapStateContext checks whether node overlaps any non-excepted peer.
    * Mirrors: Go Graph.hasBadOverlapStateContext
+   * @returns {[boolean, Error|null]}
    */
   hasBadOverlapStateContext(node, graphState, guard) {
     if (node == null || node.TopLeft == null) {
-      return [true, new Error('transaction overlap check received an incomplete node')];
+      return [true, new Error('layout invariant violated: transaction overlap check received an incomplete node')];
     }
     if (node.Cluster != null) return [false, null];
-
-    const pairwiseExceptions = graphState ? graphState.existingOverlaps : null;
+    const pairwiseExceptions = graphState != null ? graphState.existingOverlaps : null;
     let exceptions = [];
-    if (node.isContainer || node.isClusterVessel || (this.Sequences && this.Sequences.get(node))) {
-      exceptions = this.allDescendantNodesGuarded(node, true, guard || { Step() {}, Finish() {} });
+    if (node.isContainer || node.isClusterVessel || this.Sequences.get(node) != null) {
+      exceptions = this.allDescendantNodesGuarded(node, true, guard);
     }
     if (node.Container != null || node.Cluster != null || node.Sequence != null) {
-      const ancestors = this.ancestorsOfGuarded(node, guard || { Step() {}, Finish() {} });
+      const [ancestors, err] = this.ancestorsOfGuarded(node, guard);
+      if (err != null) return [false, err];
       exceptions = exceptions.concat(ancestors);
     }
     return this.doesOverlapWithDimensionsContext(node, node.TopLeft, node.Width, node.Height, exceptions, pairwiseExceptions, guard);
   }
 
   /**
-   * doesOverlapWithDimensionsContext checks whether node at point overlaps any graph node.
-   * Mirrors: Go Graph.doesOverlapWithDimensionsContext (from graph.go / validation)
+   * Mirrors: Go Graph.doesOverlapWithDimensionsContext
+   * @returns {[boolean, Error|null]}
    */
-  doesOverlapWithDimensionsContext(node, point, width, height, exceptions, pairwiseExceptions, guard) {
-    if (node == null || point == null) return [false, null];
-    const exceptSet = new Set(exceptions || []);
-    const right = point.X + width;
-    const bottom = point.Y + height;
-    for (const other of (this.Nodes || [])) {
-      if (guard) { const e = guard.Step(); if (e) return [false, e]; }
-      if (other == null || other === node || other.TopLeft == null) continue;
-      if (exceptSet.has(other)) continue;
-      if (pairwiseExceptions) {
-        const exMap = pairwiseExceptions.get(node);
-        if (exMap && exMap.has(other)) continue;
-      }
-      const delta = (typeof node.deltaTo === 'function') ? Number(node.deltaTo(other, point)) : 0;
-      if (
-        point.X < other.TopLeft.X + other.Width + delta &&
-        right + delta > other.TopLeft.X &&
-        point.Y < other.TopLeft.Y + other.Height + delta &&
-        bottom + delta > other.TopLeft.Y
-      ) {
-        return [true, null];
+  doesOverlapWithDimensionsContext(node, p, newWidth, newHeight, exceptions, pairwiseExceptions, guard) {
+    if (node == null || p == null) {
+      return [true, new Error('layout invariant violated: overlap check received an incomplete node')];
+    }
+    const right = p.X + newWidth;
+    const bottom = p.Y + newHeight;
+    let exceptionSet = null;
+    if (exceptions != null && exceptions.length > 0) {
+      exceptionSet = new Set();
+      for (const exception of exceptions) {
+        guard.Step();
+        exceptionSet.add(exception);
       }
     }
+    const pairwiseNodeExceptions = pairwiseExceptions != null ? pairwiseExceptions.get(node) : undefined;
+    for (const otherNode of this.Nodes) {
+      guard.Step();
+      if (otherNode == null) {
+        return [false, new Error('layout invariant violated: overlap check encountered a nil graph node')];
+      }
+      if (otherNode === node) continue;
+      if (otherNode.TopLeft != null) {
+        const maxSafeDelta = 500.0;
+        if (
+          p.X > otherNode.TopLeft.X + otherNode.Width + maxSafeDelta ||
+          p.X + newWidth + maxSafeDelta < otherNode.TopLeft.X ||
+          p.Y > otherNode.TopLeft.Y + otherNode.Height + maxSafeDelta ||
+          p.Y + newHeight + maxSafeDelta < otherNode.TopLeft.Y
+        ) {
+          continue;
+        }
+        if (pairwiseNodeExceptions !== undefined && pairwiseNodeExceptions.has(otherNode)) continue;
+        if (exceptionSet != null && exceptionSet.has(otherNode)) continue;
+        const delta = node.deltaToGuarded(otherNode, p, guard);
+        if (
+          p.X < otherNode.TopLeft.X + otherNode.Width + delta &&
+          right + delta > otherNode.TopLeft.X &&
+          p.Y < otherNode.TopLeft.Y + otherNode.Height + delta &&
+          bottom + delta > otherNode.TopLeft.Y
+        ) {
+          return [true, null];
+        }
+      }
+    }
+    guard.Finish();
     return [false, null];
   }
 
   /**
-   * ancestorsOfGuarded collects ancestors of node (not including node itself).
-   * Mirrors: Go Graph.ancestorsOfGuarded
-   * @param {object} node
-   * @param {object} guard
-   * @returns {Array<object>}
+   * Mirrors: Go Graph.ancestorsOfGuarded (excludes node itself).
+   * @returns {[Array<Node>|null, Error|null]}
    */
   ancestorsOfGuarded(node, guard) {
     const seen = new Set();
     const nodes = [];
     for (let current = node; current != null;) {
-      if (guard) { const e = guard.Step(); if (e) return nodes; }
-      if (seen.has(current)) break; // cycle guard
+      guard.Step();
+      if (seen.has(current)) {
+        return [null, new Error('layout invariant violated: cycle in transaction ancestry')];
+      }
       seen.add(current);
-      if (seen.size > 32768) break; // hard limit
+      if (seen.size > MAX_ENGINE_NODES) {
+        return [null, new Error('layout invariant violated: transaction ancestry exceeds node limit')];
+      }
       if (current !== node) {
         nodes.push(current);
       }
@@ -1034,7 +1051,8 @@ export class Graph {
         break;
       }
     }
-    return nodes;
+    guard.Finish();
+    return [nodes, null];
   }
 }
 

@@ -1,7 +1,7 @@
 # ADR-044: Compaction + Generic Sized Movement
 
 ## Status
-Implemented — awaiting Slice 43 review
+Accepted
 
 ## Context
 Slice 43 ports the dependency-closed placement block that sits between first-stage sizeless optimization and the later sized optimizer. The pinned Go implementation places compaction on top of shared node-spacing geometry, visibility-graph construction, candidate generation, placement-cost scoring, and atomic stage rollback.

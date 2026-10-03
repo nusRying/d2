@@ -1,30 +1,55 @@
+/**
+ * Gap reduction — pull connected neighbors closer when a large gap separates
+ * them, while keeping every speculative move transactional.
+ *
+ * Pinned Go: d2layouts/d2talalayout/internal/placement/gapreduction.go
+ * Pinned Go authority: 01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579
+ *
+ * Errors throw. Every transaction refresh is checked; a failed refresh rolls
+ * back to the previous valid rollback point (Transaction.UpdateState) and the
+ * error propagates before any accepted geometry can be reported.
+ *
+ * BROWSER-SAFE: No fs, path, crypto, process, Math.random, node: imports.
+ */
+
 import { ensureTransactionWorkGuard } from '../limits/transaction-guard.js';
+import { getContextError } from '../limits/work-context.js';
 import { edgeLength } from '../placementcost/graph.js';
 import { IDEAL_GAP_SIZE } from '../placementcost/geometry.js';
 import {
-  LayoutAxis,
-  TraversalDirection,
   axisValid,
   axisIsHorizontal,
   directionValid,
   directionIsForward,
   oppositeDirection,
 } from './axis.js';
-import { isCandidateRejection, ErrNonImprovingCandidate, ErrInvalidCandidate } from '../graph/transaction.js';
+import {
+  isCandidateRejection,
+  isInvalidCandidate,
+  isNonImprovingCandidate,
+  ErrNonImprovingCandidate,
+} from '../graph/transaction.js';
 import { precisionCompare, PRECISION } from '../geometry/math.js';
 
+// Pinned Go: placement/tuning.go largeGapThreshold
 const largeGapThreshold = 0.5;
+
+const SCORING_OPTIONS = Object.freeze({
+  EdgeAbductions: null,
+  IncludeNodeSizes: true,
+  EnforceMinimumGap: false,
+  PenalizeDirection: false,
+});
+
+function compareIDs(left, right) {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
+}
 
 /**
  * Assumes ahead is ahead of behind when forwards is true.
  * Pinned Go: placement.isBetween
- *
- * @param {import('../graph/node.js').Node} node
- * @param {import('../graph/node.js').Node} behind
- * @param {import('../graph/node.js').Node} ahead
- * @param {boolean} isHorizontal
- * @param {boolean} forwards
- * @returns {boolean}
  */
 export function isBetween(node, behind, ahead, isHorizontal, forwards) {
   const delta = behind.deltaTo(node, behind.TopLeft);
@@ -35,17 +60,15 @@ export function isBetween(node, behind, ahead, isHorizontal, forwards) {
     if (node.TopLeft.Y > behind.TopLeft.Y + behind.Height + delta) {
       return false;
     }
-
-    let b = behind;
-    let a = ahead;
     if (!forwards) {
-      b = ahead;
-      a = behind;
+      [behind, ahead] = [ahead, behind];
     }
-    if (node.TopLeft.X + node.Width < b.TopLeft.X + b.Width) {
+    // n is behind behind
+    if (node.TopLeft.X + node.Width < behind.TopLeft.X + behind.Width) {
       return false;
     }
-    if (node.TopLeft.X > a.TopLeft.X) {
+    // n is ahead of ahead
+    if (node.TopLeft.X > ahead.TopLeft.X) {
       return false;
     }
   } else {
@@ -55,17 +78,13 @@ export function isBetween(node, behind, ahead, isHorizontal, forwards) {
     if (node.TopLeft.X > behind.TopLeft.X + behind.Width + delta) {
       return false;
     }
-
-    let b = behind;
-    let a = ahead;
     if (!forwards) {
-      b = ahead;
-      a = behind;
+      [behind, ahead] = [ahead, behind];
     }
-    if (node.TopLeft.Y + node.Height < b.TopLeft.Y + b.Height) {
+    if (node.TopLeft.Y + node.Height < behind.TopLeft.Y + behind.Height) {
       return false;
     }
-    if (node.TopLeft.Y > a.TopLeft.Y) {
+    if (node.TopLeft.Y > ahead.TopLeft.Y) {
       return false;
     }
   }
@@ -75,21 +94,13 @@ export function isBetween(node, behind, ahead, isHorizontal, forwards) {
 export const IsBetween = isBetween;
 
 /**
- * Assumes otherNode is ahead of node when forwards is true.
+ * Assumes ahead is ahead of behind when forwards is true. The first node wins
+ * ties, so callers must pass the order-preserving ConnectedNodes traversal.
  * Pinned Go: placement.nearestBetween
- *
- * @param {import('../graph/node.js').Node[]} nodes
- * @param {import('../graph/node.js').Node} behind
- * @param {import('../graph/node.js').Node} ahead
- * @param {import('../graph/node.js').Node} inContainer
- * @param {boolean} isHorizontal
- * @param {boolean} forwards
- * @returns {import('../graph/node.js').Node|null}
  */
 export function nearestBetween(nodes, behind, ahead, inContainer, isHorizontal, forwards) {
   let nearest = null;
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i];
+  for (const n of nodes) {
     if (n === behind || n === ahead) {
       continue;
     }
@@ -108,50 +119,33 @@ export function nearestBetween(nodes, behind, ahead, inContainer, isHorizontal, 
         if (n.TopLeft.X < nearest.TopLeft.X) {
           nearest = n;
         }
-      } else {
-        if (n.TopLeft.X + n.Width > nearest.TopLeft.X + nearest.Width) {
-          nearest = n;
-        }
+      } else if (n.TopLeft.X + n.Width > nearest.TopLeft.X + nearest.Width) {
+        nearest = n;
       }
-    } else {
-      if (forwards) {
-        if (n.TopLeft.Y < nearest.TopLeft.Y) {
-          nearest = n;
-        }
-      } else {
-        if (n.TopLeft.Y + n.Height > nearest.TopLeft.Y + nearest.Height) {
-          nearest = n;
-        }
+    } else if (forwards) {
+      if (n.TopLeft.Y < nearest.TopLeft.Y) {
+        nearest = n;
       }
+    } else if (n.TopLeft.Y + n.Height > nearest.TopLeft.Y + nearest.Height) {
+      nearest = n;
     }
   }
-
   return nearest;
 }
 
 export const NearestBetween = nearestBetween;
 
 /**
- * nearestConnectedAhead finds the nearest connected node in the specified traversal direction.
- * Pinned Go: placement.nearestConnectedAhead
- *
- * @param {import('../graph/node.js').Node} node
- * @param {boolean} isHorizontal
- * @param {boolean} forwards
- * @returns {import('../graph/node.js').Node|null}
+ * nearestConnectedAhead finds the nearest connected node in the traversal
+ * direction. Pinned Go: placement.nearestConnectedAhead
  */
 export function nearestConnectedAhead(node, isHorizontal, forwards) {
   let nearest = null;
-  const edges = node.Edges || [];
-
-  for (let i = 0; i < edges.length; i++) {
-    const adj = node.adjacent(edges[i]);
-    if (adj == null || adj.TopLeft == null) {
-      continue;
-    }
+  for (const e of node.Edges) {
+    const adj = node.adjacent(e);
     if (isHorizontal) {
       if (forwards) {
-        // if adj's left is behind node's right it's not ahead
+        // if adj's left is behind node's right its not ahead
         if (adj.TopLeft.X < node.TopLeft.X + node.Width) {
           continue;
         }
@@ -159,7 +153,7 @@ export function nearestConnectedAhead(node, isHorizontal, forwards) {
           nearest = adj;
         }
       } else {
-        // if adj's right is ahead of node's left it's not behind
+        // if adj's right is ahead of node's left its not behind
         if (adj.TopLeft.X + adj.Width > node.TopLeft.X) {
           continue;
         }
@@ -167,43 +161,54 @@ export function nearestConnectedAhead(node, isHorizontal, forwards) {
           nearest = adj;
         }
       }
+    } else if (forwards) {
+      if (adj.TopLeft.Y < node.TopLeft.Y + node.Height) {
+        continue;
+      }
+      if (nearest == null || adj.TopLeft.Y < nearest.TopLeft.Y) {
+        nearest = adj;
+      }
     } else {
-      if (forwards) {
-        if (adj.TopLeft.Y < node.TopLeft.Y + node.Height) {
-          continue;
-        }
-        if (nearest == null || adj.TopLeft.Y < nearest.TopLeft.Y) {
-          nearest = adj;
-        }
-      } else {
-        if (adj.TopLeft.Y + adj.Height > node.TopLeft.Y) {
-          continue;
-        }
-        if (nearest == null || adj.TopLeft.Y + adj.Height > nearest.TopLeft.Y + nearest.Height) {
-          nearest = adj;
-        }
+      if (adj.TopLeft.Y + adj.Height > node.TopLeft.Y) {
+        continue;
+      }
+      if (nearest == null || adj.TopLeft.Y + adj.Height > nearest.TopLeft.Y + nearest.Height) {
+        nearest = adj;
       }
     }
   }
-
   return nearest;
 }
 
 export const NearestConnectedAhead = nearestConnectedAhead;
 
+function newGapTransaction(ctx, g) {
+  const [txn, err] = g.newRequestTransaction(ctx, { AffectContainers: true });
+  if (err != null) {
+    throw err;
+  }
+  return txn;
+}
+
+function refresh(txn) {
+  txn.clear();
+  const err = txn.updateState();
+  if (err != null) {
+    throw err;
+  }
+}
+
 /**
- * reduceGapToNeighbors attempts to reduce the gap between this node and its neighbors in front of it.
- * Pinned Go: placement.reduceGapToNeighbors
+ * reduceGapToNeighbors attempts to reduce the gap between this node and its
+ * neighbors in front of it.
  *
- * @param {object} ctx
- * @param {import('../graph/node.js').Node} node
- * @param {import('../graph/transaction.js').Transaction|null} txn
- * @param {{ axis: number, direction: number, attemptRecoverSymmetry?: boolean, costTxn?: import('../graph/transaction.js').Transaction }} options
- * @returns {[boolean, number]} [changed, newEdgeLength]
+ * Pinned Go: placement.reduceGapToNeighbors
+ * @returns {[boolean, number]} [changed, newEdgeLength]. Errors throw.
  */
 export function reduceGapToNeighbors(ctx, node, txn, options) {
-  if (ctx.Err && ctx.Err() != null) {
-    throw ctx.Err();
+  const ctxErr = getContextError(ctx);
+  if (ctxErr != null) {
+    throw ctxErr;
   }
   if (!axisValid(options.axis)) {
     throw new Error('TALA gap reduction requires an axis');
@@ -211,35 +216,29 @@ export function reduceGapToNeighbors(ctx, node, txn, options) {
   if (!directionValid(options.direction)) {
     throw new Error('TALA gap reduction requires a direction');
   }
-
   const isHorizontal = axisIsHorizontal(options.axis);
   const forwards = directionIsForward(options.direction);
-  const attemptRecoverSymmetry = options.attemptRecoverSymmetry ?? false;
-
-  if (node.Graph.CellSize === 0 && typeof node.Graph.computeCellSize === 'function') {
+  const attemptRecoverSymmetry = Boolean(options.attemptRecoverSymmetry);
+  // Needed for calculating partial symmetry
+  if (node.Graph.CellSize === 0) {
     node.Graph.computeCellSize();
   }
 
-  const nearestAhead = nearestConnectedAhead(node, isHorizontal, forwards);
+  let nearestAhead = nearestConnectedAhead(node, isHorizontal, forwards);
   if (nearestAhead == null) {
     return [false, 0];
   }
-
   // if nearest ahead is fixed or is within a fixed node, we can't pull it closer
   for (let c = nearestAhead.Container; c != null; c = c.Container) {
     if (c.FixedTopLeft != null) {
       return [false, 0];
     }
   }
-
-  let excluded = [node];
+  const excluded = [node];
   if (node.HerdAssignment != null) {
-    const containerNodes = node.Graph.Containers instanceof Map
-      ? (node.Graph.Containers.get(node.Container) || [])
-      : (node.Graph.Containers?.[node.Container] || []);
-
-    for (let i = 0; i < containerNodes.length; i++) {
-      const sibling = containerNodes[i];
+    // Siblings herded on the same side would lose their alignment if the
+    // connected set were pulled towards this node.
+    for (const sibling of node.Graph.Containers.get(node.Container) ?? []) {
       if (sibling === node || sibling.HerdAssignment == null || nearestAhead.isDescendantOf(sibling)) {
         continue;
       }
@@ -250,65 +249,56 @@ export function reduceGapToNeighbors(ctx, node, txn, options) {
   }
 
   const sharedContainer = node.nearestSharedAncestor(nearestAhead);
-  const connectedToNearest = nearestAhead.connectedNodes(excluded, node.Graph);
   const nearestBetweenNode = nearestBetween(
-    connectedToNearest,
+    nearestAhead.connectedNodes(excluded, node.Graph),
     node,
     nearestAhead,
     sharedContainer,
     isHorizontal,
-    forwards
+    forwards,
   );
 
-  const fixedNodes = typeof node.Graph.fixedNodes === 'function' ? node.Graph.fixedNodes() : [];
-  excluded = [...excluded, ...fixedNodes];
+  // we don't want fixed nodes preventing us from getting the actual nearest
+  // between, but we only want to move connected nodes up until a fixed node
+  excluded.push(...node.Graph.fixedNodes());
   const connectedNodes = nearestAhead.connectedNodeSet(excluded, node.Graph);
 
-  let effectiveNearestAhead = nearestAhead;
   if (nearestBetweenNode != null) {
-    effectiveNearestAhead = nearestBetweenNode;
+    nearestAhead = nearestBetweenNode;
   }
 
-  if (options.costTxn) {
-    options.costTxn.capturePlacementCosts('GapNormalizationTransactions');
+  if (options.costTxn != null) {
+    const captureErr = options.costTxn.capturePlacementCosts('GapNormalizationTransactions');
+    if (captureErr != null) {
+      throw captureErr;
+    }
   }
-
-  const oldEdgeLength = edgeLength(ctx, node.Graph, {
-    EdgeAbductions: null,
-    IncludeNodeSizes: true,
-    EnforceMinimumGap: false,
-    PenalizeDirection: false,
-  });
+  const oldEdgeLength = edgeLength(ctx, node.Graph, SCORING_OPTIONS);
   let newEdgeLength = oldEdgeLength;
 
   const nodesInBetween = [];
-  const allNodes = node.Graph.Nodes || [];
-  for (let i = 0; i < allNodes.length; i++) {
-    const n = allNodes[i];
-    if (n === node || n === effectiveNearestAhead) {
+  for (const n of node.Graph.Nodes) {
+    if (n === node || n === nearestAhead) {
       continue;
     }
-    const isAConnectedNode = connectedNodes.includes(n);
-    if (isAConnectedNode) {
+    if (connectedNodes.includes(n)) {
       continue;
     }
     if (forwards) {
-      if (n.isBlocked(node, effectiveNearestAhead, true, isHorizontal)) {
+      if (n.isBlocked(node, nearestAhead, true, isHorizontal)) {
         nodesInBetween.push(n);
       }
-    } else {
-      if (n.isBlocked(effectiveNearestAhead, node, true, isHorizontal)) {
-        nodesInBetween.push(n);
-      }
+    } else if (n.isBlocked(nearestAhead, node, true, isHorizontal)) {
+      nodesInBetween.push(n);
     }
   }
 
   let backwardTxn = null;
-  const candidateNodes = [node, ...nodesInBetween];
-
-  for (let ci = 0; ci < candidateNodes.length; ci++) {
-    let candidateNode = candidateNodes[ci];
-    while (candidateNode.owningContainer() !== effectiveNearestAhead.owningContainer()) {
+  // We try pulling the nearest ahead to any nodes in between
+  for (let candidateNode of [node, ...nodesInBetween]) {
+    // if nearest ahead is less nested, only move it to the candidate's ancestor
+    // in the same container
+    while (candidateNode.owningContainer() !== nearestAhead.owningContainer()) {
       candidateNode = candidateNode.owningContainer();
       if (candidateNode == null) {
         break;
@@ -317,20 +307,15 @@ export function reduceGapToNeighbors(ctx, node, txn, options) {
     if (candidateNode == null) {
       continue;
     }
-
-    let gapSize = 0;
+    let gapSize;
     if (isHorizontal) {
-      if (forwards) {
-        gapSize = effectiveNearestAhead.TopLeft.X - (candidateNode.TopLeft.X + candidateNode.Width);
-      } else {
-        gapSize = candidateNode.TopLeft.X - (effectiveNearestAhead.TopLeft.X + effectiveNearestAhead.Width);
-      }
+      gapSize = forwards
+        ? nearestAhead.TopLeft.X - (candidateNode.TopLeft.X + candidateNode.Width)
+        : candidateNode.TopLeft.X - (nearestAhead.TopLeft.X + nearestAhead.Width);
     } else {
-      if (forwards) {
-        gapSize = effectiveNearestAhead.TopLeft.Y - (candidateNode.TopLeft.Y + candidateNode.Height);
-      } else {
-        gapSize = candidateNode.TopLeft.Y - (effectiveNearestAhead.TopLeft.Y + effectiveNearestAhead.Height);
-      }
+      gapSize = forwards
+        ? nearestAhead.TopLeft.Y - (candidateNode.TopLeft.Y + candidateNode.Height)
+        : candidateNode.TopLeft.Y - (nearestAhead.TopLeft.Y + nearestAhead.Height);
     }
 
     if (gapSize <= largeGapThreshold * node.Graph.CellSize) {
@@ -346,292 +331,235 @@ export function reduceGapToNeighbors(ctx, node, txn, options) {
     }
 
     let candidateEdgeLength = 0;
-    let localTxn = txn;
-    if (localTxn == null) {
-      const [t, err] = node.Graph.newRequestTransaction(ctx, { affectContainers: true });
-      if (err != null) {
-        throw err;
-      }
-      localTxn = t;
+    if (txn == null) {
+      txn = newGapTransaction(ctx, node.Graph);
     } else {
-      localTxn.clear();
-      localTxn.updateState();
+      refresh(txn); // refresh-site: candidate
     }
-
-    localTxn.addOp(() => {
-      for (let j = 0; j < connectedNodes.length; j++) {
-        const cn = connectedNodes[j];
+    const candidateTxn = txn;
+    txn.addOp(() => {
+      for (const n of connectedNodes) {
         if (isHorizontal) {
-          cn.translate(delta, 0);
+          n.translate(delta, 0);
         } else {
-          cn.translate(0, delta);
+          n.translate(0, delta);
         }
       }
-      if (typeof node.Graph.syncClusters === 'function') {
-        node.Graph.syncClusters();
-      }
-      if (typeof node.Graph.syncSequences === 'function') {
-        node.Graph.syncSequences();
-      }
+      node.Graph.syncClusters();
+      node.Graph.syncSequences();
+      candidateEdgeLength = edgeLength(ctx, node.Graph, SCORING_OPTIONS);
 
-      candidateEdgeLength = edgeLength(ctx, node.Graph, {
-        EdgeAbductions: null,
-        IncludeNodeSizes: true,
-        EnforceMinimumGap: false,
-        PenalizeDirection: false,
-      });
-
+      // Before we commit to anything, try to "recover symmetry" by running gap
+      // reduction on the opposite side.
       if (attemptRecoverSymmetry) {
         if (backwardTxn == null) {
-          const [bt, bErr] = localTxn.cloneGeometryContext();
-          if (bErr != null) {
-            throw bErr;
+          const [cloned, cloneErr] = candidateTxn.cloneGeometryContext();
+          if (cloneErr != null) {
+            return cloneErr;
           }
-          backwardTxn = bt;
+          backwardTxn = cloned;
         }
         backwardTxn.clear();
-        backwardTxn.updateState();
-
+        const updateErr = backwardTxn.updateState(); // refresh-site: backward
+        if (updateErr != null) {
+          return updateErr;
+        }
         const [mirroredTxn, cloneErr] = backwardTxn.cloneGeometryContext();
         if (cloneErr != null) {
-          throw cloneErr;
+          return cloneErr;
         }
-
         backwardTxn.addOp(() => {
           const [moved, mirroredEdgeLength] = reduceGapToNeighbors(ctx, node, mirroredTxn, {
             axis: options.axis,
             direction: oppositeDirection(options.direction),
             costTxn: options.costTxn,
           });
-
           if (moved && mirroredEdgeLength < candidateEdgeLength && mirroredEdgeLength < oldEdgeLength) {
-            return;
+            return null;
           }
           return ErrNonImprovingCandidate;
         });
-
-        const commitErr = backwardTxn.commit(ctx);
-        if (commitErr != null) {
-          if (!isCandidateRejection(commitErr)) {
-            throw commitErr;
+        const backwardErr = backwardTxn.commit(ctx);
+        if (backwardErr != null) {
+          if (!isCandidateRejection(backwardErr)) {
+            return backwardErr;
           }
         } else {
-          return;
+          // If the backward commit was successful, it means it was optimal
+          return null;
         }
       }
 
       if (candidateEdgeLength >= oldEdgeLength) {
         return ErrNonImprovingCandidate;
       }
+      return null;
     });
-
-    const commitErr = localTxn.commit(ctx);
-    if (commitErr != null) {
-      localTxn.clear();
-      if (commitErr instanceof ErrNonImprovingCandidate.constructor || commitErr === ErrNonImprovingCandidate) {
+    const err = txn.commit(ctx);
+    if (err != null) {
+      txn.clear();
+      // Continue searching after an invalid candidate. A non-improving
+      // candidate cannot get better by searching farther forward.
+      if (isNonImprovingCandidate(err)) {
         break;
       }
-      if (!(commitErr instanceof ErrInvalidCandidate.constructor || commitErr === ErrInvalidCandidate)) {
-        throw commitErr;
+      if (!isInvalidCandidate(err)) {
+        throw err;
       }
     } else {
       newEdgeLength = candidateEdgeLength;
-      localTxn.clear();
-      localTxn.updateState();
+      refresh(txn); // refresh-site: accepted
       break;
     }
   }
 
-  // Try moving non-fixed node to the side of its container
-  let movingNode = node;
-  if (movingNode.Container != null && movingNode.Container !== effectiveNearestAhead.Container && movingNode.FixedTopLeft == null) {
-    while (movingNode.owningContainer() !== effectiveNearestAhead.owningContainer()) {
-      const innerBox = movingNode.Container.innerBox();
+  // try moving non-fixed node to the side of its container
+  if (node.Container != null && node.Container !== nearestAhead.Container && node.FixedTopLeft == null) {
+    while (node.owningContainer() !== nearestAhead.owningContainer()) {
+      const innerBox = node.Container.innerBox();
 
-      let gapSize = 0;
+      let gapSize;
       if (isHorizontal) {
-        if (forwards) {
-          gapSize = innerBox.TopLeft.X + innerBox.Width - (movingNode.TopLeft.X + movingNode.Width);
-        } else {
-          gapSize = movingNode.TopLeft.X - innerBox.TopLeft.X;
-        }
+        gapSize = forwards
+          ? innerBox.TopLeft.X + innerBox.Width - (node.TopLeft.X + node.Width)
+          : node.TopLeft.X - innerBox.TopLeft.X;
       } else {
-        if (forwards) {
-          gapSize = innerBox.TopLeft.Y + innerBox.Height - (movingNode.TopLeft.Y + movingNode.Height);
-        } else {
-          gapSize = movingNode.TopLeft.Y - innerBox.TopLeft.Y;
-        }
+        gapSize = forwards
+          ? innerBox.TopLeft.Y + innerBox.Height - (node.TopLeft.Y + node.Height)
+          : node.TopLeft.Y - innerBox.TopLeft.Y;
       }
 
-      const padding = movingNode.Graph.containerPadding(movingNode.Container, true);
+      const padding = node.Graph.containerPadding(node.Container, true);
       let delta = gapSize;
       if (isHorizontal) {
-        if (forwards) {
-          delta -= typeof padding.right === 'function' ? padding.right() : (padding.right ?? 0);
-        } else {
-          delta -= typeof padding.left === 'function' ? padding.left() : (padding.left ?? 0);
-        }
+        delta -= forwards ? padding.Right() : padding.Left();
       } else {
-        if (forwards) {
-          delta -= typeof padding.bottom === 'function' ? padding.bottom() : (padding.bottom ?? 0);
-        } else {
-          delta -= typeof padding.top === 'function' ? padding.top() : (padding.top ?? 0);
-        }
+        delta -= forwards ? padding.Bottom() : padding.Top();
       }
-
       if (!forwards) {
         delta = -delta;
       }
-
-      if (gapSize > largeGapThreshold * movingNode.Graph.CellSize && delta !== 0) {
-        let localTxn = txn;
-        if (localTxn == null) {
-          const [t, err] = movingNode.Graph.newRequestTransaction(ctx, { affectContainers: true });
-          if (err != null) {
-            throw err;
-          }
-          localTxn = t;
+      if (gapSize > largeGapThreshold * node.Graph.CellSize && delta !== 0) {
+        if (txn == null) {
+          txn = newGapTransaction(ctx, node.Graph);
         } else {
-          localTxn.clear();
-          localTxn.updateState();
+          refresh(txn); // refresh-site: container-side
         }
-
-        const nodeToMove = movingNode;
-        localTxn.addOp(() => {
+        const moving = node;
+        const sideDelta = delta;
+        txn.addOp(() => {
           if (isHorizontal) {
-            nodeToMove.moveWithChildren(delta, 0);
+            moving.moveWithChildren(sideDelta, 0);
           } else {
-            nodeToMove.moveWithChildren(0, delta);
+            moving.moveWithChildren(0, sideDelta);
           }
+          return null;
         });
-
         let rolledBack = false;
-        const commitErr = localTxn.commit(ctx);
-        if (commitErr != null) {
-          if (!isCandidateRejection(commitErr)) {
-            throw commitErr;
+        const err = txn.commit(ctx);
+        if (err != null) {
+          if (!isCandidateRejection(err)) {
+            throw err;
           }
           rolledBack = true;
         } else {
-          const movedEdgeLength = edgeLength(ctx, movingNode.Graph, {
-            EdgeAbductions: null,
-            IncludeNodeSizes: true,
-            EnforceMinimumGap: false,
-            PenalizeDirection: false,
-          });
+          let movedEdgeLength;
+          try {
+            movedEdgeLength = edgeLength(ctx, node.Graph, SCORING_OPTIONS);
+          } catch (scoreErr) {
+            txn.rollback();
+            throw scoreErr;
+          }
           if (precisionCompare(movedEdgeLength, newEdgeLength, PRECISION) >= 0) {
-            localTxn.rollback();
+            txn.rollback();
             rolledBack = true;
           } else {
             newEdgeLength = movedEdgeLength;
           }
         }
-
         if (rolledBack) {
-          localTxn.clear();
+          txn.clear();
+          // If moving to the side of the container obstructs something, move
+          // to IdealGapSize away from the next thing along that axis.
           let leastDistance = Infinity;
-          const containerNodes = movingNode.Graph.Containers instanceof Map
-            ? (movingNode.Graph.Containers.get(movingNode.owningContainer()) || [])
-            : (movingNode.Graph.Containers?.[movingNode.owningContainer()] || []);
-
-          for (let i = 0; i < containerNodes.length; i++) {
-            const otherNode = containerNodes[i];
-            if (movingNode === otherNode) {
+          for (const otherNode of node.Graph.Containers.get(node.owningContainer()) ?? []) {
+            if (node === otherNode) {
               continue;
             }
             if (isHorizontal) {
               if (forwards) {
                 const x = otherNode.TopLeft.X - IDEAL_GAP_SIZE;
-                if (x > movingNode.TopLeft.X + movingNode.Width) {
-                  if (x - (movingNode.TopLeft.X + movingNode.Width) < leastDistance) {
-                    leastDistance = x - (movingNode.TopLeft.X + movingNode.Width);
-                  }
+                if (x > node.TopLeft.X + node.Width && x - (node.TopLeft.X + node.Width) < leastDistance) {
+                  leastDistance = x - (node.TopLeft.X + node.Width);
                 }
               } else {
                 const x = otherNode.TopLeft.X + otherNode.Width + IDEAL_GAP_SIZE;
-                if (x < movingNode.TopLeft.X) {
-                  if (movingNode.TopLeft.X - x < leastDistance) {
-                    leastDistance = movingNode.TopLeft.X - x;
-                  }
+                if (x < node.TopLeft.X && node.TopLeft.X - x < leastDistance) {
+                  leastDistance = node.TopLeft.X - x;
                 }
               }
+            } else if (forwards) {
+              const y = otherNode.TopLeft.Y - IDEAL_GAP_SIZE;
+              if (y > node.TopLeft.Y + node.Height && y - (node.TopLeft.Y + node.Height) < leastDistance) {
+                leastDistance = y - (node.TopLeft.Y + node.Height);
+              }
             } else {
-              if (forwards) {
-                const y = otherNode.TopLeft.Y - IDEAL_GAP_SIZE;
-                if (y > movingNode.TopLeft.Y + movingNode.Height) {
-                  if (y - (movingNode.TopLeft.Y + movingNode.Height) < leastDistance) {
-                    leastDistance = y - (movingNode.TopLeft.Y + movingNode.Height);
-                  }
-                }
-              } else {
-                const y = otherNode.TopLeft.Y + otherNode.Height + IDEAL_GAP_SIZE;
-                if (y < movingNode.TopLeft.Y) {
-                  if (movingNode.TopLeft.Y - y < leastDistance) {
-                    leastDistance = movingNode.TopLeft.Y - y;
-                  }
-                }
+              const y = otherNode.TopLeft.Y + otherNode.Height + IDEAL_GAP_SIZE;
+              if (y < node.TopLeft.Y && node.TopLeft.Y - y < leastDistance) {
+                leastDistance = node.TopLeft.Y - y;
               }
             }
           }
-
-          if (Number.isFinite(leastDistance)) {
-            let altDelta = leastDistance;
+          if (leastDistance !== Infinity) {
+            let nearDelta = leastDistance;
             if (!forwards) {
-              altDelta = -altDelta;
+              nearDelta = -nearDelta;
             }
-            localTxn.addOp(() => {
+            txn.addOp(() => {
               if (isHorizontal) {
-                nodeToMove.moveWithChildren(altDelta, 0);
+                moving.moveWithChildren(nearDelta, 0);
               } else {
-                nodeToMove.moveWithChildren(0, altDelta);
+                moving.moveWithChildren(0, nearDelta);
               }
+              return null;
             });
-
-            const altCommitErr = localTxn.commit(ctx);
-            if (altCommitErr != null) {
-              if (!isCandidateRejection(altCommitErr)) {
-                throw altCommitErr;
+            const nearErr = txn.commit(ctx);
+            if (nearErr != null) {
+              if (!isCandidateRejection(nearErr)) {
+                throw nearErr;
               }
             } else {
-              const movedEdgeLength = edgeLength(ctx, movingNode.Graph, {
-                EdgeAbductions: null,
-                IncludeNodeSizes: true,
-                EnforceMinimumGap: false,
-                PenalizeDirection: false,
-              });
+              let movedEdgeLength;
+              try {
+                movedEdgeLength = edgeLength(ctx, node.Graph, SCORING_OPTIONS);
+              } catch (scoreErr) {
+                txn.rollback();
+                throw scoreErr;
+              }
               if (precisionCompare(movedEdgeLength, newEdgeLength, PRECISION) >= 0) {
-                localTxn.rollback();
+                txn.rollback();
               } else {
                 newEdgeLength = movedEdgeLength;
-                localTxn.clear();
-                localTxn.updateState();
+                refresh(txn); // refresh-site: container-side-accepted
               }
             }
           }
         }
       }
-
-      movingNode = movingNode.owningContainer();
-      if (movingNode.Container == null) {
+      node = node.owningContainer();
+      if (node.Container == null) {
         break;
       }
     }
   }
-
   return [newEdgeLength !== oldEdgeLength, newEdgeLength];
 }
 
 export const ReduceGapToNeighbors = reduceGapToNeighbors;
 
 /**
- * gapNormalization runs gap reduction on a set of nodes in connection-count order.
+ * gapNormalization runs gap reduction on nodes in connection-count order.
  * Pinned Go: placement.gapNormalization
- *
- * @param {object} ctx
- * @param {import('../graph/node.js').Node[]} nodes
- * @param {import('../graph/transaction.js').Transaction} txn
- * @param {import('../graph/graph.js').Graph} g
- * @param {{ axis: number, direction: number, costTxn?: import('../graph/transaction.js').Transaction }} options
  * @returns {boolean}
  */
 export function gapNormalization(ctx, nodes, txn, g, options) {
@@ -641,35 +569,29 @@ export function gapNormalization(ctx, nodes, txn, g, options) {
   if (!directionValid(options.direction)) {
     throw new Error('TALA GapNormalization requires a direction');
   }
-
-  ensureTransactionWorkGuard(ctx, 'GapNormalizationTransactions');
-
-  const sortedByConnections = [...nodes];
+  [ctx] = ensureTransactionWorkGuard(ctx, 'GapNormalizationTransactions');
+  // Most-connected nodes first so central areas attract isolated nodes.
+  const sortedByConnections = [...(nodes ?? [])];
   sortedByConnections.sort((a, b) => {
-    const aLen = a.Edges ? a.Edges.length : 0;
-    const bLen = b.Edges ? b.Edges.length : 0;
-    if (bLen !== aLen) {
-      return bLen - aLen;
+    if (b.Edges.length !== a.Edges.length) {
+      return b.Edges.length < a.Edges.length ? -1 : 1;
     }
-    return Number(a.ID - b.ID);
+    return compareIDs(a.ID, b.ID);
   });
 
   let changed = false;
-
-  for (let i = 0; i < sortedByConnections.length; i++) {
-    const node = sortedByConnections[i];
-    if (g.NodeToTree && (g.NodeToTree instanceof Map ? g.NodeToTree.has(node) : g.NodeToTree[node] != null)) {
+  // whole trees can move towards other nodes but we don't want to move within trees
+  for (const node of sortedByConnections) {
+    if (g.NodeToTree.has(node)) {
       continue;
     }
     if (node.Hierarchy != null) {
       continue;
     }
-
     const [candidateTxn, cloneErr] = txn.cloneGeometryContext();
     if (cloneErr != null) {
       throw cloneErr;
     }
-
     txn.addOp(() => {
       reduceGapToNeighbors(ctx, node, candidateTxn, {
         axis: options.axis,
@@ -677,20 +599,22 @@ export function gapNormalization(ctx, nodes, txn, g, options) {
         attemptRecoverSymmetry: true,
         costTxn: options.costTxn,
       });
+      return null;
     });
-
-    const commitErr = txn.commit(ctx);
-    if (commitErr != null) {
-      if (!isCandidateRejection(commitErr)) {
-        throw commitErr;
+    const err = txn.commit(ctx);
+    if (err != null) {
+      if (!isCandidateRejection(err)) {
+        throw err;
       }
     } else {
-      txn.updateState();
+      const updateErr = txn.updateState(); // refresh-site: gap-normalization
+      if (updateErr != null) {
+        throw updateErr;
+      }
       changed = true;
     }
     txn.clear();
   }
-
   return changed;
 }
 
