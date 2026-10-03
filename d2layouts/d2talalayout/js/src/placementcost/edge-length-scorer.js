@@ -5,23 +5,7 @@ function wrapCountingContext(ctx, counter) {
   return {
     Err() {
       counter.count++;
-      if (typeof ctx.Err === 'function') {
-        return ctx.Err();
-      }
-      if (typeof ctx.err === 'function') {
-        return ctx.err();
-      }
-      return null;
-    },
-    err() {
-      counter.count++;
-      if (typeof ctx.err === 'function') {
-        return ctx.err();
-      }
-      if (typeof ctx.Err === 'function') {
-        return ctx.Err();
-      }
-      return null;
+      return ctx.Err();
     },
   };
 }

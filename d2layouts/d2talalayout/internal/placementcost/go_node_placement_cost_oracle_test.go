@@ -79,6 +79,7 @@ type AxisScoreScenarioJSON struct {
 }
 
 type ClusterPairScenarioJSON struct {
+	Panic bool `json:"panic,omitempty"`
 	Name       string `json:"name"`
 	FirstID    string `json:"firstId,omitempty"`
 	SecondID   string `json:"secondId,omitempty"`
@@ -182,6 +183,18 @@ func addTestNode(g *layoutgraph.Graph, x, y, w, h float64) *layoutgraph.Node {
 	n.TopLeft = geo.NewPoint(x, y)
 	g.AddNodeUnchecked(n)
 	return n
+}
+
+
+func capturePanic(fn func()) (panicked bool, value string) {
+	defer func() {
+		if r := recover(); r != nil {
+			panicked = true
+			value = fmt.Sprint(r)
+		}
+	}()
+	fn()
+	return false, ""
 }
 
 func TestGenerateNodePlacementCostOracle(t *testing.T) {
