@@ -126,4 +126,39 @@ describe('Slice 42 — initializeNodes Unit Tests', () => {
     assert.strictEqual(n3.TopLeft.X, 50);
     assert.strictEqual(n3.TopLeft.Y, 60);
   });
+
+  it('preserves exact context error messages at initializeNodes direct boundary', () => {
+    const makeGraph = () => {
+      const g = new Graph();
+      g.CellSize = 10;
+      const n1 = g.AddNode(new Node(1, 10, 10));
+      const n2 = g.AddNode(new Node(2, 10, 10));
+      addTestEdge(g, n1, n2);
+      return g;
+    };
+
+    assert.throws(
+      () => initializeNodes({ Err: () => new Error('context canceled') }, makeGraph()),
+      (err) => {
+        assert.strictEqual(err.message, 'InitializeNodes: context canceled');
+        return true;
+      }
+    );
+
+    assert.throws(
+      () => initializeNodes({ Err: () => new Error('context deadline exceeded') }, makeGraph()),
+      (err) => {
+        assert.strictEqual(err.message, 'InitializeNodes: context deadline exceeded');
+        return true;
+      }
+    );
+
+    assert.throws(
+      () => initializeNodes({ Err: () => new Error('oracle custom initialize error') }, makeGraph()),
+      (err) => {
+        assert.strictEqual(err.message, 'InitializeNodes: oracle custom initialize error');
+        return true;
+      }
+    );
+  });
 });

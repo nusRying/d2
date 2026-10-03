@@ -303,47 +303,8 @@ export class Node {
     return this.orderedNears();
   }
 
-  isContainerNode() {
-    return Boolean(this.isContainer);
-  }
-
-  IsContainer() {
-    return Boolean(this.isContainer);
-  }
-
   IsClusterVessel() {
     return Boolean(this.isClusterVessel);
-  }
-
-  adjacent(e) {
-    if (this === e.From) {
-      return e.To;
-    }
-    return e.From;
-  }
-
-  Adjacent(e) {
-    return this.adjacent(e);
-  }
-
-  isDescendantOf(maybeAncestor) {
-    if (maybeAncestor === this) {
-      return true;
-    }
-    if (this.Container != null) {
-      return this.Container.isDescendantOf(maybeAncestor);
-    }
-    if (this.Cluster != null && this.Cluster.Vessel != null) {
-      return this.Cluster.Vessel.isDescendantOf(maybeAncestor);
-    }
-    if (this.Sequence != null && this.Sequence.Vessel != null) {
-      return this.Sequence.Vessel.isDescendantOf(maybeAncestor);
-    }
-    return maybeAncestor == null;
-  }
-
-  IsDescendantOf(maybeAncestor) {
-    return this.isDescendantOf(maybeAncestor);
   }
 
   isMajorityTarget() {
@@ -391,7 +352,6 @@ export class Node {
     const reachedOrVisited = new Set([this]);
 
     const queue = (n) => {
-      if (n == null) return;
       if (ignore != null) {
         if (ignore instanceof Set || ignore instanceof Map) {
           if (ignore.has(n)) return;
@@ -410,7 +370,8 @@ export class Node {
       const curr = visitQueue.shift();
       let includeNode = true;
       if (traverseTrees) {
-        if (this.Graph && this.Graph.NodeToTree && this.Graph.NodeToTree.has(curr)) {
+        const nodeToTree = this.Graph.NodeToTree;
+        if (nodeToTree && (nodeToTree.has ? nodeToTree.has(curr) : nodeToTree[curr] !== undefined)) {
           includeNode = false;
         }
       }
@@ -425,15 +386,15 @@ export class Node {
         queue(adjacentNode);
       }
 
-      if (traverseTrees && this.Graph) {
-        const trees = this.Graph.Trees ? this.Graph.Trees.get(curr) : null;
+      if (traverseTrees) {
+        const trees = this.Graph.Trees.get ? this.Graph.Trees.get(curr) : this.Graph.Trees[curr];
         if (trees != null) {
           for (const tree of trees) {
             guard.Step();
             queue(tree.Node);
           }
-        } else if (this.Graph.NodeToTree && this.Graph.NodeToTree.has(curr)) {
-          const tree = this.Graph.NodeToTree.get(curr);
+        } else if (this.Graph.NodeToTree && (this.Graph.NodeToTree.has ? this.Graph.NodeToTree.has(curr) : this.Graph.NodeToTree[curr] !== undefined)) {
+          const tree = this.Graph.NodeToTree.get ? this.Graph.NodeToTree.get(curr) : this.Graph.NodeToTree[curr];
           if (tree.Parent != null) {
             queue(tree.Parent.Node);
           } else {
@@ -450,12 +411,10 @@ export class Node {
 
       if (includeNears) {
         let nears = curr.orderedNears();
-        if (curr.isClusterVessel && this.Graph && this.Graph.Clusters) {
-          const cluster = this.Graph.Clusters.get(curr);
-          if (cluster && cluster.Nodes) {
-            for (const cn of cluster.Nodes) {
-              nears = nears.concat(cn.orderedNears());
-            }
+        if (curr.isClusterVessel) {
+          const cluster = this.Graph.Clusters.get ? this.Graph.Clusters.get(curr) : this.Graph.Clusters[curr];
+          for (const cn of cluster.Nodes) {
+            nears = nears.concat(cn.orderedNears());
           }
         }
         for (let near of nears) {
@@ -472,20 +431,18 @@ export class Node {
         }
       }
 
-      if (includeContainers && this.Graph) {
-        if (curr.Sequence != null && curr.Sequence.Nodes) {
+      if (includeContainers) {
+        if (curr.Sequence != null) {
           for (const step of curr.Sequence.Nodes) {
             guard.Step();
             queue(step);
           }
         }
-        if (curr.isClusterVessel && this.Graph.Clusters) {
-          const cluster = this.Graph.Clusters.get(curr);
-          if (cluster && cluster.Nodes) {
-            for (const cNode of cluster.Nodes) {
-              guard.Step();
-              queue(cNode);
-            }
+        if (curr.isClusterVessel) {
+          const cluster = this.Graph.Clusters.get ? this.Graph.Clusters.get(curr) : this.Graph.Clusters[curr];
+          for (const cNode of cluster.Nodes) {
+            guard.Step();
+            queue(cNode);
           }
         }
 

@@ -163,4 +163,144 @@ describe('Slice 42 — OptimizationWorkGuard', () => {
     assert.strictEqual(chosen, want);
     assert.strictEqual(Number(guard.used), draws);
   });
+
+  it('performs exact Err() polling count and ignores isCancelled() when Err() exists', () => {
+    let errCalls = 0;
+    let cancelCalls = 0;
+    const dualContext = {
+      Err() {
+        errCalls++;
+        return null;
+      },
+      isCancelled() {
+        cancelCalls++;
+        return false;
+      },
+    };
+
+    // constructor -> exactly 1 Err() call, 0 isCancelled calls
+    const guard = new OptimizationWorkGuard(dualContext, 'strideTest', MAX_OPTIMIZATION_WORK_UNITS);
+    assert.strictEqual(errCalls, 1);
+    assert.strictEqual(cancelCalls, 0);
+
+    // Add(0) -> exactly 1 additional Err() call
+    guard.add(0n);
+    assert.strictEqual(errCalls, 2);
+    assert.strictEqual(cancelCalls, 0);
+
+    // 63 accepted Step calls after constructor -> no extra poll
+    for (let i = 0; i < 63; i++) {
+      guard.step();
+    }
+    assert.strictEqual(errCalls, 2);
+    assert.strictEqual(cancelCalls, 0);
+
+    // 64th boundary -> exactly 1 poll
+    guard.step();
+    assert.strictEqual(errCalls, 3);
+    assert.strictEqual(cancelCalls, 0);
+
+    // Finish() -> exactly 1 poll
+    guard.finish();
+    assert.strictEqual(errCalls, 4);
+    assert.strictEqual(cancelCalls, 0);
+  });
+
+  it('preserves exact context error messages across boundaries', () => {
+    // 1. Constructor: canceled, deadline exceeded, custom error
+    assert.throws(
+      () => new OptimizationWorkGuard({ Err: () => new Error('context canceled') }, 'locConst'),
+      (err) => {
+        assert.strictEqual(err.message, 'locConst: context canceled');
+        return true;
+      }
+    );
+    assert.throws(
+      () => new OptimizationWorkGuard({ Err: () => new Error('context deadline exceeded') }, 'locConst'),
+      (err) => {
+        assert.strictEqual(err.message, 'locConst: context deadline exceeded');
+        return true;
+      }
+    );
+    assert.throws(
+      () => new OptimizationWorkGuard({ Err: () => new Error('oracle custom optimization error') }, 'locConst'),
+      (err) => {
+        assert.strictEqual(err.message, 'locConst: oracle custom optimization error');
+        return true;
+      }
+    );
+
+    // 2. Add(0): deadline, custom
+    let activeErr = null;
+    const dynamicCtx = { Err: () => activeErr };
+    const guardAdd = new OptimizationWorkGuard(dynamicCtx, 'locAdd');
+    activeErr = new Error('context deadline exceeded');
+    assert.throws(
+      () => guardAdd.add(0n),
+      (err) => {
+        assert.strictEqual(err.message, 'locAdd: context deadline exceeded');
+        return true;
+      }
+    );
+    activeErr = new Error('oracle custom optimization error');
+    assert.throws(
+      () => guardAdd.add(0n),
+      (err) => {
+        assert.strictEqual(err.message, 'locAdd: oracle custom optimization error');
+        return true;
+      }
+    );
+
+    // 3. 64-boundary: deadline, custom
+    activeErr = null;
+    const guardStride = new OptimizationWorkGuard(dynamicCtx, 'locStride');
+    for (let i = 0; i < 63; i++) {
+      guardStride.step();
+    }
+    activeErr = new Error('context deadline exceeded');
+    assert.throws(
+      () => guardStride.step(),
+      (err) => {
+        assert.strictEqual(err.message, 'locStride: context deadline exceeded');
+        return true;
+      }
+    );
+
+    activeErr = null;
+    const guardStrideCustom = new OptimizationWorkGuard(dynamicCtx, 'locStrideCustom');
+    for (let i = 0; i < 63; i++) {
+      guardStrideCustom.step();
+    }
+    activeErr = new Error('oracle custom optimization error');
+    assert.throws(
+      () => guardStrideCustom.step(),
+      (err) => {
+        assert.strictEqual(err.message, 'locStrideCustom: oracle custom optimization error');
+        return true;
+      }
+    );
+
+    // 4. Finish: deadline, custom
+    activeErr = null;
+    const guardFinish = new OptimizationWorkGuard(dynamicCtx, 'locFinish');
+    activeErr = new Error('context deadline exceeded');
+    assert.throws(
+      () => guardFinish.finish(),
+      (err) => {
+        assert.strictEqual(err.message, 'locFinish: context deadline exceeded');
+        return true;
+      }
+    );
+
+    activeErr = null;
+    const guardFinishCustom = new OptimizationWorkGuard(dynamicCtx, 'locFinishCustom');
+    activeErr = new Error('oracle custom optimization error');
+    assert.throws(
+      () => guardFinishCustom.finish(),
+      (err) => {
+        assert.strictEqual(err.message, 'locFinishCustom: oracle custom optimization error');
+        return true;
+      }
+    );
+  });
 });

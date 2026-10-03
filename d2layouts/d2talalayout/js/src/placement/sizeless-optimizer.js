@@ -6,6 +6,9 @@ import {
   MAX_OPTIMIZATION_WORK_UNITS,
 } from "../limits/constants.js";
 import {
+  getContextError,
+} from "../limits/work-context.js";
+import {
   OptimizationWorkGuard,
   OptimizationResourceLimitError,
   shuffle,
@@ -132,40 +135,41 @@ export class SizelessOptimizer {
         guard,
         this.mutationScratch
       );
-    } catch (err) {
-      this.mutationScratch.release();
-      throw err;
-    }
 
-    const occupiedRef = this.occupied;
-    const occupiedSnapshot = new Map(this.occupied);
-    for (const _entry of this.occupied) {
-      guard.Step();
-    }
-
-    const restoreOccupied = () => {
-      if (occupiedRef == null) {
-        this.occupied = null;
-        return;
+      const occupiedRef = this.occupied;
+      const occupiedSnapshot = new Map();
+      if (this.occupied != null) {
+        for (const [point, node] of this.occupied) {
+          guard.Step();
+          occupiedSnapshot.set(point, node);
+        }
       }
-      occupiedRef.clear();
-      for (const [k, v] of occupiedSnapshot) {
-        occupiedRef.set(k, v);
-      }
-      this.occupied = occupiedRef;
-    };
 
-    let complete = false;
-    try {
-      this.optimizeGuarded(ctx, temp, guard);
-      guard.Finish();
-      complete = true;
+      const restoreOccupied = () => {
+        if (occupiedRef == null) {
+          this.occupied = null;
+          return;
+        }
+        occupiedRef.clear();
+        for (const [k, v] of occupiedSnapshot) {
+          occupiedRef.set(k, v);
+        }
+        this.occupied = occupiedRef;
+      };
+
+      let complete = false;
+      try {
+        this.optimizeGuarded(ctx, temp, guard);
+        guard.Finish();
+        complete = true;
+      } finally {
+        if (!complete) {
+          snapshot.restore();
+          restoreOccupied();
+        }
+      }
     } finally {
       this.mutationScratch.release();
-      if (!complete) {
-        snapshot.restore();
-        restoreOccupied();
-      }
     }
   }
 
@@ -429,16 +433,10 @@ export class SizelessOptimizer {
         }
       }
 
-      if (ctx != null) {
-        if (typeof ctx.isCancelled === "function" && ctx.isCancelled()) {
-          throw new Error("EdgeLength: context canceled");
-        }
-        if (typeof ctx.Err === "function" && ctx.Err() != null) {
-          throw new Error("EdgeLength: context canceled");
-        }
-        if (ctx.signal && ctx.signal.aborted) {
-          throw new Error("EdgeLength: context canceled");
-        }
+      const err = getContextError(ctx);
+      if (err != null) {
+        const msg = err.message ?? String(err);
+        throw new Error(`EdgeLength: ${msg}`);
       }
       if (!Number.isFinite(leastDistance)) {
         throw new Error("sizelessOptimizer.moveNodeToBest: could not find any placement");
@@ -509,16 +507,10 @@ export class SizelessOptimizer {
       }
     }
 
-    if (ctx != null) {
-      if (typeof ctx.isCancelled === "function" && ctx.isCancelled()) {
-        throw new Error("EdgeLength: context canceled");
-      }
-      if (typeof ctx.Err === "function" && ctx.Err() != null) {
-        throw new Error("EdgeLength: context canceled");
-      }
-      if (ctx.signal && ctx.signal.aborted) {
-        throw new Error("EdgeLength: context canceled");
-      }
+    const err = getContextError(ctx);
+    if (err != null) {
+      const msg = err.message ?? String(err);
+      throw new Error(`EdgeLength: ${msg}`);
     }
     return bestSwapCandidate;
   }

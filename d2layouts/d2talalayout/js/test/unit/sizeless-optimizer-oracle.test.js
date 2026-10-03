@@ -527,4 +527,49 @@ describe('Slice 42 — Sizeless Optimizer Oracle Suite', () => {
       assert.strictEqual(n2.TopLeft.Y, sc.restoredNodes['2'].y);
     }
   });
+
+  it('replays malformedReachability scenarios verifying natural JS throw corresponds to Go panic', () => {
+    for (const sc of fixture.malformedReachability) {
+      if (sc.name === 'nil_adjacent_endpoint') {
+        const g1 = new Graph();
+        const n1 = g1.AddNode(new Node(1, 10, 10));
+        const badEdge = new Edge(n1, null);
+        n1.Edges.push(badEdge);
+        g1.AddEdge(badEdge);
+        const guard1 = new OptimizationWorkGuard(bg, 'reach1', MAX_OPTIMIZATION_WORK_UNITS);
+        assert.throws(
+          () => n1.AllReachableNodesContext(false, true, true, null, guard1),
+          (err) => {
+            assert(err != null);
+            return true;
+          }
+        );
+      } else if (sc.name === 'cluster_vessel_missing_cluster') {
+        const g2 = new Graph();
+        const n2 = g2.AddNode(new Node(2, 10, 10));
+        n2.isClusterVessel = true;
+        const guard2 = new OptimizationWorkGuard(bg, 'reach2', MAX_OPTIMIZATION_WORK_UNITS);
+        assert.throws(
+          () => n2.AllReachableNodesContext(false, true, true, null, guard2),
+          (err) => {
+            assert(err != null);
+            return true;
+          }
+        );
+      } else if (sc.name === 'tree_missing_node') {
+        const g3 = new Graph();
+        const n3 = g3.AddNode(new Node(3, 10, 10));
+        if (!g3.NodeToTree) g3.NodeToTree = new Map();
+        g3.NodeToTree.set(n3, { Node: null, Parent: null, Children: null });
+        const guard3 = new OptimizationWorkGuard(bg, 'reach3', MAX_OPTIMIZATION_WORK_UNITS);
+        assert.throws(
+          () => n3.AllReachableNodesContext(false, true, true, null, guard3),
+          (err) => {
+            assert(err != null);
+            return true;
+          }
+        );
+      }
+    }
+  });
 });

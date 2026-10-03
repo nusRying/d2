@@ -67,3 +67,70 @@ export function pollingWorkContext(isCancelled) {
 }
 
 export const PollingWorkContext = pollingWorkContext;
+
+/**
+ * Extracts any error from a context or signal.
+ */
+export function getContextError(ctx) {
+  if (ctx == null) return null;
+  if (typeof ctx.Err === "function") {
+    return ctx.Err();
+  }
+  if (typeof ctx.isCancelled === "function") {
+    return ctx.isCancelled() ? new Error("context canceled") : null;
+  }
+  const signal = typeof ctx.aborted === "boolean" ? ctx : ctx.signal;
+  if (signal && typeof signal.aborted === "boolean") {
+    if (signal.aborted) {
+      const reason = signal.reason;
+      if (reason instanceof Error) return reason;
+      if (typeof reason === "string") return new Error(reason);
+      return new Error("context canceled");
+    }
+    return null;
+  }
+  return null;
+}
+
+export const GetContextError = getContextError;
+
+/**
+ * Normalizes an incoming context into a canonical object exposing Err() -> Error | null.
+ */
+export function canonicalContext(ctx, location = "") {
+  if (ctx == null) {
+    throw new Error(`TALA ${location} requires a context`);
+  }
+  if (typeof ctx === "object" || typeof ctx === "function") {
+    // A. If input already has Err(): use that exact Err() method.
+    if (typeof ctx.Err === "function") {
+      return {
+        Err: () => ctx.Err(),
+      };
+    }
+    // B. If input is WorkContext / only has isCancelled():
+    if (typeof ctx.isCancelled === "function") {
+      return {
+        Err: () => (ctx.isCancelled() ? new Error("context canceled") : null),
+      };
+    }
+    // C. AbortSignal or object with signal:
+    const signal = typeof ctx.aborted === "boolean" ? ctx : ctx.signal;
+    if (signal && typeof signal.aborted === "boolean") {
+      return {
+        Err: () => {
+          if (signal.aborted) {
+            const reason = signal.reason;
+            if (reason instanceof Error) return reason;
+            if (typeof reason === "string") return new Error(reason);
+            return new Error("context canceled");
+          }
+          return null;
+        },
+      };
+    }
+  }
+  throw new Error(`TALA ${location} requires a context`);
+}
+
+export const CanonicalContext = canonicalContext;

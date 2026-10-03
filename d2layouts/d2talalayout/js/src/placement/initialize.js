@@ -1,6 +1,7 @@
 import { Point } from "../geometry/point.js";
 import { Validate as validate } from "../graph/topology-preflight.js";
 import { WorkGuard } from "../limits/work-guard.js";
+import { getContextError } from "../limits/work-context.js";
 import { MAX_ENGINE_WORK_UNITS } from "../limits/constants.js";
 import { NodeEdgeLength } from "../placementcost/edge-length.js";
 import { snapshotNodePositionsContext, restoreNodePositions } from "./types.js";
@@ -81,16 +82,10 @@ export function initializeNodes(ctx, g) {
     const sizelessFactor = g.CellSize * COMPACTION_FACTOR;
 
     const init = (node) => {
-      if (ctx != null) {
-        if (typeof ctx.isCancelled === "function" && ctx.isCancelled()) {
-          throw new Error("InitializeNodes: context canceled");
-        }
-        if (typeof ctx.Err === "function" && ctx.Err() != null) {
-          throw new Error("InitializeNodes: context canceled");
-        }
-        if (ctx.signal && ctx.signal.aborted) {
-          throw new Error("InitializeNodes: context canceled");
-        }
+      const err = getContextError(ctx);
+      if (err != null) {
+        const msg = err.message ?? String(err);
+        throw new Error(`InitializeNodes: ${msg}`);
       }
       if (node.TopLeft != null) {
         return;

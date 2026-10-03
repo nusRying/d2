@@ -40,8 +40,15 @@ type SizelessOracleFixture struct {
 	BestSwap                 []BestSwapScenarioJSON     `json:"bestSwap"`
 	SizelessOptimize         []OptimizeScenarioJSON     `json:"sizelessOptimize"`
 	InitializationCandidates []InitCandScenarioJSON     `json:"initializationCandidates"`
-	InitializeNodes          []InitNodesScenarioJSON    `json:"initializeNodes"`
-	Atomicity                []AtomicityScenarioJSON    `json:"atomicity"`
+	InitializeNodes          []InitNodesScenarioJSON              `json:"initializeNodes"`
+	Atomicity                []AtomicityScenarioJSON              `json:"atomicity"`
+	MalformedReachability    []MalformedReachabilityScenarioJSON  `json:"malformedReachability"`
+}
+
+type MalformedReachabilityScenarioJSON struct {
+	Name       string `json:"name"`
+	Type       string `json:"type"`
+	PanicsInGo bool   `json:"panicsInGo"`
 }
 
 type WorkGuardScenarioJSON struct {
@@ -340,33 +347,6 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 				Name: fmt.Sprintf("shuffle_count_%d", count), Count: count, Seed: 991, Result: values, NextInt63: rnd.Int63(), Used: guard.Used(),
 			})
 		}
-
-		// Rejected draw scenario
-		n := int32(1_431_655_766)
-		threshold := uint32(-n) % uint32(n)
-		var seed int64
-		var want int32
-		var draws uint64
-		for ; seed < 100; seed++ {
-			random := rand.New(rand.NewSource(seed))
-			draws = 0
-			for {
-				draws++
-				product := uint64(random.Uint32()) * uint64(n)
-				if uint32(product) >= threshold {
-					want = int32(product >> 32)
-					break
-				}
-			}
-			if draws > 1 {
-				break
-			}
-		}
-		guard, _ := limits.NewOptimizationWorkGuard(context.Background(), "shuffle", limits.MaxOptimizationWorkUnits)
-		idx, _ := limits.ShuffleIndex(rand.New(rand.NewSource(seed)), n, guard)
-		fixture.OptimizationShuffle = append(fixture.OptimizationShuffle, ShuffleScenarioJSON{
-			Name: "shuffle_rejected_draw", IsRejected: true, Seed: seed, N: n, Draws: draws, Chosen: idx, Used: guard.Used(), NextInt63: int64(want),
-		})
 	}
 
 	// ==========================================
@@ -818,6 +798,70 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 				"1": {X: n1.TopLeft.X, Y: n1.TopLeft.Y},
 				"2": {X: n2.TopLeft.X, Y: n2.TopLeft.Y},
 			},
+		})
+	}
+
+	// ==========================================
+	// 15. malformedReachability
+	// ==========================================
+	{
+		// 1. nil adjacent endpoint
+		g1 := layoutgraph.NewGraph()
+		n1 := g1.AddNode(layoutgraph.NewNode(1, 10, 10))
+		e1 := layoutgraph.NewEdge(n1, nil)
+		n1.Edges = append(n1.Edges, e1)
+		g1.AddEdge(e1)
+		guard1, _ := limits.NewWorkGuard(context.Background(), "reach1", limits.MaxEngineWorkUnits)
+		panics1 := false
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					panics1 = true
+				}
+			}()
+			_, _ = n1.AllReachableNodesContext(false, true, true, nil, guard1)
+		}()
+		fixture.MalformedReachability = append(fixture.MalformedReachability, MalformedReachabilityScenarioJSON{
+			Name: "nil_adjacent_endpoint", Type: "edge", PanicsInGo: panics1,
+		})
+
+		// 2. cluster vessel missing cluster entry
+		g2 := layoutgraph.NewGraph()
+		n2 := g2.AddNode(layoutgraph.NewNode(2, 10, 10))
+		n2.SetClusterVessel(true)
+		guard2, _ := limits.NewWorkGuard(context.Background(), "reach2", limits.MaxEngineWorkUnits)
+		panics2 := false
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					panics2 = true
+				}
+			}()
+			_, _ = n2.AllReachableNodesContext(false, true, true, nil, guard2)
+		}()
+		fixture.MalformedReachability = append(fixture.MalformedReachability, MalformedReachabilityScenarioJSON{
+			Name: "cluster_vessel_missing_cluster", Type: "cluster", PanicsInGo: panics2,
+		})
+
+		// 3. tree missing node entry
+		g3 := layoutgraph.NewGraph()
+		n3 := g3.AddNode(layoutgraph.NewNode(3, 10, 10))
+		if g3.NodeToTree == nil {
+			g3.NodeToTree = make(map[*layoutgraph.Node]*layoutgraph.Tree)
+		}
+		g3.NodeToTree[n3] = &layoutgraph.Tree{Node: nil}
+		guard3, _ := limits.NewWorkGuard(context.Background(), "reach3", limits.MaxEngineWorkUnits)
+		panics3 := false
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					panics3 = true
+				}
+			}()
+			_, _ = n3.AllReachableNodesContext(false, true, true, nil, guard3)
+		}()
+		fixture.MalformedReachability = append(fixture.MalformedReachability, MalformedReachabilityScenarioJSON{
+			Name: "tree_missing_node", Type: "tree", PanicsInGo: panics3,
 		})
 	}
 

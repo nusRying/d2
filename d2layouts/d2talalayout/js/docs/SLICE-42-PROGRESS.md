@@ -2,21 +2,21 @@
 
 ## Implementation Details
 - First-stage placement optimizer and node initialization stack successfully ported and validated against pinned Go commit `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`.
-- Implemented `OptimizationWorkGuard` with unsigned 64-bit BigInt limits, 64-step polling cadence, arithmetic overflow checking, and `n log2 n` sorting work accounting.
-- Implemented `shuffle` (Fisher-Yates with Lemire bias elimination) using Mitchell & Reeds LFSR (`GoRand`), with `Uint32()` support.
-- Added `Graph` placement cost snapshots (`SnapshotPlacementCosts`, `PlacementCostSnapshot`, `LookupEdgeLengthCost`, `StoreEdgeLengthCost`, `EdgeLengthCacheEntries`, `ResetPlacementCosts`) with exact Map reference identity preservation.
-- Added `Node` and `Edge` topology extensions (`adjacent`, `isDescendantOf`, `isMajorityTarget`, `hasArrowTo`, `isTargetedTo`, `allReachableNodesGuarded`, `reachableNodesGuarded`).
-- Implemented placement metrics (`occupied`, `withinMaxSize`, `intersectsOtherNode`, `median`, `medianToNeighbors`, `adjacents`).
-- Implemented optimizer support functions (`optimizerMoveNodeAbs`, `optimizerSwapPositions`, `withOptimizerPositionsSwapped`, `optimizerMedian`, `optimizerAdjacents`, `optimizerDescendants`, `captureOptimizerCandidateMovement`, `OptimizerMutationSnapshot`, `PointerSnapshot`).
-- Implemented `SizelessOptimizer` Simulated Annealing engine (`medianPointGuarded`, `findClosestUnoccupiedDistanceGuarded`, `placementPointsGuarded`, `moveNodeToBestGuarded`, `bestSwapCandidateGuarded`, `swapCandidatesGuarded`).
-- Implemented `initializeNodes` and `nodeCandidatePositions` with BFS and fixed-subgraph traversals, directional candidate scans, non-negative bounding for fixed graphs, and transactional rollback on cancellation.
+- Authoritative Go production source restored: `internal/limits/optimization.go` is byte-for-byte identical to the Slice 41 base (0 diff).
+- Dedicated test-only oracle `internal/limits/go_optimization_oracle_test.go` (`package limits`) accesses unexported `shuffleIndex` and generates `test/fixtures/go-optimization-reference.json`.
+- Single `Err()` observation semantics and canonical context adapter in `OptimizationWorkGuard`, guaranteeing exact polling counts (constructor: 1, Add(0): 1, 63 steps: 0, 64th step: 1, finish: 1) and ignoring `isCancelled()` when `Err()` is present.
+- Exact underlying context error messages preserved (`<loc>: context canceled`, `<loc>: context deadline exceeded`, `<loc>: <custom>`) across `OptimizationWorkGuard`, `moveNodeToBestGuarded`, `bestSwapCandidateGuarded`, and `initializeNodes`.
+- Reachability queue helper nil normalization removed (no longer silently dropping nulls; malformed reachable nulls and missing cluster vessels naturally throw in JS matching Go panics). Duplicate `Node` methods (`adjacent`, `isDescendantOf`, `IsContainer`) removed.
+- Edge accessors (`hasArrowTo`, `isTargetedTo`) audited and verified for source/target/both/none arrows and self-loops.
+- Guaranteed optimizer mutation scratch release via `try ... finally` covering occupied snapshot charging and mutation, with Step-then-set ordering and Map reference identity preserved on rollback.
+- Explicit disabled placement cost cache (`edgeLengthCache = null`) support verified across Store, Snapshot, Mutate, Restore, and Reset.
 
 ## Test Coverage
-- Real-Go oracle fixture generated via `internal/placement/go_sizeless_optimizer_oracle_test.go` (`test/fixtures/go-sizeless-optimizer-reference.json`).
-- `test/unit/sizeless-optimizer-oracle.test.js` replays 15 distinct scenario groups (36 test suites total) verifying exact mathematical parity with Go.
-- `test/unit/optimization-work-guard.test.js` verifies W-1/W/W+1 limits, 64-step polling, arithmetic overflow, AddSort counts, and Lemire rejection behavior.
-- `test/unit/sizeless-optimizer.test.js` verifies setup validation, occupancy map reference preservation, candidate selection, and rollback atomicity.
-- `test/unit/initialize-nodes.test.js` verifies candidate scan orders, fixed graph clamping, star/path/cycle graph initialization, and rollback atomicity.
-- `test/unit/placement-api-boundary.test.js` confirms internal optimizer symbols are not leaked at `src/placement/index.js` or `src/index.js`.
+- Real-Go oracle fixtures generated via `internal/placement/go_sizeless_optimizer_oracle_test.go` (`go-sizeless-optimizer-reference.json`, 34KB) and `internal/limits/go_optimization_oracle_test.go` (`go-optimization-reference.json`, 16KB).
+- `test/unit/sizeless-optimizer-oracle.test.js` replays 16 scenario groups verifying exact mathematical parity with Go, including malformed reachability parity.
+- `test/unit/optimization-work-guard.test.js` (10 tests) verifies W-1/W/W+1 limits, exact Err polling counts, exact context error message preservation across all boundaries, and Lemire rejection behavior.
+- `test/unit/sizeless-optimizer.test.js` (10 tests) verifies setup validation, `canOptimizeNodeGuarded(node, g, guard)` with all 3 parameters across node categories, disabled cache support, scratch release on early occupied failure, late context check error preservation, Edge accessors, and rollback atomicity.
+- `test/unit/initialize-nodes.test.js` (7 tests) verifies candidate scan orders, fixed graph clamping, star/path/cycle graph initialization, direct boundary context error preservation, and rollback atomicity.
+- `test/unit/placement-api-boundary.test.js` (2 tests) confirms internal optimizer symbols are not leaked at `src/placement/index.js` or `src/index.js`.
 - All Go regression packages pass (`limits`, `layoutgraph`, `placementcost`, `placement`, `proximity`, `grouping`).
-- Full JS test suite passes (2,500 tests across 94 files, 0 failures).
+- Full JS test suite passes (2,509 tests across 94 files, 49,961 expect assertions, 0 failures).

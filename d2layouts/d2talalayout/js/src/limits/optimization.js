@@ -5,6 +5,7 @@ import {
 import {
   WorkContext,
   abortSignalWorkContext,
+  canonicalContext,
 } from "./work-context.js";
 import {
   WorkCanceledError,
@@ -42,24 +43,7 @@ export function isOptimizationResourceLimitError(error) {
 }
 
 function normalizeContext(ctx, location) {
-  if (ctx == null) {
-    throw new Error(`TALA ${location} requires a context`);
-  }
-  if (ctx instanceof WorkContext) {
-    return ctx;
-  }
-  if (typeof ctx === "object") {
-    if (typeof ctx.isCancelled === "function" || typeof ctx.Err === "function") {
-      return ctx;
-    }
-    if (typeof ctx.aborted === "boolean") {
-      return abortSignalWorkContext(ctx);
-    }
-    if (ctx.signal && typeof ctx.signal.aborted === "boolean") {
-      return abortSignalWorkContext(ctx.signal);
-    }
-  }
-  throw new Error(`TALA ${location} requires a context`);
+  return canonicalContext(ctx, location);
 }
 
 /**
@@ -170,16 +154,9 @@ export class OptimizationWorkGuard {
   }
 
   Check() {
-    if (this.ctx != null) {
-      if (typeof this.ctx.isCancelled === "function" && this.ctx.isCancelled()) {
-        throw new WorkCanceledError(this.location);
-      }
-      if (typeof this.ctx.Err === "function" && this.ctx.Err() != null) {
-        throw new WorkCanceledError(this.location);
-      }
-      if (this.ctx.signal && this.ctx.signal.aborted) {
-        throw new WorkCanceledError(this.location);
-      }
+    const err = this.ctx.Err();
+    if (err != null) {
+      throw new WorkCanceledError(this.location, err);
     }
   }
 

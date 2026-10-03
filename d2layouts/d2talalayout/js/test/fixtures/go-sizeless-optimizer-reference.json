@@ -1344,18 +1344,6 @@
       ],
       "nextInt63": "3411132043274254794",
       "used": "1023"
-    },
-    {
-      "name": "shuffle_rejected_draw",
-      "count": 0,
-      "seed": "2",
-      "result": null,
-      "nextInt63": "379466524",
-      "used": "2",
-      "isRejected": true,
-      "n": 1431655766,
-      "draws": "2",
-      "chosen": 379466524
     }
   ],
   "placementCostSnapshot": [
@@ -2316,6 +2304,23 @@
           "y": 9
         }
       }
+    }
+  ],
+  "malformedReachability": [
+    {
+      "name": "nil_adjacent_endpoint",
+      "type": "edge",
+      "panicsInGo": true
+    },
+    {
+      "name": "cluster_vessel_missing_cluster",
+      "type": "cluster",
+      "panicsInGo": true
+    },
+    {
+      "name": "tree_missing_node",
+      "type": "tree",
+      "panicsInGo": true
     }
   ]
 }

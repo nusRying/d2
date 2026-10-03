@@ -15,11 +15,15 @@ export { INT64_MIN, INT64_MAX };
  * Cancellation error matching Go's context.Canceled wrapped with location.
  */
 export class WorkCanceledError extends Error {
-  constructor(location = "") {
+  constructor(location = "", cause = null) {
     const loc = location ?? "";
-    super(`${loc}: context canceled`);
+    const msg = cause ? (cause.message ?? String(cause)) : "context canceled";
+    super(`${loc}: ${msg}`);
     this.name = "AbortError";
     this.location = loc;
+    if (cause != null) {
+      this.cause = cause;
+    }
   }
 }
 
@@ -83,6 +87,12 @@ function normalizeContext(ctx, location) {
   if (typeof ctx === "object") {
     if (typeof ctx.isCancelled === "function") {
       return ctx;
+    }
+    if (typeof ctx.Err === "function") {
+      return {
+        isCancelled: () => ctx.Err() != null,
+        Err: () => ctx.Err(),
+      };
     }
     if (typeof ctx.aborted === "boolean") {
       return abortSignalWorkContext(ctx);
@@ -189,6 +199,13 @@ export class WorkGuard {
    * Check observes cancellation immediately.
    */
   Check() {
+    if (typeof this.ctx.Err === "function") {
+      const err = this.ctx.Err();
+      if (err != null) {
+        throw new WorkCanceledError(this.location, err);
+      }
+      return;
+    }
     if (this.ctx.isCancelled()) {
       throw new WorkCanceledError(this.location);
     }
