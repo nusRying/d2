@@ -758,7 +758,8 @@ export function evaluateNodeEdgeLength(ctx, node, options, s, setup) {
           : (node.Graph?.Containers?.[curr] ?? []);
         obstructionSets.push(set);
         obstructionAdded.add(curr);
-        if (curr == null || curr === ancestor) break;
+        // Go checks the shared ancestor only after advancing.
+        if (curr == null) break;
         curr = curr.effectiveContainer();
         if (curr === ancestor) break;
       }
@@ -771,7 +772,8 @@ export function evaluateNodeEdgeLength(ctx, node, options, s, setup) {
           : (node.Graph?.Containers?.[curr] ?? []);
         obstructionSets.push(set);
         obstructionAdded.add(curr);
-        if (curr == null || curr === ancestor) break;
+        // Go checks the shared ancestor only after advancing.
+        if (curr == null) break;
         curr = curr.effectiveContainer();
         if (curr === ancestor) break;
       }
