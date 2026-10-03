@@ -205,6 +205,31 @@
       "name": "depth_nested",
       "operation": "depth",
       "depthValue": 3
+    },
+    {
+      "name": "node_orientation_nil",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "node_container_direction_nil_graph",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "node_nearest_shared_ancestor_nil",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "sizeless_orientation_nil_valid",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "sizeless_orientation_valid_nil",
+      "operation": "",
+      "panic": "true"
     }
   ],
   "compass": [
@@ -1391,6 +1416,70 @@
       "penalizeDirection": false,
       "hasAbductions": false,
       "score": 270
+    },
+    {
+      "name": "parallel_127",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11430
+    },
+    {
+      "name": "parallel_128",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11520
+    },
+    {
+      "name": "parallel_129",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11610
+    },
+    {
+      "name": "min_gap_false",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 0
+    },
+    {
+      "name": "min_gap_true",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 0
+    },
+    {
+      "name": "source_abduction",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
+    },
+    {
+      "name": "target_abduction",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
+    },
+    {
+      "name": "label_contribution",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
     },
     {
       "name": "common_uncle_siblings_axis_penalty",

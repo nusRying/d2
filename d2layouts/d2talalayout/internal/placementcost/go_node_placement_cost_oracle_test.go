@@ -440,6 +440,26 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 			GeometryScenarioJSON{Name: "depth_root", Operation: "depth", DepthValue: iPtr(dRoot)},
 			GeometryScenarioJSON{Name: "depth_nested", Operation: "depth", DepthValue: iPtr(dNested)},
 		)
+
+		// Malformed cases
+		p, _ := capturePanic(func() { n1.Orientation(nil) })
+		fixture.Geometry = append(fixture.Geometry, GeometryScenarioJSON{Name: "node_orientation_nil", Panic: fmt.Sprintf("%t", p)})
+
+		p, _ = capturePanic(func() {
+			n1.Graph = nil
+			n1.ContainerDirection()
+		})
+		n1.Graph = g
+		fixture.Geometry = append(fixture.Geometry, GeometryScenarioJSON{Name: "node_container_direction_nil_graph", Panic: fmt.Sprintf("%t", p)})
+
+		p, _ = capturePanic(func() { n1.NearestSharedAncestor(nil) })
+		fixture.Geometry = append(fixture.Geometry, GeometryScenarioJSON{Name: "node_nearest_shared_ancestor_nil", Panic: fmt.Sprintf("%t", p)})
+
+		p, _ = capturePanic(func() { sizelessOrientation(nil, n2) })
+		fixture.Geometry = append(fixture.Geometry, GeometryScenarioJSON{Name: "sizeless_orientation_nil_valid", Panic: fmt.Sprintf("%t", p)})
+
+		p, _ = capturePanic(func() { sizelessOrientation(n1, nil) })
+		fixture.Geometry = append(fixture.Geometry, GeometryScenarioJSON{Name: "sizeless_orientation_valid_nil", Panic: fmt.Sprintf("%t", p)})
 	}
 
 	// ==========================================
@@ -846,6 +866,65 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 			IncludeNodeSizes: true,
 			Score:            pScore,
 		})
+
+		// 127 parallel edges
+		g127 := createTestGraph()
+		n127_1 := addTestNode(g127, 100, 100, 60, 40)
+		n127_2 := addTestNode(g127, 250, 100, 60, 40)
+		for i := 0; i < 127; i++ {
+			g127.Connect(n127_1, n127_2)
+		}
+		s127, _ := NodeEdgeLength(ctx, n127_1, EdgeLengthOptions{IncludeNodeSizes: true})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "parallel_127", Score: s127})
+
+		// 128 parallel edges
+		g127.Connect(n127_1, n127_2)
+		s128, _ := NodeEdgeLength(ctx, n127_1, EdgeLengthOptions{IncludeNodeSizes: true})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "parallel_128", Score: s128})
+
+		// 129 parallel edges
+		g127.Connect(n127_1, n127_2)
+		s129, _ := NodeEdgeLength(ctx, n127_1, EdgeLengthOptions{IncludeNodeSizes: true})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "parallel_129", Score: s129})
+
+		// Minimum Gap Observable
+		gMinGap := createTestGraph()
+		mg1 := addTestNode(gMinGap, 100, 100, 50, 50)
+		mg2 := addTestNode(gMinGap, 110, 100, 50, 50)
+		gMinGap.Connect(mg1, mg2)
+		sMinGapF, _ := NodeEdgeLength(ctx, mg1, EdgeLengthOptions{IncludeNodeSizes: true, EnforceMinimumGap: false})
+		sMinGapT, _ := NodeEdgeLength(ctx, mg1, EdgeLengthOptions{IncludeNodeSizes: true, EnforceMinimumGap: true})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "min_gap_false", Score: sMinGapF})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "min_gap_true", Score: sMinGapT})
+
+		// Source Abduction
+		gSrcAbd := createTestGraph()
+		sa1 := addTestNode(gSrcAbd, 100, 100, 50, 50)
+		sa2 := addTestNode(gSrcAbd, 300, 100, 50, 50)
+		gSrcAbd.Connect(sa1, sa2)
+		saExt := addTestNode(gSrcAbd, 0, 0, 50, 50)
+		clSrcAbd := &layoutgraph.Cluster{Graph: gSrcAbd, Nodes: layoutgraph.Nodes{sa1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyFrom: sa1, OriginallyTo: sa2, CurrentFrom: saExt, CurrentTo: sa2}}}
+		sSrcAbd, _ := NodeEdgeLength(ctx, sa1, EdgeLengthOptions{IncludeNodeSizes: true, EdgeAbductions: clSrcAbd.EdgeAbductions})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "source_abduction", Score: sSrcAbd})
+
+		// Target Abduction
+		gTgtAbd := createTestGraph()
+		ta1 := addTestNode(gTgtAbd, 100, 100, 50, 50)
+		ta2 := addTestNode(gTgtAbd, 300, 100, 50, 50)
+		gTgtAbd.Connect(ta1, ta2)
+		taExt := addTestNode(gTgtAbd, 400, 400, 50, 50)
+		clTgtAbd := &layoutgraph.Cluster{Graph: gTgtAbd, Nodes: layoutgraph.Nodes{ta2}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyFrom: ta1, OriginallyTo: ta2, CurrentFrom: ta1, CurrentTo: taExt}}}
+		sTgtAbd, _ := NodeEdgeLength(ctx, ta1, EdgeLengthOptions{IncludeNodeSizes: true, EdgeAbductions: clTgtAbd.EdgeAbductions})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "target_abduction", Score: sTgtAbd})
+
+		// Label Contribution
+		gLabel := createTestGraph()
+		l1 := addTestNode(gLabel, 100, 100, 50, 50)
+		l2 := addTestNode(gLabel, 300, 100, 50, 50)
+		lEdge := gLabel.Connect(l1, l2)
+		lEdge.Label = &layoutgraph.Label{Text: "a very very very long main label", Width: 200, Height: 20}
+		sLabel, _ := NodeEdgeLength(ctx, l1, EdgeLengthOptions{IncludeNodeSizes: true})
+		fixture.NodeEdgeLength = append(fixture.NodeEdgeLength, EdgeLengthScenarioJSON{Name: "label_contribution", Score: sLabel})
 
 		// CommonUncleSiblings contribution
 		gUncle := createTestGraph()

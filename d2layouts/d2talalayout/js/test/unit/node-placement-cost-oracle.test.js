@@ -344,6 +344,37 @@ describe('Slice 41 Node Placement-Cost Kernel — Go Oracle', () => {
       const exp = reference.geometry.find(s => s.name === 'depth_nested');
       assert.equal(depth(child), exp.depthValue);
     });
+
+    it('node_orientation_nil', () => {
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 10, 10, 10, 10);
+      assert.throws(() => n1.Orientation(null), TypeError);
+    });
+
+    it('node_container_direction_nil_graph', () => {
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 10, 10, 10, 10);
+      n1.Graph = null;
+      assert.throws(() => n1.ContainerDirection(), TypeError);
+    });
+
+    it('node_nearest_shared_ancestor_nil', () => {
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 10, 10, 10, 10);
+      assert.throws(() => n1.NearestSharedAncestor(null), TypeError);
+    });
+
+    it('sizeless_orientation_nil_valid', () => {
+      const g = createTestGraph();
+      const n2 = addTestNode(g, 10, 10, 10, 10);
+      assert.throws(() => sizelessOrientation(null, n2), TypeError);
+    });
+
+    it('sizeless_orientation_valid_nil', () => {
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 10, 10, 10, 10);
+      assert.throws(() => sizelessOrientation(n1, null), TypeError);
+    });
   });
 
   // ── 4. AxisScore ─────────────────────────────────────────────────────────────
@@ -496,6 +527,39 @@ describe('Slice 41 Node Placement-Cost Kernel — Go Oracle', () => {
       assert.equal(exact, exp.exactlyTwo);
       assert.notEqual(f, null);
       assert.notEqual(s, null);
+    });
+
+    it('nil_cluster', () => {
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(null), TypeError);
+    });
+
+    it('empty_nodes', () => {
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(new Cluster({ Nodes: [] })), TypeError);
+    });
+
+    it('nil_first_node', () => {
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(new Cluster({ Nodes: [null] })), TypeError);
+    });
+
+    it('nil_edge_abduction', () => {
+      const g = createTestGraph();
+      const cn1 = addTestNode(g, 100, 100, 50, 50);
+      const cl = new Cluster({ Nodes: [cn1], EdgeAbductions: [null] });
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(cl), TypeError);
+    });
+
+    it('case_a_nil_current_from', () => {
+      const g = createTestGraph();
+      const cn1 = addTestNode(g, 100, 100, 50, 50);
+      const cl = new Cluster({ Nodes: [cn1], EdgeAbductions: [new EdgeAbduction({ OriginallyTo: cn1, CurrentFrom: null })] });
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(cl), TypeError);
+    });
+
+    it('case_b_nil_current_to', () => {
+      const g = createTestGraph();
+      const cn1 = addTestNode(g, 100, 100, 50, 50);
+      const cl = new Cluster({ Nodes: [cn1], EdgeAbductions: [new EdgeAbduction({ OriginallyFrom: cn1, CurrentTo: null })] });
+      assert.throws(() => clusterExactlyTwoExternalConnectedNodes(cl), TypeError);
     });
   });
 
@@ -679,6 +743,99 @@ describe('Slice 41 Node Placement-Cost Kernel — Go Oracle', () => {
         assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
       });
     }
+
+    it('parallel_127', () => {
+      _id = 7010n;
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 100, 100, 60, 40);
+      const n2 = addTestNode(g, 250, 100, 60, 40);
+      for (let i = 0; i < 127; i++) g.Connect(n1, n2);
+      const score = NodeEdgeLength(NULL_CTX, n1, new EdgeLengthOptions({ IncludeNodeSizes: true }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'parallel_127');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('parallel_128', () => {
+      _id = 7020n;
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 100, 100, 60, 40);
+      const n2 = addTestNode(g, 250, 100, 60, 40);
+      for (let i = 0; i < 128; i++) g.Connect(n1, n2);
+      const score = NodeEdgeLength(NULL_CTX, n1, new EdgeLengthOptions({ IncludeNodeSizes: true }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'parallel_128');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('parallel_129', () => {
+      _id = 7030n;
+      const g = createTestGraph();
+      const n1 = addTestNode(g, 100, 100, 60, 40);
+      const n2 = addTestNode(g, 250, 100, 60, 40);
+      for (let i = 0; i < 129; i++) g.Connect(n1, n2);
+      const score = NodeEdgeLength(NULL_CTX, n1, new EdgeLengthOptions({ IncludeNodeSizes: true }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'parallel_129');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('min_gap_false', () => {
+      _id = 7040n;
+      const g = createTestGraph();
+      const mg1 = addTestNode(g, 100, 100, 50, 50);
+      const mg2 = addTestNode(g, 110, 100, 50, 50);
+      g.Connect(mg1, mg2);
+      const score = NodeEdgeLength(NULL_CTX, mg1, new EdgeLengthOptions({ IncludeNodeSizes: true, EnforceMinimumGap: false }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'min_gap_false');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('min_gap_true', () => {
+      _id = 7050n;
+      const g = createTestGraph();
+      const mg1 = addTestNode(g, 100, 100, 50, 50);
+      const mg2 = addTestNode(g, 110, 100, 50, 50);
+      g.Connect(mg1, mg2);
+      const score = NodeEdgeLength(NULL_CTX, mg1, new EdgeLengthOptions({ IncludeNodeSizes: true, EnforceMinimumGap: true }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'min_gap_true');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('source_abduction', () => {
+      _id = 7060n;
+      const g = createTestGraph();
+      const sa1 = addTestNode(g, 100, 100, 50, 50);
+      const sa2 = addTestNode(g, 300, 100, 50, 50);
+      g.Connect(sa1, sa2);
+      const saExt = addTestNode(g, 0, 0, 50, 50);
+      const abds = [{ OriginallyFrom: sa1, OriginallyTo: sa2, CurrentFrom: saExt, CurrentTo: sa2 }];
+      const score = NodeEdgeLength(NULL_CTX, sa1, new EdgeLengthOptions({ IncludeNodeSizes: true, EdgeAbductions: abds }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'source_abduction');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('target_abduction', () => {
+      _id = 7070n;
+      const g = createTestGraph();
+      const ta1 = addTestNode(g, 100, 100, 50, 50);
+      const ta2 = addTestNode(g, 300, 100, 50, 50);
+      g.Connect(ta1, ta2);
+      const taExt = addTestNode(g, 400, 400, 50, 50);
+      const abds = [{ OriginallyFrom: ta1, OriginallyTo: ta2, CurrentFrom: ta1, CurrentTo: taExt }];
+      const score = NodeEdgeLength(NULL_CTX, ta1, new EdgeLengthOptions({ IncludeNodeSizes: true, EdgeAbductions: abds }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'target_abduction');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
+
+    it('label_contribution', () => {
+      _id = 7080n;
+      const g = createTestGraph();
+      const l1 = addTestNode(g, 100, 100, 50, 50);
+      const l2 = addTestNode(g, 300, 100, 50, 50);
+      const e = g.Connect(l1, l2);
+      e.Label = { Text: "a very very very long main label", Width: 200, Height: 20 };
+      const score = NodeEdgeLength(NULL_CTX, l1, new EdgeLengthOptions({ IncludeNodeSizes: true }));
+      const exp = reference.nodeEdgeLength.find(s => s.name === 'label_contribution');
+      assert.ok(Math.abs(score - exp.score) < 1e-9, `want ${exp.score} got ${score}`);
+    });
 
     it('three_parallel_edges', () => {
       _id = 7100n;
