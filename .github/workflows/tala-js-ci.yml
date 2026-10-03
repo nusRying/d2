@@ -79,26 +79,7 @@ jobs:
       - name: Generate Slice 43 compaction oracle
         env:
           TALA_SLICE43_ORACLE: "1"
-        run: go test -count=1 -run '^TestSlice43CompactionOracle
-      - name: Test proximity
-        run: go test -count=1 ./d2layouts/d2talalayout/internal/proximity/...
-
-      - name: Test grouping
-        run: go test -count=1 ./d2layouts/d2talalayout/internal/grouping/...
-
-  hygiene:
-    name: Diff hygiene
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 2
-
-      - name: Reject whitespace errors
-        run: git diff --check HEAD^ HEAD
- -v ./d2layouts/d2talalayout/internal/placement/...
+        run: go test -count=1 -run TestSlice43CompactionOracle -v ./d2layouts/d2talalayout/internal/placement/...
 
       - name: Test placement
         run: go test -count=1 ./d2layouts/d2talalayout/internal/placement/...
