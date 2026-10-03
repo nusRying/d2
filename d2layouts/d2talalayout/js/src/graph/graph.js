@@ -108,6 +108,19 @@ export class Graph {
     return this.fixedNodes();
   }
 
+  containerFixedOrigin(container) {
+    for (const node of this.Nodes) {
+      if (node.container() !== container) continue;
+      const point = node.fixedOrigin();
+      if (point != null) return point;
+    }
+    return null;
+  }
+
+  ContainerFixedOrigin(container) {
+    return this.containerFixedOrigin(container);
+  }
+
   hasFixedNode() {
     for (const n of this.Nodes) {
       if (n.FixedTopLeft != null) {
