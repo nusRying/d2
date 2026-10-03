@@ -157,9 +157,7 @@ export class WorkGuard {
       this.used = BigInt.asIntN(64, this.limit + 1n);
       const stride = this.pollingStride();
       if (previous <= this.limit && (previous / stride) !== (this.limit / stride)) {
-        if (this.ctx.isCancelled()) {
-          throw new WorkCanceledError(this.location);
-        }
+        this.Check();
       }
       throw new WorkLimitError(this.location, this.limit);
     }
