@@ -30,6 +30,15 @@ function graph3() {
   return { g, a, b, c };
 }
 
+function inflationGraph() {
+  const g = new Graph();
+  g.CellSize = 10;
+  const a = add(g, 1, 0, 0);
+  const b = add(g, 2, 20, 0);
+  g.Connect(a, b);
+  return { g, a, b };
+}
+
 describe("Slice 43 — Compaction direct gates", () => {
   it("rejects incomplete options before graph validation", () => {
     const ctx = { Err: () => null };
@@ -45,7 +54,7 @@ describe("Slice 43 — Compaction direct gates", () => {
   });
 
   it("restores exact point identities and routing costs after post-inflation cancellation", () => {
-    const { g, b } = graph3();
+    const { g, b } = inflationGraph();
     const originalPoints = g.Nodes.map((n) => n.TopLeft);
     const originalValues = g.Nodes.map((n) => [n.TopLeft.X, n.TopLeft.Y]);
     g.crossingCost = 11;
@@ -54,7 +63,7 @@ describe("Slice 43 — Compaction direct gates", () => {
 
     const ctx = {
       Err() {
-        return b.TopLeft.X !== 100 ? new Error("context canceled") : null;
+        return b.TopLeft.X !== 20 ? new Error("context canceled") : null;
       },
     };
 
@@ -75,12 +84,12 @@ describe("Slice 43 — Compaction direct gates", () => {
   });
 
   it("restores exact state if a context throws after inflation", () => {
-    const { g, b } = graph3();
+    const { g, b } = inflationGraph();
     const originals = g.Nodes.map((n) => ({ ref: n.TopLeft, x: n.TopLeft.X, y: n.TopLeft.Y }));
     const panic = new Error("oracle post-inflation panic");
     const ctx = {
       Err() {
-        if (b.TopLeft.X !== 100) throw panic;
+        if (b.TopLeft.X !== 20) throw panic;
         return null;
       },
     };
