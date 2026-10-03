@@ -1252,14 +1252,14 @@ export class Node {
 
   deltaTo(other, atPoint) {
     if (other == null || atPoint == null) {
-      throw new Error("spacing check received incomplete nodes");
+      throw new Error("layout invariant violated: spacing check received incomplete nodes");
     }
     let maxEdgeWidth = Number.MIN_SAFE_INTEGER;
     let maxEdgeHeight = Number.MIN_SAFE_INTEGER;
     let isConnected = false;
     for (const edge of this.Edges) {
       if (edge == null || edge.From == null || edge.To == null) {
-        throw new Error("spacing check encountered an incomplete edge");
+        throw new Error("layout invariant violated: spacing check encountered an incomplete edge");
       }
       if (this.adjacent(edge) === other) {
         isConnected = true;
