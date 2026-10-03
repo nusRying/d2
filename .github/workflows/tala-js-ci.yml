@@ -6,14 +6,18 @@ on:
       - "tala-js/**"
     paths:
       - ".github/workflows/tala-js-ci.yml"
-      - "d2layouts/d2talalayout/js/**"
+      - "d2layouts/d2talalayout/js/src/**"
+      - "d2layouts/d2talalayout/js/test/**"
+      - "d2layouts/d2talalayout/js/package.json"
       - "d2layouts/d2talalayout/internal/**"
       - "go.mod"
       - "go.sum"
   pull_request:
     paths:
       - ".github/workflows/tala-js-ci.yml"
-      - "d2layouts/d2talalayout/js/**"
+      - "d2layouts/d2talalayout/js/src/**"
+      - "d2layouts/d2talalayout/js/test/**"
+      - "d2layouts/d2talalayout/js/package.json"
       - "d2layouts/d2talalayout/internal/**"
       - "go.mod"
       - "go.sum"
