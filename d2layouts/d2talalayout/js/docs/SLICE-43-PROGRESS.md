@@ -24,11 +24,23 @@ The committed fixture pins:
 - exact candidate points.
 - generic candidate scorer final position and OptimizationWorkGuard usage.
 - exact final node positions for normal and transition compaction.
+- `orderedAlongAxis` horizontal and vertical coordinate ordering and ID ties.
+- `nearestFrom` trailing edge coordinate maximization and first-occurrence retention.
+- `compactionFloor` sized, sizeless, and padding boundary increments.
+- `inflateAlongAxis` normal and transition repositioning.
+- `optimizerDoesOverlap`, `optimizerIsOccupied`, `optimizerCanMove` predicates and work charging.
+- `shiftSubgraphs` moving and non-moving (`TestShiftSubgraphsWontChange`) scenarios.
+- `compactAlongAxis` execution, changed status, and work units used.
+- exact minimum CompactionMoves work boundary W (954) and first pass work (732).
+
+## Regressions and Dedicated Tests
+- Dedicated `test/unit/moves.test.js` protecting strict scoring, tie preference, nil point errors, no-valid-placement errors, fixed-origin constraints, and `CompactionMoves` cancellation location.
+- Exact W (954) and W-1 (953) boundary regression in `test/unit/compaction.test.js` verifying full stage rollback of geometry, Point object identity, routing costs, placement cache sentinel, and cache Map survival.
+- Panic and cancellation mid-mutation rollbacks matching pinned Go tests.
+- Replicating `TestVisibilityGraphOverlap`, `TestVisibilityGraphInitialization`, and `TestShiftSubgraphsWontChange`.
 
 ## CI
 GitHub Actions automatically runs the full JavaScript parity suite, Go parity packages, and diff hygiene for Slice 43 source/test changes.
-
-Final GitHub Actions verification: 2,526 JS tests across 96 files, 49,976 expect assertions, 0 failures; Go `limits`, `layoutgraph`, `placementcost`, `placement`, `proximity`, and `grouping` all passed; diff hygiene passed.
 
 ## Explicitly out of scope
 - sized optimizer

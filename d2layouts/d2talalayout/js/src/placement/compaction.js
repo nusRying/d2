@@ -233,9 +233,18 @@ export function inflateAlongAxis(g, isHorizontal, includeSizes, factor, vEdges, 
 }
 
 function numAdjacent(nodes) {
-  let sum = 0;
-  for (const node of nodes) sum += node.Edges.length;
-  return sum;
+  const nodeSet = new Set(nodes);
+  const adjacentNodes = new Set();
+  for (const node of nodes) {
+    for (const edge of node.Edges) {
+      if (edge.From.ID === edge.To.ID) continue;
+      const adjacentNode = node.Adjacent(edge);
+      if (adjacentNode != null && !nodeSet.has(adjacentNode)) {
+        adjacentNodes.add(adjacentNode);
+      }
+    }
+  }
+  return adjacentNodes.size;
 }
 
 export function shiftSubgraphs(ctx, g, isHorizontal, includeSizes, factor, edgeAbductions, vEdges) {

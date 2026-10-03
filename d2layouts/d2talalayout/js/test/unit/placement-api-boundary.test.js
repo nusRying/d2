@@ -11,6 +11,9 @@ import {
   optimizerMedian,
   optimizerAdjacents,
   optimizerDescendants,
+  optimizerDoesOverlap,
+  optimizerIsOccupied,
+  optimizerCanMove,
 } from '../../src/placement/optimizer-support.js';
 import { captureOptimizerCandidateMovement } from '../../src/placement/candidate-movement.js';
 import { compaction, candidateMoves, visibilityEdges } from '../../src/placement/compaction.js';
@@ -33,6 +36,9 @@ describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
       'optimizerMedian',
       'optimizerAdjacents',
       'optimizerDescendants',
+      'optimizerDoesOverlap',
+      'optimizerIsOccupied',
+      'optimizerCanMove',
       'COMPACTION_FACTOR',
       'PointerSnapshot',
       'moveNodeToBest',
@@ -59,6 +65,9 @@ describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
     assert.strictEqual(typeof optimizerMedian, 'function');
     assert.strictEqual(typeof optimizerAdjacents, 'function');
     assert.strictEqual(typeof optimizerDescendants, 'function');
+    assert.strictEqual(typeof optimizerDoesOverlap, 'function');
+    assert.strictEqual(typeof optimizerIsOccupied, 'function');
+    assert.strictEqual(typeof optimizerCanMove, 'function');
     assert.strictEqual(typeof compaction, 'function');
     assert.strictEqual(typeof candidateMoves, 'function');
     assert.strictEqual(typeof visibilityEdges, 'function');
