@@ -76,11 +76,6 @@ jobs:
       - name: Test placementcost
         run: go test -count=1 ./d2layouts/d2talalayout/internal/placementcost/...
 
-      - name: Generate Slice 43 compaction oracle
-        env:
-          TALA_SLICE43_ORACLE: "1"
-        run: go test -count=1 -run TestSlice43CompactionOracle -v ./d2layouts/d2talalayout/internal/placement/...
-
       - name: Test placement
         run: go test -count=1 ./d2layouts/d2talalayout/internal/placement/...
 
