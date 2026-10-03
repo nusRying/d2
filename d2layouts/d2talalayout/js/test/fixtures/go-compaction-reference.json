@@ -256,5 +256,9 @@
         "y": 100
       }
     ]
+  },
+  "numAdjacent": {
+    "edgeCountSemantics": 5,
+    "uniqueExternalNeighbors": 2
   }
 }

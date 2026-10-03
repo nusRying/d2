@@ -316,4 +316,32 @@ describe("Slice 43 — Real-Go compaction oracle replay", () => {
     assert.equal(BigInt(reference.exactWorkBoundary.w), 954n);
     assert.equal(BigInt(reference.exactWorkBoundary.firstPassWork), 732n);
   });
+
+  it("replays numAdjacent edge-count semantics distinguishing from unique external neighbors", () => {
+    const g = new Graph();
+    const n1 = add(g, 1, 0, 0);
+    const n2 = add(g, 2, 50, 0);
+    const n3 = add(g, 3, 100, 0);
+    const n4 = add(g, 4, 150, 0);
+    g.Connect(n1, n2);
+    g.Connect(n1, n3);
+    g.Connect(n2, n3);
+    g.Connect(n2, n4);
+
+    const subgraph = [n1, n2];
+    const edgeCount = subgraph.reduce((sum, n) => sum + n.Edges.length, 0);
+    assert.equal(edgeCount, reference.numAdjacent.edgeCountSemantics);
+    assert.equal(edgeCount, 5);
+
+    const uniqueExt = new Set();
+    for (const n of subgraph) {
+      for (const e of n.Edges) {
+        const adj = n.Adjacent(e);
+        if (adj !== n1 && adj !== n2) uniqueExt.add(adj);
+      }
+    }
+    assert.equal(uniqueExt.size, reference.numAdjacent.uniqueExternalNeighbors);
+    assert.equal(uniqueExt.size, 2);
+    assert.notEqual(edgeCount, uniqueExt.size);
+  });
 });

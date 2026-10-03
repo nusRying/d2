@@ -32,6 +32,7 @@ The committed fixture pins:
 - `shiftSubgraphs` moving and non-moving (`TestShiftSubgraphsWontChange`) scenarios.
 - `compactAlongAxis` execution, changed status, and work units used.
 - exact minimum CompactionMoves work boundary W (954) and first pass work (732).
+- `numAdjacent`: exact edge-count sum semantics (5) distinguishing from unique external neighbors (2).
 
 ## Regressions and Dedicated Tests
 - Dedicated `test/unit/moves.test.js` protecting strict scoring, tie preference, nil point errors, no-valid-placement errors, fixed-origin constraints, and `CompactionMoves` cancellation location.

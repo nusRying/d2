@@ -92,6 +92,10 @@ type slice43Oracle struct {
 		FirstPassWork uint64        `json:"firstPassWork"`
 		Positions     []slice43Node `json:"positions"`
 	} `json:"exactWorkBoundary"`
+	NumAdjacent struct {
+		EdgeCountSemantics      int `json:"edgeCountSemantics"`
+		UniqueExternalNeighbors int `json:"uniqueExternalNeighbors"`
+	} `json:"numAdjacent"`
 }
 
 func slice43Positions(g *layoutgraph.Graph) []slice43Node {
@@ -547,6 +551,41 @@ func TestSlice43CompactionOracle(t *testing.T) {
 		out.ExactWorkBoundary.W = minimum
 		out.ExactWorkBoundary.FirstPassWork = firstPassWork
 		out.ExactWorkBoundary.Positions = slice43Positions(exactGraph)
+	}
+
+	// 11. numAdjacent semantics (edge count sum vs unique external neighbors)
+	{
+		g := layoutgraph.NewGraph()
+		n1 := layoutgraph.NewNode(1, 10, 10)
+		n1.TopLeft = geo.NewPoint(0, 0)
+		g.AddNode(n1)
+		n2 := layoutgraph.NewNode(2, 10, 10)
+		n2.TopLeft = geo.NewPoint(50, 0)
+		g.AddNode(n2)
+		n3 := layoutgraph.NewNode(3, 10, 10)
+		n3.TopLeft = geo.NewPoint(100, 0)
+		g.AddNode(n3)
+		n4 := layoutgraph.NewNode(4, 10, 10)
+		n4.TopLeft = geo.NewPoint(150, 0)
+		g.AddNode(n4)
+		g.Connect(n1, n2) // internal edge
+		g.Connect(n1, n3) // external edge to n3
+		g.Connect(n2, n3) // another external edge to same n3
+		g.Connect(n2, n4) // external edge to n4
+
+		subgraph := layoutgraph.Nodes{n1, n2}
+		out.NumAdjacent.EdgeCountSemantics = subgraph.NumAdjacent()
+
+		uniqueExt := map[*layoutgraph.Node]bool{}
+		for _, n := range subgraph {
+			for _, e := range n.Edges {
+				adj := n.Adjacent(e)
+				if adj != n1 && adj != n2 {
+					uniqueExt[adj] = true
+				}
+			}
+		}
+		out.NumAdjacent.UniqueExternalNeighbors = len(uniqueExt)
 	}
 
 	bytes, err := json.MarshalIndent(out, "", "  ")
