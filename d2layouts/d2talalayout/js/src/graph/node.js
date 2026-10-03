@@ -923,7 +923,6 @@ export class Node {
   // containerDirection reports the layout direction of this node's owning
   // container, mirroring Go Node.ContainerDirection() (node.go:2419).
   containerDirection() {
-    if (this.Graph == null) return Orientation.NONE;
     return this.Graph.direction(this.effectiveContainer());
   }
 
@@ -973,7 +972,7 @@ export class Node {
   // Pinned Go: layoutgraph.Node.nearestSharedAncestor (node.go:2380)
   nearestSharedAncestor(otherNode) {
     let container = this.effectiveContainer();
-    let otherContainer = otherNode != null ? otherNode.effectiveContainer() : null;
+    let otherContainer = otherNode.effectiveContainer();
     if (container == null || otherContainer == null) return null;
     let nLevel = this.containerLevel();
     let otherLevel = otherNode.containerLevel();
@@ -1001,7 +1000,7 @@ export class Node {
   }
 
   orientation(otherNode) {
-    if (this.TopLeft == null || otherNode == null || otherNode.TopLeft == null) {
+    if (this.TopLeft == null || otherNode.TopLeft == null) {
       return Orientation.NONE;
     }
     if ((this.TopLeft.Y + this.Height) < otherNode.TopLeft.Y) {

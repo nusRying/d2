@@ -7,9 +7,6 @@
  * @returns {[import('../graph/node.js').Node|null, import('../graph/node.js').Node|null, boolean]}
  */
 export function clusterExactlyTwoExternalConnectedNodes(cluster) {
-  if (cluster == null || !cluster.Nodes || cluster.Nodes.length === 0) {
-    return [null, null, false];
-  }
   const currentGraph = cluster.Nodes[0].Graph;
   let first = null;
   let second = null;
@@ -19,12 +16,12 @@ export function clusterExactlyTwoExternalConnectedNodes(cluster) {
     let externalNode = null;
     if (edgeAbduction.OriginallyFrom == null && edgeAbduction.OriginallyTo != null) {
       // edge coming into cluster
-      if (edgeAbduction.CurrentFrom != null && edgeAbduction.CurrentFrom.TopLeft != null && edgeAbduction.CurrentFrom.Graph === currentGraph) {
+      if (edgeAbduction.CurrentFrom.TopLeft != null && edgeAbduction.CurrentFrom.Graph === currentGraph) {
         externalNode = edgeAbduction.CurrentFrom;
       }
     } else if (edgeAbduction.OriginallyTo == null && edgeAbduction.OriginallyFrom != null) {
       // edge exiting from cluster
-      if (edgeAbduction.CurrentTo != null && edgeAbduction.CurrentTo.TopLeft != null && edgeAbduction.CurrentTo.Graph === currentGraph) {
+      if (edgeAbduction.CurrentTo.TopLeft != null && edgeAbduction.CurrentTo.Graph === currentGraph) {
         externalNode = edgeAbduction.CurrentTo;
       }
     }

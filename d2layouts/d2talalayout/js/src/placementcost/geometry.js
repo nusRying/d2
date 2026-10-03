@@ -12,9 +12,6 @@ export const CONNECTED_NODE_GAP = 60.0;
 export const IDEAL_GAP_SIZE = 2.5 * CONNECTED_NODE_GAP; // 150.0
 
 export function checkScoringCancellation(ctx) {
-  if (ctx == null) {
-    return null;
-  }
   let err = null;
   if (typeof ctx.Err === 'function') {
     err = ctx.Err();
@@ -22,7 +19,7 @@ export function checkScoringCancellation(ctx) {
     err = ctx.err();
   }
   if (err != null) {
-    return new Error(`EdgeLength: context canceled`);
+    return new Error(`EdgeLength: ${err.message || String(err)}`);
   }
   return null;
 }
@@ -115,7 +112,7 @@ export function placementDistance(first, second, includeSizes) {
 }
 
 export function sizelessOrientation(node, other) {
-  if (node == null || node.TopLeft == null || other == null || other.TopLeft == null) {
+  if (node.TopLeft == null || other.TopLeft == null) {
     return Orientation.NONE;
   }
   if (node.TopLeft.Y < other.TopLeft.Y) {

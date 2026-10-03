@@ -204,10 +204,10 @@ export class Graph {
     let hasLength = false;
     let maxLength = CONNECTED_NODE_GAP;
     for (const n of this.Nodes) {
-      if (n == null || n.TopLeft == null) continue;
+      if (n.TopLeft == null) continue;
       for (const e of (n.Edges || [])) {
         const adj = n.adjacent(e);
-        if (adj == null || adj.TopLeft == null) continue;
+        if (adj.TopLeft == null) continue;
         hasLength = true;
         const distance = n.distanceTo(adj, true);
         if (distance > maxLength) maxLength = distance;
