@@ -1,0 +1,163 @@
+import { describe, it } from "node:test";
+import assert from "node:assert/strict";
+
+import { Graph } from "../../src/graph/graph.js";
+import { Node } from "../../src/graph/node.js";
+import { Point } from "../../src/geometry/point.js";
+import { LayoutAxis } from "../../src/placement/axis.js";
+import {
+  MAX_COMPACTION_CANDIDATE_COUNT,
+  candidateMoves,
+  compaction,
+  visibilityEdges,
+} from "../../src/placement/compaction.js";
+
+function add(g, id, x, y, w = 10, h = 10) {
+  const n = new Node(BigInt(id), w, h);
+  n.TopLeft = new Point(x, y);
+  g.AddNode(n);
+  return n;
+}
+
+function graph3() {
+  const g = new Graph();
+  g.CellSize = 10;
+  const a = add(g, 1, 0, 0);
+  const b = add(g, 2, 100, 0);
+  const c = add(g, 3, 200, 0);
+  g.Connect(a, b);
+  g.Connect(b, c);
+  return { g, a, b, c };
+}
+
+describe("Slice 43 — Compaction direct gates", () => {
+  it("rejects incomplete options before graph validation", () => {
+    const ctx = { Err: () => null };
+    assert.throws(() => compaction(ctx, null, {}), /TALA Compaction requires an axis/);
+    assert.throws(
+      () => compaction(ctx, null, { axis: LayoutAxis.Horizontal, factor: 0 }),
+      /TALA Compaction requires a finite positive factor/
+    );
+    assert.throws(
+      () => compaction(ctx, null, { axis: LayoutAxis.Horizontal, factor: Number.NaN }),
+      /TALA Compaction requires a finite positive factor/
+    );
+  });
+
+  it("restores exact point identities and routing costs after post-inflation cancellation", () => {
+    const { g, b } = graph3();
+    const originalPoints = g.Nodes.map((n) => n.TopLeft);
+    const originalValues = g.Nodes.map((n) => [n.TopLeft.X, n.TopLeft.Y]);
+    g.crossingCost = 11;
+    g.turnCost = 22;
+    g.nonCenterPortCost = 33;
+
+    const ctx = {
+      Err() {
+        return b.TopLeft.X !== 100 ? new Error("context canceled") : null;
+      },
+    };
+
+    assert.throws(
+      () => compaction(ctx, g, {
+        axis: LayoutAxis.Horizontal,
+        includeSizes: true,
+        factor: 1,
+      }),
+      /Compaction: context canceled/
+    );
+
+    g.Nodes.forEach((node, i) => {
+      assert.equal(node.TopLeft, originalPoints[i]);
+      assert.deepEqual([node.TopLeft.X, node.TopLeft.Y], originalValues[i]);
+    });
+    assert.deepEqual(g.RoutingCosts(), { Crossing: 11, Turn: 22, NonCenterPort: 33 });
+  });
+
+  it("restores exact state if a context throws after inflation", () => {
+    const { g, b } = graph3();
+    const originals = g.Nodes.map((n) => ({ ref: n.TopLeft, x: n.TopLeft.X, y: n.TopLeft.Y }));
+    const panic = new Error("oracle post-inflation panic");
+    const ctx = {
+      Err() {
+        if (b.TopLeft.X !== 100) throw panic;
+        return null;
+      },
+    };
+
+    assert.throws(
+      () => compaction(ctx, g, {
+        axis: LayoutAxis.Horizontal,
+        includeSizes: true,
+        factor: 1,
+      }),
+      (err) => err === panic
+    );
+    g.Nodes.forEach((node, i) => {
+      assert.equal(node.TopLeft, originals[i].ref);
+      assert.equal(node.TopLeft.X, originals[i].x);
+      assert.equal(node.TopLeft.Y, originals[i].y);
+    });
+  });
+
+  it("reports the CompactionMoves resource location and rolls back", () => {
+    const { g } = graph3();
+    const before = g.Nodes.map((n) => ({ ref: n.TopLeft, x: n.TopLeft.X, y: n.TopLeft.Y }));
+    const ctx = { Err: () => null };
+    assert.throws(
+      () => compaction(ctx, g, {
+        axis: LayoutAxis.Horizontal,
+        includeSizes: true,
+        factor: 1,
+        moveWorkLimit: 1n,
+      }),
+      /CompactionMoves/
+    );
+    g.Nodes.forEach((node, i) => {
+      assert.equal(node.TopLeft, before[i].ref);
+      assert.equal(node.TopLeft.X, before[i].x);
+      assert.equal(node.TopLeft.Y, before[i].y);
+    });
+  });
+
+  it("rejects a non-finite candidate range", () => {
+    const g = new Graph();
+    g.CellSize = 10;
+    const a = add(g, 1, 0, 0);
+    const b = add(g, 2, Infinity, 0);
+    assert.throws(
+      () => candidateMoves({ Err: () => null }, g, b, 1, true, true, 0, []),
+      /compaction candidate range is not finite/
+    );
+    void a;
+  });
+
+  it("bounds candidate generation at MAX_GRAPH_SIZE + 3", () => {
+    const g = new Graph();
+    g.CellSize = 1;
+    const a = add(g, 1, 0, 0);
+    const b = add(g, 2, MAX_COMPACTION_CANDIDATE_COUNT + 100, 0);
+    const edge = g.Connect(a, b);
+    assert.throws(
+      () => candidateMoves({ Err: () => null }, g, b, 0.1, true, false, 0, [edge]),
+      new RegExp(`candidate count .* exceeds limit ${MAX_COMPACTION_CANDIDATE_COUNT}`)
+    );
+  });
+
+  it("uses exact visibility work location on cancellation", () => {
+    let calls = 0;
+    const ctx = {
+      Err() {
+        calls++;
+        return calls >= 2 ? new Error("context canceled") : null;
+      },
+      isCancelled() {
+        return false;
+      },
+    };
+    const g = new Graph();
+    add(g, 1, 0, 0);
+    add(g, 2, 100, 0);
+    assert.throws(() => visibilityEdges(ctx, g, true, true), /CompactionVisibility/);
+  });
+});
