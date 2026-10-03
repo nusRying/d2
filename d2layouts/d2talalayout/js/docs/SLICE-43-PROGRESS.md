@@ -28,7 +28,7 @@ The committed fixture pins:
 ## CI
 GitHub Actions automatically runs the full JavaScript parity suite, Go parity packages, and diff hygiene for Slice 43 source/test changes.
 
-Final test counts will be recorded after the final green Slice 43 CI run.
+Final GitHub Actions verification: 2,526 JS tests across 96 files, 49,976 expect assertions, 0 failures; Go `limits`, `layoutgraph`, `placementcost`, `placement`, `proximity`, and `grouping` all passed; diff hygiene passed.
 
 ## Explicitly out of scope
 - sized optimizer
