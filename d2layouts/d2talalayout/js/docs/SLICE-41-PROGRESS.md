@@ -12,6 +12,6 @@
 - `test/unit/node-placement-cost-oracle.test.js` updated to include extensive oracle validation, including 15 new Cluster cases (panic & non-panic), 5 geometry malformed cases, parallel edges, min gap, abductions, and labels.
 - `test/unit/placementcost-api-boundary.test.js` verified API export restrictions.
 - All target regressions pass.
-- Full npm test suite passes (0 failures out of 2435 tests).
+- Full npm test suite passes (0 failures out of 2464 tests).
 - All Go packages (placementcost, layoutgraph, placement, proximity, grouping) PASS.
 - Git tree is clean, diff checks pass.
