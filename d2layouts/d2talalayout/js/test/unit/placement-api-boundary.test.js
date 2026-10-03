@@ -33,13 +33,21 @@ import {
   nearestConnectedAhead,
 } from '../../src/placement/gap-reduction.js';
 import {
+  SizedOptimizer,
+  newSizedOptimizer,
+  iterPlacementsAroundPoint,
+  withHubSpokesSuppressed,
+} from '../../src/placement/sized-optimizer.js';
+import { normalizeGaps, transposeAll } from '../../src/placement/placement-stages.js';
+import { chargeOptimizerTranspose } from '../../src/placement/optimizer-support.js';
+import {
   OptimizerSpatialIndex,
   indexedCanMove,
   indexedIsOccupied,
   indexedDoesOverlap,
 } from '../../src/placement/optimizer-spatial-index.js';
 
-describe('Slices 42–44 — Placement Optimizer API Boundary', () => {
+describe('Slices 42–45 — Placement Optimizer API Boundary', () => {
   it('does not export internal placement optimizer functions in placement index or root index', () => {
     const forbidden = [
       // Slice 42-43
@@ -99,10 +107,29 @@ describe('Slices 42–44 — Placement Optimizer API Boundary', () => {
       'indexedCanMove',
       'indexedIsOccupied',
       'indexedDoesOverlap',
-      // Slice 45 deferred
+      // Slice 45 sized optimizer internals
       'SizedOptimizer',
       'sizedOptimizer',
+      'newSizedOptimizer',
+      'NewSizedOptimizer',
+      'iterPlacementsAroundPoint',
+      'withHubSpokesSuppressed',
       'medianPointGuarded',
+      'protrudingChildrenGuarded',
+      'findClosestUnoccupiedDistanceGuarded',
+      'findUnoccupiedGuarded',
+      'isPointOccupiedGuarded',
+      'fillPlacementPointsGuarded',
+      'moveNodeToBestGuarded',
+      'bestSwapCandidateGuarded',
+      'syncHerdFencesGuarded',
+      'chargeOptimizerTranspose',
+      'MAX_OPTIMIZER_PLACEMENT_CANDIDATES',
+      // Slice 45 stage wrappers stay internal until Place exists (Slice 46)
+      'normalizeGaps',
+      'NormalizeGaps',
+      'transposeAll',
+      'TransposeAll',
     ];
 
     for (const name of forbidden) {
@@ -146,5 +173,21 @@ describe('Slices 42–44 — Placement Optimizer API Boundary', () => {
     assert.strictEqual(typeof indexedCanMove, 'function');
     assert.strictEqual(typeof indexedIsOccupied, 'function');
     assert.strictEqual(typeof indexedDoesOverlap, 'function');
+    // Slice 45 direct imports
+    assert.strictEqual(typeof SizedOptimizer, 'function');
+    assert.strictEqual(typeof newSizedOptimizer, 'function');
+    assert.strictEqual(typeof iterPlacementsAroundPoint, 'function');
+    assert.strictEqual(typeof withHubSpokesSuppressed, 'function');
+    assert.strictEqual(typeof chargeOptimizerTranspose, 'function');
+    assert.strictEqual(typeof normalizeGaps, 'function');
+    assert.strictEqual(typeof transposeAll, 'function');
+    for (const method of [
+      'medianPointGuarded', 'protrudingChildrenGuarded', 'findClosestUnoccupiedDistanceGuarded',
+      'findUnoccupiedGuarded', 'isPointOccupiedGuarded', 'fillPlacementPointsGuarded',
+      'moveNodeToBestGuarded', 'bestSwapCandidateGuarded', 'syncHerdFencesGuarded',
+      'optimize', 'optimizeWithLimit', 'optimizeGuarded',
+    ]) {
+      assert.strictEqual(typeof SizedOptimizer.prototype[method], 'function', method);
+    }
   });
 });
