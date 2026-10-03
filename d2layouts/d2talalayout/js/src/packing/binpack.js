@@ -19,7 +19,7 @@ import { newEdgeSegment } from '../graph/structural-access.js';
 import { contextWithTransactionWorkGuard } from '../limits/transaction-guard.js';
 import { MAX_BIN_PACK_WORK_UNITS } from '../limits/constants.js';
 import { isWorkCanceledError, isWorkLimitError } from '../limits/work-guard.js';
-import { boundingBox, fixedBoundingBox, nodeBoundingBox } from './graphbounds-support.js';
+import { boundingBox, fixedBoundingBox, nodeBoundingBox } from '../graphbounds/index.js';
 import {
   SUBGRAPH_PADDING,
   allEdgesHaveCompleteRoutesGuarded,

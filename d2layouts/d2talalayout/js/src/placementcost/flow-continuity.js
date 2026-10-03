@@ -1,3 +1,4 @@
+import { goHypot } from '../geometry/go-math.js';
 const FLOW_SPINE_WEIGHT = 1.0;
 const FLOW_BRANCH_WEIGHT = 1.0;
 
@@ -69,7 +70,7 @@ export function flowContinuityCost(node, s) {
 
     const x = adj.TopLeft.X + adj.Width / 2 - cx;
     const y = adj.TopLeft.Y + adj.Height / 2 - cy;
-    const length = Math.hypot(x, y);
+    const length = goHypot(x, y);
     if (length === 0) {
       continue;
     }

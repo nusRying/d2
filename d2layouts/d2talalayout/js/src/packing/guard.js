@@ -8,7 +8,7 @@ import { WorkGuard } from '../limits/work-guard.js';
 import { MAX_ENGINE_NODES, MAX_ENGINE_WORK_UNITS } from '../limits/constants.js';
 import { Spacing } from '../graph/graph.js';
 import { sortNodesByID } from '../graph/node.js';
-import { boundingBox, fixedBoundingBox } from './graphbounds-support.js';
+import { boundingBox, fixedBoundingBox } from '../graphbounds/index.js';
 import { syncClusterGeometryWithWork } from './cluster-geometry-support.js';
 import { goID, goMax, goMin, goPow2, invariantError } from './go-support.js';
 

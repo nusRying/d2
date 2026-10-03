@@ -1,3 +1,4 @@
+import { goPow2 } from '../geometry/go-math.js';
 import { MAX_ENGINE_NODES, MAX_ENGINE_WORK_UNITS } from "../limits/constants.js";
 import { WorkGuard } from "../limits/work-guard.js";
 import { goRound } from "../geometry/math.js";
@@ -150,5 +151,5 @@ export function roundToNearestCellSize(value, cellSize) {
 }
 
 export function numPointsWithinManhattanDistance(distance) {
-  return Math.ceil(Math.pow(distance, 2) + Math.pow(distance + 1, 2));
+  return Math.ceil(goPow2(distance) + goPow2(distance + 1));
 }

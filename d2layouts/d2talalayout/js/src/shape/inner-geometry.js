@@ -1,3 +1,4 @@
+import { goPow2 } from '../geometry/go-math.js';
 import { Box } from "../geometry/box.js";
 import { Point } from "../geometry/point.js";
 import { goRound } from "../geometry/math.js";
@@ -231,7 +232,7 @@ export function shapeGetInsidePlacement(shapeType, box, width, height, paddingX,
       const theta = Math.fround(Math.atan2(ry, rx));
       const sin = Math.sin(theta);
       const cos = Math.cos(theta);
-      const r = (rx * ry) / Math.sqrt(Math.pow(rx * sin, 2) + Math.pow(ry * cos, 2));
+      const r = (rx * ry) / Math.sqrt(goPow2(rx * sin) + goPow2(ry * cos));
       return new Point(
         box.TopLeft.X + Math.ceil(rx - cos * (r - paddingX / 2.0)),
         box.TopLeft.Y + Math.ceil(ry - sin * (r - paddingY / 2.0))

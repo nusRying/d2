@@ -1,24 +1,29 @@
+import { goHypot, goPow2 } from "../geometry/go-math.js";
 import { Point } from "../geometry/point.js";
 import { goRound } from "../geometry/math.js";
 import { validateEngineGraph } from "../graph/topology-preflight.js";
 import { WorkCanceledError } from "../limits/work-guard.js";
+import { getContextError } from "../limits/work-context.js";
 
 /**
- * Checks direct context cancellation matching Go's ctx.Err() semantics.
+ * Go: if err := ctx.Err(); err != nil { return false, err } — one ctx.Err()
+ * call per check; the context error is returned unwrapped.
  *
  * @param {any} context
  */
 function checkDirectCancellation(context) {
-  if (context != null) {
-    const isCancelled =
-      typeof context.isCancelled === "function"
-        ? context.isCancelled()
-        : Boolean(context.aborted);
-    if (isCancelled) {
-      const error = new Error("context canceled");
-      error.name = "AbortError";
-      throw error;
-    }
+  if (context == null) return;
+  if (typeof context.Err === "function") {
+    const err = context.Err();
+    if (err != null) throw err;
+    return;
+  }
+  // Polling-only contexts have no Err identity to return; synthesize the
+  // canonical cancellation error.
+  if (getContextError(context) != null) {
+    const error = new Error("context canceled");
+    error.name = "AbortError";
+    throw error;
   }
 }
 
@@ -97,7 +102,7 @@ export function initializeByGraphDistance(context, g) {
         const j = (q + sweep) % n;
         let dx = x[i] - x[j];
         let dy = y[i] - y[j];
-        let length = Math.hypot(dx, dy);
+        let length = goHypot(dx, dy);
         if (length < 1e-9) {
           dx = 1e-6;
           dy = 1e-6;
@@ -146,7 +151,7 @@ export function initializeByGraphDistance(context, g) {
           if (occupied.has(key)) {
             continue;
           }
-          const c = Math.pow(xx - tx, 2) + Math.pow(yy - ty, 2);
+          const c = goPow2(xx - tx) + goPow2(yy - ty);
           if (c < cost) {
             best = [xx, yy];
             cost = c;

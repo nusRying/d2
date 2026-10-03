@@ -1,4 +1,5 @@
 import { WorkCanceledError } from "../limits/work-guard.js";
+import { getContextError } from "../limits/work-context.js";
 import {
   Orientation,
   orientationToString,
@@ -115,13 +116,15 @@ export function groupSheep(context, graph, root, abductions) {
 
 export const GroupSheep = groupSheep;
 
+// Go: if err := ctx.Err(); err != nil { return fmt.Errorf("AssignHerds: %w", err) }
 function checkAssignHerdsCancellation(context) {
-  const isCancelled =
-    typeof context.isCancelled === "function"
-      ? context.isCancelled()
-      : Boolean(context.aborted);
-  if (isCancelled) {
-    throw new WorkCanceledError("AssignHerds");
+  if (context == null) {
+    // Go: calling Err on a nil context interface panics.
+    throw new TypeError("AssignHerds requires a context");
+  }
+  const err = getContextError(context);
+  if (err != null) {
+    throw new WorkCanceledError("AssignHerds", err);
   }
 }
 
