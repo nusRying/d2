@@ -195,6 +195,53 @@ export class Graph {
     this.computeCellSize();
   }
 
+  // maxEdgeLength returns the maximum edge distance (with sizes) across all
+  // node pairs in the graph. Falls back to ConnectedNodeGap (60) if no
+  // positioned pair exists.
+  // Pinned Go: layoutgraph.Graph.maxEdgeLength (graph.go:627)
+  maxEdgeLength() {
+    const CONNECTED_NODE_GAP = 60.0;
+    let hasLength = false;
+    let maxLength = CONNECTED_NODE_GAP;
+    for (const n of this.Nodes) {
+      if (n == null || n.TopLeft == null) continue;
+      for (const e of (n.Edges || [])) {
+        const adj = n.adjacent(e);
+        if (adj == null || adj.TopLeft == null) continue;
+        hasLength = true;
+        const distance = n.distanceTo(adj, true);
+        if (distance > maxLength) maxLength = distance;
+      }
+    }
+    if (!hasLength) return 0.0;
+    return maxLength;
+  }
+
+  // turnCostValue returns the lazily-computed turn penalty.
+  // Pinned Go: layoutgraph.Graph.turnCostValue (graph.go:532)
+  turnCostValue() {
+    const TURN_PENALTY_MULTIPLIER = 0.125;
+    if (this.turnCost !== 0) return this.turnCost;
+    const cost = TURN_PENALTY_MULTIPLIER * this.Edges.length * this.maxEdgeLength();
+    this.turnCost = cost;
+    return cost;
+  }
+
+  TurnCost() {
+    return this.turnCostValue();
+  }
+
+  // resetTurnCost resets the lazily-cached turn cost so it is recomputed on
+  // next access.
+  // Pinned Go: layoutgraph.Graph.resetTurnCost (graph.go:621)
+  resetTurnCost() {
+    this.turnCost = 0;
+  }
+
+  ResetTurnCost() {
+    this.resetTurnCost();
+  }
+
   isSequenceVessel(node) {
     return this.Sequences.has(node);
   }

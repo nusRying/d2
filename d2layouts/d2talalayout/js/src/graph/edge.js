@@ -1,6 +1,7 @@
 
 import { Point } from '../geometry/point.js';
 import { goRound } from '../geometry/math.js';
+import { Orientation } from '../geometry/orientation.js';
 import { LabelPosition, normalizeLabelPosition, getPointOnRoute, getUnitNormalVector, routeLength } from './label-position.js';
 
 // NoArrowhead is the sentinel value matching Go's NoArrowhead constant ("none").
@@ -232,6 +233,109 @@ export class Edge {
 
   IsUndirected() {
     return this.isUndirected();
+  }
+
+  directedEndpoints() {
+    if (!this.isDirected()) {
+      return [null, null, false];
+    }
+    if (this.hasSourceArrow()) {
+      return [this.To, this.From, true];
+    }
+    return [this.From, this.To, true];
+  }
+
+  DirectedEndpoints() {
+    return this.directedEndpoints();
+  }
+
+  hasTableColumn() {
+    return this.FromTableColumnIndex != null || this.ToTableColumnIndex != null;
+  }
+
+  HasTableColumn() {
+    return this.hasTableColumn();
+  }
+
+  isBetweenTableColumns() {
+    return this.FromTableColumnIndex != null && this.ToTableColumnIndex != null;
+  }
+
+  IsBetweenTableColumns() {
+    return this.isBetweenTableColumns();
+  }
+
+  hasLargeArrowheadLabel() {
+    return (this.SourceArrowheadLabel != null && this.SourceArrowheadLabel.Text.length > 3) ||
+      (this.TargetArrowheadLabel != null && this.TargetArrowheadLabel.Text.length > 3);
+  }
+
+  HasLargeArrowheadLabel() {
+    return this.hasLargeArrowheadLabel();
+  }
+
+  facingTablePorts(abductionFrom, abductionTo) {
+    if (!this.hasTableColumn()) {
+      return {
+        from: new Point(0, 0),
+        to: new Point(0, 0),
+        hasFrom: false,
+        hasTo: false,
+        orientation: Orientation.NONE,
+      };
+    }
+    const from = abductionFrom != null ? abductionFrom : this.From;
+    const to = abductionTo != null ? abductionTo : this.To;
+    const orientation = from.orientation(to);
+    const ports = {
+      from: new Point(0, 0),
+      to: new Point(0, 0),
+      hasFrom: false,
+      hasTo: false,
+      orientation,
+    };
+    switch (orientation) {
+      case Orientation.TopLeft:
+      case Orientation.BottomLeft:
+      case Orientation.Left:
+        if (this.FromTableColumnIndex != null) {
+          const [p, ok] = from.tableColumnPortValue(Orientation.Right, this.FromTableColumnIndex);
+          ports.from = p;
+          ports.hasFrom = ok;
+        }
+        if (this.ToTableColumnIndex != null) {
+          const [p, ok] = to.tableColumnPortValue(Orientation.Left, this.ToTableColumnIndex);
+          ports.to = p;
+          ports.hasTo = ok;
+        }
+        return ports;
+      case Orientation.Right:
+      case Orientation.TopRight:
+      case Orientation.BottomRight:
+        if (this.FromTableColumnIndex != null) {
+          const [p, ok] = from.tableColumnPortValue(Orientation.Left, this.FromTableColumnIndex);
+          ports.from = p;
+          ports.hasFrom = ok;
+        }
+        if (this.ToTableColumnIndex != null) {
+          const [p, ok] = to.tableColumnPortValue(Orientation.Right, this.ToTableColumnIndex);
+          ports.to = p;
+          ports.hasTo = ok;
+        }
+        return ports;
+    }
+    return {
+      from: new Point(0, 0),
+      to: new Point(0, 0),
+      hasFrom: false,
+      hasTo: false,
+      orientation: Orientation.NONE,
+    };
+  }
+
+  FacingTablePortValues(from, to) {
+    const ports = this.facingTablePorts(from, to);
+    return [ports.from, ports.to, ports.hasFrom, ports.hasTo, ports.orientation];
   }
 
   reconnect(newEndpoint, isTo) {

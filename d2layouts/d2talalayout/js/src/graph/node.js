@@ -1,5 +1,5 @@
 import { Box } from '../geometry/box.js';
-import { euclideanDistance, goRound } from '../geometry/math.js';
+import { euclideanDistance, goRound, truncateDecimals } from '../geometry/math.js';
 import { Point } from '../geometry/point.js';
 import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
@@ -99,6 +99,98 @@ export const RECOGNIZED_SHAPES = new Set([
   "Table",
   "Code",
 ]);
+
+function crossProductTurn(p, q, r) {
+  const pqX = q.X - p.X;
+  const pqY = q.Y - p.Y;
+  const prX = r.X - p.X;
+  const prY = r.Y - p.Y;
+  return pqY * prX - pqX * prY;
+}
+
+function closedIntervalsOverlap(a1, a2, b1, b2) {
+  const aMin = Math.min(a1, a2);
+  const aMax = Math.max(a1, a2);
+  const bMin = Math.min(b1, b2);
+  const bMax = Math.max(b1, b2);
+  return aMin <= bMax && bMin <= aMax;
+}
+
+function straddlesLine(side1, side2) {
+  return side1 === 0 || side2 === 0 || (side1 < 0) !== (side2 < 0);
+}
+
+function segmentsIntersect(p1, q1, p2, q2) {
+  const p2Side = crossProductTurn(p1, q1, p2);
+  const q2Side = crossProductTurn(p1, q1, q2);
+  const p1Side = crossProductTurn(p2, q2, p1);
+  const q1Side = crossProductTurn(p2, q2, q1);
+
+  if (p2Side === 0 && q2Side === 0 && p1Side === 0 && q1Side === 0) {
+    return closedIntervalsOverlap(p1.X, q1.X, p2.X, q2.X) &&
+      closedIntervalsOverlap(p1.Y, q1.Y, p2.Y, q2.Y);
+  }
+
+  return straddlesLine(p2Side, q2Side) && straddlesLine(p1Side, q1Side);
+}
+
+function segmentIntersectsBox(p1, p2, box) {
+  if (p1 == null || p2 == null || box == null || box.TopLeft == null) {
+    return false;
+  }
+
+  let left = box.TopLeft.X;
+  let right = box.TopLeft.X + box.Width;
+  if (left > right) {
+    const tmp = left;
+    left = right;
+    right = tmp;
+  }
+  let top = box.TopLeft.Y;
+  let bottom = box.TopLeft.Y + box.Height;
+  if (top > bottom) {
+    const tmp = top;
+    top = bottom;
+    bottom = tmp;
+  }
+  if (Number.isNaN(left) || Number.isNaN(right) || Number.isNaN(top) || Number.isNaN(bottom)) {
+    return false;
+  }
+
+  if ((p1.X < left && p2.X < left) || (p1.X > right && p2.X > right) ||
+    (p1.Y < top && p2.Y < top) || (p1.Y > bottom && p2.Y > bottom)) {
+    return false;
+  }
+
+  const contains = (p) => left <= p.X && p.X <= right && top <= p.Y && p.Y <= bottom;
+  if (contains(p1) || contains(p2)) {
+    return true;
+  }
+
+  let tEnter = 0.0;
+  let tExit = 1.0;
+  const clipAxis = (start, delta, minCoord, maxCoord) => {
+    if (delta === 0) {
+      return minCoord <= start && start <= maxCoord;
+    }
+    let t1 = (minCoord - start) / delta;
+    let t2 = (maxCoord - start) / delta;
+    if (t1 > t2) {
+      const tmp = t1;
+      t1 = t2;
+      t2 = tmp;
+    }
+    tEnter = Math.max(tEnter, t1);
+    tExit = Math.min(tExit, t2);
+    return tEnter <= tExit;
+  };
+
+  if (!clipAxis(p1.X, p2.X - p1.X, left, right) ||
+    !clipAxis(p1.Y, p2.Y - p1.Y, top, bottom)) {
+    return false;
+  }
+  return tEnter < tExit;
+}
 
 export class Node {
   constructor(id, width = 0, height = 0) {
@@ -818,6 +910,290 @@ export class Node {
 
   FitToGraph(graph, padding) {
     this.fitNodeToGraph(graph, padding);
+  }
+
+  center() {
+    return new Point(this.TopLeft.X + this.Width / 2, this.TopLeft.Y + this.Height / 2);
+  }
+
+  Center() {
+    return this.center();
+  }
+
+  // containerDirection reports the layout direction of this node's owning
+  // container, mirroring Go Node.ContainerDirection() (node.go:2419).
+  containerDirection() {
+    if (this.Graph == null) return Orientation.NONE;
+    return this.Graph.direction(this.effectiveContainer());
+  }
+
+  ContainerDirection() {
+    return this.containerDirection();
+  }
+
+  // effectiveContainer returns the node's active layout container.
+  // Active cluster and sequence vessels replace the node's direct container
+  // while those grouping algorithms are running.
+  // Pinned Go: layoutgraph.Node.EffectiveContainer (quality_api.go:26)
+  effectiveContainer() {
+    if (this.Cluster != null && this.Cluster.isActive && this.Cluster.isActive() &&
+        this.Cluster.Vessel != null) {
+      return this.Cluster.Vessel.Container ?? null;
+    }
+    if (this.Sequence != null && this.Sequence.isActive && this.Sequence.isActive() &&
+        this.Sequence.Vessel != null) {
+      return this.Sequence.Vessel.Container ?? null;
+    }
+    return this.Container ?? null;
+  }
+
+  EffectiveContainer() {
+    return this.effectiveContainer();
+  }
+
+  // IsContainer reports whether this node acts as a layout container.
+  // Mirrors Go Node.IsContainer() (hierarchy_access.go:140).
+  // The underlying boolean field `isContainer` is set by addNodeToContainer().
+  IsContainer() {
+    return this.isContainer === true;
+  }
+
+  // containerLevel returns the nesting depth of this node's container chain.
+  // Pinned Go: layoutgraph.Node.containerLevel (node.go:2354)
+  containerLevel() {
+    let level = 0;
+    for (let curr = this; curr != null; curr = curr.effectiveContainer()) {
+      level++;
+    }
+    return level;
+  }
+
+  // nearestSharedAncestor returns the most-nested container that is an ancestor
+  // of both this node and otherNode.
+  // Pinned Go: layoutgraph.Node.nearestSharedAncestor (node.go:2380)
+  nearestSharedAncestor(otherNode) {
+    let container = this.effectiveContainer();
+    let otherContainer = otherNode != null ? otherNode.effectiveContainer() : null;
+    if (container == null || otherContainer == null) return null;
+    let nLevel = this.containerLevel();
+    let otherLevel = otherNode.containerLevel();
+
+    while (container !== otherContainer) {
+      if (nLevel === otherLevel) {
+        container = container.effectiveContainer();
+        nLevel--;
+        otherContainer = otherContainer.effectiveContainer();
+        otherLevel--;
+      } else if (nLevel > otherLevel) {
+        container = container.effectiveContainer();
+        nLevel--;
+      } else {
+        otherContainer = otherContainer.effectiveContainer();
+        otherLevel--;
+      }
+      if (container == null || otherContainer == null) return null;
+    }
+    return container;
+  }
+
+  NearestSharedAncestor(otherNode) {
+    return this.nearestSharedAncestor(otherNode);
+  }
+
+  orientation(otherNode) {
+    if (this.TopLeft == null || otherNode == null || otherNode.TopLeft == null) {
+      return Orientation.NONE;
+    }
+    if ((this.TopLeft.Y + this.Height) < otherNode.TopLeft.Y) {
+      if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.TopLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+        return Orientation.TopRight;
+      }
+      return Orientation.Top;
+    }
+
+    if ((otherNode.TopLeft.Y + otherNode.Height) < this.TopLeft.Y) {
+      if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.BottomLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+        return Orientation.BottomRight;
+      }
+      return Orientation.Bottom;
+    }
+
+    if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+      return Orientation.Right;
+    }
+
+    if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+      return Orientation.Left;
+    }
+
+    return Orientation.NONE;
+  }
+
+  Orientation(otherNode) {
+    return this.orientation(otherNode);
+  }
+
+  containsPoint(p, delta) {
+    return this.TopLeft.X - delta <= p.X &&
+      this.TopLeft.X + this.Width + delta >= p.X &&
+      this.TopLeft.Y - delta <= p.Y &&
+      this.TopLeft.Y + this.Height + delta >= p.Y;
+  }
+
+  overlapsLine(p1, p2, delta) {
+    if (this.containsPoint(p1, delta) || this.containsPoint(p2, delta)) {
+      return true;
+    }
+
+    const l = this.TopLeft.X - delta;
+    const r = this.TopLeft.X + this.Width + delta;
+    const t = this.TopLeft.Y - delta;
+    const b = this.TopLeft.Y + this.Height + delta;
+
+    const tl = new Point(l, t);
+    const br = new Point(r, b);
+    const tr = new Point(r, t);
+    const bl = new Point(l, b);
+
+    return segmentsIntersect(tl, tr, p1, p2) ||
+      segmentsIntersect(tr, br, p1, p2) ||
+      segmentsIntersect(br, bl, p1, p2) ||
+      segmentsIntersect(bl, tl, p1, p2);
+  }
+
+  OverlapsLine(p1, p2, delta) {
+    return this.overlapsLine(p1, p2, delta);
+  }
+
+  passesThrough(p1, p2) {
+    return segmentIntersectsBox(p1, p2, this);
+  }
+
+  PassesThrough(p1, p2) {
+    return this.passesThrough(p1, p2);
+  }
+
+  area() {
+    return this.Width * this.Height;
+  }
+
+  Area() {
+    return this.area();
+  }
+
+  overlapsAlongDimension(other, isHorizontal, includeSizes) {
+    if (isHorizontal) {
+      if (includeSizes) {
+        if (this.TopLeft.Y > (other.TopLeft.Y + other.Height)) {
+          return false;
+        }
+        if ((this.TopLeft.Y + this.Height) < other.TopLeft.Y) {
+          return false;
+        }
+      } else {
+        if (this.TopLeft.Y > other.TopLeft.Y) {
+          return false;
+        }
+        if (this.TopLeft.Y < other.TopLeft.Y) {
+          return false;
+        }
+      }
+    } else {
+      if (includeSizes) {
+        if (this.TopLeft.X > (other.TopLeft.X + other.Width)) {
+          return false;
+        }
+        if ((this.TopLeft.X + this.Width) < other.TopLeft.X) {
+          return false;
+        }
+      } else {
+        if (this.TopLeft.X > other.TopLeft.X) {
+          return false;
+        }
+        if (this.TopLeft.X < other.TopLeft.X) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  OverlapsAlongDimension(other, isHorizontal, includeSizes) {
+    return this.overlapsAlongDimension(other, isHorizontal, includeSizes);
+  }
+
+  numColumns() {
+    return this._numColumns || 0;
+  }
+
+  NumColumns() {
+    return this.numColumns();
+  }
+
+  setNumColumns(numColumns) {
+    this._numColumns = numColumns;
+  }
+
+  SetNumColumns(numColumns) {
+    this.setNumColumns(numColumns);
+  }
+
+  tableColumnPortValue(orientation, columnIndex) {
+    if (this.isTable()) {
+      if (orientation !== Orientation.Left && orientation !== Orientation.Right) {
+        return [new Point(0, 0), false];
+      }
+      const numCols = this._numColumns || 0;
+      if (numCols === 0) {
+        if (columnIndex !== 0) {
+          throw new Error("table column port index out of range");
+        }
+      } else if (columnIndex < 0 || columnIndex >= numCols) {
+        throw new Error("table column port index out of range");
+      }
+
+      let yPercentage = 0.5;
+      if (numCols > 0) {
+        const rowHeightPercentage = 1 / (numCols + 1);
+        let percentage = rowHeightPercentage + rowHeightPercentage / 2;
+        for (let i = 0; i < columnIndex; i++) {
+          percentage += rowHeightPercentage;
+        }
+        percentage = Math.round(percentage * 10000) / 10000;
+        yPercentage = truncateDecimals(percentage);
+      }
+      const xPercentage = orientation === Orientation.Right ? 1.0 : 0.0;
+      return [
+        new Point(
+          this.TopLeft.X + Math.round(this.Width * xPercentage),
+          this.TopLeft.Y + Math.round(this.Height * yPercentage),
+        ),
+        true,
+      ];
+    }
+    const standardSidePercentages = [0.25, 0.5, 0.75];
+    if (columnIndex >= 0 && columnIndex < standardSidePercentages.length) {
+      const yPct = standardSidePercentages[columnIndex];
+      const xPct = orientation === Orientation.Right ? 1.0 : 0.0;
+      return [
+        new Point(
+          this.TopLeft.X + Math.round(this.Width * xPct),
+          this.TopLeft.Y + Math.round(this.Height * yPct),
+        ),
+        true,
+      ];
+    }
+    return [new Point(0, 0), false];
+  }
+
+  TableColumnPortValue(orientation, columnIndex) {
+    return this.tableColumnPortValue(orientation, columnIndex);
   }
 
   debugID() {

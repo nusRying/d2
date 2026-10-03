@@ -1,7 +1,7 @@
 # ADR-041: Placement Foundations Bundle (Slice 40)
 
 ## Status
-Implemented — awaiting Slice 40 review
+Accepted
 
 ## Context
 Following the formal approval of Slice 39 (`PlaceChildrenOrder`), Slice 40 transitions the TALA JavaScript migration from previous micro-slices to an intentionally larger, dependency-closed foundation bundle. This bundle packages all fundamental primitives and invariant checkers required by downstream placement stages (optimizers, compaction, and orthogonal placement) without premature orchestration or optimizer expansion.
