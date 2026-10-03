@@ -238,11 +238,11 @@ type s46stProbe struct {
 	// Graph.Containers (Go map) loop: which context check observes the
 	// cancellation (the guard's stride poll or the direct check) depends on
 	// map order, so only the error source varies. Error is blank then.
-	ErrorVaries bool `json:"errorVaries,omitempty"`
-	Canceled bool       `json:"canceled"`
-	Result   bool       `json:"result"`
-	Restored bool        `json:"restored"`
-	State    *s46stState `json:"state,omitempty"` // only when not restored
+	ErrorVaries bool        `json:"errorVaries,omitempty"`
+	Canceled    bool        `json:"canceled"`
+	Result      bool        `json:"result"`
+	Restored    bool        `json:"restored"`
+	State       *s46stState `json:"state,omitempty"` // only when not restored
 }
 
 type s46stCase struct {

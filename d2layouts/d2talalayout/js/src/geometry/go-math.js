@@ -129,4 +129,3 @@ export function goPow2(x) {
   }
   return ldexp(a1, ae);
 }
-
