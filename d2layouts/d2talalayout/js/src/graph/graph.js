@@ -77,6 +77,10 @@ export class Graph {
     }
   }
 
+  AddNodeToContainer(container, node) {
+    this.addNodeToContainer(container, node);
+  }
+
   addNewNodeToContainer(container, node) {
     this.addNodeUnchecked(node);
     this.addNodeToContainer(container, node);
@@ -716,6 +720,109 @@ export class Graph {
 
   BoundingBox() {
     return this.bounds();
+  }
+
+  lookupEdgeLengthCost(state) {
+    if (this.edgeLengthCache == null) {
+      return [0, false];
+    }
+    const val = this.edgeLengthCache.get(state);
+    if (val !== undefined) {
+      return [val, true];
+    }
+    return [0, false];
+  }
+
+  LookupEdgeLengthCost(state) {
+    return this.lookupEdgeLengthCost(state);
+  }
+
+  storeEdgeLengthCost(state, cost) {
+    if (this.edgeLengthCache != null) {
+      this.edgeLengthCache.set(state, cost);
+    }
+  }
+
+  StoreEdgeLengthCost(state, cost) {
+    this.storeEdgeLengthCost(state, cost);
+  }
+
+  edgeLengthCacheEntries() {
+    if (this.edgeLengthCache == null) {
+      return 0;
+    }
+    return this.edgeLengthCache.size;
+  }
+
+  EdgeLengthCacheEntries() {
+    return this.edgeLengthCacheEntries();
+  }
+
+  resetPlacementCosts() {
+    if (this.edgeLengthCache != null) {
+      this.edgeLengthCache.clear();
+    }
+    this.crossingCost = 0;
+    this.turnCost = 0;
+    this.nonCenterPortCost = 0;
+  }
+
+  ResetPlacementCosts() {
+    this.resetPlacementCosts();
+  }
+
+  snapshotPlacementCosts() {
+    let cacheClone = null;
+    if (this.edgeLengthCache != null) {
+      cacheClone = new Map(this.edgeLengthCache);
+    }
+    return new PlacementCostSnapshot(
+      this,
+      this.edgeLengthCache,
+      cacheClone,
+      this.crossingCost,
+      this.turnCost,
+      this.nonCenterPortCost
+    );
+  }
+
+  SnapshotPlacementCosts() {
+    return this.snapshotPlacementCosts();
+  }
+}
+
+export class PlacementCostSnapshot {
+  constructor(graph, cacheRef, cache, crossingCost, turnCost, nonCenterPortCost) {
+    this.graph = graph;
+    this.cacheRef = cacheRef;
+    this.cache = cache;
+    this.crossingCost = crossingCost;
+    this.turnCost = turnCost;
+    this.nonCenterPortCost = nonCenterPortCost;
+  }
+
+  restore() {
+    if (this.graph == null) {
+      return;
+    }
+    if (this.cacheRef == null) {
+      this.graph.edgeLengthCache = null;
+    } else {
+      this.cacheRef.clear();
+      if (this.cache != null) {
+        for (const [k, v] of this.cache) {
+          this.cacheRef.set(k, v);
+        }
+      }
+      this.graph.edgeLengthCache = this.cacheRef;
+    }
+    this.graph.crossingCost = this.crossingCost;
+    this.graph.turnCost = this.turnCost;
+    this.graph.nonCenterPortCost = this.nonCenterPortCost;
+  }
+
+  Restore() {
+    this.restore();
   }
 }
 

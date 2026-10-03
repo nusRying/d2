@@ -1,7 +1,7 @@
 # ADR-042: Node Placement-Cost Kernel Bundle
 
 ## Status
-Implemented — awaiting Slice 41 review
+Accepted
 
 ## Context
 We need to migrate the node-level placement cost scoring layer from the Go codebase.

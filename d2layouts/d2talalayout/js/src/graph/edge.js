@@ -208,6 +208,22 @@ export class Edge {
     return this.hasTargetArrow();
   }
 
+  hasArrowTo(node) {
+    return (node === this.From && this.hasSourceArrow()) || (node === this.To && this.hasTargetArrow());
+  }
+
+  HasArrowTo(node) {
+    return this.hasArrowTo(node);
+  }
+
+  isTargetedTo(node) {
+    return this.hasArrowTo(node);
+  }
+
+  IsTargetedTo(node) {
+    return this.isTargetedTo(node);
+  }
+
   // isDirected: exactly one end has an arrowhead. Pinned to Go edge.go.
   isDirected() {
     return this.hasSourceArrow() !== this.hasTargetArrow();

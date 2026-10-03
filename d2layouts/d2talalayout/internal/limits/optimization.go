@@ -153,3 +153,8 @@ func shuffleIndex(random *rand.Rand, n int32, guard *OptimizationWorkGuard) (int
 	}
 	return int32(product >> 32), nil
 }
+
+// ShuffleIndex exports shuffleIndex for oracle testing and bounded draw inspection.
+func ShuffleIndex(random *rand.Rand, n int32, guard *OptimizationWorkGuard) (int32, error) {
+	return shuffleIndex(random, n, guard)
+}

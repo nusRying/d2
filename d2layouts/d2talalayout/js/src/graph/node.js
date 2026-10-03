@@ -6,6 +6,7 @@ import { Icon } from './icon.js';
 import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
 import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost, nodesFixedBounds } from './node-bounds.js';
 import { shapeGetInnerBox, shapeGetInsidePlacement, shapeGetDimensionsToFit } from '../shape/inner-geometry.js';
+import { ancestryParent } from './topology-preflight.js';
 
 function getPaddingValues(padding) {
   if (!padding) {
@@ -300,6 +301,221 @@ export class Node {
 
   OrderedNears() {
     return this.orderedNears();
+  }
+
+  isContainerNode() {
+    return Boolean(this.isContainer);
+  }
+
+  IsContainer() {
+    return Boolean(this.isContainer);
+  }
+
+  IsClusterVessel() {
+    return Boolean(this.isClusterVessel);
+  }
+
+  adjacent(e) {
+    if (this === e.From) {
+      return e.To;
+    }
+    return e.From;
+  }
+
+  Adjacent(e) {
+    return this.adjacent(e);
+  }
+
+  isDescendantOf(maybeAncestor) {
+    if (maybeAncestor === this) {
+      return true;
+    }
+    if (this.Container != null) {
+      return this.Container.isDescendantOf(maybeAncestor);
+    }
+    if (this.Cluster != null && this.Cluster.Vessel != null) {
+      return this.Cluster.Vessel.isDescendantOf(maybeAncestor);
+    }
+    if (this.Sequence != null && this.Sequence.Vessel != null) {
+      return this.Sequence.Vessel.isDescendantOf(maybeAncestor);
+    }
+    return maybeAncestor == null;
+  }
+
+  IsDescendantOf(maybeAncestor) {
+    return this.isDescendantOf(maybeAncestor);
+  }
+
+  isMajorityTarget() {
+    let counter = 0;
+    for (const e of this.Edges) {
+      if (e.isDirected()) {
+        if (e.isTargetedTo(this)) {
+          counter++;
+        } else {
+          counter--;
+        }
+      }
+    }
+    return counter > 0;
+  }
+
+  IsMajorityTarget() {
+    return this.isMajorityTarget();
+  }
+
+  allReachableNodesGuarded(includeContainers, includeNears, traverseTrees, ignore, guard) {
+    return this.reachableNodesGuarded(
+      () => true,
+      includeContainers,
+      includeNears,
+      traverseTrees,
+      ignore,
+      guard
+    );
+  }
+
+  AllReachableNodesContext(includeContainers, includeNears, traverseTrees, ignore, guard) {
+    return this.allReachableNodesGuarded(
+      includeContainers,
+      includeNears,
+      traverseTrees,
+      ignore,
+      guard
+    );
+  }
+
+  reachableNodesGuarded(shouldVisit, includeContainers, includeNears, traverseTrees, ignore, guard) {
+    const reachableNodes = [];
+    const visitQueue = [this];
+    const reachedOrVisited = new Set([this]);
+
+    const queue = (n) => {
+      if (n == null) return;
+      if (ignore != null) {
+        if (ignore instanceof Set || ignore instanceof Map) {
+          if (ignore.has(n)) return;
+        } else if (ignore[n] !== undefined) {
+          return;
+        }
+      }
+      if (reachedOrVisited.has(n)) return;
+      if (!shouldVisit(n)) return;
+      reachedOrVisited.add(n);
+      visitQueue.push(n);
+    };
+
+    while (visitQueue.length > 0) {
+      guard.Step();
+      const curr = visitQueue.shift();
+      let includeNode = true;
+      if (traverseTrees) {
+        if (this.Graph && this.Graph.NodeToTree && this.Graph.NodeToTree.has(curr)) {
+          includeNode = false;
+        }
+      }
+      if (includeNode) {
+        reachableNodes.push(curr);
+      }
+      reachedOrVisited.add(curr);
+
+      for (const e of curr.Edges) {
+        guard.Step();
+        const adjacentNode = curr.adjacent(e);
+        queue(adjacentNode);
+      }
+
+      if (traverseTrees && this.Graph) {
+        const trees = this.Graph.Trees ? this.Graph.Trees.get(curr) : null;
+        if (trees != null) {
+          for (const tree of trees) {
+            guard.Step();
+            queue(tree.Node);
+          }
+        } else if (this.Graph.NodeToTree && this.Graph.NodeToTree.has(curr)) {
+          const tree = this.Graph.NodeToTree.get(curr);
+          if (tree.Parent != null) {
+            queue(tree.Parent.Node);
+          } else {
+            queue(tree.sentinelNode());
+          }
+          if (tree.Children) {
+            for (const c of tree.Children) {
+              guard.Step();
+              queue(c.Node);
+            }
+          }
+        }
+      }
+
+      if (includeNears) {
+        let nears = curr.orderedNears();
+        if (curr.isClusterVessel && this.Graph && this.Graph.Clusters) {
+          const cluster = this.Graph.Clusters.get(curr);
+          if (cluster && cluster.Nodes) {
+            for (const cn of cluster.Nodes) {
+              nears = nears.concat(cn.orderedNears());
+            }
+          }
+        }
+        for (let near of nears) {
+          guard.Step();
+          if (near.Cluster && (typeof near.Cluster.IsActive === 'function' ? near.Cluster.IsActive() : near.Cluster.isActive())) {
+            near = near.Cluster.Vessel;
+          } else if (near.Sequence && (typeof near.Sequence.IsActive === 'function' ? near.Sequence.IsActive() : near.Sequence.isActive())) {
+            near = near.Sequence.Vessel;
+          }
+          if (near.Container !== this.Container) {
+            continue;
+          }
+          queue(near);
+        }
+      }
+
+      if (includeContainers && this.Graph) {
+        if (curr.Sequence != null && curr.Sequence.Nodes) {
+          for (const step of curr.Sequence.Nodes) {
+            guard.Step();
+            queue(step);
+          }
+        }
+        if (curr.isClusterVessel && this.Graph.Clusters) {
+          const cluster = this.Graph.Clusters.get(curr);
+          if (cluster && cluster.Nodes) {
+            for (const cNode of cluster.Nodes) {
+              guard.Step();
+              queue(cNode);
+            }
+          }
+        }
+
+        for (const otherNode of this.Graph.Nodes) {
+          guard.Step();
+          if (reachedOrVisited.has(otherNode)) {
+            continue;
+          }
+          let isDescendant = reachabilityIsDescendantOf(curr, otherNode, guard);
+          if (!isDescendant) {
+            isDescendant = reachabilityIsDescendantOf(otherNode, curr, guard);
+          }
+          if (isDescendant) {
+            queue(otherNode);
+          }
+        }
+      }
+    }
+    return reachableNodes;
+  }
+
+  ReachableNodesContext(shouldVisit, includeContainers, includeNears, traverseTrees, ignore, guard) {
+    return this.reachableNodesGuarded(
+      shouldVisit,
+      includeContainers,
+      includeNears,
+      traverseTrees,
+      ignore,
+      guard
+    );
   }
 
   setShape(shapeType) {
@@ -1235,4 +1451,19 @@ export function nodeDebugID(node) {
     }
   }
   return BigInt(node.ID != null ? node.ID : 0).toString(10);
+}
+
+export function reachabilityIsDescendantOf(maybeDescendant, maybeAncestor, guard) {
+  if (guard == null) {
+    throw new Error("TALA reachability ancestry requires a work guard");
+  }
+  for (let current = maybeDescendant; ; current = ancestryParent(current)) {
+    guard.Step();
+    if (maybeAncestor === current) {
+      return true;
+    }
+    if (current == null) {
+      return false;
+    }
+  }
 }

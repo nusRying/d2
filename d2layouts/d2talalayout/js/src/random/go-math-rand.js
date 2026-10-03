@@ -256,6 +256,10 @@ export class GoRand {
 		return BigInt.asIntN(64, this.Uint64() & rngMask);
 	}
 
+	Uint32() {
+		return Number(this.Int63() >> 31n);
+	}
+
 	Int63n(n) {
 		const maxInt64 = (1n << 63n) - 1n;
 

@@ -57,3 +57,9 @@ export const MAX_PLACE_TREES_WORK_UNITS = 68_000_000n;
 // MaxLabelPlacementWorkUnits bounds the quadratic overlap and candidate search
 // performed while positioning labels and icons.
 export const MAX_LABEL_PLACEMENT_WORK_UNITS = 50_000_000n;
+
+// MaxOptimizationWorkUnits bounds one hierarchy or placement optimization.
+export const MAX_OPTIMIZATION_WORK_UNITS = 250_000_000n;
+
+// optimizationContextCheckStride is the polling stride for optimization work.
+export const OPTIMIZATION_CONTEXT_CHECK_STRIDE = 64n;
