@@ -1,5 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import {
   OptimizationWorkGuard,
   OptimizationResourceLimitError,
@@ -8,6 +11,7 @@ import {
   Shuffle,
   shuffleIndex,
 } from '../../src/limits/optimization.js';
+import { WorkLimitError } from '../../src/limits/work-guard.js';
 import {
   MAX_OPTIMIZATION_WORK_UNITS,
   OPTIMIZATION_CONTEXT_CHECK_STRIDE,
@@ -27,6 +31,16 @@ class CountingContext {
 }
 
 const bg = { isCancelled: () => false };
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const optimizationFixture = JSON.parse(
+  fs.readFileSync(
+    path.join(__dirname, '..', 'fixtures', 'go-optimization-reference.json'),
+    'utf8'
+  )
+);
+
 
 describe('Slice 42 — OptimizationWorkGuard', () => {
   it('requires a non-null context', () => {
@@ -122,46 +136,60 @@ describe('Slice 42 — OptimizationWorkGuard', () => {
     assert.strictEqual(guard.used, 16n); // 8 + 8 = 16
   });
 
-  it('performs Fisher-Yates shuffle deterministically with GoRand', () => {
-    const arr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    const rnd = new GoRand(991n);
-    const guard = new OptimizationWorkGuard(bg, 'shuffle', MAX_OPTIMIZATION_WORK_UNITS);
+  it('replays all Go-generated shuffle scenarios exactly', () => {
+    for (const scenario of optimizationFixture.shuffleScenarios) {
+      if (scenario.isRejected) {
+        continue;
+      }
+      const count = scenario.count ?? 0;
+      const values = Array.from({ length: count }, (_, index) => index);
+      const rnd = new GoRand(BigInt(scenario.seed));
+      const guard = new OptimizationWorkGuard(
+        bg,
+        'shuffle',
+        MAX_OPTIMIZATION_WORK_UNITS
+      );
 
-    shuffle(arr, rnd, guard);
-    assert.strictEqual(guard.used, 9n); // 9 swaps for 10 elements
-    // Verify permutation matches Go oracle
-    assert.deepStrictEqual(arr, [5, 1, 2, 8, 4, 0, 3, 6, 9, 7]);
-    assert.strictEqual(rnd.Int63(), 8041617062267906751n);
+      shuffle(values, rnd, guard);
+
+      assert.deepStrictEqual(
+        values,
+        scenario.result ?? [],
+        `${scenario.name} permutation mismatch`
+      );
+      assert.strictEqual(
+        guard.Used(),
+        BigInt(scenario.used),
+        `${scenario.name} used mismatch`
+      );
+      assert.strictEqual(
+        rnd.Int63(),
+        BigInt(scenario.nextInt63),
+        `${scenario.name} next Int63 mismatch`
+      );
+    }
   });
 
-  it('re-draws upon Lemire bias in shuffleIndex', () => {
-    const n = 1_431_655_766;
-    const threshold = Number(((-BigInt(n)) & 0xffffffffn) % BigInt(n));
-    let seed = 0n;
-    let draws = 0;
-    let want = 0;
+  it('replays the Go-generated rejected shuffle draw exactly', () => {
+    const scenario = optimizationFixture.shuffleScenarios.find(
+      (candidate) => candidate.isRejected
+    );
+    assert.notStrictEqual(scenario, undefined);
 
-    for (; seed < 100n; seed++) {
-      const random = new GoRand(seed);
-      draws = 0;
-      for (;;) {
-        draws++;
-        const product = BigInt(random.Uint32()) * BigInt(n);
-        if (Number(product & 0xffffffffn) >= threshold) {
-          want = Number(product >> 32n);
-          break;
-        }
-      }
-      if (draws > 1) {
-        break;
-      }
-    }
+    const guard = new OptimizationWorkGuard(
+      bg,
+      'shuffle',
+      MAX_OPTIMIZATION_WORK_UNITS
+    );
+    const chosen = shuffleIndex(
+      new GoRand(BigInt(scenario.seed)),
+      scenario.n,
+      guard
+    );
 
-    assert(draws > 1, 'must find a rejected draw seed');
-    const guard = new OptimizationWorkGuard(bg, 'shuffle', MAX_OPTIMIZATION_WORK_UNITS);
-    const chosen = shuffleIndex(new GoRand(seed), n, guard);
-    assert.strictEqual(chosen, want);
-    assert.strictEqual(Number(guard.used), draws);
+    assert.strictEqual(chosen, scenario.chosen);
+    assert.strictEqual(guard.Used(), BigInt(scenario.used));
+    assert.strictEqual(Number(guard.Used()), Number(scenario.draws));
   });
 
   it('performs exact Err() polling count and ignores isCancelled() when Err() exists', () => {
@@ -204,6 +232,101 @@ describe('Slice 42 — OptimizationWorkGuard', () => {
     guard.finish();
     assert.strictEqual(errCalls, 4);
     assert.strictEqual(cancelCalls, 0);
+  });
+
+  it('rejected-limit boundary preserves Err() precedence and observation count', () => {
+    let errCalls = 0;
+    let cancelCalls = 0;
+    let currentError = null;
+    const dualContext = {
+      Err() {
+        errCalls++;
+        return currentError;
+      },
+      isCancelled() {
+        cancelCalls++;
+        return false;
+      },
+    };
+
+    // Constructor polls once.
+    const deadlineGuard = new OptimizationWorkGuard(dualContext, 'overflowDeadline', 64n);
+    assert.strictEqual(errCalls, 1);
+    assert.strictEqual(cancelCalls, 0);
+
+    // Move to used=63 without another poll.
+    deadlineGuard.Add(63n);
+    assert.strictEqual(errCalls, 1);
+    assert.strictEqual(deadlineGuard.Used(), 63n);
+
+    currentError = new Error('context deadline exceeded');
+    assert.throws(
+      () => deadlineGuard.Add(2n),
+      (err) => {
+        assert.strictEqual(err.message, 'overflowDeadline: context deadline exceeded');
+        return true;
+      }
+    );
+    assert.strictEqual(deadlineGuard.Used(), 65n);
+    assert.strictEqual(errCalls, 2);
+    assert.strictEqual(cancelCalls, 0);
+
+    // Custom error has the same precedence on a crossed rejected boundary.
+    errCalls = 0;
+    currentError = null;
+    const customGuard = new OptimizationWorkGuard(dualContext, 'overflowCustom', 64n);
+    customGuard.Add(63n);
+    currentError = new Error('oracle custom work error');
+    assert.throws(
+      () => customGuard.Add(2n),
+      (err) => {
+        assert.strictEqual(err.message, 'overflowCustom: oracle custom work error');
+        return true;
+      }
+    );
+    assert.strictEqual(customGuard.Used(), 65n);
+    assert.strictEqual(errCalls, 2);
+    assert.strictEqual(cancelCalls, 0);
+  });
+
+  it('rejected-limit charge without a crossed poll boundary returns WorkLimitError without Err polling', () => {
+    let errCalls = 0;
+    const ctx = {
+      Err() {
+        errCalls++;
+        return new Error('must not be observed');
+      },
+      isCancelled() {
+        throw new Error('isCancelled must not be queried');
+      },
+    };
+
+    // Constructor must succeed, so clear the first Err result after counting it.
+    let first = true;
+    ctx.Err = () => {
+      errCalls++;
+      if (first) {
+        first = false;
+        return null;
+      }
+      return new Error('must not be observed');
+    };
+
+    const guard = new OptimizationWorkGuard(ctx, 'overflowNoBoundary', 100n);
+    assert.strictEqual(errCalls, 1);
+
+    // Rejected charge from used=0 to first-rejected=101 does not satisfy
+    // previous/stride != limit/stride, so Go returns the work-limit error directly.
+    assert.throws(
+      () => guard.Add(101n),
+      (err) => {
+        assert(err instanceof WorkLimitError);
+        assert.strictEqual(err.message, 'TALA overflowNoBoundary work exceeds limit 100');
+        return true;
+      }
+    );
+    assert.strictEqual(guard.Used(), 101n);
+    assert.strictEqual(errCalls, 1);
   });
 
   it('preserves exact context error messages across boundaries', () => {
