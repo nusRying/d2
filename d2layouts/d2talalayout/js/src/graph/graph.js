@@ -771,6 +771,28 @@ export class Graph {
     return this.edgeLengthCacheEntries();
   }
 
+  routingCosts() {
+    return {
+      Crossing: this.crossingCost,
+      Turn: this.turnCost,
+      NonCenterPort: this.nonCenterPortCost,
+    };
+  }
+
+  RoutingCosts() {
+    return this.routingCosts();
+  }
+
+  restoreRoutingCosts(state) {
+    this.crossingCost = state.Crossing;
+    this.turnCost = state.Turn;
+    this.nonCenterPortCost = state.NonCenterPort;
+  }
+
+  RestoreRoutingCosts(state) {
+    this.restoreRoutingCosts(state);
+  }
+
   resetPlacementCosts() {
     if (this.edgeLengthCache != null) {
       this.edgeLengthCache.clear();
