@@ -178,7 +178,7 @@ export function candidateMoves(ctx, g, node, factor, isHorizontal, includeSizes,
     : (includeSizes ? node.TopLeft.Y / g.CellSize : node.TopLeft.Y);
   const start = floor - floorDecrease;
   if (!Number.isFinite(start) || !Number.isFinite(ceil)) {
-    throw new Error("compaction candidate range is not finite");
+    throw new Error("layout invariant violated: compaction candidate range is not finite");
   }
   if (start <= ceil) {
     const count = Math.floor(ceil - start) + 1;
