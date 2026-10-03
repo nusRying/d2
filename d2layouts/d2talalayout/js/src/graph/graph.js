@@ -18,6 +18,9 @@ const noopWorkStepper = {
   finish() {},
 };
 
+// layoutgraph centerPortMultiplier (graph.go).
+export const CENTER_PORT_MULTIPLIER = 0.04287499999999999;
+
 export class Graph {
   constructor() {
     this.ID = "";
@@ -221,6 +224,36 @@ export class Graph {
   // node pairs in the graph. Falls back to ConnectedNodeGap (60) if no
   // positioned pair exists.
   // Pinned Go: layoutgraph.Graph.maxEdgeLength (graph.go:627)
+  /**
+   * Mirrors: Go Graph.nonCenterPortCostValue (graph.go), exposed as
+   * NonCenterPortCost. Lazily computed and cached; 0 when the graph has no
+   * edges (and then not cached, as in Go).
+   */
+  nonCenterPortCostValue() {
+    if (this.nonCenterPortCost !== 0) {
+      return this.nonCenterPortCost;
+    }
+    if (this.Edges.length === 0) {
+      return 0;
+    }
+    let cost = CENTER_PORT_MULTIPLIER * this.Edges.length * this.maxEdgeLength();
+    let minSize = Infinity;
+    for (const n of this.Nodes) {
+      if (n.isContainer) continue;
+      minSize = Math.min(minSize, n.Height);
+      minSize = Math.min(minSize, n.Width);
+    }
+    if (minSize !== Infinity) {
+      cost = Math.max(cost, minSize / 3);
+    }
+    this.nonCenterPortCost = cost;
+    return cost;
+  }
+
+  NonCenterPortCost() {
+    return this.nonCenterPortCostValue();
+  }
+
   maxEdgeLength() {
     const CONNECTED_NODE_GAP = 60.0;
     let hasLength = false;

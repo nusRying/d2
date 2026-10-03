@@ -55,7 +55,12 @@ import { equidistance, Equidistance, equidistanceNodeGuarded } from '../../src/p
 import { dejitter, Dejitter } from '../../src/placement/dejitter.js';
 import { balanceSymmetry, BalanceSymmetry, isSimple } from '../../src/placement/symmetry.js';
 import { align, Align, swap, Swap } from '../../src/placement/stage-wrappers.js';
-import { containerAlignmentCost, nonCenterPortCostValue, nodesCenter } from '../../src/placement/stage-support.js';
+import { nodesCenter } from '../../src/placement/stage-support.js';
+import { place, Place, prepare, Prepare, placeNodes, placeNodesOrthogonally } from '../../src/placement/structural-placement.js';
+import {
+  orientationContext, orientSourceInterior, interiorFlow, orientationFootprintSize, orientationFitsContainer,
+} from '../../src/placement/container-orientation.js';
+import { joinDistancedClusters } from '../../src/grouping/join.js';
 import {
   OptimizerSpatialIndex,
   indexedCanMove,
@@ -176,6 +181,23 @@ describe('Slices 42–46 — Placement Optimizer API Boundary', () => {
       'containerAlignmentCost',
       'nonCenterPortCostValue',
       'nodesCenter',
+      'place',
+      'Place',
+      'prepare',
+      'Prepare',
+      'placeNodes',
+      'PlaceNodes',
+      'placeNodesOrthogonally',
+      'orientationContext',
+      'orientSourceInterior',
+      'interiorFlow',
+      'orientationFootprintSize',
+      'orientationFitsContainer',
+      'joinDistancedClusters',
+      'JoinDistancedClusters',
+      'splitSubgraphsTracked',
+      'snapshotNodeGraphOwnership',
+      'abductEdges',
     ];
 
     for (const name of forbidden) {
@@ -233,7 +255,10 @@ describe('Slices 42–46 — Placement Optimizer API Boundary', () => {
       compareDirectionCounts, containerEdgeDirections, hasFixedDescendant, mirrorAxes, direct,
       swapPositions, smartSwapPositions, swapOptimize, equidistance, Equidistance,
       equidistanceNodeGuarded, dejitter, Dejitter, balanceSymmetry, BalanceSymmetry, isSimple,
-      align, Align, swap, Swap, containerAlignmentCost, nonCenterPortCostValue, nodesCenter,
+      align, Align, swap, Swap, nodesCenter,
+      place, Place, prepare, Prepare, placeNodes, placeNodesOrthogonally,
+      orientationContext, orientSourceInterior, interiorFlow, orientationFootprintSize,
+      orientationFitsContainer, joinDistancedClusters,
     ]) {
       assert.strictEqual(typeof fn, 'function');
     }

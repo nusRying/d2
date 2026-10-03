@@ -25,7 +25,7 @@ import { getContextError } from '../limits/work-context.js';
 import { edgeLength } from '../placementcost/graph.js';
 import { CONNECTED_NODE_GAP } from '../placementcost/geometry.js';
 import { intersectsOtherNode, withinMaxSize } from './metrics.js';
-import { containerAlignmentCost } from './stage-support.js';
+import { containerAlignmentCost } from '../placementcost/graph.js';
 
 function alignmentScoringOptions(edgeAbductions) {
   return {

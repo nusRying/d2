@@ -325,7 +325,7 @@ export function containerAlignmentCost(ctx, graph) {
       throw err1;
     }
     const n1 = nodes[i];
-    if (!n1.isContainer()) {
+    if (!n1.IsContainer()) {
       continue;
     }
     for (let j = i + 1; j < nodes.length; j++) {
@@ -334,7 +334,7 @@ export function containerAlignmentCost(ctx, graph) {
         throw err2;
       }
       const n2 = nodes[j];
-      if (!n2.isContainer()) {
+      if (!n2.IsContainer()) {
         continue;
       }
       if (n1.effectiveContainer() !== n2.effectiveContainer()) {
@@ -342,8 +342,7 @@ export function containerAlignmentCost(ctx, graph) {
       }
       if (n1.Width === n2.Width && n1.Height === n2.Height) {
         if (n1.TopLeft.X !== n2.TopLeft.X && n1.TopLeft.Y !== n2.TopLeft.Y) {
-          const nonCenterCost = typeof graph.nonCenterPortCost === 'function' ? graph.nonCenterPortCost() : (graph.nonCenterPortCost ?? 0);
-          l += nonCenterCost;
+          l += graph.nonCenterPortCostValue();
         }
       }
     }

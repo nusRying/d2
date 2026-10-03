@@ -1,0 +1,4 @@
+[test]
+# Real-Go oracle replays (cancellation probes, full Place runs) exceed
+# bun's 5 s per-test default on slower machines.
+timeout = 300000

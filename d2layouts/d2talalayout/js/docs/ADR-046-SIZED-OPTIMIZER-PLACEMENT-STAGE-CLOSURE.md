@@ -1,7 +1,7 @@
 # ADR-046: Sized Optimizer and Placement Stage Closure
 
 ## Status
-Implemented — awaiting Slice 45 review
+Accepted
 
 ## Context
 Slice 45 ports the complete pinned `internal/placement/sized_optimizer.go` — the local search that moves, swaps, and transposes sized nodes — plus the placement stage wrappers that are already dependency-closed on Slices 42–44 (`NormalizeGaps`, `TransposeAll`; `Normalize` and `Pad` already exist from Slice 40). `Place`/`placeNodes` remain in Slice 46 because they depend on packing, trees, and container orientation.
