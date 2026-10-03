@@ -13,8 +13,10 @@ import {
   optimizerDescendants,
 } from '../../src/placement/optimizer-support.js';
 import { captureOptimizerCandidateMovement } from '../../src/placement/candidate-movement.js';
+import { compaction, candidateMoves, visibilityEdges } from '../../src/placement/compaction.js';
+import { moveNodeToBest } from '../../src/placement/moves.js';
 
-describe('Slice 42 — Placement Optimizer API Boundary', () => {
+describe('Slices 42–43 — Placement Optimizer API Boundary', () => {
   it('does not export internal placement optimizer functions in placement index or root index', () => {
     const forbidden = [
       'SizelessOptimizer',
@@ -33,6 +35,10 @@ describe('Slice 42 — Placement Optimizer API Boundary', () => {
       'optimizerDescendants',
       'COMPACTION_FACTOR',
       'PointerSnapshot',
+      'moveNodeToBest',
+      'visibilityEdges',
+      'candidateMoves',
+      'compaction',
     ];
 
     for (const name of forbidden) {
@@ -53,5 +59,9 @@ describe('Slice 42 — Placement Optimizer API Boundary', () => {
     assert.strictEqual(typeof optimizerMedian, 'function');
     assert.strictEqual(typeof optimizerAdjacents, 'function');
     assert.strictEqual(typeof optimizerDescendants, 'function');
+    assert.strictEqual(typeof compaction, 'function');
+    assert.strictEqual(typeof candidateMoves, 'function');
+    assert.strictEqual(typeof visibilityEdges, 'function');
+    assert.strictEqual(typeof moveNodeToBest, 'function');
   });
 });
