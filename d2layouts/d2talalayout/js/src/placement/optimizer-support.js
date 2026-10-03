@@ -504,6 +504,100 @@ export function chargeOptimizerScoring(node, edgeAbductions, includeSymmetry, gu
 }
 
 /**
+ * optimizerDoesOverlap checks a sized candidate against positioned graph nodes.
+ * Pinned Go: internal/placement/optimization_guard.go optimizerDoesOverlap
+ */
+export function optimizerDoesOverlap(node, point, exceptions, guard) {
+  if (node == null || node.Graph == null || point == null) {
+    throw new Error(`TALA ${guard.Location()} overlap check requires a node, graph, and point`);
+  }
+  const except = exceptions ?? [];
+  if (node.Graph.Nodes.length > MAX_ENGINE_NODES || except.length > MAX_ENGINE_NODES) {
+    throw new Error(`TALA ${guard.Location()} overlap inputs exceed node limit ${MAX_ENGINE_NODES}`);
+  }
+  const right = point.X + node.Width;
+  const bottom = point.Y + node.Height;
+  for (const otherNode of node.Graph.Nodes) {
+    guard.Step();
+    if (otherNode == null) {
+      throw new Error(`TALA ${guard.Location()} found a nil graph node`);
+    }
+    if (otherNode === node) continue;
+    let excluded = false;
+    for (const exception of except) {
+      guard.Step();
+      if (exception === otherNode) {
+        excluded = true;
+        break;
+      }
+    }
+    if (excluded || otherNode.TopLeft == null) continue;
+
+    const maxSafeDelta = 500;
+    if (
+      point.X > otherNode.TopLeft.X + otherNode.Width + maxSafeDelta ||
+      point.X + node.Width + maxSafeDelta < otherNode.TopLeft.X ||
+      point.Y > otherNode.TopLeft.Y + otherNode.Height + maxSafeDelta ||
+      point.Y + node.Height + maxSafeDelta < otherNode.TopLeft.Y
+    ) {
+      continue;
+    }
+    guard.Add(BigInt(node.Edges.length));
+    const delta = Number(node.DeltaTo(otherNode, point));
+    if (
+      point.X < otherNode.TopLeft.X + otherNode.Width + delta &&
+      right + delta > otherNode.TopLeft.X &&
+      point.Y < otherNode.TopLeft.Y + otherNode.Height + delta &&
+      bottom + delta > otherNode.TopLeft.Y
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function optimizerIsOccupied(g, point, guard) {
+  if (g == null || point == null) {
+    throw new Error(`TALA ${guard.Location()} occupancy check requires a graph and point`);
+  }
+  if (g.Nodes.length > MAX_ENGINE_NODES) {
+    throw new Error(`TALA ${guard.Location()} occupancy node count exceeds limit ${MAX_ENGINE_NODES}`);
+  }
+  for (const node of g.Nodes) {
+    guard.Step();
+    if (node == null) {
+      throw new Error(`TALA ${guard.Location()} found a nil graph node`);
+    }
+    if (
+      node.TopLeft != null &&
+      node.TopLeft.X === point.X &&
+      node.TopLeft.Y === point.Y
+    ) {
+      return [node, true];
+    }
+  }
+  return [null, false];
+}
+
+export function optimizerCanMove(node, point, includeSizes, guard) {
+  if (node == null || node.Graph == null || point == null) {
+    throw new Error(`TALA ${guard.Location()} movement check requires a node, graph, and point`);
+  }
+  if (
+    node.TopLeft != null &&
+    node.TopLeft.X === point.X &&
+    node.TopLeft.Y === point.Y
+  ) {
+    return true;
+  }
+  const [, occupied] = optimizerIsOccupied(node.Graph, point, guard);
+  if (occupied || !includeSizes) {
+    return !occupied;
+  }
+  return !optimizerDoesOverlap(node, point, null, guard);
+}
+
+/**
  * optimizerDescendants collects all hierarchy descendants in stable reverse-push DFS order.
  *
  * Pinned reference: internal/placement/optimization_guard.go optimizerDescendants
