@@ -85,6 +85,27 @@ jobs:
       - name: Test grouping
         run: go test -count=1 ./d2layouts/d2talalayout/internal/grouping/...
 
+      - name: Test hierarchy
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/hierarchy/...
+
+      - name: Test trees
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/trees/...
+
+      - name: Test packing
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/packing/...
+
+      - name: Test loops
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/loops/...
+
+      - name: Test graphbounds
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/graphbounds/...
+
+      - name: Test labeling
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/labeling/...
+
+      - name: Test nodeshape
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/nodeshape/...
+
   hygiene:
     name: Diff hygiene
     runs-on: ubuntu-latest
