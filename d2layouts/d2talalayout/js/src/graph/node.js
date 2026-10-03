@@ -1,7 +1,7 @@
 import { Box } from '../geometry/box.js';
 import { euclideanDistance, goRound, truncateDecimals } from '../geometry/math.js';
 import { Point } from '../geometry/point.js';
-import { Orientation, orientationToString } from '../geometry/orientation.js';
+import { Orientation, orientationToString, getOpposite } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
 import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
 import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost, nodesFixedBounds } from './node-bounds.js';
@@ -36,6 +36,24 @@ function getLoopOffset(node, orientation) {
     return 0;
   }
   return 0;
+}
+
+function nodeSpacingSide(node, side) {
+  const spacing = node?._margin ?? node?.margin ?? null;
+  if (spacing == null) return 0;
+  const value = spacing[side] ?? spacing[side[0].toUpperCase() + side.slice(1)] ?? 0;
+  return Number(value) || 0;
+}
+
+function boxesOverlapWithPadding(b1, b2, padding) {
+  const b1Right = b1.TopLeft.X + b1.Width;
+  const b2Right = b2.TopLeft.X + b2.Width;
+  if (b1.TopLeft.X >= b2Right + padding || b2.TopLeft.X >= b1Right + padding) {
+    return false;
+  }
+  const b1Bottom = b1.TopLeft.Y + b1.Height;
+  const b2Bottom = b2.TopLeft.Y + b2.Height;
+  return b1.TopLeft.Y < b2Bottom + padding && b2.TopLeft.Y < b1Bottom + padding;
 }
 
 function intervalGap(aStart, aEnd, bStart, bEnd) {
@@ -219,6 +237,8 @@ export class Node {
     this.HerdAssignment = null;
     this.LoopOffsets = null;
     this.LongDistanceNeighborRequirements = null;
+    this._margin = { top: 0, right: 0, bottom: 0, left: 0 };
+    this._padding = { top: 0, right: 0, bottom: 0, left: 0 };
     this.elkData = null;
 
     this.FontSize = null;
@@ -1209,6 +1229,180 @@ export class Node {
 
   Orientation(otherNode) {
     return this.orientation(otherNode);
+  }
+
+  orientationAtPoint(otherNode, point) {
+    if (point == null || otherNode.TopLeft == null) {
+      return Orientation.NONE;
+    }
+    if ((point.Y + this.Height) < otherNode.TopLeft.Y) {
+      if ((point.X + this.Width) < otherNode.TopLeft.X) return Orientation.TopLeft;
+      if ((otherNode.TopLeft.X + otherNode.Width) < point.X) return Orientation.TopRight;
+      return Orientation.Top;
+    }
+    if ((otherNode.TopLeft.Y + otherNode.Height) < point.Y) {
+      if ((point.X + this.Width) < otherNode.TopLeft.X) return Orientation.BottomLeft;
+      if ((otherNode.TopLeft.X + otherNode.Width) < point.X) return Orientation.BottomRight;
+      return Orientation.Bottom;
+    }
+    if ((otherNode.TopLeft.X + otherNode.Width) < point.X) return Orientation.Right;
+    if ((point.X + this.Width) < otherNode.TopLeft.X) return Orientation.Left;
+    return Orientation.NONE;
+  }
+
+  deltaTo(other, atPoint) {
+    if (other == null || atPoint == null) {
+      throw new Error("spacing check received incomplete nodes");
+    }
+    let maxEdgeWidth = Number.MIN_SAFE_INTEGER;
+    let maxEdgeHeight = Number.MIN_SAFE_INTEGER;
+    let isConnected = false;
+    for (const edge of this.Edges) {
+      if (edge == null || edge.From == null || edge.To == null) {
+        throw new Error("spacing check encountered an incomplete edge");
+      }
+      if (this.adjacent(edge) === other) {
+        isConnected = true;
+        maxEdgeWidth = Math.max(maxEdgeWidth, Number(edge.MinWidth ?? 0));
+        maxEdgeHeight = Math.max(maxEdgeHeight, Number(edge.MinHeight ?? 0));
+      }
+    }
+    let horizontalDelta = isConnected ? 60 : 20;
+    let verticalDelta = isConnected ? 60 : 20;
+    if (this._shapeType === "Table" || other._shapeType === "Table") {
+      horizontalDelta = 120;
+    }
+    if (maxEdgeHeight > verticalDelta) verticalDelta = maxEdgeHeight;
+    if (maxEdgeWidth > horizontalDelta) horizontalDelta = maxEdgeWidth;
+
+    const m1 = this._margin ?? {};
+    const m2 = other._margin ?? {};
+    const hasMargin = [m1.top,m1.right,m1.bottom,m1.left,m2.top,m2.right,m2.bottom,m2.left]
+      .some((v) => Number(v ?? 0) !== 0);
+    const hasLoops =
+      (this.LoopOffsets instanceof Map ? this.LoopOffsets.size > 0 : this.LoopOffsets != null && Object.keys(this.LoopOffsets).length > 0) ||
+      (other.LoopOffsets instanceof Map ? other.LoopOffsets.size > 0 : other.LoopOffsets != null && Object.keys(other.LoopOffsets).length > 0);
+    if (horizontalDelta === verticalDelta && !hasLoops && !hasMargin) {
+      return horizontalDelta;
+    }
+
+    const o = this.orientationAtPoint(other, atPoint);
+    if (hasLoops) {
+      let loopDelta = 20;
+      loopDelta += Number(getLoopOffset(this, getOpposite(o)) || 0);
+      loopDelta += Number(getLoopOffset(other, o) || 0);
+      horizontalDelta = Math.max(horizontalDelta, loopDelta);
+      verticalDelta = Math.max(verticalDelta, loopDelta);
+    }
+
+    let n1LabelWidth = 0, n1LabelHeight = 0, n2LabelWidth = 0, n2LabelHeight = 0;
+    const applyMargin = (node, orientation, first) => {
+      let w = 0, h = 0;
+      switch (orientation) {
+        case Orientation.Bottom: h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.Top: h = nodeSpacingSide(node, "top"); break;
+        case Orientation.Right: w = nodeSpacingSide(node, "right"); break;
+        case Orientation.Left: w = nodeSpacingSide(node, "left"); break;
+        case Orientation.BottomLeft: w = nodeSpacingSide(node, "left"); h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.BottomRight: w = nodeSpacingSide(node, "right"); h = nodeSpacingSide(node, "bottom"); break;
+        case Orientation.TopLeft: w = nodeSpacingSide(node, "left"); h = nodeSpacingSide(node, "top"); break;
+        case Orientation.TopRight: w = nodeSpacingSide(node, "right"); h = nodeSpacingSide(node, "top"); break;
+      }
+      if (first) { n1LabelWidth = Math.trunc(w); n1LabelHeight = Math.trunc(h); }
+      else { n2LabelWidth = Math.trunc(w); n2LabelHeight = Math.trunc(h); }
+    };
+    applyMargin(this, getOpposite(o), true);
+    applyMargin(other, o, false);
+    horizontalDelta = Math.max(horizontalDelta, n1LabelWidth + n2LabelWidth);
+    verticalDelta = Math.max(verticalDelta, n1LabelHeight + n2LabelHeight);
+
+    if (o === Orientation.Top || o === Orientation.Bottom) return verticalDelta;
+    if (o === Orientation.Left || o === Orientation.Right) return horizontalDelta;
+    return Math.min(horizontalDelta, verticalDelta);
+  }
+
+  DeltaTo(other, atPoint) {
+    return this.deltaTo(other, atPoint);
+  }
+
+  doesOverlapAt(other, point) {
+    const delta = this.deltaTo(other, point);
+    return boxesOverlapWithPadding(
+      { TopLeft: point, Width: this.Width, Height: this.Height },
+      other.Box,
+      delta
+    );
+  }
+
+  DoesOverlapAt(other, point) {
+    return this.doesOverlapAt(other, point);
+  }
+
+  visibilityGraphCandidate(isHorizontal, checkSide, includeSizes, otherNode, padding) {
+    if (isHorizontal) {
+      if (checkSide && this.TopLeft.X >= otherNode.TopLeft.X) return false;
+      if (includeSizes) {
+        if (this.TopLeft.Y > otherNode.TopLeft.Y + otherNode.Height + padding) return false;
+        if (this.TopLeft.Y + this.Height + padding < otherNode.TopLeft.Y) return false;
+      } else if (this.TopLeft.Y !== otherNode.TopLeft.Y) {
+        return false;
+      }
+    } else {
+      if (checkSide && this.TopLeft.Y >= otherNode.TopLeft.Y) return false;
+      if (includeSizes) {
+        if (this.TopLeft.X > otherNode.TopLeft.X + otherNode.Width + padding) return false;
+        if (this.TopLeft.X + this.Width + padding < otherNode.TopLeft.X) return false;
+      } else if (this.TopLeft.X !== otherNode.TopLeft.X) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  VisibilityGraphCandidate(isHorizontal, checkSide, includeSizes, otherNode, padding) {
+    return this.visibilityGraphCandidate(isHorizontal, checkSide, includeSizes, otherNode, padding);
+  }
+
+  IsBlocked(nodeA, nodeB, includeSizes, isHorizontal) {
+    if (isHorizontal) {
+      if (includeSizes) {
+        if (!(this.TopLeft.X >= nodeA.TopLeft.X + nodeA.Width &&
+              this.TopLeft.X + this.Width <= nodeB.TopLeft.X)) return false;
+      } else if (!(this.TopLeft.X >= nodeA.TopLeft.X && this.TopLeft.X <= nodeB.TopLeft.X)) {
+        return false;
+      }
+      if (includeSizes) {
+        return this.TopLeft.Y <= Math.max(nodeA.TopLeft.Y, nodeB.TopLeft.Y) &&
+          this.TopLeft.Y + this.Height >= Math.min(nodeA.TopLeft.Y + nodeA.Height, nodeB.TopLeft.Y + nodeB.Height);
+      }
+      return this.TopLeft.Y <= Math.max(nodeA.TopLeft.Y, nodeB.TopLeft.Y) &&
+        this.TopLeft.Y >= Math.min(nodeA.TopLeft.Y, nodeB.TopLeft.Y);
+    }
+    if (includeSizes) {
+      if (!(this.TopLeft.Y >= nodeA.TopLeft.Y + nodeA.Height &&
+            this.TopLeft.Y + this.Height <= nodeB.TopLeft.Y)) return false;
+      return this.TopLeft.X <= Math.max(nodeA.TopLeft.X, nodeB.TopLeft.X) &&
+        this.TopLeft.X + this.Width >= Math.min(nodeA.TopLeft.X + nodeA.Width, nodeB.TopLeft.X + nodeB.Width);
+    }
+    if (!(this.TopLeft.Y >= nodeA.TopLeft.Y && this.TopLeft.Y <= nodeB.TopLeft.Y)) return false;
+    return this.TopLeft.X <= Math.max(nodeA.TopLeft.X, nodeB.TopLeft.X) &&
+      this.TopLeft.X >= Math.min(nodeA.TopLeft.X, nodeB.TopLeft.X);
+  }
+
+  isPointPastFixedOrigin(x, y, includeSizes) {
+    const fixedOrigin = this.Graph.containerFixedOrigin(this.container());
+    if (fixedOrigin == null) return false;
+    let fx = fixedOrigin.X;
+    let fy = fixedOrigin.Y;
+    if (!includeSizes) {
+      fx = goRound(fx / this.Graph.CellSize);
+      fy = goRound(fy / this.Graph.CellSize);
+    }
+    return x < fx || y < fy;
+  }
+
+  PointPastFixedOrigin(x, y, includeSizes) {
+    return this.isPointPastFixedOrigin(x, y, includeSizes);
   }
 
   containsPoint(p, delta) {
