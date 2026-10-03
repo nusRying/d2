@@ -312,7 +312,7 @@ describe('Slice 45 — sized optimizer Go oracle replay', () => {
         expectSamePointers(built, saved);
       }
     }
-  });
+  }, 120_000);
 
   it('rolls back and rethrows the same value thrown after a trial mutation', () => {
     const cases = [

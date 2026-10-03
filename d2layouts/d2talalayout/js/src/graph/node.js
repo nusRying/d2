@@ -1,3 +1,4 @@
+import { tableColumnPortValue as shapeTableColumnPortValue } from '../shape/table-ports.js';
 import { Box } from '../geometry/box.js';
 import { euclideanDistance, goRound, truncateDecimals } from '../geometry/math.js';
 import { Point } from '../geometry/point.js';
@@ -2039,52 +2040,12 @@ export class Node {
     this.setNumColumns(numColumns);
   }
 
+  /**
+   * Mirrors Go nodeshape.TableColumnPortValue: non-table shapes and non-side
+   * orientations return ok=false; coordinates use Go math.Round.
+   */
   tableColumnPortValue(orientation, columnIndex) {
-    if (this.isTable()) {
-      if (orientation !== Orientation.Left && orientation !== Orientation.Right) {
-        return [new Point(0, 0), false];
-      }
-      const numCols = this._numColumns || 0;
-      if (numCols === 0) {
-        if (columnIndex !== 0) {
-          throw new Error("table column port index out of range");
-        }
-      } else if (columnIndex < 0 || columnIndex >= numCols) {
-        throw new Error("table column port index out of range");
-      }
-
-      let yPercentage = 0.5;
-      if (numCols > 0) {
-        const rowHeightPercentage = 1 / (numCols + 1);
-        let percentage = rowHeightPercentage + rowHeightPercentage / 2;
-        for (let i = 0; i < columnIndex; i++) {
-          percentage += rowHeightPercentage;
-        }
-        percentage = Math.round(percentage * 10000) / 10000;
-        yPercentage = truncateDecimals(percentage);
-      }
-      const xPercentage = orientation === Orientation.Right ? 1.0 : 0.0;
-      return [
-        new Point(
-          this.TopLeft.X + Math.round(this.Width * xPercentage),
-          this.TopLeft.Y + Math.round(this.Height * yPercentage),
-        ),
-        true,
-      ];
-    }
-    const standardSidePercentages = [0.25, 0.5, 0.75];
-    if (columnIndex >= 0 && columnIndex < standardSidePercentages.length) {
-      const yPct = standardSidePercentages[columnIndex];
-      const xPct = orientation === Orientation.Right ? 1.0 : 0.0;
-      return [
-        new Point(
-          this.TopLeft.X + Math.round(this.Width * xPct),
-          this.TopLeft.Y + Math.round(this.Height * yPct),
-        ),
-        true,
-      ];
-    }
-    return [new Point(0, 0), false];
+    return shapeTableColumnPortValue(this, orientation, columnIndex);
   }
 
   TableColumnPortValue(orientation, columnIndex) {
