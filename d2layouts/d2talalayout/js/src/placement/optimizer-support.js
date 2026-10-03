@@ -504,6 +504,62 @@ export function chargeOptimizerScoring(node, edgeAbductions, includeSymmetry, gu
 }
 
 /**
+ * Pinned Go: internal/placement/optimization_guard.go maxOptimizerPlacementCandidates
+ */
+export const MAX_OPTIMIZER_PLACEMENT_CANDIDATES = 1_000_000;
+
+/**
+ * chargeOptimizerTranspose bounds transpose's independent reachability,
+ * rotation, and scoring work under the optimizer's single operation budget.
+ * Cheap eligibility checks avoid charging the worst case when transpose will
+ * return immediately.
+ *
+ * Pinned reference: internal/placement/optimization_guard.go chargeOptimizerTranspose
+ */
+export function chargeOptimizerTranspose(g, node, edgeAbductions, guard) {
+  if (g == null || node == null || node.Graph == null) {
+    throw new Error(`TALA ${guard.Location()} transpose requires a node with a graph`);
+  }
+  const abductionCount = edgeAbductions == null ? 0 : edgeAbductions.length;
+  if (g.Nodes.length > MAX_ENGINE_NODES || g.Edges.length > MAX_ENGINE_EDGES || abductionCount > MAX_ENGINE_EDGES) {
+    throw new Error(`TALA ${guard.Location()} transpose inputs exceed engine limits`);
+  }
+  for (const abduction of edgeAbductions ?? []) {
+    guard.Step();
+    if (abduction == null) {
+      throw new Error(`TALA ${guard.Location()} found a nil edge abduction`);
+    }
+  }
+  if (node.Hierarchy != null || node.FixedTopLeft != null || node.Edges.length < 1 || node.Edges.length > 2) {
+    return guard.Step();
+  }
+  if (g.NodeToTree.has(node) || g.isTreeSentinel(node)) {
+    return guard.Step();
+  }
+
+  const nodes = BigInt(g.Nodes.length + 1);
+  const edges = BigInt(g.Edges.length + 1);
+  const abductions = BigInt(abductionCount + 1);
+  // Reachability is performed several times while selecting a rotation side.
+  for (let i = 0; i < 6; i++) {
+    guard.Add(nodes + edges + abductions);
+  }
+  // At most four trial rotations and one committed rotation are scored.
+  for (let i = 0; i < 5; i++) {
+    if (edgeAbductions == null) {
+      guard.AddProduct(nodes, edges);
+      guard.AddProduct(edges, edges);
+    } else {
+      guard.AddProduct(BigInt(node.Edges.length + 1), nodes + abductions);
+    }
+  }
+  // Rotating containers can translate descendants for each trial.
+  for (let i = 0; i < 4; i++) {
+    guard.AddProduct(nodes, nodes);
+  }
+}
+
+/**
  * optimizerDoesOverlap checks a sized candidate against positioned graph nodes.
  * Pinned Go: internal/placement/optimization_guard.go optimizerDoesOverlap
  */

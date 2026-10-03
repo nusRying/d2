@@ -583,6 +583,21 @@ export class Node {
     return this.distanceTo(other, includeSizes);
   }
 
+  // isAdjacentTo reports whether other lies within one cell (sized) or one
+  // unit (sizeless) of this node.
+  // Pinned Go: layoutgraph.Node.isAdjacentTo (node.go:1122)
+  isAdjacentTo(other, includeSizes) {
+    const d = this.distanceTo(other, includeSizes);
+    if (includeSizes) {
+      return d <= this.Graph.CellSize;
+    }
+    return d <= 1.0;
+  }
+
+  IsAdjacentTo(other, includeSizes) {
+    return this.isAdjacentTo(other, includeSizes);
+  }
+
   setNumColumns(n) {
     this._numColumns = n;
   }
