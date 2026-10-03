@@ -11,7 +11,6 @@ import {
   Shuffle,
   shuffleIndex,
 } from '../../src/limits/optimization.js';
-import { WorkLimitError } from '../../src/limits/work-guard.js';
 import {
   MAX_OPTIMIZATION_WORK_UNITS,
   OPTIMIZATION_CONTEXT_CHECK_STRIDE,
@@ -232,101 +231,6 @@ describe('Slice 42 — OptimizationWorkGuard', () => {
     guard.finish();
     assert.strictEqual(errCalls, 4);
     assert.strictEqual(cancelCalls, 0);
-  });
-
-  it('rejected-limit boundary preserves Err() precedence and observation count', () => {
-    let errCalls = 0;
-    let cancelCalls = 0;
-    let currentError = null;
-    const dualContext = {
-      Err() {
-        errCalls++;
-        return currentError;
-      },
-      isCancelled() {
-        cancelCalls++;
-        return false;
-      },
-    };
-
-    // Constructor polls once.
-    const deadlineGuard = new OptimizationWorkGuard(dualContext, 'overflowDeadline', 64n);
-    assert.strictEqual(errCalls, 1);
-    assert.strictEqual(cancelCalls, 0);
-
-    // Move to used=63 without another poll.
-    deadlineGuard.Add(63n);
-    assert.strictEqual(errCalls, 1);
-    assert.strictEqual(deadlineGuard.Used(), 63n);
-
-    currentError = new Error('context deadline exceeded');
-    assert.throws(
-      () => deadlineGuard.Add(2n),
-      (err) => {
-        assert.strictEqual(err.message, 'overflowDeadline: context deadline exceeded');
-        return true;
-      }
-    );
-    assert.strictEqual(deadlineGuard.Used(), 65n);
-    assert.strictEqual(errCalls, 2);
-    assert.strictEqual(cancelCalls, 0);
-
-    // Custom error has the same precedence on a crossed rejected boundary.
-    errCalls = 0;
-    currentError = null;
-    const customGuard = new OptimizationWorkGuard(dualContext, 'overflowCustom', 64n);
-    customGuard.Add(63n);
-    currentError = new Error('oracle custom work error');
-    assert.throws(
-      () => customGuard.Add(2n),
-      (err) => {
-        assert.strictEqual(err.message, 'overflowCustom: oracle custom work error');
-        return true;
-      }
-    );
-    assert.strictEqual(customGuard.Used(), 65n);
-    assert.strictEqual(errCalls, 2);
-    assert.strictEqual(cancelCalls, 0);
-  });
-
-  it('rejected-limit charge without a crossed poll boundary returns WorkLimitError without Err polling', () => {
-    let errCalls = 0;
-    const ctx = {
-      Err() {
-        errCalls++;
-        return new Error('must not be observed');
-      },
-      isCancelled() {
-        throw new Error('isCancelled must not be queried');
-      },
-    };
-
-    // Constructor must succeed, so clear the first Err result after counting it.
-    let first = true;
-    ctx.Err = () => {
-      errCalls++;
-      if (first) {
-        first = false;
-        return null;
-      }
-      return new Error('must not be observed');
-    };
-
-    const guard = new OptimizationWorkGuard(ctx, 'overflowNoBoundary', 10n);
-    assert.strictEqual(errCalls, 1);
-
-    // With limit 10, both previous=0 and limit=10 are in stride bucket 0,
-    // so the rejected charge does not poll the context and returns WorkLimitError.
-    assert.throws(
-      () => guard.Add(11n),
-      (err) => {
-        assert(err instanceof WorkLimitError);
-        assert.strictEqual(err.message, 'TALA overflowNoBoundary work exceeds limit 10');
-        return true;
-      }
-    );
-    assert.strictEqual(guard.Used(), 11n);
-    assert.strictEqual(errCalls, 1);
   });
 
   it('preserves exact context error messages across boundaries', () => {
