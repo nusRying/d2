@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { Graph } from "../../src/graph/graph.js";
 import { Node } from "../../src/graph/node.js";
 import { Point } from "../../src/geometry/point.js";
+import { Orientation } from "../../src/geometry/orientation.js";
 import { LayoutAxis } from "../../src/placement/axis.js";
 import {
   MAX_COMPACTION_CANDIDATE_COUNT,
@@ -138,7 +139,7 @@ describe("Slice 43 — Compaction direct gates", () => {
     assert.equal(a.DeltaTo(b, a.TopLeft), 120);
 
     a.SetShape("");
-    a.LoopOffsets = new Map([[7, 50]]); // Orientation.Right; opposite of Left
+    a.LoopOffsets = new Map([[Orientation.Right, 50]]);
     assert.equal(a.DeltaTo(b, a.TopLeft), 70);
 
     a.LoopOffsets = null;
