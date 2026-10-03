@@ -129,6 +129,21 @@ describe("Slice 43 — Compaction direct gates", () => {
     });
   });
 
+  it("reports exact DeltaTo invariant errors", () => {
+    const g = new Graph();
+    const a = add(g, 1, 0, 0);
+    const b = add(g, 2, 100, 0);
+    assert.throws(
+      () => a.DeltaTo(null, a.TopLeft),
+      /layout invariant violated: spacing check received incomplete nodes/
+    );
+    a.Edges.push({ From: null, To: b, MinWidth: 0, MinHeight: 0 });
+    assert.throws(
+      () => a.DeltaTo(b, a.TopLeft),
+      /layout invariant violated: spacing check encountered an incomplete edge/
+    );
+  });
+
   it("rejects a non-finite candidate range", () => {
     const g = new Graph();
     g.CellSize = 10;
@@ -136,7 +151,7 @@ describe("Slice 43 — Compaction direct gates", () => {
     const b = add(g, 2, Infinity, 0);
     assert.throws(
       () => candidateMoves({ Err: () => null }, g, b, 1, true, true, 0, []),
-      /compaction candidate range is not finite/
+      /layout invariant violated: compaction candidate range is not finite/
     );
     void a;
   });
