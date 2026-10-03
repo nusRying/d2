@@ -40,6 +40,22 @@ import {
 } from '../../src/placement/sized-optimizer.js';
 import { normalizeGaps, transposeAll } from '../../src/placement/placement-stages.js';
 import { chargeOptimizerTranspose } from '../../src/placement/optimizer-support.js';
+import { alignAxes, alignmentDeltas, tryMove, attemptShift } from '../../src/placement/alignment.js';
+import {
+  DirectionCounts,
+  edgeDirectionCounts,
+  compareDirectionCounts,
+  containerEdgeDirections,
+  hasFixedDescendant,
+  mirrorAxes,
+  direct,
+} from '../../src/placement/direct.js';
+import { swapPositions, smartSwapPositions, swapOptimize } from '../../src/placement/swap.js';
+import { equidistance, Equidistance, equidistanceNodeGuarded } from '../../src/placement/equidistance.js';
+import { dejitter, Dejitter } from '../../src/placement/dejitter.js';
+import { balanceSymmetry, BalanceSymmetry, isSimple } from '../../src/placement/symmetry.js';
+import { align, Align, swap, Swap } from '../../src/placement/stage-wrappers.js';
+import { containerAlignmentCost, nonCenterPortCostValue, nodesCenter } from '../../src/placement/stage-support.js';
 import {
   OptimizerSpatialIndex,
   indexedCanMove,
@@ -47,7 +63,7 @@ import {
   indexedDoesOverlap,
 } from '../../src/placement/optimizer-spatial-index.js';
 
-describe('Slices 42–45 — Placement Optimizer API Boundary', () => {
+describe('Slices 42–46 — Placement Optimizer API Boundary', () => {
   it('does not export internal placement optimizer functions in placement index or root index', () => {
     const forbidden = [
       // Slice 42-43
@@ -130,6 +146,36 @@ describe('Slices 42–45 — Placement Optimizer API Boundary', () => {
       'NormalizeGaps',
       'transposeAll',
       'TransposeAll',
+      // Slice 46 placement stages stay internal (structural placement wires them)
+      'alignAxes',
+      'alignmentDeltas',
+      'tryMove',
+      'attemptShift',
+      'DirectionCounts',
+      'edgeDirectionCounts',
+      'compareDirectionCounts',
+      'containerEdgeDirections',
+      'hasFixedDescendant',
+      'mirrorAxes',
+      'direct',
+      'swapPositions',
+      'smartSwapPositions',
+      'swapOptimize',
+      'equidistance',
+      'Equidistance',
+      'equidistanceNodeGuarded',
+      'dejitter',
+      'Dejitter',
+      'balanceSymmetry',
+      'BalanceSymmetry',
+      'isSimple',
+      'align',
+      'Align',
+      'swap',
+      'Swap',
+      'containerAlignmentCost',
+      'nonCenterPortCostValue',
+      'nodesCenter',
     ];
 
     for (const name of forbidden) {
@@ -181,6 +227,16 @@ describe('Slices 42–45 — Placement Optimizer API Boundary', () => {
     assert.strictEqual(typeof chargeOptimizerTranspose, 'function');
     assert.strictEqual(typeof normalizeGaps, 'function');
     assert.strictEqual(typeof transposeAll, 'function');
+    // Slice 46 direct imports
+    for (const fn of [
+      alignAxes, alignmentDeltas, tryMove, attemptShift, DirectionCounts, edgeDirectionCounts,
+      compareDirectionCounts, containerEdgeDirections, hasFixedDescendant, mirrorAxes, direct,
+      swapPositions, smartSwapPositions, swapOptimize, equidistance, Equidistance,
+      equidistanceNodeGuarded, dejitter, Dejitter, balanceSymmetry, BalanceSymmetry, isSimple,
+      align, Align, swap, Swap, containerAlignmentCost, nonCenterPortCostValue, nodesCenter,
+    ]) {
+      assert.strictEqual(typeof fn, 'function');
+    }
     for (const method of [
       'medianPointGuarded', 'protrudingChildrenGuarded', 'findClosestUnoccupiedDistanceGuarded',
       'findUnoccupiedGuarded', 'isPointOccupiedGuarded', 'fillPlacementPointsGuarded',
