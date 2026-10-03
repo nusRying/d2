@@ -21,4 +21,4 @@
 - `test/unit/initialize-nodes.test.js` (7 tests) verifies candidate scan orders, fixed graph clamping, star/path/cycle graph initialization, direct boundary context error preservation, and rollback atomicity.
 - `test/unit/placement-api-boundary.test.js` (2 tests) confirms internal optimizer symbols are not leaked at `src/placement/index.js` or `src/index.js`.
 - All Go regression packages pass (`limits`, `layoutgraph`, `placementcost`, `placement`, `proximity`, `grouping`).
-- Post-correction direct Slice 42, full JS, and Go limits/placement reruns are pending execution on the local agent; update the exact counts here only after those commands pass.
+- GitHub Actions `TALA JS migration CI` verified the post-correction branch automatically: 2,511 JS tests across 94 files, 49,976 expect assertions, 0 failures; Go `limits`, `layoutgraph`, `placementcost`, `placement`, `proximity`, and `grouping` all passed; diff hygiene passed.
