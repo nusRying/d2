@@ -129,6 +129,24 @@ describe("Slice 43 — Compaction direct gates", () => {
     });
   });
 
+  it("applies table, loop-offset, and directional-margin spacing", () => {
+    const g = new Graph();
+    const a = add(g, 1, 0, 0);
+    const b = add(g, 2, 200, 0);
+
+    a.SetShape("Table");
+    assert.equal(a.DeltaTo(b, a.TopLeft), 120);
+
+    a.SetShape("");
+    a.LoopOffsets = new Map([[7, 50]]); // Orientation.Right; opposite of Left
+    assert.equal(a.DeltaTo(b, a.TopLeft), 70);
+
+    a.LoopOffsets = null;
+    a._margin.right = 40;
+    b._margin.left = 30;
+    assert.equal(a.DeltaTo(b, a.TopLeft), 70);
+  });
+
   it("reports exact DeltaTo invariant errors", () => {
     const g = new Graph();
     const a = add(g, 1, 0, 0);
