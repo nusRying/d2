@@ -1198,6 +1198,79 @@
       "firstId": "40",
       "secondId": "41",
       "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_cluster",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "empty_nodes",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_first_node",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_edge_abduction",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "case_a_nil_current_from",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "case_b_nil_current_to",
+      "exactlyTwo": false
+    },
+    {
+      "name": "nil_edge_abductions",
+      "exactlyTwo": false
+    },
+    {
+      "name": "both_originals_nil",
+      "exactlyTwo": false
+    },
+    {
+      "name": "both_originals_nonnil",
+      "exactlyTwo": false
+    },
+    {
+      "name": "unpositioned_candidate",
+      "exactlyTwo": false
+    },
+    {
+      "name": "wrong_graph_candidate",
+      "exactlyTwo": false
+    },
+    {
+      "name": "distinct_same_id",
+      "firstId": "999",
+      "secondId": "999",
+      "exactlyTwo": true
+    },
+    {
+      "name": "duplicate_external_identity",
+      "firstId": "40",
+      "exactlyTwo": false
+    },
+    {
+      "name": "first_seen_order",
+      "firstId": "41",
+      "secondId": "40",
+      "exactlyTwo": true
+    },
+    {
+      "name": "third_distinct_external",
+      "firstId": "40",
+      "secondId": "41",
+      "exactlyTwo": false
     }
   ],
   "obstructionBounds": [

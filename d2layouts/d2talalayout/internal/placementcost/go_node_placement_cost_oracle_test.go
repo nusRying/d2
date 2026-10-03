@@ -534,6 +534,103 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{
 			Name: "three_external", FirstID: fmt.Sprintf("%d", f.ID), SecondID: fmt.Sprintf("%d", s.ID), ExactlyTwo: exact,
 		})
+
+		// --- SLICE 41 CLUSTER PANIC & MALFORMED CASES ---
+		p, _ := capturePanic(func() { clusterExactlyTwoExternalConnectedNodes(nil) })
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "nil_cluster", Panic: p})
+
+		p, _ = capturePanic(func() { clusterExactlyTwoExternalConnectedNodes(&layoutgraph.Cluster{Nodes: layoutgraph.Nodes{}}) })
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "empty_nodes", Panic: p})
+
+		p, _ = capturePanic(func() { clusterExactlyTwoExternalConnectedNodes(&layoutgraph.Cluster{Nodes: layoutgraph.Nodes{nil}}) })
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "nil_first_node", Panic: p})
+
+		p, _ = capturePanic(func() {
+			clusterExactlyTwoExternalConnectedNodes(&layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{nil}})
+		})
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "nil_edge_abduction", Panic: p})
+
+		p, _ = capturePanic(func() {
+			clusterExactlyTwoExternalConnectedNodes(&layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyTo: cn1, CurrentFrom: nil}}})
+		})
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "case_a_nil_current_from", Panic: p})
+
+		p, _ = capturePanic(func() {
+			clusterExactlyTwoExternalConnectedNodes(&layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyFrom: cn1, CurrentTo: nil}}})
+		})
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "case_b_nil_current_to", Panic: p})
+
+		// Non-panic cases
+		clNilAbductions := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: nil}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clNilAbductions)
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "nil_edge_abductions", ExactlyTwo: exact})
+
+		clBothNil := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyFrom: nil, OriginallyTo: nil, CurrentFrom: ext1, CurrentTo: cn2}}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clBothNil)
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "both_originals_nil", ExactlyTwo: exact})
+
+		clBothNonNil := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyFrom: cn1, OriginallyTo: cn2, CurrentFrom: ext1, CurrentTo: cn2}}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clBothNonNil)
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "both_originals_nonnil", ExactlyTwo: exact})
+
+		unpos := addTestNode(g, 0, 0, 0, 0)
+		unpos.TopLeft = nil
+		clUnpos := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyTo: cn1, CurrentFrom: unpos}}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clUnpos)
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "unpositioned_candidate", ExactlyTwo: exact})
+
+		g2 := createTestGraph()
+		wrong := addTestNode(g2, 10, 10, 10, 10)
+		clWrongGraph := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{{OriginallyTo: cn1, CurrentFrom: wrong}}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clWrongGraph)
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "wrong_graph_candidate", ExactlyTwo: exact})
+
+		dup1 := addTestNode(g, 50, 50, 10, 10)
+		dup2 := addTestNode(g, 60, 60, 10, 10)
+		dup1.ID = 999
+		dup2.ID = 999
+		clDistinctSameId := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
+			{OriginallyTo: cn1, CurrentFrom: dup1},
+			{OriginallyTo: cn1, CurrentFrom: dup2},
+		}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clDistinctSameId)
+		fID, sID := "", ""
+		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
+		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "distinct_same_id", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
+
+		clDuplicate := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
+			{OriginallyTo: cn1, CurrentFrom: ext1},
+			{OriginallyTo: cn1, CurrentFrom: ext1},
+		}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clDuplicate)
+		fID = ""
+		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "duplicate_external_identity", FirstID: fID, ExactlyTwo: exact})
+
+		clFirstSeen := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
+			{OriginallyTo: cn1, CurrentFrom: ext2},
+			{OriginallyTo: cn1, CurrentFrom: ext1},
+		}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clFirstSeen)
+		fID, sID = "", ""
+		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
+		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "first_seen_order", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
+
+		ext4 := addTestNode(g, 100, 100, 10, 10)
+		ext5 := addTestNode(g, 100, 100, 10, 10)
+		clThirdDistinct := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
+			{OriginallyTo: cn1, CurrentFrom: ext1},
+			{OriginallyTo: cn1, CurrentFrom: ext2},
+			{OriginallyTo: cn1, CurrentFrom: ext4},
+			{OriginallyTo: cn1, CurrentFrom: ext5},
+		}}
+		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clThirdDistinct)
+		fID, sID = "", ""
+		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
+		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "third_distinct_external", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
 	}
 
 	// ==========================================
