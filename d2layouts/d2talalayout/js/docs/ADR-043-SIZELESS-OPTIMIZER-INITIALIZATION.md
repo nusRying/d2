@@ -1,7 +1,7 @@
 # ADR-043: Sizeless Optimizer + Initialization Bundle
 
 ## Status
-Implemented — awaiting Slice 42 review
+Accepted
 
 ## Context
 We need to migrate the first-stage placement optimization stack from Go Tala into JavaScript:
