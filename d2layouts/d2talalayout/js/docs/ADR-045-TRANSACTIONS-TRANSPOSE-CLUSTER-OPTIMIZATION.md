@@ -1,7 +1,7 @@
 # ADR-045: Transactions, Transpose, Cluster Optimization, Gap Reduction, and Optimizer Spatial Index
 
 ## Status
-Implemented — awaiting Slice 44 review
+Accepted
 
 ## Context
 Slice 44 ports the transaction substrate, transpose, cluster optimization, gap reduction, and spatial index substrate required for layout placement in TALA. In Go, these modules form the transactional foundation and spatial acceleration layer upon which sized optimization is built.
