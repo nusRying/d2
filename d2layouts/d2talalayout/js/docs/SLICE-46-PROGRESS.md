@@ -64,7 +64,7 @@ All oracles are gated by `TALA_SLICE46_ORACLE=1`. Plain `go test` asserts the co
 - `placement-api-boundary.test.js` is extended with every new internal.
 - **Full JS suite:** 123 files, 4451 tests, 0 failures.
 - **Go:** all pass, including every Slice 46 fixture assertion. Packages: hierarchy, trees, packing, placement, layoutgraph, grouping, proximity, limits, placementcost, loops, graphbounds, labeling, nodeshape.
-- **CI:** the Go parity job now also runs hierarchy, trees, packing, loops, graphbounds, labeling, and nodeshape.
+- **CI:** the existing Go parity job runs limits, layoutgraph, placementcost, placement (which includes both Slice 46 placement oracles), proximity, and grouping. Adding hierarchy, trees, packing, loops, graphbounds, labeling, and nodeshape to `.github/workflows/tala-js-ci.yml` needs a push with the GitHub `workflow` scope, which this session's token lacks, so the change is left for the maintainer.
 
 ## Explicitly out of scope (Slices 47–50)
 Routing, full label placement, quality scoring, the engine pipeline, and the public `layout()` API.
