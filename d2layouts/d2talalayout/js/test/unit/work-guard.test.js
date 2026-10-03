@@ -310,6 +310,69 @@ describe("Slice 08 WorkGuard Unit Tests", () => {
       expect(g.Used()).toBe(1024n); // limit + 1n
     });
 
+    it("overflow Add crossing boundary preserves Err() error and exact observation count", () => {
+      let errCalls = 0;
+      let cancelCalls = 0;
+      let currentError = null;
+      const ctx = {
+        Err() {
+          errCalls++;
+          return currentError;
+        },
+        isCancelled() {
+          cancelCalls++;
+          return false;
+        },
+      };
+
+      const deadlineGuard = new WorkGuard(ctx, "overflowDeadline", 64n);
+      expect(errCalls).toBe(1);
+      expect(cancelCalls).toBe(0);
+      deadlineGuard.Add(63n);
+      expect(errCalls).toBe(1);
+
+      currentError = new Error("context deadline exceeded");
+      expect(() => deadlineGuard.Add(2n)).toThrow("overflowDeadline: context deadline exceeded");
+      expect(deadlineGuard.Used()).toBe(65n);
+      expect(errCalls).toBe(2);
+      expect(cancelCalls).toBe(0);
+
+      errCalls = 0;
+      cancelCalls = 0;
+      currentError = null;
+      const customGuard = new WorkGuard(ctx, "overflowCustom", 64n);
+      customGuard.Add(63n);
+      currentError = new Error("oracle custom work error");
+      expect(() => customGuard.Add(2n)).toThrow("overflowCustom: oracle custom work error");
+      expect(customGuard.Used()).toBe(65n);
+      expect(errCalls).toBe(2);
+      expect(cancelCalls).toBe(0);
+    });
+
+    it("overflow Add without crossing boundary skips Err() and returns WorkLimitError", () => {
+      let errCalls = 0;
+      let first = true;
+      const ctx = {
+        Err() {
+          errCalls++;
+          if (first) {
+            first = false;
+            return null;
+          }
+          return new Error("must not be observed");
+        },
+        isCancelled() {
+          throw new Error("isCancelled must not be queried");
+        },
+      };
+
+      const guard = new WorkGuard(ctx, "overflowNoBoundary", 10n);
+      expect(errCalls).toBe(1);
+      expect(() => guard.Add(11n)).toThrow("TALA overflowNoBoundary work exceeds limit 10");
+      expect(guard.Used()).toBe(11n);
+      expect(errCalls).toBe(1);
+    });
+
     it("Add(0) boundary behavior: polls at exact boundary, does not poll away from boundary", () => {
       const controller1 = new AbortController();
       const g1 = new WorkGuard(abortSignalWorkContext(controller1.signal), "zeroAtBoundary", 1000);
