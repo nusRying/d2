@@ -1,21 +1,19 @@
 import { WorkCanceledError } from "../limits/work-guard.js";
+import { getContextError } from "../limits/work-context.js";
 
 /**
- * checkPlaceChildrenOrderCancellation checks context cancellation using direct
- * ctx.Err() semantics.
+ * checkPlaceChildrenOrderCancellation mirrors Go's
+ * `if err := ctx.Err(); err != nil { return fmt.Errorf("PlaceChildrenOrder: %w", err) }`:
+ * exactly one ctx.Err() call per check, wrapping the context error as cause.
  *
  * Pinned reference: d2layouts/d2talalayout/internal/placement/node_placement.go
  *
  * @param {any} context
  */
 function checkPlaceChildrenOrderCancellation(context) {
-  const isCancelled =
-    typeof context.isCancelled === "function"
-      ? context.isCancelled()
-      : Boolean(context.aborted);
-
-  if (isCancelled) {
-    throw new WorkCanceledError("PlaceChildrenOrder");
+  const err = getContextError(context);
+  if (err != null) {
+    throw new WorkCanceledError("PlaceChildrenOrder", err);
   }
 }
 

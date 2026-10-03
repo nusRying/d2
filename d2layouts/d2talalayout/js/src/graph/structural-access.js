@@ -16,13 +16,13 @@
 // Slice 1–45 Graph/Node/Edge classes stay unchanged.
 
 import { Point } from '../geometry/point.js';
-import { precisionCompare } from '../geometry/math.js';
+import { precisionCompare, PRECISION } from '../geometry/math.js';
 import { Orientation, orientationToString } from '../geometry/orientation.js';
 import { WorkGuard } from '../limits/work-guard.js';
 import { MAX_ENGINE_NODES, MAX_ENGINE_WORK_UNITS } from '../limits/constants.js';
 import { EdgeAbduction } from './edge-abduction.js';
 import { Spacing, newGraph } from './graph.js';
-import { isOutsideLabelPosition } from './label-position.js';
+import { LABEL_PADDING, LabelPosition, isOutsideLabelPosition, normalizeLabelPosition } from './label-position.js';
 import { sortNodesByID } from './node.js';
 import { validateEngineGraph } from './topology-preflight.js';
 import { collectRuntimeObjectsContext } from './graph-state.js';
@@ -596,8 +596,59 @@ export function hasLeakyEdge(node) {
   return false;
 }
 
-/** Graph.ComputeNodeSpacing. updateSpacing is supplied by the caller's port. */
-export function computeNodeSpacing(graph, updateSpacing) {
+// layoutgraph MaxIconSize (geometry_policy.go).
+export const MAX_ICON_SIZE = 64;
+
+const P = LabelPosition;
+const OUTSIDE_TOP = new Set([P.OutsideTopLeft, P.OutsideTopCenter, P.OutsideTopRight]);
+const OUTSIDE_BOTTOM = new Set([P.OutsideBottomLeft, P.OutsideBottomCenter, P.OutsideBottomRight]);
+const OUTSIDE_LEFT = new Set([P.OutsideLeftTop, P.OutsideLeftMiddle, P.OutsideLeftBottom]);
+const OUTSIDE_RIGHT = new Set([P.OutsideRightTop, P.OutsideRightMiddle, P.OutsideRightBottom]);
+const INSIDE_TOP = new Set([P.InsideTopLeft, P.InsideTopCenter, P.InsideTopRight]);
+const INSIDE_BOTTOM = new Set([P.InsideBottomLeft, P.InsideBottomCenter, P.InsideBottomRight]);
+
+// Returns [spacingObject, side] for a fixed label/icon position, or null.
+function spacingSlot(node, position) {
+  const pos = normalizeLabelPosition(position);
+  if (OUTSIDE_TOP.has(pos)) return [node._margin, 'top'];
+  if (OUTSIDE_BOTTOM.has(pos)) return [node._margin, 'bottom'];
+  if (OUTSIDE_LEFT.has(pos)) return [node._margin, 'left'];
+  if (OUTSIDE_RIGHT.has(pos)) return [node._margin, 'right'];
+  if (INSIDE_TOP.has(pos)) return [node._padding, 'top'];
+  if (INSIDE_BOTTOM.has(pos)) return [node._padding, 'bottom'];
+  if (pos === P.InsideMiddleLeft) return [node._padding, 'left'];
+  if (pos === P.InsideMiddleRight) return [node._padding, 'right'];
+  return null;
+}
+
+/** Node.UpdateSpacing (node.go). */
+export function updateSpacing(n) {
+  if (n.Label != null && n.Label.PositionFixed()) {
+    const width = n.Label.Width + 2 * LABEL_PADDING;
+    const height = n.Label.Height + 2 * LABEL_PADDING;
+    const slot = spacingSlot(n, n.Label.Position);
+    if (slot != null) {
+      const [spacing, side] = slot;
+      spacing[side] = side === 'left' || side === 'right' ? width : height;
+    }
+  }
+  if (n.Icon != null && n.Icon.PositionFixed()) {
+    const iconSize = MAX_ICON_SIZE + 2 * LABEL_PADDING;
+    const slot = spacingSlot(n, n.Icon.Position);
+    if (slot != null) {
+      const [spacing, side] = slot;
+      spacing[side] = Math.max(spacing[side], iconSize);
+    }
+  }
+  const [dx, dy] = n.modifierElementAdjustments();
+  if (dx !== 0 || dy !== 0) {
+    n._margin.top += dy;
+    n._margin.right += dx;
+  }
+}
+
+/** Graph.ComputeNodeSpacing. */
+export function computeNodeSpacing(graph) {
   for (const node of graph.Nodes) {
     updateSpacing(node);
   }
@@ -915,4 +966,149 @@ export function countSegmentCrossingsContext(ctx, segments) {
   err = contextErr(ctx);
   if (err != null) throw edgeLengthError(err);
   return crossings;
+}
+
+// ---------------------------------------------------------------------------
+// structure_api.go / graph.go guarded helpers used by grouping.JoinDistancedClusters
+// ---------------------------------------------------------------------------
+
+/** Node.distanceBetweenCenters. */
+export function distanceBetweenCenters(nodeA, nodeB, includeSizes) {
+  const c = 1.0 / 20.0;
+  let xCenter = Math.abs(nodeA.TopLeft.X - nodeB.TopLeft.X);
+  let yCenter = Math.abs(nodeA.TopLeft.Y - nodeB.TopLeft.Y);
+  if (includeSizes) {
+    xCenter = Math.abs((nodeA.TopLeft.X + nodeA.Width / 2) - (nodeB.TopLeft.X + nodeB.Width / 2)) / (nodeA.Width + nodeB.Width);
+    yCenter = Math.abs((nodeA.TopLeft.Y + nodeA.Height / 2) - (nodeB.TopLeft.Y + nodeB.Height / 2)) / (nodeA.Height + nodeB.Height);
+  }
+  return c * Math.min(xCenter, yCenter);
+}
+
+/** Node.distance = distanceTo + distanceBetweenCenters. */
+export function nodeDistance(nodeA, nodeB, includeSizes) {
+  return nodeA.distanceTo(nodeB, includeSizes) + distanceBetweenCenters(nodeA, nodeB, includeSizes);
+}
+
+/**
+ * Nodes.DistanceClustersWithWorkGuard (clustersWithWorkGuard). Returns null
+ * (Go nil) when fewer than two seed nodes exist. Go's recursive perimeter
+ * merge is replayed with an explicit frame stack in the same visit order.
+ */
+export function distanceClustersWithWorkGuard(nodes, distanceThreshold, guard) {
+  if (guard == null) {
+    throw new Error('TALA DistanceClusters requires a work guard');
+  }
+  const charge = (units) => guard.Add(units);
+  const chargeSort = (length) => {
+    for (let width = 1; width < length; width *= 2) {
+      charge(length);
+      if (width > Math.trunc(length / 2)) break;
+    }
+  };
+  const nodeToCluster = new Map();
+  let nextGeneratedClusterID = 0;
+  const createCluster = (node) => {
+    if (!nodeToCluster.has(node)) nodeToCluster.set(node, nextGeneratedClusterID++);
+  };
+  const seedNodes = [];
+  const maybeAddSeedNodes = (n, adj) => {
+    const d = nodeDistance(n, adj, true);
+    if (precisionCompare(d, distanceThreshold, PRECISION) > 0) seedNodes.push(n, adj);
+  };
+  for (const n of nodes) {
+    charge(1 + n.Edges.length + n.Nears.size);
+    for (const e of n.Edges) maybeAddSeedNodes(n, n.adjacent(e));
+    chargeSort(n.Nears.size);
+    for (let near of n.orderedNears()) {
+      if (near.Cluster != null) {
+        near = near.Cluster.Vessel;
+      } else if (near.Sequence != null) {
+        near = near.Sequence.Vessel;
+      } else if (n.Graph.NodeToTree.has(near)) {
+        let tree = n.Graph.NodeToTree.get(near);
+        while (tree.Parent != null) {
+          guard.Step();
+          tree = tree.Parent;
+        }
+        near = tree.sentinelNode();
+      }
+      if (near.Container !== n.Container) continue;
+      maybeAddSeedNodes(n, near);
+    }
+  }
+  if (seedNodes.length < 2) {
+    guard.Finish();
+    return null;
+  }
+
+  const mergeNodesInPerimeter = (start) => {
+    // Each frame is [node, nextIndex, clusterID captured on entry]; entering a
+    // frame charges like Go's recursive call.
+    charge(nodes.length);
+    const stack = [[start, 0, nodeToCluster.get(start)]];
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1];
+      const n = frame[0];
+      let descended = false;
+      while (frame[1] < nodes.length) {
+        const otherN = nodes[frame[1]++];
+        if (otherN === n || otherN.FixedTopLeft != null) continue;
+        const d = nodeDistance(n, otherN, true);
+        if (precisionCompare(d, distanceThreshold, PRECISION) > 0) continue;
+        const clusterID = frame[2];
+        const inMap = nodeToCluster.has(otherN);
+        if (inMap && nodeToCluster.get(otherN) === clusterID) continue;
+        nodeToCluster.set(otherN, nodeToCluster.get(n));
+        if (!inMap) {
+          charge(nodes.length);
+          stack.push([otherN, 0, nodeToCluster.get(otherN)]);
+          descended = true;
+          break;
+        }
+      }
+      if (!descended) stack.pop();
+    }
+  };
+
+  charge(seedNodes.length);
+  for (const node of seedNodes) {
+    if (node.FixedTopLeft != null) continue;
+    createCluster(node);
+    mergeNodesInPerimeter(node);
+  }
+  charge(nodes.length);
+  if (!nodes.some((n) => n.FixedTopLeft != null) && nodeToCluster.size !== nodes.length) {
+    throw new Error(`Clustered nodes: ${nodeToCluster.size}. Total: ${nodes.length}`);
+  }
+  const clusterMapping = new Map();
+  charge(nodeToCluster.size);
+  for (const [node, clusterID] of nodeToCluster) {
+    if (!clusterMapping.has(clusterID)) clusterMapping.set(clusterID, []);
+    clusterMapping.get(clusterID).push(node);
+  }
+  for (const cluster of clusterMapping.values()) {
+    chargeSort(cluster.length);
+    sortNodesByID(cluster);
+  }
+  charge(clusterMapping.size);
+  const clusterIDs = [...clusterMapping.keys()];
+  chargeSort(clusterIDs.length);
+  clusterIDs.sort((a, b) => a - b);
+  const clusters = [];
+  charge(clusterIDs.length);
+  for (const id of clusterIDs) clusters.push(clusterMapping.get(id));
+  guard.Finish();
+  return clusters;
+}
+
+/** Graph.WouldOverlapWithWorkGuard; throws instead of returning an error. */
+export function wouldOverlapWithWorkGuard(graph, node, point, exceptions, pairwiseExceptions, guard) {
+  if (guard == null) {
+    throw new Error('TALA overlap check requires a work guard');
+  }
+  const width = node == null ? 0 : node.Width;
+  const height = node == null ? 0 : node.Height;
+  const [overlaps, err] = graph.doesOverlapWithDimensionsContext(node, point, width, height, exceptions, pairwiseExceptions, guard);
+  if (err != null) throw err;
+  return overlaps;
 }
