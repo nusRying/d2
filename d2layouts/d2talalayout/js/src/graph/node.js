@@ -12,10 +12,11 @@ import { euclideanDistance, goRound, truncateDecimals } from '../geometry/math.j
 import { Point } from '../geometry/point.js';
 import { Orientation, orientationToString, getOpposite } from '../geometry/orientation.js';
 import { Icon } from './icon.js';
-import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox } from './label-position.js';
+import { LABEL_PADDING, isOutsideLabelPosition, getPointOnBox, LabelPosition, normalizeLabelPosition } from './label-position.js';
 import { nodesLeftmost, nodesTopmost, nodesRightmost, nodesBottommost, nodesFixedBounds } from './node-bounds.js';
 import { shapeGetInnerBox, shapeGetInsidePlacement, shapeGetDimensionsToFit } from '../shape/inner-geometry.js';
 import { ancestryParent } from './topology-preflight.js';
+import { MAX_ICON_SIZE } from './structural-access.js';
 
 function getPaddingValues(padding) {
   if (!padding) {
@@ -597,6 +598,14 @@ export class Node {
     return this.aspectRatio1();
   }
 
+  isImage() {
+    return this._shapeType === "Image";
+  }
+
+  IsImage() {
+    return this.isImage();
+  }
+
   sameShape(other) {
     if (other === null || other === undefined) {
       return false;
@@ -964,6 +973,70 @@ export class Node {
       b2.TopLeft.X + b2.Width <= b1.TopLeft.X + b1.Width &&
       b2.TopLeft.Y + b2.Height <= b1.TopLeft.Y + b1.Height
     );
+  }
+
+  Covers(node) {
+    return this.covers(node);
+  }
+
+  getBox() {
+    return this.Box;
+  }
+
+  GetBox() {
+    return this.Box;
+  }
+
+  pad(padding) {
+    const pad = Number(padding);
+    if (this.TopLeft != null) {
+      this.TopLeft.X -= pad;
+      this.TopLeft.Y -= pad;
+    }
+    this.Width += 2 * pad;
+    this.Height += 2 * pad;
+  }
+
+  PadLabelCandidate(padding) {
+    this.pad(padding);
+  }
+
+  ancestryParent() {
+    return ancestryParent(this);
+  }
+
+  AncestryParent() {
+    return ancestryParent(this);
+  }
+
+  labelTopLeft(labelPosition, width, height) {
+    const box = isOutsideLabelPosition(labelPosition) ? this.Box : this.innerBox();
+    return getPointOnBox(labelPosition, box, LABEL_PADDING, width, height);
+  }
+
+  LabelTopLeft(labelPosition, width, height) {
+    return this.labelTopLeft(labelPosition, width, height);
+  }
+
+  iconSize(iconPosition) {
+    const minDimension = Math.min(this.Width, this.Height);
+    let size;
+    if (normalizeLabelPosition(iconPosition) === LabelPosition.InsideMiddleCenter) {
+      size = 0.5 * minDimension;
+    } else {
+      size = Math.min(minDimension, Math.max(32.0, 0.5 * minDimension));
+    }
+    size = Math.min(size, MAX_ICON_SIZE);
+    if (!isOutsideLabelPosition(iconPosition)) {
+      const box = this.innerBox();
+      size = Math.min(Math.max(0, box.Width - 2 * LABEL_PADDING), size);
+      size = Math.min(Math.max(0, box.Height - 2 * LABEL_PADDING), size);
+    }
+    return size;
+  }
+
+  IconSize(iconPosition) {
+    return this.iconSize(iconPosition);
   }
 
   doesOverlapExact(node) {

@@ -119,3 +119,7 @@ export function ValidatePositionedGraphSelection(ctx, operation, graph, extraEdg
     throw wrapContextError(operation, err);
   }
 }
+
+export function ValidatePositionedGraph(ctx, operation, graph) {
+  return ValidatePositionedGraphSelection(ctx, operation, graph, null);
+}

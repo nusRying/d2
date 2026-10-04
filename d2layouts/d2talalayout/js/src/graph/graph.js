@@ -810,6 +810,21 @@ export class Graph {
     return this.bounds();
   }
 
+  area() {
+    if (!this.Nodes || this.Nodes.length === 0) {
+      return 0;
+    }
+    const [tl, br] = this.boundingBox(false);
+    if (tl == null || br == null) {
+      return 0;
+    }
+    return Math.abs(tl.X - br.X) * Math.abs(tl.Y - br.Y);
+  }
+
+  Area() {
+    return this.area();
+  }
+
   lookupEdgeLengthCost(state) {
     if (this.edgeLengthCache == null) {
       return [0, false];

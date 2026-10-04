@@ -127,3 +127,33 @@ export function loopOffset(node, orientation) {
   if (offsets instanceof Map) return offsets.has(orientation) ? offsets.get(orientation) : 0;
   return offsets[orientation] ?? 0;
 }
+
+/**
+ * LabelBoxFits reports whether outer completely contains inner.
+ */
+export function LabelBoxFits(outer, inner) {
+  if (outer == null || inner == null || outer.TopLeft == null || inner.TopLeft == null) {
+    return false;
+  }
+  return (
+    inner.TopLeft.X >= outer.TopLeft.X &&
+    inner.TopLeft.Y >= outer.TopLeft.Y &&
+    inner.TopLeft.X + inner.Width <= outer.TopLeft.X + outer.Width &&
+    inner.TopLeft.Y + inner.Height <= outer.TopLeft.Y + outer.Height
+  );
+}
+
+/**
+ * PadLabelCandidate expands (or shrinks, for a negative value) a temporary
+ * node box by the same amount on every side.
+ * Mutates the existing TopLeft Point without replacing the object reference.
+ */
+export function PadLabelCandidate(node, padding) {
+  const pad = Number(padding);
+  if (node.TopLeft != null) {
+    node.TopLeft.X -= pad;
+    node.TopLeft.Y -= pad;
+  }
+  node.Width += 2 * pad;
+  node.Height += 2 * pad;
+}

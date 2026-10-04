@@ -211,6 +211,18 @@ export function nodeOverlapCount(node, nodes, delta, guard) {
   return count;
 }
 
+/** partialNodeOverlapCount */
+export function partialNodeOverlapCount(node, nodes, delta, guard) {
+  let count = 0;
+  for (const otherNode of nodes) {
+    guard.step();
+    if (LabelBoxesOverlap(node, otherNode, delta) && !otherNode.covers(node)) {
+      count++;
+    }
+  }
+  return count;
+}
+
 /** nodeOverlapArea → [area, overlapCount] */
 export function nodeOverlapArea(node, nodes, delta, partial, guard) {
   let area = 0.0;
@@ -245,6 +257,20 @@ export function edgeOverlapCount(node, edges, delta, guard) {
     }
   }
   return count;
+}
+
+/** collectLabelPlacementAncestors */
+export function collectLabelPlacementAncestors(node, guard) {
+  const ancestors = [];
+  for (let current = node, depth = 0; current != null; depth++) {
+    if (depth >= maxLabelPlacementAncestryDepth) {
+      throw new Error(`TALA ${guard.location} container depth exceeds limit ${maxLabelPlacementAncestryDepth}`);
+    }
+    guard.step();
+    ancestors.push(current);
+    current = typeof current.EffectiveContainer === 'function' ? current.EffectiveContainer() : current.effectiveContainer();
+  }
+  return ancestors;
 }
 
 /** isLabelPlacementDescendantOf */

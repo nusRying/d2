@@ -23,13 +23,14 @@ import { goMax, goMin } from '../geometry/go-math.js';
 import { Orientation } from '../geometry/orientation.js';
 import { LABEL_PADDING, LabelPosition as P, normalizeLabelPosition } from '../graph/label-position.js';
 import { Node } from '../graph/node.js';
-import { EDGE_LABEL_PREFERENCE_ORDER } from './model.js';
-import { IsOnEdge, IsUnlocked, Mirrored } from './label-position-ops.js';
-import { IconSize, IsClusterEdge, IsImage, NodeLabelTopLeft } from './labeling-access.js';
+import { EDGE_LABEL_PREFERENCE_ORDER, compareLabelPositions, labelPositionPreferences, labelPositionPreferenceTranches } from './model.js';
+import { IsOnEdge, IsOutside, IsUnlocked, Mirrored } from './label-position-ops.js';
+import { IconSize, IsClusterEdge, IsImage, LabelBoxFits, NodeLabelTopLeft, PadLabelCandidate } from './labeling-access.js';
 import { ValidatePositionedGraphSelection } from './positioned-validation.js';
 import {
   captureLabelPlacement,
   clusterLabelPlacementOrientation,
+  collectLabelPlacementAncestors,
   edgeLabelTopLeft,
   edgeOverlapCount,
   isLabelPlacementDescendantOf,
@@ -37,6 +38,7 @@ import {
   newLabelPlacementWorkGuard,
   nodeOverlapArea,
   nodeOverlapCount,
+  partialNodeOverlapCount,
   positionedArrowheadLabel,
   routeLengthPlacement,
   sortLabelPlacementEdges,
@@ -70,6 +72,293 @@ function newFakeNode(topLeft, width, height, d2id, graph) {
   node.Graph = graph;
   node.setShape(SQUARE_TYPE);
   return node;
+}
+
+/**
+ * scoreNodeLabelOverlaps ranks a node-label candidate. A label-label overlap
+ * is deliberately twice as costly as a node or edge overlap.
+ */
+export function scoreNodeLabelOverlaps(nodeOverlapCount, edgeOverlapCount, labelOverlapCount) {
+  return nodeOverlapCount + edgeOverlapCount + 2 * labelOverlapCount;
+}
+
+/**
+ * Place chooses positions for every movable node label, icon, and routed edge
+ * label in graph.
+ */
+export function Place(ctx, graph) {
+  return place(ctx, graph, maxLabelPlacementWorkUnits);
+}
+
+/** place with an explicit label-placement work limit. */
+export function place(ctx, g, workLimit) {
+  const location = 'PlaceLabels';
+  ValidatePositionedGraphSelection(ctx, location, g, null);
+  const snapshot = captureLabelPlacement(g, null);
+  try {
+    const guard = newLabelPlacementWorkGuard(ctx, location, workLimit);
+    placeBody(ctx, g, guard);
+  } catch (err) {
+    snapshot.restore();
+    throw err;
+  }
+}
+
+function placeBody(ctx, g, guard) {
+  const checkCanceled = () => guard.step();
+  const placedFakeNodes = [];
+
+  // add all arrowhead labels to placedFakeNodes
+  for (const e of g.Edges) {
+    checkCanceled();
+    if (e.SourceArrowheadLabel != null) {
+      const pal = positionedArrowheadLabel(e, false, guard);
+      placedFakeNodes.push(newFakeNode(pal.Box.TopLeft, pal.Box.Width, pal.Box.Height, e.SourceArrowheadLabel.Text, g));
+    }
+    if (e.TargetArrowheadLabel != null) {
+      const pal = positionedArrowheadLabel(e, true, guard);
+      placedFakeNodes.push(newFakeNode(pal.Box.TopLeft, pal.Box.Width, pal.Box.Height, e.TargetArrowheadLabel.Text, g));
+    }
+  }
+
+  // add all loop and fixed edge labels to placedFakeNodes
+  for (const e of g.Edges) {
+    checkCanceled();
+    if (e.Label != null && (e.isLoop() || e.Label.PositionFixed())) {
+      const topLeft = edgeLabelTopLeft(e, e.Label.Position, e.Label.Width, e.Label.Height, guard);
+      placedFakeNodes.push(newFakeNode(topLeft, e.Label.Width, e.Label.Height, e.Label.Text, g));
+    }
+  }
+
+  // reposition node labels and icons
+  for (const node of g.Nodes) {
+    checkCanceled();
+    const siblingsAndChildren = [];
+    const containerSiblings = g.Containers.get(node.Container) ?? [];
+    for (const n of containerSiblings) {
+      checkCanceled();
+      if (n !== node) {
+        siblingsAndChildren.push(n);
+      }
+    }
+    if (node.IsContainer()) {
+      const children = g.Containers.get(node) ?? [];
+      for (const child of children) {
+        checkCanceled();
+        siblingsAndChildren.push(child);
+      }
+    }
+
+    const ancestors = collectLabelPlacementAncestors(node, guard);
+
+    let bestIconPosition = null;
+    let bestFakeNode = null;
+    let bestScore = Infinity;
+
+    if (node.Icon != null && !IsImage(node)) {
+      if (!node.Icon.PositionFixed()) {
+        const iconPositions = labelPositionPreferences(node);
+        for (const iconPosition of iconPositions) {
+          checkCanceled();
+          const iconSize = IconSize(node, iconPosition);
+          const fakeIconNode = newFakeNode(
+            NodeLabelTopLeft(node, iconPosition, iconSize, iconSize),
+            iconSize,
+            iconSize,
+            null,
+            g,
+          );
+
+          const nodeset = siblingsAndChildren.slice();
+          if (node.Label != null && node.Label.PositionFixed()) {
+            const fixedLabelNode = newFakeNode(
+              NodeLabelTopLeft(node, node.Label.Position, node.Label.Width, node.Label.Height),
+              node.Label.Width,
+              node.Label.Height,
+              node.Label.Text,
+              g,
+            );
+            nodeset.push(fixedLabelNode);
+          }
+
+          const nodeOverlaps = nodeOverlapCount(fakeIconNode, nodeset, 0, guard);
+          const edgeOverlaps = edgeOverlapCount(fakeIconNode, g.Edges, 0, guard);
+          const labelOverlaps = nodeOverlapCount(fakeIconNode, placedFakeNodes, 0, guard);
+          const score = scoreNodeLabelOverlaps(nodeOverlaps, edgeOverlaps, labelOverlaps);
+          if (score < bestScore) {
+            bestIconPosition = iconPosition;
+            bestFakeNode = fakeIconNode;
+            bestScore = score;
+            if (score === 0) {
+              break;
+            }
+          }
+        }
+      } else {
+        const iconSize = IconSize(node, node.Icon.Position);
+        const fakeIconNode = newFakeNode(
+          NodeLabelTopLeft(node, node.Icon.Position, iconSize, iconSize),
+          iconSize,
+          iconSize,
+          null,
+          g,
+        );
+        bestFakeNode = fakeIconNode;
+        bestIconPosition = node.Icon.Position;
+      }
+      checkCanceled();
+      placedFakeNodes.push(bestFakeNode);
+      node.Icon.Position = bestIconPosition;
+    }
+
+    if (node.Label == null || node.Label.PositionFixed()) {
+      continue;
+    }
+
+    if (node.Icon != null && !IsImage(node)) {
+      const iconSize = IconSize(node, node.Icon.Position);
+      const fakeIconNode = newFakeNode(
+        NodeLabelTopLeft(node, node.Icon.Position, iconSize, iconSize),
+        iconSize,
+        iconSize,
+        null,
+        g,
+      );
+      siblingsAndChildren.push(fakeIconNode);
+    }
+
+    bestScore = Infinity;
+    let bestLabelPosition = null;
+    bestFakeNode = null;
+    const tranches = labelPositionPreferenceTranches(node);
+    for (const tranch of tranches) {
+      checkCanceled();
+      let tiedBest = [];
+      let tiedBestFakeLabelNodes = [];
+      for (const labelPosition of tranch) {
+        checkCanceled();
+        if (labelPosition === bestIconPosition) {
+          continue;
+        }
+        const fakeLabelNode = newFakeNode(
+          NodeLabelTopLeft(node, labelPosition, node.Label.Width, node.Label.Height),
+          node.Label.Width,
+          node.Label.Height,
+          node.Label.Text,
+          g,
+        );
+        if (!IsOutside(labelPosition)) {
+          PadLabelCandidate(fakeLabelNode, LABEL_PADDING);
+          if (!LabelBoxFits(node.innerBox(), fakeLabelNode.Box)) {
+            continue;
+          }
+          PadLabelCandidate(fakeLabelNode, -LABEL_PADDING);
+        }
+
+        const siblingOverlaps = nodeOverlapCount(fakeLabelNode, siblingsAndChildren, LABEL_PADDING, guard);
+        const ancestorOverlaps = partialNodeOverlapCount(fakeLabelNode, ancestors, LABEL_PADDING, guard);
+        const edgeOverlaps = edgeOverlapCount(fakeLabelNode, g.Edges, LABEL_PADDING - 1, guard);
+        const labelOverlaps = nodeOverlapCount(fakeLabelNode, placedFakeNodes, LABEL_PADDING, guard);
+        const score = scoreNodeLabelOverlaps(siblingOverlaps + ancestorOverlaps, edgeOverlaps, labelOverlaps);
+        if (score < bestScore) {
+          bestLabelPosition = labelPosition;
+          bestFakeNode = fakeLabelNode;
+          bestScore = score;
+          if (IsOutside(labelPosition) && IsOutside(bestLabelPosition)) {
+            tiedBest = [labelPosition];
+            tiedBestFakeLabelNodes = [fakeLabelNode];
+          } else {
+            tiedBest = [];
+            tiedBestFakeLabelNodes = [];
+          }
+        } else if (score === bestScore && compareLabelPositions(node, labelPosition, bestLabelPosition) === 0 && IsOutside(bestLabelPosition) && IsOutside(labelPosition)) {
+          tiedBest.push(labelPosition);
+          tiedBestFakeLabelNodes.push(fakeLabelNode);
+        }
+      }
+
+      if (tiedBest.length > 1) {
+        let bestTiebreakScore = Infinity;
+        let bestTieBreakLabelPosition = null;
+        let bestTieBreakFakeNode = null;
+        for (let i = 0; i < tiedBest.length; i++) {
+          const labelPosition = tiedBest[i];
+          checkCanceled();
+          const tiebreakFakeLabelNode = newFakeNode(
+            NodeLabelTopLeft(node, labelPosition, node.Label.Width * 2, node.Label.Height * 2),
+            node.Label.Width * 2,
+            node.Label.Height * 2,
+            node.Label.Text,
+            g,
+          );
+          if (!IsOutside(labelPosition)) {
+            PadLabelCandidate(tiebreakFakeLabelNode, LABEL_PADDING);
+            if (!LabelBoxFits(node.innerBox(), tiebreakFakeLabelNode.Box)) {
+              continue;
+            }
+            PadLabelCandidate(tiebreakFakeLabelNode, -LABEL_PADDING);
+          }
+
+          const siblingOverlaps = nodeOverlapCount(tiebreakFakeLabelNode, siblingsAndChildren, LABEL_PADDING, guard);
+          const ancestorOverlaps = partialNodeOverlapCount(tiebreakFakeLabelNode, ancestors, LABEL_PADDING, guard);
+          const edgeOverlaps = edgeOverlapCount(tiebreakFakeLabelNode, g.Edges, LABEL_PADDING - 1, guard);
+          const labelOverlaps = nodeOverlapCount(tiebreakFakeLabelNode, placedFakeNodes, LABEL_PADDING, guard);
+          const score = scoreNodeLabelOverlaps(siblingOverlaps + ancestorOverlaps, edgeOverlaps, labelOverlaps);
+          if (score < bestTiebreakScore) {
+            bestTiebreakScore = score;
+            bestTieBreakLabelPosition = labelPosition;
+            bestTieBreakFakeNode = tiedBestFakeLabelNodes[i];
+          }
+        }
+        bestLabelPosition = bestTieBreakLabelPosition;
+        bestFakeNode = bestTieBreakFakeNode;
+      }
+    }
+
+    checkCanceled();
+    placedFakeNodes.push(bestFakeNode);
+    node.Label.Position = bestLabelPosition;
+  }
+
+  // Find the best edge label position
+  const sharedSegments = findSharedSegmentsChecked(g.Edges, checkCanceled);
+  const sharedSegmentFakeNodes = [];
+  for (let i = 0; i < sharedSegments.length; i++) {
+    const seg = sharedSegments[i];
+    checkCanceled();
+    const tl = seg.Start.copy();
+    let width = seg.End.X - seg.Start.X;
+    let height = seg.End.Y - seg.Start.Y;
+    if (seg.End.X === seg.Start.X) {
+      width = 2 * SharedSegmentClearance;
+      tl.X -= SharedSegmentClearance;
+    } else {
+      height = 2 * SharedSegmentClearance;
+      tl.Y -= SharedSegmentClearance;
+    }
+    sharedSegmentFakeNodes.push(newFakeNode(tl, width, height, `fake_shared_segment_${i}`, g));
+  }
+
+  let sortedEdges = [];
+  for (const e of g.Edges) {
+    checkCanceled();
+    if (e.Label == null || e.isLoop() || e.Label.PositionFixed()) {
+      continue;
+    }
+    sortedEdges.push(e);
+  }
+
+  sortedEdges = sortLabelPlacementEdges(sortedEdges, guard);
+
+  for (const edge of sortedEdges) {
+    checkCanceled();
+    const [fakeNode, position, percentage] = findBestEdgeLabelPosition(edge, g, placedFakeNodes, sharedSegmentFakeNodes, guard);
+    placedFakeNodes.push(fakeNode);
+    edge.Label.Position = position;
+    edge.LabelPercentage = percentage;
+  }
+
+  guard.check();
 }
 
 /**
