@@ -3,6 +3,7 @@ import { Point } from '../geometry/point.js';
 import { goRound } from '../geometry/math.js';
 import { newBezierCurve } from '../geometry/bezier.js';
 import { STEP_WEDGE_WIDTH } from './constants.js';
+import { PointValueMap } from '../routing/layoutgraph-route-support.js';
 
 // Pinned Go: internal/nodeshape/shape*.go (SnapPointPercentages, PortIndices,
 // MirroredPortIndices, CenterPortIndices, CenterPortIndex) and
@@ -671,4 +672,62 @@ export function nodePorts(node) {
     }
   }
   return ports;
+}
+
+export function nodePortsByOrientation(node, orientation) {
+  const ports = nodePorts(node);
+  const indices = nodePortIndices(node, orientation);
+  const portsForOrientation = [];
+  for (const index of indices) {
+    if (index >= 0 && index < ports.length) {
+      portsForOrientation.push(ports[index]);
+    }
+  }
+  return portsForOrientation;
+}
+
+export function nodeCenterPorts(node) {
+  const ports = nodePorts(node);
+  const indices = nodeCenterPortIndices(node);
+  const centerPorts = [];
+  for (const index of indices) {
+    if (index >= 0 && index < ports.length) {
+      centerPorts.push(ports[index]);
+    }
+  }
+  return centerPorts;
+}
+
+export function nodeMirroredPorts(node) {
+  const ports = nodePorts(node);
+  const portToMirrored = new PointValueMap();
+  const mirroredIndices = nodeMirroredPortIndices(node);
+  if (mirroredIndices) {
+    for (const [index, mirrorIndex] of mirroredIndices.entries()) {
+      if (index >= 0 && index < ports.length && mirrorIndex >= 0 && mirrorIndex < ports.length) {
+        portToMirrored.set(ports[index], ports[mirrorIndex]);
+      }
+    }
+  }
+  return portToMirrored;
+}
+
+export function nodeOverlappingPorts(n1, n2) {
+  const overlaps = new PointValueMap();
+  const n1BelowN2 = typeof n1.isDescendantOf === 'function' ? n1.isDescendantOf(n2) : false;
+  const n2BelowN1 = typeof n2.isDescendantOf === 'function' ? n2.isDescendantOf(n1) : false;
+  if (n1BelowN2 || n2BelowN1) {
+    return overlaps;
+  }
+  const n1Ports = nodePorts(n1);
+  const n2Ports = nodePorts(n2);
+  for (const p1 of n1Ports) {
+    for (const p2 of n2Ports) {
+      if (p1.X === p2.X && p1.Y === p2.Y) {
+        overlaps.set(p1, true);
+        break;
+      }
+    }
+  }
+  return overlaps;
 }

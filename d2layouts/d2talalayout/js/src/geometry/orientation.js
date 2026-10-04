@@ -1,4 +1,3 @@
-// Matches Go's geo.Orientation enum
 export const Orientation = {
   TopLeft: 0,
   TopRight: 1,
@@ -8,7 +7,12 @@ export const Orientation = {
   Right: 5,
   Bottom: 6,
   Left: 7,
+  None: 8,
   NONE: 8,
+  isDiagonal,
+  isHorizontal,
+  isVertical,
+  getOpposite,
 };
 
 export function orientationToString(o) {

@@ -1,4 +1,12 @@
 import { tableColumnPortValue as shapeTableColumnPortValue } from '../shape/table-ports.js';
+import {
+  nodePorts,
+  nodePortsByOrientation,
+  nodeCenterPorts,
+  nodeMirroredPorts,
+  nodeOverlappingPorts,
+  nodePortIndices,
+} from '../shape/ports.js';
 import { Box } from '../geometry/box.js';
 import { euclideanDistance, goRound, truncateDecimals } from '../geometry/math.js';
 import { Point } from '../geometry/point.js';
@@ -683,6 +691,76 @@ export class Node {
 
   IsDescendantOf(maybeAncestor) {
     return this.isDescendantOf(maybeAncestor);
+  }
+
+  ports() {
+    return nodePorts(this);
+  }
+
+  Ports() {
+    return this.ports();
+  }
+
+  portsByOrientation(orientation) {
+    return nodePortsByOrientation(this, orientation);
+  }
+
+  PortsByOrientation(orientation) {
+    return this.portsByOrientation(orientation);
+  }
+
+  centerPorts() {
+    return nodeCenterPorts(this);
+  }
+
+  CenterPorts() {
+    return this.centerPorts();
+  }
+
+  mirroredPorts() {
+    return nodeMirroredPorts(this);
+  }
+
+  MirroredPorts() {
+    return this.mirroredPorts();
+  }
+
+  overlappingPorts(other) {
+    return nodeOverlappingPorts(this, other);
+  }
+
+  OverlappingPorts(other) {
+    return this.overlappingPorts(other);
+  }
+
+  ContainsPoint(point, padding = 0) {
+    return this.containsPoint(point, padding);
+  }
+
+  pointToPortOrientation(point) {
+    if (point == null) return Orientation.NONE;
+    const ports = this.ports();
+    for (const o of [Orientation.Top, Orientation.Right, Orientation.Left, Orientation.Bottom]) {
+      for (const index of nodePortIndices(this, o)) {
+        const port = ports[index];
+        if (port && port.X === point.X && port.Y === point.Y) {
+          return o;
+        }
+      }
+    }
+    return Orientation.NONE;
+  }
+
+  PortOrientation(point) {
+    return this.pointToPortOrientation(point);
+  }
+
+  distanceTo(other, includeSizes) {
+    return distanceBetweenBoxes(nodeDistanceBox(this, includeSizes), nodeDistanceBox(other, includeSizes));
+  }
+
+  DistanceTo(other, includeSizes) {
+    return this.distanceTo(other, includeSizes);
   }
 
   rdfsWalk(applyFunc) {

@@ -1,6 +1,6 @@
 
 import { Point } from '../geometry/point.js';
-import { goRound } from '../geometry/math.js';
+import { euclideanDistance, goRound } from '../geometry/math.js';
 import { Orientation } from '../geometry/orientation.js';
 import { LabelPosition, normalizeLabelPosition, getPointOnRoute, getUnitNormalVector, routeLength } from './label-position.js';
 
@@ -467,5 +467,16 @@ export class Edge {
 
   BoundingBox() {
     return this.bounds();
+  }
+
+  EuclideanDistance() {
+    if (this.From == null || this.To == null || this.From.TopLeft == null || this.To.TopLeft == null) {
+      return 0.0;
+    }
+    return euclideanDistance(this.From.TopLeft.X, this.From.TopLeft.Y, this.To.TopLeft.X, this.To.TopLeft.Y);
+  }
+
+  euclideanDistance() {
+    return this.EuclideanDistance();
   }
 }
