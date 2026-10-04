@@ -111,7 +111,7 @@ describe('Geometry Parity', () => {
         const actual = geo.truncateDecimals(input);
         assertExactFloat(actual, tc.output);
       }
-      
+
       // Explicit negative zero test cases matching Go's float64(int(v*1000))/1000
       expect(Object.is(geo.truncateDecimals(-0.0001), 0)).toBe(true); // Must be +0
       expect(Object.is(geo.truncateDecimals(-0), 0)).toBe(true); // Must be +0
@@ -129,7 +129,7 @@ describe('Geometry Parity', () => {
         const p4 = new geo.Point(inp.x4, inp.y4);
 
         assertExactFloat(p1.distanceToLine(p2, p3), tc.point_distance_to_line);
-        
+
         const ip = geo.intersectionPoint(p1, p2, p3, p4);
         if (tc.point_intersection_point === null) {
           expect(ip).toBeNull();
@@ -154,7 +154,7 @@ describe('Geometry Parity', () => {
 
     test('Point mutation semantics', () => {
       const p1 = new geo.Point(10, 20);
-      
+
       const p2 = p1.copy();
       expect(p2).not.toBe(p1);
       expect(p2.equals(p1)).toBe(true);
@@ -165,11 +165,11 @@ describe('Geometry Parity', () => {
 
       const p4 = p1.interpolate(new geo.Point(20, 30), 0.5);
       expect(p4).not.toBe(p1);
-      
+
       p1.transpose();
       expect(p1.X).toBe(20);
       expect(p1.Y).toBe(10); // Mutated
-      
+
       p1.truncateDecimals();
       expect(p1.X).toBe(20); // Mutated
     });
@@ -193,7 +193,7 @@ describe('Geometry Parity', () => {
       expect(new geo.Point(0, 0).onOrthogonalSegment(a, b)).toBe(true); // inside horizontal
       expect(new geo.Point(-10, 0).onOrthogonalSegment(a, b)).toBe(true); // endpoint
       expect(new geo.Point(-11, 0).onOrthogonalSegment(a, b)).toBe(false); // outside horizontal
-      
+
       const c = new geo.Point(0, -10);
       const d = new geo.Point(0, 10);
       expect(new geo.Point(0, 0).onOrthogonalSegment(c, d)).toBe(true); // inside vertical
@@ -213,20 +213,20 @@ describe('Geometry Parity', () => {
         assertExactFloat(actual.X, expected.x);
         assertExactFloat(actual.Y, expected.y);
       }
-      
+
       // Empty/invalid input contract
       expect(() => geo.getMedianPoint([])).toThrow("getMedianPoint requires at least one point");
       expect(() => geo.getMedianPoint(null)).toThrow("getMedianPoint requires at least one point");
-      
+
       // Explicit JS semantic median tests
       // 1 point
       const p1 = geo.getMedianPoint([new geo.Point(1, 1)]);
       expect(p1.X).toBe(1); expect(p1.Y).toBe(1);
-      
+
       // odd number
       const pOdd = geo.getMedianPoint([new geo.Point(0, 0), new geo.Point(10, 20), new geo.Point(5, 4)]);
       expect(pOdd.X).toBe(5); expect(pOdd.Y).toBe(4);
-      
+
       // even number
       const pEven = geo.getMedianPoint([new geo.Point(0, 0), new geo.Point(10, 20), new geo.Point(5, 4), new geo.Point(2, 2)]);
       // xs: 0, 2, 5, 10 -> median = (2+5)/2 = 3.5
@@ -267,7 +267,7 @@ describe('Geometry Parity', () => {
     test('Vector semantic operations', () => {
       const v = new geo.Vector(3, 4);
       expect(v.length()).toBe(5);
-      
+
       const v2 = v.addLength(5);
       expect(v2.length()).toBe(10);
       expect(v2).not.toBe(v);
@@ -288,14 +288,14 @@ describe('Geometry Parity', () => {
       // In Go, length is 0, so 1/0 = +Inf, and 0 * +Inf = NaN. Both components are NaN.
       expect(Number.isNaN(zu.components[0])).toBe(true);
       expect(Number.isNaN(zu.components[1])).toBe(true);
-      
+
       const deg = new geo.Vector(0, 1).degrees();
       expect(deg).toBeCloseTo(90, 5);
-      
+
       const rev = v.reverse();
       expect(rev.components[0]).toBe(-3);
       expect(rev.components[1]).toBe(-4);
-      
+
       const fromProp = geo.Vector.fromProperties(10, 45); // len 10, angle 45
       expect(fromProp.length()).toBeCloseTo(10, 5);
     });
@@ -313,7 +313,7 @@ describe('Geometry Parity', () => {
         const bounds = s3.getBounds([s4], Math.abs(inp.x4));
         assertExactFloat(bounds[0], tc.segment_get_bounds.floor);
         assertExactFloat(bounds[1], tc.segment_get_bounds.ceil);
-        
+
         expect(s1.overlaps(s2, inp.randBool, Math.abs(inp.x1))).toBe(tc.segment_overlaps);
       }
     });
@@ -321,19 +321,19 @@ describe('Geometry Parity', () => {
     test('Segment explicit semantic tests', () => {
       const s1 = new geo.Segment(new geo.Point(0, 0), new geo.Point(10, 10));
       const s2 = new geo.Segment(new geo.Point(0, 10), new geo.Point(10, 0));
-      
+
       // intersects
       expect(s1.intersects(s2)).toBe(true);
       expect(s1.intersections(s2).length).toBe(1);
-      
+
       const s3 = new geo.Segment(new geo.Point(20, 20), new geo.Point(30, 30));
       expect(s1.intersects(s3)).toBe(false); // extensions would intersect, but segments don't
-      
+
       // collinear overlaps
       const s4 = new geo.Segment(new geo.Point(5, 5), new geo.Point(15, 15));
       // In overlaps(), if not parallel, it's false. Here they are collinear and overlap.
       expect(s1.overlaps(s4, false, geo.PRECISION)).toBe(true);
-      
+
       // parallel, overlapping in X
       const s5 = new geo.Segment(new geo.Point(0, 1), new geo.Point(10, 11));
       // Overlaps() with isHorizontal=false only checks X overlap. Since both span X: 0->10, it's true!
@@ -354,13 +354,13 @@ describe('Geometry Parity', () => {
         const p1 = new geo.Point(inp.x1, inp.y1);
         const p3 = new geo.Point(inp.x3, inp.y3);
         const p4 = new geo.Point(inp.x4, inp.y4);
-        
+
         const b1 = new geo.Box(p1, Math.abs(inp.x2), Math.abs(inp.y2));
         const b2 = new geo.Box(p3, Math.abs(inp.x4), Math.abs(inp.y4));
 
         expect(b1.contains(p4)).toBe(tc.box_contains);
         expect(b1.overlaps(b2)).toBe(tc.box_overlaps);
-        
+
         const s1 = new geo.Segment(new geo.Point(inp.x1, inp.y1), new geo.Point(inp.x2, inp.y2));
         expect(b1.intersects(s1, Math.abs(inp.x3))).toBe(tc.box_intersects);
       }
@@ -368,7 +368,7 @@ describe('Geometry Parity', () => {
 
     test('Box explicit semantic tests', () => {
       const b1 = new geo.Box(new geo.Point(0, 0), 10, 10);
-      
+
       const bc = b1.copy();
       expect(bc).not.toBe(b1);
       expect(bc.TopLeft).not.toBe(b1.TopLeft); // separate points
@@ -388,7 +388,7 @@ describe('Geometry Parity', () => {
       expect(b1.overlaps(bBorderRight)).toBe(false); // strict comparison in Go
 
       const bBorderBottom = new geo.Box(new geo.Point(0, 10), 10, 10);
-      expect(b1.overlaps(bBorderBottom)).toBe(false); 
+      expect(b1.overlaps(bBorderBottom)).toBe(false);
 
       // Contains explicitly
       expect(b1.contains(new geo.Point(5, 5))).toBe(true);
@@ -406,7 +406,7 @@ describe('Geometry Parity', () => {
         geo.Orientation.BottomLeft, geo.Orientation.BottomRight, geo.Orientation.Bottom,
         geo.Orientation.Left, geo.Orientation.Right, geo.Orientation.NONE
       ];
-      
+
       for (const o of all) {
         const opp = geo.getOpposite(o);
         expect(geo.getOpposite(opp)).toBe(o); // opp(opp(x)) == x
@@ -420,7 +420,7 @@ describe('Geometry Parity', () => {
       expect(geo.sameSide(geo.Orientation.Top, geo.Orientation.Top)).toBe(true);
       expect(geo.sameSide(geo.Orientation.TopLeft, geo.Orientation.TopRight)).toBe(true);
       expect(geo.sameSide(geo.Orientation.Top, geo.Orientation.Bottom)).toBe(false);
-      
+
       expect(geo.isDiagonal(geo.Orientation.TopLeft)).toBe(true);
       expect(geo.isDiagonal(geo.Orientation.Top)).toBe(false);
 
@@ -490,7 +490,7 @@ describe('Geometry Parity', () => {
           const v = specialValues[idx];
           const p = new geo.Point(v, v);
           p.truncateFloat32();
-          
+
           assertExactFloat(p.X, special[key][0]);
           assertExactFloat(p.Y, special[key][1]);
         } else if (key.startsWith('radians_')) {
@@ -499,7 +499,7 @@ describe('Geometry Parity', () => {
           const v = specialValues[idx];
           const vec = new geo.Vector(v, 1.0);
           const rad = vec.radians();
-          
+
           assertExactFloat(rad, special[key]);
         }
       }

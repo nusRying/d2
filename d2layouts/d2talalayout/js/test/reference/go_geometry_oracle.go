@@ -131,7 +131,7 @@ func testGoRound() []map[string]interface{} {
 
 func testMedian() []map[string]interface{} {
 	res := []map[string]interface{}{}
-	
+
 	// Case 1: 1 point
 	pts1 := geo.Points{geo.NewPoint(1, 1)}
 	res = append(res, map[string]interface{}{"name": "1 point", "points": toPointObjArray(pts1), "output": toPointObj(pts1.GetMedian())})

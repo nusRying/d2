@@ -12,7 +12,7 @@ const oracle = JSON.parse(readFileSync(oracleFile, 'utf8'))
 
 function checkOracle(name, setup) {
   const goRes = oracle.scenarios[name]
-  
+
   let graph
   try {
     graph = setup()
@@ -70,7 +70,7 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       c1.Container = container
       c2.Container = container
       c3.Container = container
-      
+
       g.addNodeToContainer(null, container)
       g.addNodeToContainer(container, c1)
       g.addNodeToContainer(container, c2)
@@ -194,7 +194,7 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       g.addNodeToContainer(container, c2)
       g.addNodeToContainer(container, c3)
       g.addNodeToContainer(container, c4)
-      
+
       c1.Edges = [new Edge(c1, uncle2), new Edge(c1, uncle3)]
       c2.Edges = [new Edge(c2, uncle2)]
       c3.Edges = [new Edge(c3, uncle3)]
@@ -217,7 +217,7 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       g.addNodeToContainer(container, c1)
       g.addNodeToContainer(container, c2)
       g.addNodeToContainer(container, c3)
-      
+
       c1.Edges = [new Edge(c1, uncle1), new Edge(c1, uncle2)]
       c2.Edges = [new Edge(c2, uncle1)]
       c3.Edges = [new Edge(c3, uncle2)]
@@ -288,17 +288,17 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       c2.Container = c1
       const uncle = new Node('100')
       uncle.Container = c1
-      
+
       const child1 = new Node('1')
       const child2 = new Node('2')
       child1.Container = c2; child2.Container = c2
-      
+
       g.addNodeToContainer(null, c1)
       g.addNodeToContainer(c1, c2)
       g.addNodeToContainer(c1, uncle)
       g.addNodeToContainer(c2, child1)
       g.addNodeToContainer(c2, child2)
-      
+
       child1.Edges = [new Edge(child1, uncle)]
       child2.Edges = [new Edge(child2, uncle)]
       return g
@@ -311,19 +311,19 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       const cont1 = new Node('10')
       const cont2 = new Node('20')
       const uncle = new Node('100')
-      
+
       const c1 = new Node('1'); c1.Container = cont1
       const c2 = new Node('2'); c2.Container = cont1
       const c3 = new Node('3'); c3.Container = cont2
       const c4 = new Node('4'); c4.Container = cont2
-      
+
       g.addNodeToContainer(null, cont1)
       g.addNodeToContainer(cont1, c1)
       g.addNodeToContainer(cont1, c2)
       g.addNodeToContainer(null, cont2)
       g.addNodeToContainer(cont2, c3)
       g.addNodeToContainer(cont2, c4)
-      
+
       c1.Edges = [new Edge(c1, uncle)]
       c2.Edges = [new Edge(c2, uncle)]
       c3.Edges = [new Edge(c3, uncle)]
@@ -358,7 +358,7 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       return g
     })
   })
-  
+
   it('R_preexisting_common', () => {
     checkOracle('R_preexisting_common', () => {
       const g = new Graph()
@@ -373,7 +373,7 @@ describe('CommonUncleSiblings Oracle Replay', () => {
       g.addNodeToContainer(container, c2)
       c1.Edges = [new Edge(c1, uncle)]
       c2.Edges = [new Edge(c2, uncle)]
-      
+
       g.CommonUncleSiblings = new Map()
       return g
     })

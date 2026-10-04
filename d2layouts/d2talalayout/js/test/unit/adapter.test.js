@@ -11,12 +11,12 @@ describe("ELK Adapter", () => {
     const graph = elkToTalaGraph(simpleChain);
     expect(graph.ID).toBe("root");
     expect(graph.Nodes.length).toBe(3);
-    
+
     const findNode = (id) => graph.Nodes.find(n => n.D2ID === id);
     const a = findNode("a");
     const b = findNode("b");
     const c = findNode("c");
-    
+
     expect(a).toBeDefined();
     expect(b).toBeDefined();
     expect(c).toBeDefined();
@@ -42,7 +42,7 @@ describe("ELK Adapter", () => {
     // Root nodes are nodes with Container == null
     const rootNodes = graph.Nodes.filter(n => n.Container === null);
     expect(rootNodes.length).toBe(2);
-    
+
     const findNode = (id) => graph.Nodes.find(n => n.D2ID === id);
     const container = findNode("container");
     const a = findNode("a");
@@ -67,7 +67,7 @@ describe("ELK Adapter", () => {
     expect(emptyGraph.Nodes.length).toBe(0);
     expect(emptyGraph.Edges.length).toBe(0);
   });
-  
+
   it("should accept an empty-string root ID", () => {
     const graph = elkToTalaGraph({ id: "", children: [] });
     expect(graph.ID).toBe("");
@@ -165,7 +165,7 @@ describe("ELK Adapter", () => {
 
   it("should update geometry and edge routes during round-trip", () => {
     const graph = elkToTalaGraph(metadataPreservation);
-    
+
     // Mutate geometry in TALA graph
     const findNode = (id) => graph.Nodes.find(n => n.D2ID === id);
     const n = findNode("a");
@@ -173,10 +173,10 @@ describe("ELK Adapter", () => {
     n.TopLeft.X = 500;
     n.TopLeft.Y = 500;
     n.Width = 1000;
-    
+
     const findEdge = (id) => graph.Edges.find(e => e.D2ID === id);
     const e1 = findEdge("e1");
-    
+
     // Test multi-section route assignment
     e1.route = [
       { startPoint: {x:0, y:0}, endPoint: {x: 50, y: 50}, bendPoints: [{x: 25, y: 25}] },
@@ -184,19 +184,19 @@ describe("ELK Adapter", () => {
     ];
 
     const output = talaToElkGraph(graph);
-    
+
     const outN = output.children.find(c => c.id === "a");
     // Since it's child of root, relative === absolute
     expect(outN.x).toBe(500);
     expect(outN.y).toBe(500);
     expect(outN.width).toBe(1000);
-    
+
     const outE1 = output.edges.find(e => e.id === "e1");
     expect(outE1.sections).toBeDefined();
     expect(outE1.sections.length).toBe(2);
     expect(outE1.sections[0].bendPoints[0].x).toBe(25);
     expect(outE1.sections[1].endPoint.x).toBe(100);
-    
+
     // Ensure that patching routes didn't destruct other edge metadata
     expect(outE1.layoutOptions["elk.edgeRouting"]).toBe("ORTHOGONAL");
   });
@@ -205,26 +205,26 @@ describe("ELK Adapter", () => {
     const originalInput = JSON.parse(JSON.stringify(portsFixture));
     const graph = elkToTalaGraph(originalInput);
     const clonedGraph = cloneGraph(graph);
-    
+
     const findNode = (g, id) => g.Nodes.find(n => n.D2ID === id);
     const table = findNode(graph, "table");
     const clonedTable = findNode(clonedGraph, "table");
-    
+
     expect(table).not.toBe(clonedTable);
-    
+
     // Node elkData isolation
     expect(table.elkData).toBeDefined();
     expect(clonedTable.elkData).toEqual(table.elkData);
     expect(clonedTable.elkData).not.toBe(table.elkData);
-    
+
     const findEdge = (g, id) => g.Edges.find(e => e.D2ID === id);
     const e1 = findEdge(graph, "e1");
     const clonedE1 = findEdge(clonedGraph, "e1");
-    
+
     expect(e1).not.toBe(clonedE1);
     expect(clonedE1.From).toBe(clonedTable);
     expect(clonedE1.From).not.toBe(table);
-    
+
     expect(clonedTable.Edges.includes(clonedE1)).toBe(true);
     expect(clonedTable.Edges.includes(e1)).toBe(false);
 

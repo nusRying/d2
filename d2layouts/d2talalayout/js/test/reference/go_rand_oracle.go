@@ -77,12 +77,12 @@ func main() {
 
 	for _, s := range seeds {
 		rng := rand.New(rand.NewSource(s))
-		
+
 		int63Vals := make([]string, 20)
 		for i := 0; i < 20; i++ {
 			int63Vals[i] = fmt.Sprintf("%d", rng.Int63())
 		}
-		
+
 		rng2 := rand.New(rand.NewSource(s))
 		float64Bits := make([]string, 20)
 		for i := 0; i < 20; i++ {
@@ -99,7 +99,7 @@ func main() {
 	}
 
 	bounds := []int64{1, 2, 3, 10, 1024, 2147483647, 2147483648, 4611686018427387905, 9223372036854775807}
-	
+
 	for _, s := range seeds {
 		rng := rand.New(rand.NewSource(s))
 		vals := make([]string, len(bounds))
@@ -120,12 +120,12 @@ func main() {
 	mixedRun := MixedRunResult{
 		Seed: fmt.Sprintf("%d", mixedSeed),
 	}
-	
+
 	addMixed := func(typ string, val string) {
 		mixedRun.Types = append(mixedRun.Types, typ)
 		mixedRun.Values = append(mixedRun.Values, val)
 	}
-	
+
 	addMixed("Int63", fmt.Sprintf("%d", mixedRng.Int63()))
 	addMixed("Float64Bits", fmt.Sprintf("%016x", math.Float64bits(mixedRng.Float64())))
 	addMixed("Int63n(10)", fmt.Sprintf("%d", mixedRng.Int63n(10)))
@@ -143,7 +143,7 @@ func main() {
 	cValue := cRng.Int63n(cBound)
 	draws := cSource.draws
 	cNext := cRng.Int63()
-	
+
 	fixture.RejectionProof = RejectionProof{
 		Seed:        "1",
 		Bound:       fmt.Sprintf("%d", cBound),
@@ -156,7 +156,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	if len(os.Args) > 1 {
 		err = os.WriteFile(os.Args[1], data, 0644)
 		if err != nil {

@@ -62,7 +62,7 @@ func main() {
 	g6.AddNodeUnchecked(n19)
 	g6.AddNewNodeToContainer(n19, n20)
 	g6.AddNewNodeToContainer(n20, n21)
-	
+
 	outData.Cases["NodeLevel"] = map[string]interface{}{
 		"TopLevel":   n19.Level(),
 		"Child":      n20.Level(),
@@ -154,11 +154,11 @@ func main() {
 	g7.AddNodeUnchecked(n23)
 	g7.AddNodeUnchecked(n24)
 	g7.AddNodeUnchecked(n25)
-	
+
 	g7.Connect(n22, n23)
 	g7.Connect(n22, n24)
 	g7.Connect(n22, n22) // self loop
-	
+
 	eToB := n22.ConnectionTo(n23)
 	eToC := n22.ConnectionTo(n24)
 	eToA := n22.ConnectionTo(n22)
@@ -216,7 +216,7 @@ func main() {
 	n16 := &layoutgraph.Node{ID: 16}
 	g3.AddNodeUnchecked(n15)
 	g3.AddNodeUnchecked(n16)
-	
+
 	e6.Reconnect(n15, false) // Reconnect From n8 to n15
 	e6.Reconnect(n16, true)  // Reconnect To n9 to n16
 
