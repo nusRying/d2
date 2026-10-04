@@ -1,7 +1,7 @@
 # ADR-051: Engine, Multi-Seed Selection and Public ELK Layout API
 
 ## Status
-Implemented — awaiting Slice 50 review
+Accepted
 
 (ADR numbers and migration slice numbers are independent; this ADR belongs to
 Slice 50, the final migration slice.)
