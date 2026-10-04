@@ -2,7 +2,7 @@
 
 ## Status
 
-Implemented — awaiting Slice 49 review
+Accepted
 
 ## Authority and Scope
 

@@ -254,6 +254,114 @@ func s50Cases() []struct {
 	}
 }
 
+type s50CompoundCase struct {
+	Name       string      `json:"name"`
+	Spec       s50Spec     `json:"spec"`
+	Seed       int64       `json:"seed"`
+	Changed    bool        `json:"changed"`
+	Error      string      `json:"error"`
+	Detours    [2]int      `json:"detours"`
+	Candidate  *s50Result  `json:"candidate,omitempty"`
+	Preserved  *s50Result  `json:"preserved,omitempty"`
+}
+
+func s50Capture(out *layoutgraph.Graph) s50Result {
+	res := s50Result{}
+	for _, n := range out.Nodes {
+		nr := s50NodeResult{ID: uint64(n.ID), W: n.Width, H: n.Height}
+		if n.TopLeft != nil {
+			nr.X, nr.Y = n.TopLeft.X, n.TopLeft.Y
+		}
+		if n.Label != nil {
+			nr.LabelPos = int(n.Label.Position)
+		}
+		res.Nodes = append(res.Nodes, nr)
+	}
+	for _, e := range out.Edges {
+		er := s50EdgeResult{ID: uint64(e.ID), IsCurve: e.IsCurve, LabelPercentage: e.LabelPercentage, Points: []float64{}}
+		for _, p := range e.Points {
+			er.Points = append(er.Points, p.X, p.Y)
+		}
+		if e.Label != nil {
+			er.LabelPos = int(e.Label.Position)
+		}
+		res.Edges = append(res.Edges, er)
+	}
+	return res
+}
+
+func s50CompoundSpecs() []struct {
+	name string
+	spec s50Spec
+} {
+	group := func(id uint64, children ...uint64) []s50Node {
+		nodes := []s50Node{{ID: id, W: 0, H: 0}}
+		for _, c := range children {
+			nodes = append(nodes, s50Node{ID: c, W: 80, H: 40, Container: id})
+		}
+		return nodes
+	}
+	var three []s50Node
+	three = append(three, group(1, 11, 12, 13)...)
+	three = append(three, group(2, 21, 22)...)
+	three = append(three, s50Node{ID: 3, W: 100, H: 50}, s50Node{ID: 4, W: 100, H: 50})
+	threeEdges := []s50Edge{
+		{ID: 501, From: 11, To: 12, Directed: true}, {ID: 502, From: 12, To: 13, Directed: true},
+		{ID: 503, From: 21, To: 22, Directed: true}, {ID: 504, From: 13, To: 21, Directed: true},
+		{ID: 505, From: 3, To: 11, Directed: true}, {ID: 506, From: 22, To: 4, Directed: true},
+	}
+	var fixed []s50Node
+	fixed = append(fixed, three...)
+	fixed[len(fixed)-1].Fixed = true
+	plain := []s50Node{{ID: 1, W: 100, H: 50}, {ID: 2, W: 100, H: 50}, {ID: 3, W: 100, H: 50}}
+	return []struct {
+		name string
+		spec s50Spec
+	}{
+		{"compound-groups", s50Spec{Nodes: three, Edges: threeEdges}},
+		{"compound-groups-right", s50Spec{Nodes: three, Edges: threeEdges, Directions: []s50Direction{{Container: 0, Orientation: int(geo.Right)}}}},
+		{"compound-skip-fixed", s50Spec{Nodes: fixed, Edges: threeEdges}},
+		{"compound-skip-no-container", s50Spec{Nodes: plain, Edges: []s50Edge{{ID: 601, From: 1, To: 2}, {ID: 602, From: 2, To: 3}}}},
+	}
+}
+
+func s50CompoundCases(t *testing.T) []s50CompoundCase {
+	var out []s50CompoundCase
+	for _, sc := range s50CompoundSpecs() {
+		c := s50CompoundCase{Name: sc.name, Spec: sc.spec, Seed: 1}
+		ordinary, err := Layout(context.Background(), sc.spec.build(), LayoutOptions{Seed: 1})
+		if err != nil {
+			t.Fatalf("%s: %v", sc.name, err)
+		}
+		candidate, err := CompoundCandidate(context.Background(), ordinary)
+		c.Error = errString(err)
+		if err == nil {
+			c.Changed = candidate != ordinary
+			c.Detours = [2]int{compoundCrossAxisDetours(ordinary), compoundCrossAxisDetours(candidate)}
+			if c.Changed {
+				captured := s50Capture(candidate)
+				c.Candidate = &captured
+				preserved, err := PreserveCompoundRoutes(context.Background(), ordinary, candidate)
+				if err != nil {
+					c.Error = "preserve: " + err.Error()
+				} else {
+					p := s50Capture(preserved)
+					c.Preserved = &p
+				}
+			}
+		}
+		out = append(out, c)
+	}
+	return out
+}
+
+func errString(err error) string {
+	if err == nil {
+		return ""
+	}
+	return err.Error()
+}
+
 func TestSlice50EngineOracle(t *testing.T) {
 	if testing.Short() {
 		t.Skip("oracle")
@@ -279,7 +387,7 @@ func TestSlice50EngineOracle(t *testing.T) {
 		}
 		cases = append(cases, c)
 	}
-	encoded, err := json.Marshal(map[string]any{"cases": cases})
+	encoded, err := json.Marshal(map[string]any{"cases": cases, "compound": s50CompoundCases(t)})
 	if err != nil {
 		t.Fatal(err)
 	}

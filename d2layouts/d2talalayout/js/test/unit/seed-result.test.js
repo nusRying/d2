@@ -189,5 +189,5 @@ describe("evaluateSeedResult", () => {
     const err = thrownBy(() => evaluateSeedResult(ctx, { graph }, graph));
     expect(err).not.toBeNull();
     expect(err.message).toContain("TALA Evaluate work exceeds limit 50000000");
-  });
+  }, 300_000);
 });

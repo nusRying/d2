@@ -11,6 +11,8 @@ import { Point } from '../../src/geometry/point.js';
 import { backgroundWorkContext } from '../../src/limits/work-context.js';
 import { EvaluateWithArea } from '../../src/quality/scoring.js';
 import { Layout, LayoutOptions } from '../../src/engine/pipeline.js';
+import { CompoundCandidate, compoundCrossAxisDetours } from '../../src/engine/compound-candidate.js';
+import { PreserveCompoundRoutes } from '../../src/engine/compound-routes.js';
 
 const it = (name, fn) => bunIt(name, fn, 300_000);
 const fixture = JSON.parse(readFileSync(new URL('../fixtures/go-slice50-engine-reference.json', import.meta.url), 'utf8'));
@@ -106,5 +108,40 @@ describe('Slice 50 — engine.Layout matches pinned Go', () => {
         expect(runCase(c.spec, expected.seed)).toEqual(actual);
       });
     }
+  }
+});
+
+function capture(out) {
+  const result = { seed: 0, error: '', nodes: [], edges: [], area: 0, penalty: 0 };
+  for (const n of out.Nodes) {
+    result.nodes.push({ id: Number(n.ID), x: n.TopLeft?.X ?? 0, y: n.TopLeft?.Y ?? 0, w: n.Width, h: n.Height, labelPos: n.Label != null ? n.Label.Position : 0 });
+  }
+  for (const e of out.Edges) {
+    const points = [];
+    for (const p of e.Points) points.push(p.X, p.Y);
+    result.edges.push({ id: Number(e.ID), points, isCurve: Boolean(e.IsCurve), labelPos: e.Label != null ? e.Label.Position : 0, labelPercentage: e.LabelPercentage });
+  }
+  return result;
+}
+
+describe('Slice 50 — compound candidate and route preservation match pinned Go', () => {
+  for (const c of fixture.compound) {
+    it(c.name, () => {
+      const ordinary = Layout(bg, buildEngineSpec(c.spec), new LayoutOptions({ Seed: BigInt(c.seed) }));
+      const before = JSON.stringify(capture(ordinary));
+      const candidate = CompoundCandidate(bg, ordinary);
+      expect(JSON.stringify(capture(ordinary))).toBe(before);
+      expect(candidate !== ordinary).toBe(c.changed);
+      expect([compoundCrossAxisDetours(ordinary), compoundCrossAxisDetours(candidate)]).toEqual(c.detours);
+      if (c.changed) {
+        expect(capture(candidate)).toEqual(normalizeExpected(c.candidate));
+        const candidateBefore = JSON.stringify(capture(candidate));
+        const preserved = PreserveCompoundRoutes(bg, ordinary, candidate);
+        expect(preserved).not.toBe(candidate);
+        expect(JSON.stringify(capture(candidate))).toBe(candidateBefore);
+        expect(JSON.stringify(capture(ordinary))).toBe(before);
+        expect(capture(preserved)).toEqual(normalizeExpected(c.preserved));
+      }
+    });
   }
 });

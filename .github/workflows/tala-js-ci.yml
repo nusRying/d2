@@ -10,6 +10,8 @@ on:
       - "d2layouts/d2talalayout/js/test/**"
       - "d2layouts/d2talalayout/js/package.json"
       - "d2layouts/d2talalayout/internal/**"
+      - "d2layouts/d2talalayout/*.go"
+      - "d2layouts/d2talalayout/js/README.md"
       - "go.mod"
       - "go.sum"
   pull_request:
@@ -19,6 +21,8 @@ on:
       - "d2layouts/d2talalayout/js/test/**"
       - "d2layouts/d2talalayout/js/package.json"
       - "d2layouts/d2talalayout/internal/**"
+      - "d2layouts/d2talalayout/*.go"
+      - "d2layouts/d2talalayout/js/README.md"
       - "go.mod"
       - "go.sum"
   workflow_dispatch:
@@ -111,6 +115,80 @@ jobs:
 
       - name: Test quality
         run: go test -count=1 ./d2layouts/d2talalayout/internal/quality/...
+
+  go-engine:
+    name: Engine Go tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: ./go.mod
+          cache: true
+
+      - name: Test engine
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/engine/...
+
+  go-toplevel:
+    name: Top-level d2talalayout Go tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: ./go.mod
+          cache: true
+
+      - name: Test d2talalayout tree
+        run: go test -count=1 ./d2layouts/d2talalayout/...
+
+      - name: Normal tests leave fixtures untouched
+        run: test -z "$(git status --porcelain)"
+
+  browser:
+    name: Browser package smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: d2layouts/d2talalayout/js
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: "1.4.2"
+
+      - name: Package root loads and lays out a graph
+        run: |
+          bun -e '
+            import { layout } from "./src/index.js";
+            if (typeof layout !== "function") process.exit(1);
+            const result = await layout({ id: "root", children: [{ id: "a", width: 100, height: 50 }, { id: "b", width: 100, height: 50 }], edges: [{ id: "e1", sources: ["a"], targets: ["b"] }] }, { seed: 1 });
+            const section = result.edges[0].sections[0];
+            if (!Number.isFinite(result.children[1].x) || !Number.isFinite(section.endPoint.x)) process.exit(1);
+            JSON.stringify(result);
+          '
+
+      - name: Bundle for the browser without Node polyfills
+        run: bun build ./src/index.js --target browser --outfile "$RUNNER_TEMP/tala-js-browser.js"
+
+      - name: Bundle contains no Node built-ins or Math.random
+        run: |
+          if grep -nE 'from "node:|require\("(fs|path|crypto|child_process|worker_threads)"\)|Math\.random' "$RUNNER_TEMP/tala-js-browser.js"; then
+            echo "browser bundle references a Node built-in or Math.random"
+            exit 1
+          fi
 
   hygiene:
     name: Diff hygiene
