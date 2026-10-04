@@ -1,0 +1,426 @@
+{
+  "version": "slice-47-routing-core-v1",
+  "route_edges": [
+    {
+      "name": "empty",
+      "success": true
+    },
+    {
+      "name": "straight-edge",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 130,
+            "y": 140
+          },
+          {
+            "x": 130,
+            "y": 300
+          }
+        ]
+      }
+    },
+    {
+      "name": "chain",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 300,
+            "y": 120
+          }
+        ],
+        "1": [
+          {
+            "x": 360,
+            "y": 120
+          },
+          {
+            "x": 500,
+            "y": 120
+          }
+        ]
+      }
+    },
+    {
+      "name": "cycle",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 300,
+            "y": 120
+          }
+        ],
+        "1": [
+          {
+            "x": 330,
+            "y": 140
+          },
+          {
+            "x": 330,
+            "y": 300
+          }
+        ],
+        "2": [
+          {
+            "x": 300,
+            "y": 320
+          },
+          {
+            "x": 160,
+            "y": 320
+          }
+        ],
+        "3": [
+          {
+            "x": 130,
+            "y": 300
+          },
+          {
+            "x": 130,
+            "y": 140
+          }
+        ]
+      }
+    },
+    {
+      "name": "l-route",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 130,
+            "y": 140
+          },
+          {
+            "x": 130,
+            "y": 320
+          },
+          {
+            "x": 300,
+            "y": 320
+          }
+        ]
+      }
+    },
+    {
+      "name": "s-route",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 130,
+            "y": 140
+          },
+          {
+            "x": 130,
+            "y": 320
+          },
+          {
+            "x": 300,
+            "y": 320
+          }
+        ]
+      }
+    },
+    {
+      "name": "obstacle-detour",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 100,
+            "y": 120
+          },
+          {
+            "x": 30,
+            "y": 120
+          },
+          {
+            "x": 30,
+            "y": 370
+          },
+          {
+            "x": 100,
+            "y": 370
+          }
+        ]
+      }
+    },
+    {
+      "name": "parallel-edges",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 152,
+            "y": 160
+          },
+          {
+            "x": 152,
+            "y": 300
+          }
+        ],
+        "1": [
+          {
+            "x": 126,
+            "y": 160
+          },
+          {
+            "x": 126,
+            "y": 300
+          }
+        ]
+      }
+    },
+    {
+      "name": "nested-containers",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 130,
+            "y": 140
+          },
+          {
+            "x": 130,
+            "y": 320
+          },
+          {
+            "x": 300,
+            "y": 320
+          }
+        ]
+      }
+    },
+    {
+      "name": "cluster-ports",
+      "success": true,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 125
+          },
+          {
+            "x": 400,
+            "y": 165
+          }
+        ],
+        "1": [
+          {
+            "x": 160,
+            "y": 215
+          },
+          {
+            "x": 400,
+            "y": 175
+          }
+        ]
+      }
+    }
+  ],
+  "route_graph": [
+    {
+      "name": "zero-edge",
+      "success": true,
+      "routing_completed": false,
+      "subgraphs_routed": 0,
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph"
+      }
+    },
+    {
+      "name": "single-subgraph",
+      "success": true,
+      "routing_completed": true,
+      "subgraphs_routed": 1,
+      "edges": {
+        "0": [
+          {
+            "x": 145,
+            "y": 140
+          },
+          {
+            "x": 145,
+            "y": 310
+          },
+          {
+            "x": 300,
+            "y": 310
+          }
+        ]
+      },
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph"
+      }
+    },
+    {
+      "name": "multi-subgraph",
+      "success": true,
+      "routing_completed": true,
+      "subgraphs_routed": 2,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 250,
+            "y": 120
+          }
+        ],
+        "1": [
+          {
+            "x": 160,
+            "y": 320
+          },
+          {
+            "x": 250,
+            "y": 320
+          }
+        ]
+      },
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph",
+        "3": "parent-graph",
+        "4": "parent-graph"
+      }
+    },
+    {
+      "name": "near-linked-graph",
+      "success": true,
+      "routing_completed": true,
+      "subgraphs_routed": 2,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 250,
+            "y": 120
+          }
+        ],
+        "1": [
+          {
+            "x": 510,
+            "y": 120
+          },
+          {
+            "x": 600,
+            "y": 120
+          }
+        ]
+      },
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph",
+        "3": "parent-graph",
+        "4": "parent-graph"
+      }
+    },
+    {
+      "name": "existing-complete-routes",
+      "success": true,
+      "routing_completed": true,
+      "subgraphs_routed": 0,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 300,
+            "y": 120
+          }
+        ]
+      },
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph"
+      }
+    },
+    {
+      "name": "force-reroute-existing",
+      "success": true,
+      "routing_completed": true,
+      "subgraphs_routed": 1,
+      "edges": {
+        "0": [
+          {
+            "x": 160,
+            "y": 120
+          },
+          {
+            "x": 300,
+            "y": 120
+          }
+        ]
+      },
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph"
+      }
+    },
+    {
+      "name": "partial-routes-rejected",
+      "success": false,
+      "routing_completed": true,
+      "subgraphs_routed": 0,
+      "err": "layout invariant violated: graph is partially routed: 1 of 2 edges have routes",
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph",
+        "3": "parent-graph"
+      }
+    },
+    {
+      "name": "subgraph-observer-error",
+      "success": false,
+      "routing_completed": false,
+      "subgraphs_routed": 1,
+      "err": "simulated subgraph observer failure",
+      "node_owners": {
+        "1": "parent-graph",
+        "2": "parent-graph"
+      }
+    }
+  ],
+  "work_budgets": [
+    {
+      "scenario": "route-edges-diagonal",
+      "target": "RouteEdges",
+      "min_work": 285,
+      "pass_work": 285,
+      "fail_work": 284,
+      "fail_err": "TALA route-stage work limit exceeded: TALA EdgeRouting work exceeds limit 284",
+      "restored_ok": true
+    },
+    {
+      "scenario": "route-graph-multi-subgraph",
+      "target": "RouteGraph",
+      "min_work": 25064,
+      "pass_work": 25064,
+      "fail_work": 25063,
+      "fail_err": "TALA route-stage work limit exceeded: TALA EdgeRouting work exceeds limit 25063",
+      "restored_ok": true
+    }
+  ]
+}

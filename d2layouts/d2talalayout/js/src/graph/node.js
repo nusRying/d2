@@ -278,6 +278,30 @@ export class Node {
     return this.Box;
   }
 
+  center() {
+    return this.Box.center();
+  }
+
+  Center() {
+    return this.center();
+  }
+
+  intersections(s) {
+    return this.Box.intersections(s);
+  }
+
+  Intersections(s) {
+    return this.intersections(s);
+  }
+
+  intersects(s, buffer = 0) {
+    return this.Box.intersects(s, buffer);
+  }
+
+  Intersects(s, buffer = 0) {
+    return this.intersects(s, buffer);
+  }
+
   setClusterVessel(value) {
     this.isClusterVessel = Boolean(value);
   }
@@ -592,6 +616,124 @@ export class Node {
     return this.distanceTo(other, includeSizes);
   }
 
+  orientation(otherNode) {
+    if (this.TopLeft == null || otherNode == null || otherNode.TopLeft == null) {
+      return Orientation.None ?? Orientation.NONE;
+    }
+    if ((this.TopLeft.Y + this.Height) < otherNode.TopLeft.Y) {
+      if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.TopLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+        return Orientation.TopRight;
+      }
+      return Orientation.Top;
+    }
+
+    if ((otherNode.TopLeft.Y + otherNode.Height) < this.TopLeft.Y) {
+      if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.BottomLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+        return Orientation.BottomRight;
+      }
+      return Orientation.Bottom;
+    }
+
+    if ((otherNode.TopLeft.X + otherNode.Width) < this.TopLeft.X) {
+      return Orientation.Right;
+    }
+
+    if ((this.TopLeft.X + this.Width) < otherNode.TopLeft.X) {
+      return Orientation.Left;
+    }
+
+    return Orientation.None ?? Orientation.NONE;
+  }
+
+  Orientation(otherNode) {
+    return this.orientation(otherNode);
+  }
+
+  orientationAtPoint(otherNode, point) {
+    if (point == null || otherNode == null || otherNode.TopLeft == null) {
+      return Orientation.None ?? Orientation.NONE;
+    }
+    if ((point.Y + this.Height) < otherNode.TopLeft.Y) {
+      if ((point.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.TopLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < point.X) {
+        return Orientation.TopRight;
+      }
+      return Orientation.Top;
+    }
+
+    if ((otherNode.TopLeft.Y + otherNode.Height) < point.Y) {
+      if ((point.X + this.Width) < otherNode.TopLeft.X) {
+        return Orientation.BottomLeft;
+      }
+      if ((otherNode.TopLeft.X + otherNode.Width) < point.X) {
+        return Orientation.BottomRight;
+      }
+      return Orientation.Bottom;
+    }
+
+    if ((otherNode.TopLeft.X + otherNode.Width) < point.X) {
+      return Orientation.Right;
+    }
+
+    if ((point.X + this.Width) < otherNode.TopLeft.X) {
+      return Orientation.Left;
+    }
+
+    return Orientation.None ?? Orientation.NONE;
+  }
+
+  OrientationAtPoint(otherNode, point) {
+    return this.orientationAtPoint(otherNode, point);
+  }
+
+  ports() {
+    return nodePorts(this);
+  }
+
+  Ports() {
+    return this.ports();
+  }
+
+  portsByOrientation(orientation) {
+    return nodePortsByOrientation(this, orientation);
+  }
+
+  PortsByOrientation(orientation) {
+    return this.portsByOrientation(orientation);
+  }
+
+  centerPorts() {
+    return nodeCenterPorts(this);
+  }
+
+  CenterPorts() {
+    return this.centerPorts();
+  }
+
+  mirroredPorts() {
+    return nodeMirroredPorts(this);
+  }
+
+  MirroredPorts() {
+    return this.mirroredPorts();
+  }
+
+  overlappingPorts(other) {
+    return nodeOverlappingPorts(this, other);
+  }
+
+  OverlappingPorts(other) {
+    return this.overlappingPorts(other);
+  }
+
   // isAdjacentTo reports whether other lies within one cell (sized) or one
   // unit (sizeless) of this node.
   // Pinned Go: layoutgraph.Node.isAdjacentTo (node.go:1122)
@@ -826,6 +968,26 @@ export class Node {
 
   doesOverlapExact(node) {
     return this.Box.overlaps(node.Box);
+  }
+
+  isWithinBounds(tl, br) {
+    if (this.TopLeft.X > br.X) {
+      return false;
+    }
+    if (this.TopLeft.Y > br.Y) {
+      return false;
+    }
+    if (this.TopLeft.X + this.Width < tl.X) {
+      return false;
+    }
+    if (this.TopLeft.Y + this.Height < tl.Y) {
+      return false;
+    }
+    return true;
+  }
+
+  IsWithinBounds(tl, br) {
+    return this.isWithinBounds(tl, br);
   }
 
   translate(dx, dy) {

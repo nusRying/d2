@@ -286,4 +286,5 @@ function computeEdgeOffset(edge) {
 
 export const ComputeOffsets = computeOffsets;
 export const UpdateOffsets = updateOffsets;
-export const Route = route;
+export const Route = routeLoops;
+export { routeLoops };

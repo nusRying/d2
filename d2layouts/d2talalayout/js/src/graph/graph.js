@@ -10,6 +10,12 @@ import {
   newRequestTransaction as _newRequestTransaction,
   newRequestTransactionWithGuard as _newRequestTransactionWithGuard,
 } from './transaction.js';
+import {
+  treeEdgeMap,
+  addIsolatedTreeEdges,
+  splitSubgraphs,
+  splitSubgraphsTracked,
+} from './structural-access.js';
 
 const noopWorkStepper = {
   Step() {},
@@ -344,6 +350,22 @@ export class Graph {
 
   TreeOrder() {
     return this.treeOrder();
+  }
+
+  TreeEdgeMap() {
+    return treeEdgeMap(this);
+  }
+
+  AddIsolatedTreeEdges(isTreeEdge) {
+    return addIsolatedTreeEdges(this, isTreeEdge);
+  }
+
+  SplitSubgraphs(ctx, options) {
+    return splitSubgraphs(ctx, this, options);
+  }
+
+  SplitSubgraphsTracked(ctx, options, work) {
+    return splitSubgraphsTracked(ctx, this, options, work);
   }
 
   sequenceOrder() {

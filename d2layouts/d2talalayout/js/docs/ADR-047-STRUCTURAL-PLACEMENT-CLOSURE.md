@@ -1,7 +1,7 @@
 # ADR-047: Structural Placement Closure
 
 ## Status
-Implemented — awaiting Slice 46 review
+Accepted
 
 ## Context
 Slice 46 closes the structural side of TALA, so routing (Slices 47–48) can run against a fully placed graph. It ports the pinned Go packages `internal/hierarchy`, `internal/trees`, `internal/packing` and `internal/loops`. It also ports the remaining placement algorithms and stage wrappers, `placeNodes`/`Place`, and the dependency-safe preprocessing `Place` needs (`Prepare`, `JoinDistancedClusters`, `graphbounds`, the minimal label model, and the nodeshape port/label-preference subset).
