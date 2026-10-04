@@ -21,7 +21,7 @@ Options considered:
 
 We chose **Option B**.
 
-We will maintain exact architectural and naming parity for the ported geometric primitives. `Point` uses `.X` and `.Y`. `Box` uses `.TopLeft`, `.Width`, and `.Height`. 
+We will maintain exact architectural and naming parity for the ported geometric primitives. `Point` uses `.X` and `.Y`. `Box` uses `.TopLeft`, `.Width`, and `.Height`.
 
 We will rely on the explicitly established ELK Adapter to isolate these internal TALA structures from the public ELK JSON contract. We will NOT maintain two independently mutable coordinate fields or incur getter/setter overhead for properties heavily used in hot paths.
 

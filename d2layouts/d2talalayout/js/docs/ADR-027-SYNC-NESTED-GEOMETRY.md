@@ -4,14 +4,14 @@
 Accepted
 
 ## Context
-TALA orchestrates geometry nested updates through `Graph.SyncNestedGeometry()`. This iterates through every node in `Graph.Nodes` in source order and applies independent sync stages for Container Positioning, Cluster Synchronization (and associated padding correction), and Sequence Synchronization. 
+TALA orchestrates geometry nested updates through `Graph.SyncNestedGeometry()`. This iterates through every node in `Graph.Nodes` in source order and applies independent sync stages for Container Positioning, Cluster Synchronization (and associated padding correction), and Sequence Synchronization.
 
-Since this method acts as an orchestrator of previously approved primitives, strict conformance to the original Go ordering and conditional logic is mandatory to ensure identical final layout geometry. 
+Since this method acts as an orchestrator of previously approved primitives, strict conformance to the original Go ordering and conditional logic is mandatory to ensure identical final layout geometry.
 
 ## Design Parity Decisions
 
 ### 1. Traversal Order
-`SyncNestedGeometry` loops through `Graph.Nodes` using native array iteration (`for (const node of this.Nodes)`), which mirrors Go's `for _, n := range g.Nodes`. No deduplication or reordering occurs. 
+`SyncNestedGeometry` loops through `Graph.Nodes` using native array iteration (`for (const node of this.Nodes)`), which mirrors Go's `for _, n := range g.Nodes`. No deduplication or reordering occurs.
 
 ### 2. Condition Independence
 Unlike mutually exclusive conditionals, the Go code uses three separate `if` blocks for container, cluster, and sequence handling. A single multi-role node will have all applicable stages executed sequentially in exact Go order:

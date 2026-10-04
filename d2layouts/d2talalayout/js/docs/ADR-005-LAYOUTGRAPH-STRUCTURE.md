@@ -7,9 +7,9 @@
 Accepted
 
 ## Context
-TALA (the DAG placement and routing algorithm) operates on an internal graph representation rather than raw D2 AST or ELK JSON. 
+TALA (the DAG placement and routing algorithm) operates on an internal graph representation rather than raw D2 AST or ELK JSON.
 
-In Go, TALA's `layoutgraph` maintains nodes, edges, hierarchies, connection management, tree topologies, clustering states, near topologies, and geometry. Additionally, graph entities are identified using stable `EntityID` (int64) hash values derived from FNV-1a. 
+In Go, TALA's `layoutgraph` maintains nodes, edges, hierarchies, connection management, tree topologies, clustering states, near topologies, and geometry. Additionally, graph entities are identified using stable `EntityID` (int64) hash values derived from FNV-1a.
 
 When porting TALA to JavaScript, we must decide whether to leverage external open source graph structures (like dagre/graphlib) or replicate `layoutgraph` faithfully.
 

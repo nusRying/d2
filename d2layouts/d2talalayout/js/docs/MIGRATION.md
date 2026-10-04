@@ -68,7 +68,7 @@ Based on the Go implementation in `d2layouts/d2talalayout`:
 
 ## Third-Party Provenance and Licensing
 The JavaScript migration retains exact parity with the original Go behaviors. This requires porting specific Go components:
-- **Go math/rand (Slice 02):** The Slice 02 implementation reproduces the portions of Go `math/rand` needed by the current TALA code path: underlying `rngSource` state progression, `Uint64`, `Int63`, `Int63n` and `Float64` behavior. 
+- **Go math/rand (Slice 02):** The Slice 02 implementation reproduces the portions of Go `math/rand` needed by the current TALA code path: underlying `rngSource` state progression, `Uint64`, `Int63`, `Int63n` and `Float64` behavior.
 - **Go geometry (Slice 03):** Slice 03 ports the core `lib/geo` behavior required by the current TALA migration scope and validates selected numeric outputs against a deterministic Go oracle, including exact IEEE-754 comparisons where relevant.
 
 The overall TALA JS project lives in the MPL-2.0 D2 repository. Portions of `go-math-rand.js` are derived from Go standard-library source. Those derived portions retain the Go Authors copyright and BSD attribution. `THIRD_PARTY_NOTICES.txt` records this provenance explicitly. Any modifications to this ported component must preserve the original behavior and comply with the included BSD-style license terms.

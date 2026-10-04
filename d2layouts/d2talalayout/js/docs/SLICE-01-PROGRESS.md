@@ -7,7 +7,7 @@ Establish the JavaScript migration foundation without porting actual TALA layout
 - Inspected the Go `d2talalayout` implementation.
 - Read `ARCHITECTURE.md` and `README.md`.
 - Understood that TALA uses an internal mutable graph during layout and copies it for seeds.
-- D2 graph is only mutated on success. 
+- D2 graph is only mutated on success.
 - Go random number generator determinism is based on `rand.NewSource`.
 
 ## Implementation approach
