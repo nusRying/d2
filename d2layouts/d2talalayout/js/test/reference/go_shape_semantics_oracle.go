@@ -10,10 +10,10 @@ import (
 )
 
 type ShapeOracleOutput struct {
-	Metadata           map[string]string          `json:"metadata"`
-	RecognizedShapes   []ShapeBehaviorCase        `json:"recognizedShapes"`
-	UnsupportedCases   []UnsupportedShapeCase     `json:"unsupportedCases"`
-	SameShapeCases     []SameShapeCase            `json:"sameShapeCases"`
+	Metadata         map[string]string      `json:"metadata"`
+	RecognizedShapes []ShapeBehaviorCase    `json:"recognizedShapes"`
+	UnsupportedCases []UnsupportedShapeCase `json:"unsupportedCases"`
+	SameShapeCases   []SameShapeCase        `json:"sameShapeCases"`
 }
 
 type ShapeBehaviorCase struct {
@@ -26,13 +26,13 @@ type ShapeBehaviorCase struct {
 }
 
 type UnsupportedShapeCase struct {
-	InitialShape     string `json:"initialShape"`
-	AttemptedShape   string `json:"attemptedShape"`
-	ResultShapeType  string `json:"resultShapeType"`
-	IsTable          bool   `json:"isTable"`
-	IsClass          bool   `json:"isClass"`
-	IsSequenceStep   bool   `json:"isSequenceStep"`
-	AspectRatio1     bool   `json:"aspectRatio1"`
+	InitialShape    string `json:"initialShape"`
+	AttemptedShape  string `json:"attemptedShape"`
+	ResultShapeType string `json:"resultShapeType"`
+	IsTable         bool   `json:"isTable"`
+	IsClass         bool   `json:"isClass"`
+	IsSequenceStep  bool   `json:"isSequenceStep"`
+	AspectRatio1    bool   `json:"aspectRatio1"`
 }
 
 type SameShapeCase struct {
@@ -44,9 +44,9 @@ type SameShapeCase struct {
 func main() {
 	out := ShapeOracleOutput{
 		Metadata: map[string]string{
-			"runtimeGoVersion":   runtime.Version(),
-			"d2BaseCommit":       "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
-			"referencePackage":   "github.com/d2lang/d2/d2layouts/d2talalayout/internal/nodeshape",
+			"runtimeGoVersion": runtime.Version(),
+			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+			"referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/nodeshape",
 		},
 		RecognizedShapes: make([]ShapeBehaviorCase, 0),
 		UnsupportedCases: make([]UnsupportedShapeCase, 0),
@@ -110,13 +110,13 @@ func main() {
 		node.SetShape(tc.initial)
 		node.SetShape(tc.attempted)
 		out.UnsupportedCases = append(out.UnsupportedCases, UnsupportedShapeCase{
-			InitialShape:     tc.initial,
-			AttemptedShape:   tc.attempted,
-			ResultShapeType:  node.ShapeType(),
-			IsTable:          node.IsTable(),
-			IsClass:          node.IsClass(),
-			IsSequenceStep:   node.IsSequenceStep(),
-			AspectRatio1:     node.AspectRatio1(),
+			InitialShape:    tc.initial,
+			AttemptedShape:  tc.attempted,
+			ResultShapeType: node.ShapeType(),
+			IsTable:         node.IsTable(),
+			IsClass:         node.IsClass(),
+			IsSequenceStep:  node.IsSequenceStep(),
+			AspectRatio1:    node.AspectRatio1(),
 		})
 	}
 

@@ -21,28 +21,28 @@ type PointJSON struct {
 }
 
 type SizelessOracleFixture struct {
-	OptimizationWorkGuard    []WorkGuardScenarioJSON    `json:"optimizationWorkGuard"`
-	OptimizationShuffle      []ShuffleScenarioJSON      `json:"optimizationShuffle"`
-	PlacementCostSnapshot    []CostSnapshotScenarioJSON `json:"placementCostSnapshot"`
-	PointerSnapshots         []PointerScenarioJSON      `json:"pointerSnapshots"`
-	OptimizerAdjacents       []AdjacentsScenarioJSON    `json:"optimizerAdjacents"`
-	OptimizerMedian          []MedianScenarioJSON       `json:"optimizerMedian"`
-	OptimizerDescendants     []DescendantsScenarioJSON  `json:"optimizerDescendants"`
-	OptimizerMove            []MoveScenarioJSON         `json:"optimizerMove"`
-	OptimizerSwap            []SwapScenarioJSON         `json:"optimizerSwap"`
-	CandidateMovement        []CandMoveScenarioJSON     `json:"candidateMovement"`
-	SizelessSetup            []SetupScenarioJSON        `json:"sizelessSetup"`
-	MedianPoint              []MedianPointScenarioJSON  `json:"medianPoint"`
-	ClosestDistance          []DistanceScenarioJSON     `json:"closestDistance"`
-	PlacementPoints          []PointsScenarioJSON       `json:"placementPoints"`
-	MoveNodeToBest           []MoveToBestScenarioJSON   `json:"moveNodeToBest"`
-	SwapCandidates           []SwapCandScenarioJSON     `json:"swapCandidates"`
-	BestSwap                 []BestSwapScenarioJSON     `json:"bestSwap"`
-	SizelessOptimize         []OptimizeScenarioJSON     `json:"sizelessOptimize"`
-	InitializationCandidates []InitCandScenarioJSON     `json:"initializationCandidates"`
-	InitializeNodes          []InitNodesScenarioJSON              `json:"initializeNodes"`
-	Atomicity                []AtomicityScenarioJSON              `json:"atomicity"`
-	MalformedReachability    []MalformedReachabilityScenarioJSON  `json:"malformedReachability"`
+	OptimizationWorkGuard    []WorkGuardScenarioJSON             `json:"optimizationWorkGuard"`
+	OptimizationShuffle      []ShuffleScenarioJSON               `json:"optimizationShuffle"`
+	PlacementCostSnapshot    []CostSnapshotScenarioJSON          `json:"placementCostSnapshot"`
+	PointerSnapshots         []PointerScenarioJSON               `json:"pointerSnapshots"`
+	OptimizerAdjacents       []AdjacentsScenarioJSON             `json:"optimizerAdjacents"`
+	OptimizerMedian          []MedianScenarioJSON                `json:"optimizerMedian"`
+	OptimizerDescendants     []DescendantsScenarioJSON           `json:"optimizerDescendants"`
+	OptimizerMove            []MoveScenarioJSON                  `json:"optimizerMove"`
+	OptimizerSwap            []SwapScenarioJSON                  `json:"optimizerSwap"`
+	CandidateMovement        []CandMoveScenarioJSON              `json:"candidateMovement"`
+	SizelessSetup            []SetupScenarioJSON                 `json:"sizelessSetup"`
+	MedianPoint              []MedianPointScenarioJSON           `json:"medianPoint"`
+	ClosestDistance          []DistanceScenarioJSON              `json:"closestDistance"`
+	PlacementPoints          []PointsScenarioJSON                `json:"placementPoints"`
+	MoveNodeToBest           []MoveToBestScenarioJSON            `json:"moveNodeToBest"`
+	SwapCandidates           []SwapCandScenarioJSON              `json:"swapCandidates"`
+	BestSwap                 []BestSwapScenarioJSON              `json:"bestSwap"`
+	SizelessOptimize         []OptimizeScenarioJSON              `json:"sizelessOptimize"`
+	InitializationCandidates []InitCandScenarioJSON              `json:"initializationCandidates"`
+	InitializeNodes          []InitNodesScenarioJSON             `json:"initializeNodes"`
+	Atomicity                []AtomicityScenarioJSON             `json:"atomicity"`
+	MalformedReachability    []MalformedReachabilityScenarioJSON `json:"malformedReachability"`
 }
 
 type MalformedReachabilityScenarioJSON struct {
@@ -65,38 +65,38 @@ type WorkGuardScenarioJSON struct {
 }
 
 type ShuffleScenarioJSON struct {
-	Name       string   `json:"name"`
-	Count      int      `json:"count"`
-	Seed       int64    `json:"seed,string"`
-	Result     []int    `json:"result"`
-	NextInt63  int64    `json:"nextInt63,string"`
-	Used       uint64   `json:"used,string"`
-	IsRejected bool     `json:"isRejected,omitempty"`
-	N          int32    `json:"n,omitempty"`
-	Draws      uint64   `json:"draws,string,omitempty"`
-	Chosen     int32    `json:"chosen,omitempty"`
+	Name       string `json:"name"`
+	Count      int    `json:"count"`
+	Seed       int64  `json:"seed,string"`
+	Result     []int  `json:"result"`
+	NextInt63  int64  `json:"nextInt63,string"`
+	Used       uint64 `json:"used,string"`
+	IsRejected bool   `json:"isRejected,omitempty"`
+	N          int32  `json:"n,omitempty"`
+	Draws      uint64 `json:"draws,string,omitempty"`
+	Chosen     int32  `json:"chosen,omitempty"`
 }
 
 type CostSnapshotScenarioJSON struct {
-	Name            string             `json:"name"`
-	InitialCache    map[string]float64 `json:"initialCache,omitempty"`
-	CrossingCost    float64            `json:"crossingCost"`
-	TurnCost        float64            `json:"turnCost"`
-	NonCenterPort   float64            `json:"nonCenterPort"`
-	MutateBefore    bool               `json:"mutateBefore"`
-	DisabledCache   bool               `json:"disabledCache,omitempty"`
-	RestoredCache   map[string]float64 `json:"restoredCache,omitempty"`
-	RestoredCrossing float64           `json:"restoredCrossing"`
-	RestoredTurn    float64            `json:"restoredTurn"`
-	RestoredPort    float64            `json:"restoredPort"`
+	Name             string             `json:"name"`
+	InitialCache     map[string]float64 `json:"initialCache,omitempty"`
+	CrossingCost     float64            `json:"crossingCost"`
+	TurnCost         float64            `json:"turnCost"`
+	NonCenterPort    float64            `json:"nonCenterPort"`
+	MutateBefore     bool               `json:"mutateBefore"`
+	DisabledCache    bool               `json:"disabledCache,omitempty"`
+	RestoredCache    map[string]float64 `json:"restoredCache,omitempty"`
+	RestoredCrossing float64            `json:"restoredCrossing"`
+	RestoredTurn     float64            `json:"restoredTurn"`
+	RestoredPort     float64            `json:"restoredPort"`
 }
 
 type PointerScenarioJSON struct {
-	Name        string     `json:"name"`
-	Initial     *PointJSON `json:"initial,omitempty"`
-	MutatedX    float64    `json:"mutatedX"`
-	MutatedY    float64    `json:"mutatedY"`
-	Restored    *PointJSON `json:"restored,omitempty"`
+	Name     string     `json:"name"`
+	Initial  *PointJSON `json:"initial,omitempty"`
+	MutatedX float64    `json:"mutatedX"`
+	MutatedY float64    `json:"mutatedY"`
+	Restored *PointJSON `json:"restored,omitempty"`
 }
 
 type AdjacentsScenarioJSON struct {
@@ -117,9 +117,9 @@ type MedianScenarioJSON struct {
 }
 
 type DescendantsScenarioJSON struct {
-	Name           string   `json:"name"`
-	RootID         string   `json:"rootId"`
-	DescendantIDs  []string `json:"descendantIds"`
+	Name          string   `json:"name"`
+	RootID        string   `json:"rootId"`
+	DescendantIDs []string `json:"descendantIds"`
 }
 
 type MoveScenarioJSON struct {
@@ -162,11 +162,11 @@ type MedianPointScenarioJSON struct {
 }
 
 type DistanceScenarioJSON struct {
-	Name     string     `json:"name"`
-	NodeID   string     `json:"nodeId"`
-	MedianP  PointJSON  `json:"medianPoint"`
-	Distance float64    `json:"distance"`
-	Error    string     `json:"error,omitempty"`
+	Name     string    `json:"name"`
+	NodeID   string    `json:"nodeId"`
+	MedianP  PointJSON `json:"medianPoint"`
+	Distance float64   `json:"distance"`
+	Error    string    `json:"error,omitempty"`
 }
 
 type PointsScenarioJSON struct {
@@ -200,21 +200,21 @@ type BestSwapScenarioJSON struct {
 }
 
 type OptimizeScenarioJSON struct {
-	Name          string                `json:"name"`
-	Temp          float64               `json:"temp"`
-	Seed          int64                 `json:"seed"`
+	Name           string                `json:"name"`
+	Temp           float64               `json:"temp"`
+	Seed           int64                 `json:"seed"`
 	FinalPositions map[string]*PointJSON `json:"finalPositions"`
 }
 
 type InitCandScenarioJSON struct {
-	Name              string      `json:"name"`
-	NodeID            string      `json:"nodeId"`
-	IsMajorityTarget  bool        `json:"isMajorityTarget"`
-	Positions         []PointJSON `json:"positions"`
+	Name             string      `json:"name"`
+	NodeID           string      `json:"nodeId"`
+	IsMajorityTarget bool        `json:"isMajorityTarget"`
+	Positions        []PointJSON `json:"positions"`
 }
 
 type InitNodesScenarioJSON struct {
-	Name          string                `json:"name"`
+	Name           string                `json:"name"`
 	FinalPositions map[string]*PointJSON `json:"finalPositions"`
 }
 
@@ -320,7 +320,7 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 		// 63->64 polls context, 64->65 does not poll
 		cntCtx := &countingContext{Context: context.Background(), cancelAt: 2} // 1 in New, 2 on boundary
 		guard, _ = limits.NewOptimizationWorkGuard(cntCtx, "testGuard", 100)
-		_ = guard.Add(63) // 63 / 64 == 0
+		_ = guard.Add(63)  // 63 / 64 == 0
 		err = guard.Step() // 64 / 64 == 1 => polls Err => cancelAt 2 triggers
 		errStr = ""
 		if err != nil {
@@ -373,9 +373,9 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 			restoredMap["11111"] = 11.0
 		}
 		fixture.PlacementCostSnapshot = append(fixture.PlacementCostSnapshot, CostSnapshotScenarioJSON{
-			Name: "cache_restore_identity_and_values",
-			InitialCache: map[string]float64{"12345": 42.5, "67890": 99.0},
-			MutateBefore: true,
+			Name:          "cache_restore_identity_and_values",
+			InitialCache:  map[string]float64{"12345": 42.5, "67890": 99.0},
+			MutateBefore:  true,
 			RestoredCache: restoredMap,
 		})
 	}
@@ -390,8 +390,8 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 		pt.Y = 200
 		restoredPt := snap.restore()
 		fixture.PointerSnapshots = append(fixture.PointerSnapshots, PointerScenarioJSON{
-			Name: "pointer_restore_identity",
-			Initial: &PointJSON{X: 10, Y: 20},
+			Name:     "pointer_restore_identity",
+			Initial:  &PointJSON{X: 10, Y: 20},
 			MutatedX: 100, MutatedY: 200,
 			Restored: &PointJSON{X: restoredPt.X, Y: restoredPt.Y},
 		})
@@ -399,7 +399,7 @@ func TestGenerateSizelessOptimizerOracleFixture(t *testing.T) {
 		snapNil := snapshotPointer[geo.Point](nil)
 		restoredNil := snapNil.restore()
 		fixture.PointerSnapshots = append(fixture.PointerSnapshots, PointerScenarioJSON{
-			Name: "nil_pointer_restore",
+			Name:    "nil_pointer_restore",
 			Initial: nil,
 			Restored: func() *PointJSON {
 				if restoredNil == nil {

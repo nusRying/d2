@@ -82,11 +82,11 @@ func main() {
 
 	// 1. Mandatory Node.InsidePlacement scenarios
 	type ipDef struct {
-		name          string
-		shapeType     string
-		x, y, w, h    float64
-		contentW      float64
-		contentH      float64
+		name           string
+		shapeType      string
+		x, y, w, h     float64
+		contentW       float64
+		contentH       float64
 		top, bot, l, r float64
 	}
 
@@ -344,8 +344,8 @@ func main() {
 
 	// 2. Mandatory Node.InnerBox scenarios for EVERY recognized shape
 	allShapes := []struct {
-		name      string
-		shapeType string
+		name       string
+		shapeType  string
 		x, y, w, h float64
 	}{
 		{"default", "", 10, 20, 100, 80},

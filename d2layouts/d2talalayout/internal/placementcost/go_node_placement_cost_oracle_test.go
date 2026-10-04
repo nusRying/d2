@@ -32,28 +32,28 @@ type OracleFixtureData struct {
 }
 
 type AccessorScenarioJSON struct {
-	Name            string      `json:"name"`
-	Accessor        string      `json:"accessor"`
-	Center          *PointJSON  `json:"center,omitempty"`
-	Orientation     int         `json:"orientation,omitempty"`
-	OverlapsLine    *bool       `json:"overlapsLine,omitempty"`
-	PassesThrough   *bool       `json:"passesThrough,omitempty"`
-	Area            *float64    `json:"area,omitempty"`
-	OverlapsDim     *bool       `json:"overlapsDim,omitempty"`
-	TablePort       *PointJSON  `json:"tablePort,omitempty"`
-	HasTablePort    *bool       `json:"hasTablePort,omitempty"`
-	FacingFromPort  *PointJSON  `json:"facingFromPort,omitempty"`
-	FacingToPort    *PointJSON  `json:"facingToPort,omitempty"`
-	HasFacingFrom   *bool       `json:"hasFacingFrom,omitempty"`
-	HasFacingTo     *bool       `json:"hasFacingTo,omitempty"`
-	FacingOrient    int         `json:"facingOrient,omitempty"`
-	HasTableCol     *bool       `json:"hasTableCol,omitempty"`
-	BetweenTableCol *bool       `json:"betweenTableCol,omitempty"`
-	LargeArrowhead  *bool       `json:"largeArrowhead,omitempty"`
-	DirectedFrom    string      `json:"directedFrom,omitempty"`
-	DirectedTo      string      `json:"directedTo,omitempty"`
-	IsDirected      *bool       `json:"isDirected,omitempty"`
-	Panic           string      `json:"panic,omitempty"`
+	Name            string     `json:"name"`
+	Accessor        string     `json:"accessor"`
+	Center          *PointJSON `json:"center,omitempty"`
+	Orientation     int        `json:"orientation,omitempty"`
+	OverlapsLine    *bool      `json:"overlapsLine,omitempty"`
+	PassesThrough   *bool      `json:"passesThrough,omitempty"`
+	Area            *float64   `json:"area,omitempty"`
+	OverlapsDim     *bool      `json:"overlapsDim,omitempty"`
+	TablePort       *PointJSON `json:"tablePort,omitempty"`
+	HasTablePort    *bool      `json:"hasTablePort,omitempty"`
+	FacingFromPort  *PointJSON `json:"facingFromPort,omitempty"`
+	FacingToPort    *PointJSON `json:"facingToPort,omitempty"`
+	HasFacingFrom   *bool      `json:"hasFacingFrom,omitempty"`
+	HasFacingTo     *bool      `json:"hasFacingTo,omitempty"`
+	FacingOrient    int        `json:"facingOrient,omitempty"`
+	HasTableCol     *bool      `json:"hasTableCol,omitempty"`
+	BetweenTableCol *bool      `json:"betweenTableCol,omitempty"`
+	LargeArrowhead  *bool      `json:"largeArrowhead,omitempty"`
+	DirectedFrom    string     `json:"directedFrom,omitempty"`
+	DirectedTo      string     `json:"directedTo,omitempty"`
+	IsDirected      *bool      `json:"isDirected,omitempty"`
+	Panic           string     `json:"panic,omitempty"`
 }
 
 type GeometryScenarioJSON struct {
@@ -79,7 +79,7 @@ type AxisScoreScenarioJSON struct {
 }
 
 type ClusterPairScenarioJSON struct {
-	Panic bool `json:"panic,omitempty"`
+	Panic      bool   `json:"panic,omitempty"`
 	Name       string `json:"name"`
 	FirstID    string `json:"firstId,omitempty"`
 	SecondID   string `json:"secondId,omitempty"`
@@ -162,9 +162,9 @@ func toPJ(p *geo.Point) *PointJSON {
 	return &PointJSON{X: p.X, Y: p.Y}
 }
 
-func bPtr(b bool) *bool { return &b }
+func bPtr(b bool) *bool       { return &b }
 func fPtr(f float64) *float64 { return &f }
-func iPtr(i int) *int { return &i }
+func iPtr(i int) *int         { return &i }
 
 var nextNodeID layoutgraph.EntityID = 1
 
@@ -184,7 +184,6 @@ func addTestNode(g *layoutgraph.Graph, x, y, w, h float64) *layoutgraph.Node {
 	g.AddNodeUnchecked(n)
 	return n
 }
-
 
 func capturePanic(fn func()) (panicked bool, value string) {
 	defer func() {
@@ -499,8 +498,8 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		fixture.AxisScore = append(fixture.AxisScore, AxisScoreScenarioJSON{Name: "ties_largest_size", Score: AxisScore(layoutgraph.Nodes{nTie1, nTie2, nTie3})})
 
 		// small node multipliers (<0.25 and <0.75)
-		ns1 := addTestNode(g, 0, 100, 100, 200) // largest height
-		ns2 := addTestNode(g, 150, 100, 50, 40) // height < 0.25*200 (40 < 50)
+		ns1 := addTestNode(g, 0, 100, 100, 200)  // largest height
+		ns2 := addTestNode(g, 150, 100, 50, 40)  // height < 0.25*200 (40 < 50)
 		ns3 := addTestNode(g, 300, 100, 50, 120) // height < 0.75*200 (120 < 150)
 		fixture.AxisScore = append(fixture.AxisScore, AxisScoreScenarioJSON{Name: "small_node_multipliers", Score: AxisScore(layoutgraph.Nodes{ns1, ns2, ns3})})
 	}
@@ -615,8 +614,12 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		}}
 		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clDistinctSameId)
 		fID, sID := "", ""
-		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
-		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		if f != nil {
+			fID = fmt.Sprintf("%d", f.ID)
+		}
+		if s != nil {
+			sID = fmt.Sprintf("%d", s.ID)
+		}
 		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "distinct_same_id", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
 
 		clDuplicate := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
@@ -625,7 +628,9 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		}}
 		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clDuplicate)
 		fID = ""
-		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
+		if f != nil {
+			fID = fmt.Sprintf("%d", f.ID)
+		}
 		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "duplicate_external_identity", FirstID: fID, ExactlyTwo: exact})
 
 		clFirstSeen := &layoutgraph.Cluster{Nodes: layoutgraph.Nodes{cn1}, EdgeAbductions: []*layoutgraph.EdgeAbduction{
@@ -634,8 +639,12 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		}}
 		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clFirstSeen)
 		fID, sID = "", ""
-		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
-		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		if f != nil {
+			fID = fmt.Sprintf("%d", f.ID)
+		}
+		if s != nil {
+			sID = fmt.Sprintf("%d", s.ID)
+		}
 		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "first_seen_order", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
 
 		ext4 := addTestNode(g, 100, 100, 10, 10)
@@ -648,8 +657,12 @@ func TestGenerateNodePlacementCostOracle(t *testing.T) {
 		}}
 		f, s, exact = clusterExactlyTwoExternalConnectedNodes(clThirdDistinct)
 		fID, sID = "", ""
-		if f != nil { fID = fmt.Sprintf("%d", f.ID) }
-		if s != nil { sID = fmt.Sprintf("%d", s.ID) }
+		if f != nil {
+			fID = fmt.Sprintf("%d", f.ID)
+		}
+		if s != nil {
+			sID = fmt.Sprintf("%d", s.ID)
+		}
 		fixture.ClusterExternalPair = append(fixture.ClusterExternalPair, ClusterPairScenarioJSON{Name: "third_distinct_external", FirstID: fID, SecondID: sID, ExactlyTwo: exact})
 	}
 

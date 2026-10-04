@@ -136,9 +136,9 @@ func captureScenario(name string, g *layoutgraph.Graph, oldPtr uintptr, oldHubKe
 func main() {
 	out := &OracleOutput{
 		Metadata: map[string]string{
-			"d2BaseCommit":    "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"runtimeGoVersion": runtime.Version(),
-			"slice":           "Slice 28 — Proximity Hub Discovery (AddHubs)",
+			"slice":            "Slice 28 — Proximity Hub Discovery (AddHubs)",
 		},
 		Scenarios: make(map[string]ScenarioResult),
 	}

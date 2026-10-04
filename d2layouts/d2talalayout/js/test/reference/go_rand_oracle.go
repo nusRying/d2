@@ -23,7 +23,6 @@ type Metadata struct {
 	D2BaseCommit     string `json:"d2BaseCommit"`
 }
 
-
 type SeedRun struct {
 	Seed        string   `json:"seed"`
 	Int63       []string `json:"int63"`

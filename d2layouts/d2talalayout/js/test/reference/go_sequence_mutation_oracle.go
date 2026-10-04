@@ -302,10 +302,10 @@ func main() {
 		guard, _ = limits.NewWorkGuard(ctx, "ClearNorm", 100)
 		err = grouping.ClearRememberedSequenceMembershipBridge(seqNorm, guard)
 		clearScenarios["normal_two_node"] = map[string]interface{}{
-			"err":            err == nil,
-			"guardUsed":      guard.Used(),
-			"n1SeqCleared":   n1.Sequence == nil,
-			"n2SeqCleared":   n2.Sequence == nil,
+			"err":          err == nil,
+			"guardUsed":    guard.Used(),
+			"n1SeqCleared": n1.Sequence == nil,
+			"n2SeqCleared": n2.Sequence == nil,
 		}
 
 		// 1.4 nil member in list
@@ -317,10 +317,10 @@ func main() {
 		guard, _ = limits.NewWorkGuard(ctx, "ClearNilMember", 100)
 		err = grouping.ClearRememberedSequenceMembershipBridge(seqNilMember, guard)
 		clearScenarios["nil_member"] = map[string]interface{}{
-			"err":            err == nil,
-			"guardUsed":      guard.Used(),
-			"n3SeqCleared":   n3.Sequence == nil,
-			"n4SeqCleared":   n4.Sequence == nil,
+			"err":          err == nil,
+			"guardUsed":    guard.Used(),
+			"n3SeqCleared": n3.Sequence == nil,
+			"n4SeqCleared": n4.Sequence == nil,
 		}
 
 		// 1.5 member belongs to another sequence
@@ -333,10 +333,10 @@ func main() {
 		guard, _ = limits.NewWorkGuard(ctx, "ClearOtherSeq", 100)
 		err = grouping.ClearRememberedSequenceMembershipBridge(seqA, guard)
 		clearScenarios["member_other_sequence"] = map[string]interface{}{
-			"err":             err == nil,
-			"guardUsed":       guard.Used(),
-			"n5SeqCleared":    n5.Sequence == nil,
-			"n6SeqUntouched":  n6.Sequence == seqOther,
+			"err":            err == nil,
+			"guardUsed":      guard.Used(),
+			"n5SeqCleared":   n5.Sequence == nil,
+			"n6SeqUntouched": n6.Sequence == seqOther,
 		}
 
 		// 1.6 duplicate member reference
@@ -360,9 +360,9 @@ func main() {
 		guard, _ = limits.NewWorkGuard(ctx, "ClearPartial", 1)
 		err = grouping.ClearRememberedSequenceMembershipBridge(seqPartial, guard)
 		clearScenarios["work_guard_limit_partial"] = map[string]interface{}{
-			"errOccurred":  err != nil,
-			"guardUsed":    guard.Used(),
-			"n8SeqCleared": n8.Sequence == nil,
+			"errOccurred":   err != nil,
+			"guardUsed":     guard.Used(),
+			"n8SeqCleared":  n8.Sequence == nil,
 			"n9SeqRetained": n9.Sequence == seqPartial,
 		}
 	}
@@ -384,16 +384,16 @@ func main() {
 		e1 := connectWithID(g, 10, s1, s2)
 		seq := grouping.BuildSequenceBridge([]*layoutgraph.Node{s1, s2}, g, nil, 100)
 		buildScenarios["two_step_unpositioned"] = map[string]interface{}{
-			"vesselID":       fmt.Sprintf("%d", seq.Vessel.ID),
-			"vesselWidth":    seq.Vessel.Width,
-			"vesselHeight":   seq.Vessel.Height,
-			"vesselTopLeft":  seq.Vessel.TopLeft == nil,
+			"vesselID":            fmt.Sprintf("%d", seq.Vessel.ID),
+			"vesselWidth":         seq.Vessel.Width,
+			"vesselHeight":        seq.Vessel.Height,
+			"vesselTopLeft":       seq.Vessel.TopLeft == nil,
 			"definingEdgeRemoved": len(g.Edges) == 0 && s1.ConnectionTo(s2) == nil,
-			"s1Width":        s1.Width,
-			"s1Height":       s1.Height,
-			"s2Width":        s2.Width,
-			"s2Height":       s2.Height,
-			"originalEdgeID": fmt.Sprintf("%d", e1.ID),
+			"s1Width":             s1.Width,
+			"s1Height":            s1.Height,
+			"s2Width":             s2.Width,
+			"s2Height":            s2.Height,
+			"originalEdgeID":      fmt.Sprintf("%d", e1.ID),
 		}
 
 		// 2.2 three-step positioned
@@ -464,7 +464,7 @@ func main() {
 		// No edge connected
 		seq = grouping.BuildSequenceBridge([]*layoutgraph.Node{sa, sb}, g, nil, 600)
 		buildScenarios["remembered_rebuild_no_edge"] = map[string]interface{}{
-			"vesselID": fmt.Sprintf("%d", seq.Vessel.ID),
+			"vesselID":   fmt.Sprintf("%d", seq.Vessel.ID),
 			"nodesCount": len(seq.Nodes),
 		}
 
@@ -478,9 +478,9 @@ func main() {
 		eSecond := connectWithID(g, 102, p1, p2)
 		seq = grouping.BuildSequenceBridge([]*layoutgraph.Node{p1, p2}, g, nil, 700)
 		buildScenarios["parallel_defining_edges"] = map[string]interface{}{
-			"remainingEdges": len(g.Edges),
-			"survivingEdgeID": fmt.Sprintf("%d", g.Edges[0].ID),
-			"disconnectedEdgeID": fmt.Sprintf("%d", eFirst.ID),
+			"remainingEdges":         len(g.Edges),
+			"survivingEdgeID":        fmt.Sprintf("%d", g.Edges[0].ID),
+			"disconnectedEdgeID":     fmt.Sprintf("%d", eFirst.ID),
 			"survivingMatchesSecond": g.Edges[0] == eSecond,
 		}
 
@@ -496,20 +496,20 @@ func main() {
 		g.AddNewNodeToContainer(nil, stepC)
 		g.AddNewNodeToContainer(nil, extOut)
 		g.AddNewNodeToContainer(nil, extIn)
-		connectWithID(g, 1, stepA, stepB) // defining edge 1
-		connectWithID(g, 2, stepB, stepC) // defining edge 2
+		connectWithID(g, 1, stepA, stepB)               // defining edge 1
+		connectWithID(g, 2, stepB, stepC)               // defining edge 2
 		eOutgoing := connectWithID(g, 3, stepA, extOut) // external outgoing
 		eIncoming := connectWithID(g, 4, extIn, stepC)  // external incoming
 		eInternal := connectWithID(g, 5, stepA, stepC)  // internal non-defining edge between members!
 		seq = grouping.BuildSequenceBridge([]*layoutgraph.Node{stepA, stepB, stepC}, g, nil, 800)
 		buildScenarios["external_and_internal_edges"] = map[string]interface{}{
-			"abductionsCount": len(seq.EdgeAbductions),
+			"abductionsCount":     len(seq.EdgeAbductions),
 			"outgoingCurrentFrom": fmt.Sprintf("%d", eOutgoing.From.ID),
-			"outgoingCurrentTo": fmt.Sprintf("%d", eOutgoing.To.ID),
+			"outgoingCurrentTo":   fmt.Sprintf("%d", eOutgoing.To.ID),
 			"incomingCurrentFrom": fmt.Sprintf("%d", eIncoming.From.ID),
-			"incomingCurrentTo": fmt.Sprintf("%d", eIncoming.To.ID),
-			"internalFrom": fmt.Sprintf("%d", eInternal.From.ID),
-			"internalTo": fmt.Sprintf("%d", eInternal.To.ID),
+			"incomingCurrentTo":   fmt.Sprintf("%d", eIncoming.To.ID),
+			"internalFrom":        fmt.Sprintf("%d", eInternal.From.ID),
+			"internalTo":          fmt.Sprintf("%d", eInternal.To.ID),
 		}
 	}
 	out.Scenarios["buildSequence"] = buildScenarios
@@ -551,11 +551,11 @@ func main() {
 			})
 		}
 		abductScenarios["direct_abduction"] = map[string]interface{}{
-			"abductions": abductions,
-			"eOutFrom":   fmt.Sprintf("%d", eOut.From.ID),
-			"eOutTo":     fmt.Sprintf("%d", eOut.To.ID),
-			"eInFrom":    fmt.Sprintf("%d", eIn.From.ID),
-			"eInTo":      fmt.Sprintf("%d", eIn.To.ID),
+			"abductions":    abductions,
+			"eOutFrom":      fmt.Sprintf("%d", eOut.From.ID),
+			"eOutTo":        fmt.Sprintf("%d", eOut.To.ID),
+			"eInFrom":       fmt.Sprintf("%d", eIn.From.ID),
+			"eInTo":         fmt.Sprintf("%d", eIn.To.ID),
 			"eInternalFrom": fmt.Sprintf("%d", eInternal.From.ID),
 			"eInternalTo":   fmt.Sprintf("%d", eInternal.To.ID),
 		}
@@ -1032,13 +1032,13 @@ func main() {
 
 		nextDraw := layoutRand.Int63()
 		addSequencesScenarios["ordinary_id_collision_seed_19"] = map[string]interface{}{
-			"firstDraw":       fmt.Sprintf("%d", firstDraw),
-			"expectedVessel":  fmt.Sprintf("%d", firstDraw+1),
-			"resolvedVessel":  fmt.Sprintf("%d", vesselID),
-			"nextDraw":        fmt.Sprintf("%d", nextDraw),
-			"probeNextDraw":   fmt.Sprintf("%d", probeNextDraw),
-			"streamParity":    nextDraw == probeNextDraw,
-			"fingerprint":     fingerprintGraph(g, []*layoutgraph.Node{collidingNode, s1, s2}, layoutRand),
+			"firstDraw":      fmt.Sprintf("%d", firstDraw),
+			"expectedVessel": fmt.Sprintf("%d", firstDraw+1),
+			"resolvedVessel": fmt.Sprintf("%d", vesselID),
+			"nextDraw":       fmt.Sprintf("%d", nextDraw),
+			"probeNextDraw":  fmt.Sprintf("%d", probeNextDraw),
+			"streamParity":   nextDraw == probeNextDraw,
+			"fingerprint":    fingerprintGraph(g, []*layoutgraph.Node{collidingNode, s1, s2}, layoutRand),
 		}
 	}
 

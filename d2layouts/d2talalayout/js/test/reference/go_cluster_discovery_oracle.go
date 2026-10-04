@@ -134,10 +134,10 @@ func main() {
 		loopEdge.ID = 200
 
 		out.Scenarios["nodeAdjacent"] = map[string]interface{}{
-			"nodeIsFrom":      idStr(from.Adjacent(edge)),      // returns to (2)
-			"nodeIsTo":        idStr(to.Adjacent(edge)),        // returns from (1)
+			"nodeIsFrom":      idStr(from.Adjacent(edge)),         // returns to (2)
+			"nodeIsTo":        idStr(to.Adjacent(edge)),           // returns from (1)
 			"nodeIsLoop":      idStr(loopNode.Adjacent(loopEdge)), // returns loopNode (3)
-			"nodeIsUnrelated": idStr(unrelated.Adjacent(edge)), // malformed fallback returns edge.From (1)
+			"nodeIsUnrelated": idStr(unrelated.Adjacent(edge)),    // malformed fallback returns edge.From (1)
 		}
 	}
 
@@ -238,14 +238,14 @@ func main() {
 			"quirkSigC":        sigQuirkC,
 			"quirkMatches":     quirkMatches, // true in Go!
 			"matching": map[string]bool{
-				"empty_vs_empty":       grouping.ClusterEdgeSignatureMatchesBridge(sigEmpty, sigEmpty),
-				"undir_vs_undir":       grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigUndir),
-				"undir_vs_dir":         grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigDir),
-				"undir_vs_bidir":       grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigBidir),
-				"dir_vs_parallel":      grouping.ClusterEdgeSignatureMatchesBridge(sigDir, sigParallel),
-				"dir_vs_diamond":       grouping.ClusterEdgeSignatureMatchesBridge(sigDir, sigDiamond),
-				"mixed_vs_mixed":       grouping.ClusterEdgeSignatureMatchesBridge(sigMixed, sigMixed),
-				"mixed_vs_dir":         grouping.ClusterEdgeSignatureMatchesBridge(sigMixed, sigDir),
+				"empty_vs_empty":  grouping.ClusterEdgeSignatureMatchesBridge(sigEmpty, sigEmpty),
+				"undir_vs_undir":  grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigUndir),
+				"undir_vs_dir":    grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigDir),
+				"undir_vs_bidir":  grouping.ClusterEdgeSignatureMatchesBridge(sigUndir, sigBidir),
+				"dir_vs_parallel": grouping.ClusterEdgeSignatureMatchesBridge(sigDir, sigParallel),
+				"dir_vs_diamond":  grouping.ClusterEdgeSignatureMatchesBridge(sigDir, sigDiamond),
+				"mixed_vs_mixed":  grouping.ClusterEdgeSignatureMatchesBridge(sigMixed, sigMixed),
+				"mixed_vs_dir":    grouping.ClusterEdgeSignatureMatchesBridge(sigMixed, sigDir),
 			},
 		}
 	}
@@ -323,14 +323,14 @@ func main() {
 		deltaNull := usedAfterNull - usedBeforeNull
 
 		out.Scenarios["sequenceNeighborRecovery"] = map[string]interface{}{
-			"firstNeighbors":   infoFirst.Neighbors,  // [3]
-			"secondNeighbors":  infoSecond.Neighbors, // [3]
-			"orig1":            idStr(orig1),
-			"orig2":            idStr(orig2),
-			"origNull":         idStr(origNull),
-			"deltaFirstLookup": delta1,
+			"firstNeighbors":    infoFirst.Neighbors,  // [3]
+			"secondNeighbors":   infoSecond.Neighbors, // [3]
+			"orig1":             idStr(orig1),
+			"orig2":             idStr(orig2),
+			"origNull":          idStr(origNull),
+			"deltaFirstLookup":  delta1,
 			"deltaSecondLookup": delta2, // 0 in Go!
-			"deltaNullLookup":  deltaNull,
+			"deltaNullLookup":   deltaNull,
 		}
 	}
 
@@ -471,10 +471,10 @@ func main() {
 				caseKey = "leaky_true"
 			}
 			leakyResults[caseKey] = map[string]interface{}{
-				"isLeaky":           isLeaky,
-				"noClustering":      infoContainer.NoClustering,
+				"isLeaky":             isLeaky,
+				"noClustering":        infoContainer.NoClustering,
 				"leakyStandaloneUsed": leakyUsed,
-				"buildUsedDelta":    usedAfterBuild - usedBeforeBuild,
+				"buildUsedDelta":      usedAfterBuild - usedBeforeBuild,
 			}
 		}
 		out.Scenarios["leakyContainer"] = leakyResults
@@ -584,7 +584,7 @@ func main() {
 		// Create edges with specific Graph.Edges order
 		e1 := g.Connect(n1, ext) // ID 10
 		e1.ID = 10
-		e2 := g.Connect(n1, n2)  // ID 11 (shared between n1 and n2)
+		e2 := g.Connect(n1, n2) // ID 11 (shared between n1 and n2)
 		e2.ID = 11
 		e3 := g.Connect(n2, ext) // ID 12
 		e3.ID = 12

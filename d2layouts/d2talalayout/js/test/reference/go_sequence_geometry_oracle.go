@@ -72,8 +72,8 @@ func main() {
 	out := SequenceGeometryOracleOutput{
 		Metadata: map[string]interface{}{
 			"runtimeGoVersion": runtime.Version(),
-			"runtimeGOOS":     runtime.GOOS,
-			"runtimeGOARCH":   runtime.GOARCH,
+			"runtimeGOOS":      runtime.GOOS,
+			"runtimeGOARCH":    runtime.GOARCH,
 			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph",
 			"stepWedgeWidth":   shape.STEP_WEDGE_WIDTH,
@@ -525,10 +525,10 @@ func main() {
 		}
 
 		abductCases := map[string]interface{}{
-			"CurrentFromVessel":      idStr(seq.AbductedNodeByEdge(e1)),
-			"CurrentToVessel":        idStr(seq.AbductedNodeByEdge(e2)),
-			"BothVesselPrecedence":   idStr(seq.AbductedNodeByEdge(e3)),
-			"DifferentEdgeObject":    idStr(seq.AbductedNodeByEdge(e5)),
+			"CurrentFromVessel":       idStr(seq.AbductedNodeByEdge(e1)),
+			"CurrentToVessel":         idStr(seq.AbductedNodeByEdge(e2)),
+			"BothVesselPrecedence":    idStr(seq.AbductedNodeByEdge(e3)),
+			"DifferentEdgeObject":     idStr(seq.AbductedNodeByEdge(e5)),
 			"NoCurrentVesselEndpoint": idStr(seq.AbductedNodeByEdge(e4)),
 		}
 		out.Cases["AbductedNodeByEdge"] = abductCases
@@ -674,12 +674,12 @@ func main() {
 
 			g.SyncSequences()
 			syncSeqCases["TwoReachableSequences"] = map[string]interface{}{
-				"v1Width":    v1.Width,
-				"v1Height":   v1.Height,
+				"v1Width":      v1.Width,
+				"v1Height":     v1.Height,
 				"v1_s1TopLeft": toPointOutput(v1_s1.TopLeft),
 				"v1_s2TopLeft": toPointOutput(v1_s2.TopLeft),
-				"v2Width":    v2.Width,
-				"v2Height":   v2.Height,
+				"v2Width":      v2.Width,
+				"v2Height":     v2.Height,
 				"v2_s1TopLeft": toPointOutput(v2_s1.TopLeft),
 				"v2_s2TopLeft": toPointOutput(v2_s2.TopLeft),
 			}

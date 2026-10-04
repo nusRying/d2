@@ -84,8 +84,8 @@ func main() {
 	out := OracleOutput{
 		Metadata: map[string]interface{}{
 			"runtimeGoVersion": runtime.Version(),
-			"runtimeGOOS":     runtime.GOOS,
-			"runtimeGOARCH":   runtime.GOARCH,
+			"runtimeGOOS":      runtime.GOOS,
+			"runtimeGOARCH":    runtime.GOARCH,
 			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/limits",
 		},

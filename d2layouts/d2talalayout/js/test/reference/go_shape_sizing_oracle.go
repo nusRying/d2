@@ -17,7 +17,7 @@ import (
 
 type ShapeSizingOracleOutput struct {
 	Metadata           map[string]string          `json:"metadata"`
-	GetDimensionsToFit []DimensionsToFitScenario `json:"getDimensionsToFit"`
+	GetDimensionsToFit []DimensionsToFitScenario  `json:"getDimensionsToFit"`
 	FitToBoundingBox   []FitToBoundingBoxScenario `json:"fitToBoundingBox"`
 }
 
@@ -51,20 +51,20 @@ type DimensionsToFitScenario struct {
 }
 
 type FitToBoundingBoxScenario struct {
-	Name          string       `json:"name"`
-	Shape         string       `json:"shape"`
-	TL            *PointJSON   `json:"tl"`
-	BR            *PointJSON   `json:"br"`
-	Padding       SpacingJSON  `json:"padding"`
-	Label         *LabelJSON   `json:"label"`
-	DesiredWidth  *float64     `json:"desiredWidth"`
-	DesiredHeight *float64     `json:"desiredHeight"`
-	HasTopLeft    bool         `json:"hasTopLeft"`
-	Panicked      bool         `json:"panicked"`
-	BeforeWidth   float64      `json:"beforeWidth"`
-	BeforeHeight  float64      `json:"beforeHeight"`
-	AfterWidth    float64      `json:"afterWidth"`
-	AfterHeight   float64      `json:"afterHeight"`
+	Name          string      `json:"name"`
+	Shape         string      `json:"shape"`
+	TL            *PointJSON  `json:"tl"`
+	BR            *PointJSON  `json:"br"`
+	Padding       SpacingJSON `json:"padding"`
+	Label         *LabelJSON  `json:"label"`
+	DesiredWidth  *float64    `json:"desiredWidth"`
+	DesiredHeight *float64    `json:"desiredHeight"`
+	HasTopLeft    bool        `json:"hasTopLeft"`
+	Panicked      bool        `json:"panicked"`
+	BeforeWidth   float64     `json:"beforeWidth"`
+	BeforeHeight  float64     `json:"beforeHeight"`
+	AfterWidth    float64     `json:"afterWidth"`
+	AfterHeight   float64     `json:"afterHeight"`
 }
 
 func main() {
@@ -128,11 +128,11 @@ func main() {
 
 	// Special branches for GetDimensionsToFit
 	specialDTF := []struct {
-		name     string
-		sh       string
-		w, h     float64
-		padX     float64
-		padY     float64
+		name string
+		sh   string
+		w, h float64
+		padX float64
+		padY float64
 	}{
 		{"oval_float32_regression", shape.OVAL_TYPE, 16.2, 28.3, 6.5, 6.5},
 		{"oval_wide_limit", shape.OVAL_TYPE, 500, 50, 10, 10},

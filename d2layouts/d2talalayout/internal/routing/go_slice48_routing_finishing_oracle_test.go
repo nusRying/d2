@@ -5,11 +5,12 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph"
-	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/quality"
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph"
+	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/quality"
 )
 
 // Explicit generation only. Ordinary runs recompute and never write.

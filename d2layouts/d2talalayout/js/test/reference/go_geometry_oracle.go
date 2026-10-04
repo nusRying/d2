@@ -12,16 +12,16 @@ import (
 )
 
 type InputObj struct {
-	X1 float64 `json:"x1"`
-	Y1 float64 `json:"y1"`
-	X2 float64 `json:"x2"`
-	Y2 float64 `json:"y2"`
-	X3 float64 `json:"x3"`
-	Y3 float64 `json:"y3"`
-	X4 float64 `json:"x4"`
-	Y4 float64 `json:"y4"`
+	X1        float64 `json:"x1"`
+	Y1        float64 `json:"y1"`
+	X2        float64 `json:"x2"`
+	Y2        float64 `json:"y2"`
+	X3        float64 `json:"x3"`
+	Y3        float64 `json:"y3"`
+	X4        float64 `json:"x4"`
+	Y4        float64 `json:"y4"`
 	RandFloat float64 `json:"randFloat"`
-	RandBool bool `json:"randBool"`
+	RandBool  bool    `json:"randBool"`
 }
 
 type PointObj struct {
@@ -35,30 +35,29 @@ type BoundsObj struct {
 }
 
 type TestCase struct {
-	Input InputObj `json:"input"`
-	MathEuclideanDistance interface{} `json:"math_euclidean_distance"`
-	MathPrecisionCompare int `json:"math_precision_compare"`
-	MathTruncateDecimals interface{} `json:"math_truncate_decimals"`
-	MathSign int `json:"math_sign"`
-	VectorAdd []interface{} `json:"vector_add"`
-	VectorLength interface{} `json:"vector_length"`
-	VectorRadians interface{} `json:"vector_radians"`
-	PointDistanceToLine interface{} `json:"point_distance_to_line"`
-	PointIntersectionPoint *PointObj `json:"point_intersection_point"`
-	PointInterpolate *PointObj `json:"point_interpolate"`
-	PointTruncateFloat32 *PointObj `json:"point_truncate_float32"`
-	PointCompare int `json:"point_compare"`
-	SegmentGetBounds BoundsObj `json:"segment_get_bounds"`
-	SegmentOverlaps bool `json:"segment_overlaps"`
-	BoxContains bool `json:"box_contains"`
-	BoxOverlaps bool `json:"box_overlaps"`
-	BoxIntersects bool `json:"box_intersects"`
+	Input                  InputObj      `json:"input"`
+	MathEuclideanDistance  interface{}   `json:"math_euclidean_distance"`
+	MathPrecisionCompare   int           `json:"math_precision_compare"`
+	MathTruncateDecimals   interface{}   `json:"math_truncate_decimals"`
+	MathSign               int           `json:"math_sign"`
+	VectorAdd              []interface{} `json:"vector_add"`
+	VectorLength           interface{}   `json:"vector_length"`
+	VectorRadians          interface{}   `json:"vector_radians"`
+	PointDistanceToLine    interface{}   `json:"point_distance_to_line"`
+	PointIntersectionPoint *PointObj     `json:"point_intersection_point"`
+	PointInterpolate       *PointObj     `json:"point_interpolate"`
+	PointTruncateFloat32   *PointObj     `json:"point_truncate_float32"`
+	PointCompare           int           `json:"point_compare"`
+	SegmentGetBounds       BoundsObj     `json:"segment_get_bounds"`
+	SegmentOverlaps        bool          `json:"segment_overlaps"`
+	BoxContains            bool          `json:"box_contains"`
+	BoxOverlaps            bool          `json:"box_overlaps"`
+	BoxIntersects          bool          `json:"box_intersects"`
 }
 
 type Result struct {
 	Cases []TestCase `json:"cases"`
 }
-
 
 func encodeFloat64(f float64) interface{} {
 	if math.IsNaN(f) {
@@ -174,7 +173,7 @@ func testOrientationToString() []map[string]interface{} {
 	res := []map[string]interface{}{}
 	for _, o := range inputs {
 		res = append(res, map[string]interface{}{
-			"value": int(o),
+			"value":  int(o),
 			"string": o.ToString(),
 		})
 	}
@@ -221,7 +220,7 @@ func main() {
 				X3: x3, Y3: y3,
 				X4: x4, Y4: y4,
 				RandFloat: randFloat,
-				RandBool: randBool,
+				RandBool:  randBool,
 			},
 		}
 
@@ -301,12 +300,12 @@ func main() {
 			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"referencePackage": "github.com/d2lang/d2/lib/geo",
 		},
-		"random":  res,
-		"special": specialRes,
+		"random":           res,
+		"special":          specialRes,
 		"truncateDecimals": testTruncateDecimals(),
-		"goRound": testGoRound(),
-		"median": testMedian(),
-		"orientation": testOrientationToString(),
+		"goRound":          testGoRound(),
+		"median":           testMedian(),
+		"orientation":      testOrientationToString(),
 	}
 
 	bytes, err := json.MarshalIndent(out, "", "  ")

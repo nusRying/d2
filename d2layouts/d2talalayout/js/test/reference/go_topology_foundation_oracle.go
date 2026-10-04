@@ -139,17 +139,17 @@ func main() {
 		}
 
 		out.Cases["ClusterSemantics"] = map[string]interface{}{
-			"activeIsActive":          clusterAct.IsActive(),
-			"flip1":                   arr1,
-			"flip2":                   arr2,
-			"flip3":                   arr3,
-			"inactiveIsActive":        clusterInact.IsActive(),
-			"isClusterVessel":         vesselAct.IsClusterVessel(),
-			"zeroArrangement":         string(clusterZero.Arrangement),
-			"zeroDesiredArrangement":  string(clusterZero.DesiredArrangement),
-			"zeroPadding":             clusterZero.Padding,
-			"zeroFixedSize":           clusterZero.FixedSize,
-			"zeroFlip":                string(clusterZero.Arrangement.Flip()),
+			"activeIsActive":         clusterAct.IsActive(),
+			"flip1":                  arr1,
+			"flip2":                  arr2,
+			"flip3":                  arr3,
+			"inactiveIsActive":       clusterInact.IsActive(),
+			"isClusterVessel":        vesselAct.IsClusterVessel(),
+			"zeroArrangement":        string(clusterZero.Arrangement),
+			"zeroDesiredArrangement": string(clusterZero.DesiredArrangement),
+			"zeroPadding":            clusterZero.Padding,
+			"zeroFixedSize":          clusterZero.FixedSize,
+			"zeroFlip":               string(clusterZero.Arrangement.Flip()),
 		}
 	}
 
@@ -367,7 +367,7 @@ func main() {
 		out.Cases["TreeSentinelNode"] = map[string]interface{}{
 			"fwdSentinel":           idStr(tFwd.SentinelNode()),
 			"revSentinel":           idStr(tRev.SentinelNode()),
-			"defaultOrientation":   tDefault.Orientation.ToString(),
+			"defaultOrientation":    tDefault.Orientation.ToString(),
 			"nilSentinelNodePanics": sentinelPanics,
 		}
 	}
@@ -547,23 +547,23 @@ func main() {
 		clonedTreeRoot := cloned.Trees[clonedTreeSentinel][0]
 
 		out.Cases["CloneParity"] = map[string]interface{}{
-			"clonedClusterActive":         clonedCluster.IsActive(),
-			"clonedClusterArrangement":    string(clonedCluster.Arrangement),
-			"clonedClusterVesselFlag":     clonedCVessel.IsClusterVessel(),
-			"clonedAbductionEdgeID":       strconv.FormatInt(int64(clonedAbduction.Edge.ID), 10),
-			"clonedAbductionOrigFrom":     idStr(clonedAbduction.OriginallyFrom),
-			"clonedAbductionCurrFrom":     idStr(clonedAbduction.CurrentFrom),
-			"clonedInactClusterActive":    clonedClusterInact.IsActive(),
-			"clonedInactClusterGraphIsG":  clonedClusterInact.Graph == cloned,
-			"clonedInactCVesselGraphNil":  clonedInactCVessel.Graph == nil,
-			"clonedSeqActive":             clonedSeqInact.IsActive(),
-			"clonedSeqGraphIsG":           clonedSeqInact.Graph == cloned,
-			"clonedSeqVesselGraphNil":     clonedInactVessel.Graph == nil,
-			"clonedActSeqActive":          clonedSeqAct.IsActive(),
-			"clonedTreeRootNodeID":        idStr(clonedTreeRoot.Node),
-			"clonedTreeOrientation":       clonedTreeRoot.Orientation.ToString(),
-			"clonedNodeToTreeMatches":     cloned.NodeToTree[clonedTreeRoot.Node] == clonedTreeRoot,
-			"clonedNodesIDs":              idList(cloned.Nodes),
+			"clonedClusterActive":        clonedCluster.IsActive(),
+			"clonedClusterArrangement":   string(clonedCluster.Arrangement),
+			"clonedClusterVesselFlag":    clonedCVessel.IsClusterVessel(),
+			"clonedAbductionEdgeID":      strconv.FormatInt(int64(clonedAbduction.Edge.ID), 10),
+			"clonedAbductionOrigFrom":    idStr(clonedAbduction.OriginallyFrom),
+			"clonedAbductionCurrFrom":    idStr(clonedAbduction.CurrentFrom),
+			"clonedInactClusterActive":   clonedClusterInact.IsActive(),
+			"clonedInactClusterGraphIsG": clonedClusterInact.Graph == cloned,
+			"clonedInactCVesselGraphNil": clonedInactCVessel.Graph == nil,
+			"clonedSeqActive":            clonedSeqInact.IsActive(),
+			"clonedSeqGraphIsG":          clonedSeqInact.Graph == cloned,
+			"clonedSeqVesselGraphNil":    clonedInactVessel.Graph == nil,
+			"clonedActSeqActive":         clonedSeqAct.IsActive(),
+			"clonedTreeRootNodeID":       idStr(clonedTreeRoot.Node),
+			"clonedTreeOrientation":      clonedTreeRoot.Orientation.ToString(),
+			"clonedNodeToTreeMatches":    cloned.NodeToTree[clonedTreeRoot.Node] == clonedTreeRoot,
+			"clonedNodesIDs":             idList(cloned.Nodes),
 		}
 	}
 
@@ -596,9 +596,9 @@ func main() {
 		}
 
 		out.Cases["ClusterMemberContainerClone"] = map[string]interface{}{
-			"cloneSucceeded":       errCMC == nil,
-			"containersCount":      len(clonedCMC.Containers),
-			"containerRDFSOrder":   idList(clonedCMC.ContainerRDFSOrderUnbounded(nil)),
+			"cloneSucceeded":     errCMC == nil,
+			"containersCount":    len(clonedCMC.Containers),
+			"containerRDFSOrder": idList(clonedCMC.ContainerRDFSOrderUnbounded(nil)),
 		}
 	}
 
@@ -627,12 +627,12 @@ func main() {
 		clonedTree := clonedDT.Trees[clonedSentinel][0]
 
 		out.Cases["DetachedTreeSentinelClone"] = map[string]interface{}{
-			"cloneSucceeded":          errDT == nil,
-			"graphEdgesCount":         len(clonedDT.Edges),
-			"sentinelFromID":          idStr(clonedTree.SentinelEdge.From),
-			"sentinelToID":            idStr(clonedTree.SentinelEdge.To),
-			"sentinelOrientation":     clonedTree.Orientation.ToString(),
-			"distinctSentinelEdge":    clonedTree.SentinelEdge != detachedEdge,
+			"cloneSucceeded":       errDT == nil,
+			"graphEdgesCount":      len(clonedDT.Edges),
+			"sentinelFromID":       idStr(clonedTree.SentinelEdge.From),
+			"sentinelToID":         idStr(clonedTree.SentinelEdge.To),
+			"sentinelOrientation":  clonedTree.Orientation.ToString(),
+			"distinctSentinelEdge": clonedTree.SentinelEdge != detachedEdge,
 		}
 	}
 

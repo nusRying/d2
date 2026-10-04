@@ -36,10 +36,10 @@ type ClusterState struct {
 
 // AssignHerdsResult is the per-scenario outcome.
 type AssignHerdsResult struct {
-	Success      bool                    `json:"success"`
-	Panic        string                  `json:"panic,omitempty"`
-	Error        string                  `json:"error,omitempty"`
-	NodeStates   map[string]NodeState   `json:"nodeStates,omitempty"`
+	Success       bool                    `json:"success"`
+	Panic         string                  `json:"panic,omitempty"`
+	Error         string                  `json:"error,omitempty"`
+	NodeStates    map[string]NodeState    `json:"nodeStates,omitempty"`
 	ClusterStates map[string]ClusterState `json:"clusterStates,omitempty"`
 }
 

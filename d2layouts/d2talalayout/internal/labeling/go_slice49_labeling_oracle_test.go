@@ -112,17 +112,17 @@ type s49lScenarioResult struct {
 }
 
 type s49lExactWorkResult struct {
-	Name            string          `json:"name"`
-	Spec            s49lSpec        `json:"spec"`
-	W               int64           `json:"w"`
-	NodesInitial    []s49lNodeState `json:"nodesInitial"`
-	EdgesInitial    []s49lEdgeState `json:"edgesInitial"`
-	NodesAfter      []s49lNodeState `json:"nodesAfter"`
-	EdgesAfter      []s49lEdgeState `json:"edgesAfter"`
-	WMinus1Error    string          `json:"wMinus1Error"`
-	WMinus1Used     int64           `json:"wMinus1Used"`
-	NodesAfterRoll  []s49lNodeState `json:"nodesAfterRoll"`
-	EdgesAfterRoll  []s49lEdgeState `json:"edgesAfterRoll"`
+	Name           string          `json:"name"`
+	Spec           s49lSpec        `json:"spec"`
+	W              int64           `json:"w"`
+	NodesInitial   []s49lNodeState `json:"nodesInitial"`
+	EdgesInitial   []s49lEdgeState `json:"edgesInitial"`
+	NodesAfter     []s49lNodeState `json:"nodesAfter"`
+	EdgesAfter     []s49lEdgeState `json:"edgesAfter"`
+	WMinus1Error   string          `json:"wMinus1Error"`
+	WMinus1Used    int64           `json:"wMinus1Used"`
+	NodesAfterRoll []s49lNodeState `json:"nodesAfterRoll"`
+	EdgesAfterRoll []s49lEdgeState `json:"edgesAfterRoll"`
 }
 
 type s49lOracle struct {

@@ -571,11 +571,11 @@ func main() {
 			nodeOrder = append(nodeOrder, fmt.Sprintf("%d", node.ID))
 		}
 		createVesselScenarios["row_unsorted_positioned"] = map[string]interface{}{
-			"vessel":         vesselToDTO(v),
-			"nodeOrder":      nodeOrder,
-			"clusterVessel":  idPtr(c.Vessel),
-			"allSameWidth":   n1.Width == n2.Width && n2.Width == n3.Width,
-			"allSameHeight":  n1.Height == n2.Height && n2.Height == n3.Height,
+			"vessel":        vesselToDTO(v),
+			"nodeOrder":     nodeOrder,
+			"clusterVessel": idPtr(c.Vessel),
+			"allSameWidth":  n1.Width == n2.Width && n2.Width == n3.Width,
+			"allSameHeight": n1.Height == n2.Height && n2.Height == n3.Height,
 		}
 	}
 
@@ -862,18 +862,18 @@ func main() {
 		}
 
 		addClusterScenarios["root_level_cluster"] = map[string]interface{}{
-			"graphNodes":        graphNodes,
-			"rootChildren":      rootChildren,
-			"vesselInGraph":     slices.Contains(g.Nodes, vessel),
-			"vesselContainer":   idPtr(vessel.Container),
-			"vesselHasGraph":    vessel.Graph == g,
-			"node1Cluster":      n1.Cluster == cluster,
-			"node2Cluster":      n2.Cluster == cluster,
-			"node1Container":    idPtr(n1.Container),
-			"node2Container":    idPtr(n2.Container),
-			"node1HasGraph":     n1.Graph == g,
-			"node2HasGraph":     n2.Graph == g,
-			"clusterInMap":      g.Clusters[vessel] == cluster,
+			"graphNodes":      graphNodes,
+			"rootChildren":    rootChildren,
+			"vesselInGraph":   slices.Contains(g.Nodes, vessel),
+			"vesselContainer": idPtr(vessel.Container),
+			"vesselHasGraph":  vessel.Graph == g,
+			"node1Cluster":    n1.Cluster == cluster,
+			"node2Cluster":    n2.Cluster == cluster,
+			"node1Container":  idPtr(n1.Container),
+			"node2Container":  idPtr(n2.Container),
+			"node1HasGraph":   n1.Graph == g,
+			"node2HasGraph":   n2.Graph == g,
+			"clusterInMap":    g.Clusters[vessel] == cluster,
 		}
 	}
 
@@ -911,12 +911,12 @@ func main() {
 		}
 
 		addClusterScenarios["nested_container_cluster"] = map[string]interface{}{
-			"parentChildren":   parentChildren,
-			"vesselInGraph":    slices.Contains(g.Nodes, vessel),
-			"vesselContainer":  idPtr(vessel.Container),
-			"clusterInMap":     g.Clusters[vessel] == cluster,
-			"node1InGraph":     slices.Contains(g.Nodes, n1),
-			"node2InGraph":     slices.Contains(g.Nodes, n2),
+			"parentChildren":  parentChildren,
+			"vesselInGraph":   slices.Contains(g.Nodes, vessel),
+			"vesselContainer": idPtr(vessel.Container),
+			"clusterInMap":    g.Clusters[vessel] == cluster,
+			"node1InGraph":    slices.Contains(g.Nodes, n1),
+			"node2InGraph":    slices.Contains(g.Nodes, n2),
 		}
 	}
 
@@ -945,11 +945,11 @@ func main() {
 			rootChildren = append(rootChildren, fmt.Sprintf("%d", n.ID))
 		}
 		addClusterScenarios["duplicate_member_in_cluster_nodes"] = map[string]interface{}{
-			"rootChildren":   rootChildren,
-			"vesselInGraph":  slices.Contains(g.Nodes, vessel),
-			"node1InGraph":   slices.Contains(g.Nodes, n1),
-			"node2InGraph":   slices.Contains(g.Nodes, n2),
-			"clusterInMap":   g.Clusters[vessel] == cluster,
+			"rootChildren":  rootChildren,
+			"vesselInGraph": slices.Contains(g.Nodes, vessel),
+			"node1InGraph":  slices.Contains(g.Nodes, n1),
+			"node2InGraph":  slices.Contains(g.Nodes, n2),
+			"clusterInMap":  g.Clusters[vessel] == cluster,
 		}
 	}
 
@@ -981,8 +981,8 @@ func main() {
 			graphNodes = append(graphNodes, fmt.Sprintf("%d", n.ID))
 		}
 		addClusterScenarios["duplicate_member_in_graph_nodes"] = map[string]interface{}{
-			"graphNodes":   graphNodes,
-			"node1Count":   0, // count how many times n1 appears
+			"graphNodes":    graphNodes,
+			"node1Count":    0, // count how many times n1 appears
 			"vesselInGraph": slices.Contains(g.Nodes, vessel),
 		}
 		countN1 := 0
@@ -1024,8 +1024,8 @@ func main() {
 			rootChildren = append(rootChildren, fmt.Sprintf("%d", n.ID))
 		}
 		addClusterScenarios["extra_child_with_same_cluster"] = map[string]interface{}{
-			"rootChildren":  rootChildren,
-			"rogueInGraph":  slices.Contains(g.Nodes, rogue), // rogue was NOT in cluster.Nodes, so g.RemoveNode was not called on it!
+			"rootChildren":     rootChildren,
+			"rogueInGraph":     slices.Contains(g.Nodes, rogue),           // rogue was NOT in cluster.Nodes, so g.RemoveNode was not called on it!
 			"rogueInContainer": slices.Contains(g.Containers[nil], rogue), // but was filtered from Containers because child.Cluster == cluster!
 		}
 	}
@@ -1054,9 +1054,9 @@ func main() {
 		grouping.AddCluster(g, cluster)
 
 		addClusterScenarios["preexisting_unrelated_cluster"] = map[string]interface{}{
-			"clusterCount":         len(g.Clusters),
-			"hasUnrelatedCluster":  g.Clusters[unrelatedVessel] == unrelatedCluster,
-			"hasNewCluster":        g.Clusters[vessel] == cluster,
+			"clusterCount":        len(g.Clusters),
+			"hasUnrelatedCluster": g.Clusters[unrelatedVessel] == unrelatedCluster,
+			"hasNewCluster":       g.Clusters[vessel] == cluster,
 		}
 	}
 
@@ -1163,13 +1163,13 @@ func main() {
 		guard, _ := limits.NewWorkGuard(context.Background(), "test", 1000)
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e}, guard)
 		abductScenarios["one_outgoing_edge"] = map[string]interface{}{
-			"err":             err != nil,
-			"used":            guard.Used(),
-			"abductions":      abductionsToDTO(cluster.EdgeAbductions),
-			"edgeFrom":        fmt.Sprintf("%d", e.From.ID),
-			"edgeTo":          fmt.Sprintf("%d", e.To.ID),
-			"vesselEdgesLen":  len(vessel.Edges),
-			"n1EdgesLen":      len(n1.Edges),
+			"err":            err != nil,
+			"used":           guard.Used(),
+			"abductions":     abductionsToDTO(cluster.EdgeAbductions),
+			"edgeFrom":       fmt.Sprintf("%d", e.From.ID),
+			"edgeTo":         fmt.Sprintf("%d", e.To.ID),
+			"vesselEdgesLen": len(vessel.Edges),
+			"n1EdgesLen":     len(n1.Edges),
 		}
 	}
 
@@ -1189,13 +1189,13 @@ func main() {
 		guard, _ := limits.NewWorkGuard(context.Background(), "test", 1000)
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e}, guard)
 		abductScenarios["one_incoming_edge"] = map[string]interface{}{
-			"err":             err != nil,
-			"used":            guard.Used(),
-			"abductions":      abductionsToDTO(cluster.EdgeAbductions),
-			"edgeFrom":        fmt.Sprintf("%d", e.From.ID),
-			"edgeTo":          fmt.Sprintf("%d", e.To.ID),
-			"vesselEdgesLen":  len(vessel.Edges),
-			"n1EdgesLen":      len(n1.Edges),
+			"err":            err != nil,
+			"used":           guard.Used(),
+			"abductions":     abductionsToDTO(cluster.EdgeAbductions),
+			"edgeFrom":       fmt.Sprintf("%d", e.From.ID),
+			"edgeTo":         fmt.Sprintf("%d", e.To.ID),
+			"vesselEdgesLen": len(vessel.Edges),
+			"n1EdgesLen":     len(n1.Edges),
 		}
 	}
 
@@ -1216,14 +1216,14 @@ func main() {
 		guard, _ := limits.NewWorkGuard(context.Background(), "test", 1000)
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e}, guard)
 		abductScenarios["one_internal_edge"] = map[string]interface{}{
-			"err":             err != nil,
-			"used":            guard.Used(),
-			"abductions":      abductionsToDTO(cluster.EdgeAbductions),
-			"edgeFrom":        fmt.Sprintf("%d", e.From.ID),
-			"edgeTo":          fmt.Sprintf("%d", e.To.ID),
-			"vesselEdgesLen":  len(vessel.Edges), // should be 2!
-			"n1EdgesLen":      len(n1.Edges),
-			"n2EdgesLen":      len(n2.Edges),
+			"err":            err != nil,
+			"used":           guard.Used(),
+			"abductions":     abductionsToDTO(cluster.EdgeAbductions),
+			"edgeFrom":       fmt.Sprintf("%d", e.From.ID),
+			"edgeTo":         fmt.Sprintf("%d", e.To.ID),
+			"vesselEdgesLen": len(vessel.Edges), // should be 2!
+			"n1EdgesLen":     len(n1.Edges),
+			"n2EdgesLen":     len(n2.Edges),
 		}
 	}
 
@@ -1241,13 +1241,13 @@ func main() {
 		guard, _ := limits.NewWorkGuard(context.Background(), "test", 1000)
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e}, guard)
 		abductScenarios["one_self_loop"] = map[string]interface{}{
-			"err":             err != nil,
-			"used":            guard.Used(),
-			"abductions":      abductionsToDTO(cluster.EdgeAbductions),
-			"edgeFrom":        fmt.Sprintf("%d", e.From.ID),
-			"edgeTo":          fmt.Sprintf("%d", e.To.ID),
-			"vesselEdgesLen":  len(vessel.Edges),
-			"n1EdgesLen":      len(n1.Edges),
+			"err":            err != nil,
+			"used":           guard.Used(),
+			"abductions":     abductionsToDTO(cluster.EdgeAbductions),
+			"edgeFrom":       fmt.Sprintf("%d", e.From.ID),
+			"edgeTo":         fmt.Sprintf("%d", e.To.ID),
+			"vesselEdgesLen": len(vessel.Edges),
+			"n1EdgesLen":     len(n1.Edges),
 		}
 	}
 
@@ -1466,16 +1466,16 @@ func main() {
 		err := grouping.AbductClusterEdgesBridge(cluster, []*layoutgraph.Edge{e1, e2}, guard)
 
 		boundaryScenarios["partial_mutation_failure"] = map[string]interface{}{
-			"err":             err != nil,
-			"used":            guard.Used(),
-			"e1From":          fmt.Sprintf("%d", e1.From.ID), // should be vessel (reconnected!)
-			"e1To":            fmt.Sprintf("%d", e1.To.ID),
-			"e2From":          fmt.Sprintf("%d", e2.From.ID), // should still be n2 (NOT reconnected!)
-			"e2To":            fmt.Sprintf("%d", e2.To.ID),
+			"err":              err != nil,
+			"used":             guard.Used(),
+			"e1From":           fmt.Sprintf("%d", e1.From.ID), // should be vessel (reconnected!)
+			"e1To":             fmt.Sprintf("%d", e1.To.ID),
+			"e2From":           fmt.Sprintf("%d", e2.From.ID), // should still be n2 (NOT reconnected!)
+			"e2To":             fmt.Sprintf("%d", e2.To.ID),
 			"sentinelRetained": len(cluster.EdgeAbductions) == 1 && cluster.EdgeAbductions[0] == sentinelAbduction,
-			"vesselEdgesLen":  len(vessel.Edges), // should be 1 (from e1)
-			"n1EdgesLen":      len(n1.Edges),     // should be 0
-			"n2EdgesLen":      len(n2.Edges),     // should be 1
+			"vesselEdgesLen":   len(vessel.Edges), // should be 1 (from e1)
+			"n1EdgesLen":       len(n1.Edges),     // should be 0
+			"n2EdgesLen":       len(n2.Edges),     // should be 1
 		}
 	}
 

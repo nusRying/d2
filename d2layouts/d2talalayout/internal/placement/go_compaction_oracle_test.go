@@ -30,17 +30,17 @@ type slice43Node struct {
 }
 
 type slice43Oracle struct {
-	DeltaTo    map[string]int `json:"deltaTo"`
-	Visibility []slice43Pair  `json:"visibility"`
-	Candidates []slice43Point `json:"candidates"`
+	DeltaTo      map[string]int `json:"deltaTo"`
+	Visibility   []slice43Pair  `json:"visibility"`
+	Candidates   []slice43Point `json:"candidates"`
 	MoveNodeBest struct {
 		Changed bool    `json:"changed"`
 		X       float64 `json:"x"`
 		Y       float64 `json:"y"`
 		Used    uint64  `json:"used"`
 	} `json:"moveNodeBest"`
-	Compaction []slice43Node `json:"compaction"`
-	Transition []slice43Node `json:"transition"`
+	Compaction       []slice43Node `json:"compaction"`
+	Transition       []slice43Node `json:"transition"`
 	OrderedAlongAxis struct {
 		Horizontal []uint64 `json:"horizontal"`
 		Vertical   []uint64 `json:"vertical"`
@@ -52,7 +52,7 @@ type slice43Oracle struct {
 	} `json:"nearestFrom"`
 	CompactionFloor struct {
 		HorizontalSized    float64 `json:"horizontalSized"`
-		HorizontalSizeless  float64 `json:"horizontalSizeless"`
+		HorizontalSizeless float64 `json:"horizontalSizeless"`
 		PaddingBoundary    float64 `json:"paddingBoundary"`
 		VerticalSized      float64 `json:"verticalSized"`
 	} `json:"compactionFloor"`

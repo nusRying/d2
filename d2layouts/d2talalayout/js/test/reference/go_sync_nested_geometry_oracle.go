@@ -133,9 +133,9 @@ func addScenario(out *OracleOutput, name string, g *layoutgraph.Graph, allNodes 
 func main() {
 	out := &OracleOutput{
 		Metadata: map[string]string{
-			"d2BaseCommit":    "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+			"d2BaseCommit":     "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
 			"runtimeGoVersion": runtime.Version(),
-			"slice":           "Slice 26 — Nested Geometry Synchronization",
+			"slice":            "Slice 26 — Nested Geometry Synchronization",
 		},
 		Scenarios: make(map[string]ScenarioResult),
 	}

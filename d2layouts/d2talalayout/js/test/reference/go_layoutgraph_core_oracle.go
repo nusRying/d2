@@ -6,9 +6,10 @@ import (
 	"os"
 	"runtime"
 
+	"strconv"
+
 	"github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph"
 	"github.com/d2lang/d2/lib/geo"
-	"strconv"
 )
 
 type Output struct {
@@ -45,13 +46,13 @@ func main() {
 	g2.AddNodeToContainer(n1, n3)
 
 	outData.Cases["NodeHierarchy"] = map[string]interface{}{
-		"N1Graph":     n1.Graph != nil,
-		"N1Container": n1.Container == nil,
-		"N2Graph":     n2.Graph != nil,
-		"N2Container": n2.Container != nil && n2.Container.ID == 1,
-		"N3Graph":     n3.Graph != nil,
-		"N3Container": n3.Container != nil && n3.Container.ID == 1,
-		"RootNodesCount": len(g2.Containers[nil]),
+		"N1Graph":         n1.Graph != nil,
+		"N1Container":     n1.Container == nil,
+		"N2Graph":         n2.Graph != nil,
+		"N2Container":     n2.Container != nil && n2.Container.ID == 1,
+		"N3Graph":         n3.Graph != nil,
+		"N3Container":     n3.Container != nil && n3.Container.ID == 1,
+		"RootNodesCount":  len(g2.Containers[nil]),
 		"N1ChildrenCount": len(g2.Containers[n1]),
 	}
 
@@ -86,10 +87,10 @@ func main() {
 	}
 
 	outData.Cases["Nears"] = map[string]interface{}{
-		"N4HasN6": n4.Nears[n6] == struct{}{},
-		"N6HasN4": n6.Nears[n4] == struct{}{},
-		"N4HasN5": n4.Nears[n5] == struct{}{},
-		"N5HasN4": n5.Nears[n4] == struct{}{},
+		"N4HasN6":    n4.Nears[n6] == struct{}{},
+		"N6HasN4":    n6.Nears[n4] == struct{}{},
+		"N4HasN5":    n4.Nears[n5] == struct{}{},
+		"N5HasN4":    n5.Nears[n4] == struct{}{},
 		"OrderedIDs": orderedIDs,
 	}
 
@@ -104,8 +105,8 @@ func main() {
 	g3.Connect(n8, n8) // self-loop
 
 	outData.Cases["Edges"] = map[string]interface{}{
-		"E1From": strconv.FormatInt(int64(e1.From.ID), 10),
-		"E1To":   strconv.FormatInt(int64(e1.To.ID), 10),
+		"E1From":       strconv.FormatInt(int64(e1.From.ID), 10),
+		"E1To":         strconv.FormatInt(int64(e1.To.ID), 10),
 		"N8EdgesCount": len(n8.Edges),
 		"N9EdgesCount": len(n9.Edges),
 	}
@@ -113,8 +114,8 @@ func main() {
 	g3.Disconnect(e1)
 	outData.Cases["Disconnect"] = map[string]interface{}{
 		"GraphEdgesCount": len(g3.Edges),
-		"N8EdgesCount": len(n8.Edges),
-		"N9EdgesCount": len(n9.Edges),
+		"N8EdgesCount":    len(n8.Edges),
+		"N9EdgesCount":    len(n9.Edges),
 	}
 
 	// 4b. AddEdge exact object behavior
@@ -221,11 +222,11 @@ func main() {
 	e6.Reconnect(n16, true)  // Reconnect To n9 to n16
 
 	outData.Cases["Reconnect"] = map[string]interface{}{
-		"E6FromID": strconv.FormatInt(int64(e6.From.ID), 10),
-		"E6ToID":   strconv.FormatInt(int64(e6.To.ID), 10),
-		"N8EdgesCount": len(n8.Edges),
+		"E6FromID":      strconv.FormatInt(int64(e6.From.ID), 10),
+		"E6ToID":        strconv.FormatInt(int64(e6.To.ID), 10),
+		"N8EdgesCount":  len(n8.Edges),
 		"N15EdgesCount": len(n15.Edges),
-		"N9EdgesCount": len(n9.Edges),
+		"N9EdgesCount":  len(n9.Edges),
 		"N16EdgesCount": len(n16.Edges),
 	}
 
@@ -253,10 +254,10 @@ func main() {
 	cE7 := g5Cloned.Edges[0]
 
 	outData.Cases["Clone"] = map[string]interface{}{
-		"N17PointerDiff": cN17 != n17,
-		"E7PointerDiff":  cE7 != e7,
-		"N17TopLeftX":    cN17.TopLeft.X,
-		"N17IsContainer": cN17.IsContainer(),
+		"N17PointerDiff":  cN17 != n17,
+		"E7PointerDiff":   cE7 != e7,
+		"N17TopLeftX":     cN17.TopLeft.X,
+		"N17IsContainer":  cN17.IsContainer(),
 		"N18HasContainer": cN18.Container != nil,
 		"N18ContainerID": func() string {
 			if cN18.Container != nil {
@@ -264,10 +265,10 @@ func main() {
 			}
 			return "0"
 		}(),
-		"N17NearsCount":  len(cN17.Nears),
-		"E7FromID":       strconv.FormatInt(int64(cE7.From.ID), 10),
-		"E7ToID":         strconv.FormatInt(int64(cE7.To.ID), 10),
-		"E7Points0X":     cE7.Points[0].X,
+		"N17NearsCount": len(cN17.Nears),
+		"E7FromID":      strconv.FormatInt(int64(cE7.From.ID), 10),
+		"E7ToID":        strconv.FormatInt(int64(cE7.To.ID), 10),
+		"E7Points0X":    cE7.Points[0].X,
 	}
 	b, err := json.MarshalIndent(outData, "", "  ")
 	if err != nil {

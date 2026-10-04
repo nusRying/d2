@@ -255,14 +255,14 @@ func s50Cases() []struct {
 }
 
 type s50CompoundCase struct {
-	Name       string      `json:"name"`
-	Spec       s50Spec     `json:"spec"`
-	Seed       int64       `json:"seed"`
-	Changed    bool        `json:"changed"`
-	Error      string      `json:"error"`
-	Detours    [2]int      `json:"detours"`
-	Candidate  *s50Result  `json:"candidate,omitempty"`
-	Preserved  *s50Result  `json:"preserved,omitempty"`
+	Name      string     `json:"name"`
+	Spec      s50Spec    `json:"spec"`
+	Seed      int64      `json:"seed"`
+	Changed   bool       `json:"changed"`
+	Error     string     `json:"error"`
+	Detours   [2]int     `json:"detours"`
+	Candidate *s50Result `json:"candidate,omitempty"`
+	Preserved *s50Result `json:"preserved,omitempty"`
 }
 
 func s50Capture(out *layoutgraph.Graph) s50Result {

@@ -71,14 +71,14 @@ type ClusterDTO struct {
 }
 
 type ScenarioResult struct {
-	Success          bool                  `json:"success"`
-	ErrorText        *string               `json:"errorText"`
-	WorkGuardUsed    int64                 `json:"workGuardUsed"`
-	RandomNextInt63  string                `json:"randomNextInt63"`
-	Nodes            []string              `json:"nodes"`
-	Clusters         map[string]ClusterDTO `json:"clusters"`
-	Containers       map[string][]string   `json:"containers"`
-	Edges            []EdgeDTO             `json:"edges"`
+	Success         bool                  `json:"success"`
+	ErrorText       *string               `json:"errorText"`
+	WorkGuardUsed   int64                 `json:"workGuardUsed"`
+	RandomNextInt63 string                `json:"randomNextInt63"`
+	Nodes           []string              `json:"nodes"`
+	Clusters        map[string]ClusterDTO `json:"clusters"`
+	Containers      map[string][]string   `json:"containers"`
+	Edges           []EdgeDTO             `json:"edges"`
 }
 
 func main() {
@@ -164,10 +164,10 @@ func buildHelperCoverage(out *OracleOutput) {
 		Distance     float64 `json:"distance"`
 	}
 	distDefs := []struct {
-		name                   string
-		ax, ay, aw, ah         float64
-		bx, by, bw, bh         float64
-		includeSizes           bool
+		name           string
+		ax, ay, aw, ah float64
+		bx, by, bw, bh float64
+		includeSizes   bool
 	}{
 		{"horizontal_separated", 0, 0, 10, 10, 20, 0, 10, 10, true},
 		{"horizontal_without_sizes", 0, 0, 10, 10, 20, 0, 10, 10, false},
@@ -202,13 +202,13 @@ func buildHelperCoverage(out *OracleOutput) {
 
 	// 3. averageClusterDimensions Cases
 	type avgDimCase struct {
-		Name     string    `json:"name"`
-		Widths   []float64 `json:"widths"`
-		Heights  []float64 `json:"heights"`
-		OutW     *float64  `json:"outW"`
-		OutH     *float64  `json:"outH"`
-		IsNaNW   bool      `json:"isNaNW"`
-		IsNaNH   bool      `json:"isNaNH"`
+		Name    string    `json:"name"`
+		Widths  []float64 `json:"widths"`
+		Heights []float64 `json:"heights"`
+		OutW    *float64  `json:"outW"`
+		OutH    *float64  `json:"outH"`
+		IsNaNW  bool      `json:"isNaNW"`
+		IsNaNH  bool      `json:"isNaNH"`
 	}
 	avgDefs := []struct {
 		name    string

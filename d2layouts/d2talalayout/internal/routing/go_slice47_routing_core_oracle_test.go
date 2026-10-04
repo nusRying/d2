@@ -62,15 +62,15 @@ type s47rcNodeSpec struct {
 }
 
 type s47rcEdgeSpec struct {
-	ID       int      `json:"id"`
-	From     uint64   `json:"from"`
-	To       uint64   `json:"to"`
-	Directed bool     `json:"directed"`
-	SrcArrow string   `json:"src_arrow,omitempty"`
-	TgtArrow string   `json:"tgt_arrow,omitempty"`
-	SrcLabel string   `json:"src_label,omitempty"`
-	TgtLabel string   `json:"tgt_label,omitempty"`
-	Label    string   `json:"label,omitempty"`
+	ID       int       `json:"id"`
+	From     uint64    `json:"from"`
+	To       uint64    `json:"to"`
+	Directed bool      `json:"directed"`
+	SrcArrow string    `json:"src_arrow,omitempty"`
+	TgtArrow string    `json:"tgt_arrow,omitempty"`
+	SrcLabel string    `json:"src_label,omitempty"`
+	TgtLabel string    `json:"tgt_label,omitempty"`
+	Label    string    `json:"label,omitempty"`
 	Points   []s47rcPt `json:"points,omitempty"`
 }
 
@@ -85,20 +85,20 @@ type s47rcSequenceSpec struct {
 }
 
 type s47rcRouteEdgesResult struct {
-	Name    string                 `json:"name"`
-	Success bool                   `json:"success"`
-	Err     string                 `json:"err,omitempty"`
-	Edges   map[int][]s47rcPt      `json:"edges,omitempty"`
+	Name    string            `json:"name"`
+	Success bool              `json:"success"`
+	Err     string            `json:"err,omitempty"`
+	Edges   map[int][]s47rcPt `json:"edges,omitempty"`
 }
 
 type s47rcRouteGraphResult struct {
-	Name             string                 `json:"name"`
-	Success          bool                   `json:"success"`
-	RoutingCompleted bool                   `json:"routing_completed"`
-	SubgraphsRouted  int                    `json:"subgraphs_routed"`
-	Err              string                 `json:"err,omitempty"`
-	Edges            map[int][]s47rcPt      `json:"edges,omitempty"`
-	NodeOwners       map[uint64]string      `json:"node_owners,omitempty"`
+	Name             string            `json:"name"`
+	Success          bool              `json:"success"`
+	RoutingCompleted bool              `json:"routing_completed"`
+	SubgraphsRouted  int               `json:"subgraphs_routed"`
+	Err              string            `json:"err,omitempty"`
+	Edges            map[int][]s47rcPt `json:"edges,omitempty"`
+	NodeOwners       map[uint64]string `json:"node_owners,omitempty"`
 }
 
 type s47rcWorkBudgetResult struct {
@@ -440,7 +440,7 @@ func TestSlice47RoutingCoreReferenceOracle(t *testing.T) {
 			},
 		},
 		{
-			Name: "existing-complete-routes",
+			Name:                      "existing-complete-routes",
 			RoutesPreviouslyCompleted: true,
 			Nodes: []s47rcNodeSpec{
 				{ID: 1, X: 100, Y: 100, W: 60, H: 40},

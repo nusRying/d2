@@ -603,7 +603,13 @@ func main() {
 		out.Scenarios["rdfs_nil_guard_non_container_root"] = map[string]interface{}{
 			"success": err == nil,
 			"order":   orderIds,
-			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+			"error": func() interface{} {
+				if err != nil {
+					return err.Error()
+				} else {
+					return nil
+				}
+			}(),
 		}
 	}
 
@@ -618,7 +624,13 @@ func main() {
 		out.Scenarios["rdfs_nil_guard_empty_root"] = map[string]interface{}{
 			"success": err == nil,
 			"order":   orderIds,
-			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+			"error": func() interface{} {
+				if err != nil {
+					return err.Error()
+				} else {
+					return nil
+				}
+			}(),
 		}
 	}
 
@@ -638,7 +650,13 @@ func main() {
 		out.Scenarios["large_repeated_references"] = map[string]interface{}{
 			"success": err == nil,
 			"count":   count,
-			"error":   func() interface{} { if err != nil { return err.Error() } else { return nil } }(),
+			"error": func() interface{} {
+				if err != nil {
+					return err.Error()
+				} else {
+					return nil
+				}
+			}(),
 		}
 	}
 

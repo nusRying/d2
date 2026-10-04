@@ -41,7 +41,7 @@ type SyncClusterScenarioResult struct {
 }
 
 type OracleOutput struct {
-	Metadata             map[string]string                     `json:"metadata"`
+	Metadata             map[string]string                    `json:"metadata"`
 	RDFSScenarios        map[string]RDFSScenarioResult        `json:"rdfsScenarios"`
 	SyncClusterScenarios map[string]SyncClusterScenarioResult `json:"syncClusterScenarios"`
 }

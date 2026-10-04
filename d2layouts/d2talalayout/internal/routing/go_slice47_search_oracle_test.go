@@ -62,16 +62,16 @@ type s47sNodeSpec struct {
 }
 
 type s47sEdgeSpec struct {
-	From      uint64 `json:"from"`
-	To        uint64 `json:"to"`
-	FromCol   *int   `json:"from_col,omitempty"`
-	ToCol     *int   `json:"to_col,omitempty"`
-	Directed  bool   `json:"directed"`
-	SrcArrow  string `json:"src_arrow,omitempty"`
-	TgtArrow  string `json:"tgt_arrow,omitempty"`
-	SrcLabel  string `json:"src_label,omitempty"`
-	TgtLabel  string `json:"tgt_label,omitempty"`
-	Label     string `json:"label,omitempty"`
+	From     uint64 `json:"from"`
+	To       uint64 `json:"to"`
+	FromCol  *int   `json:"from_col,omitempty"`
+	ToCol    *int   `json:"to_col,omitempty"`
+	Directed bool   `json:"directed"`
+	SrcArrow string `json:"src_arrow,omitempty"`
+	TgtArrow string `json:"tgt_arrow,omitempty"`
+	SrcLabel string `json:"src_label,omitempty"`
+	TgtLabel string `json:"tgt_label,omitempty"`
+	Label    string `json:"label,omitempty"`
 }
 
 type s47sClusterSpec struct {
@@ -112,8 +112,8 @@ type s47sPQItem struct {
 }
 
 type s47sPQCase struct {
-	Name    string       `json:"name"`
-	Pops    []s47sPQItem `json:"pops"`
+	Name string       `json:"name"`
+	Pops []s47sPQItem `json:"pops"`
 }
 
 type s47sReferenceData struct {
@@ -321,8 +321,8 @@ func getSearchCaseSpecs() []s47sCaseSpec {
 			Nodes: []s47sNodeSpec{
 				{ID: 1, X: 0, Y: 0, W: 40, H: 40},
 				{ID: 2, X: 120, Y: 120, W: 40, H: 40},
-				{ID: 3, X: 90, Y: 0, W: 20, H: 40},  // blocks direct L top
-				{ID: 4, X: 0, Y: 90, W: 40, H: 20},  // blocks direct L bottom
+				{ID: 3, X: 90, Y: 0, W: 20, H: 40}, // blocks direct L top
+				{ID: 4, X: 0, Y: 90, W: 40, H: 20}, // blocks direct L bottom
 			},
 			Edges: []s47sEdgeSpec{
 				{From: 1, To: 2, TgtArrow: "triangle"},

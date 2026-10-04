@@ -14,13 +14,13 @@ import (
 )
 
 type NodeState struct {
-	ID                     int64   `json:"id"`
-	HasAssignment          bool    `json:"hasAssignment"`
-	Orientation            string  `json:"orientation,omitempty"`
-	OrientationInt         int     `json:"orientationInt,omitempty"`
-	Val                    float64 `json:"val,omitempty"`
-	SameSidePairCount      int     `json:"sameSidePairCount,omitempty"`
-	OppositeSidePairCount  int     `json:"oppositeSidePairCount,omitempty"`
+	ID                    int64   `json:"id"`
+	HasAssignment         bool    `json:"hasAssignment"`
+	Orientation           string  `json:"orientation,omitempty"`
+	OrientationInt        int     `json:"orientationInt,omitempty"`
+	Val                   float64 `json:"val,omitempty"`
+	SameSidePairCount     int     `json:"sameSidePairCount,omitempty"`
+	OppositeSidePairCount int     `json:"oppositeSidePairCount,omitempty"`
 }
 
 type ApplyVirallyResult struct {

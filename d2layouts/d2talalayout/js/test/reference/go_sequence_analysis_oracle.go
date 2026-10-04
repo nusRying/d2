@@ -548,7 +548,7 @@ func main() {
 		g.Connect(s1, s2)
 
 		vessel := layoutgraph.NewNode(100, 40, 30) // Width > 0
-		vessel.Graph = g                            // IsActive() true
+		vessel.Graph = g                           // IsActive() true
 		seq := &layoutgraph.Sequence{Vessel: vessel, Graph: g}
 		s1.Sequence = seq
 		s2.Sequence = seq
