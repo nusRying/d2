@@ -106,6 +106,9 @@ jobs:
       - name: Test nodeshape
         run: go test -count=1 ./d2layouts/d2talalayout/internal/nodeshape/...
 
+      - name: Test routing
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/routing/...
+
   hygiene:
     name: Diff hygiene
     runs-on: ubuntu-latest
