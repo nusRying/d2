@@ -1,7 +1,5 @@
 //go:build ignore
 
-//go:build tala_cluster_discovery_oracle
-
 package main
 
 import (

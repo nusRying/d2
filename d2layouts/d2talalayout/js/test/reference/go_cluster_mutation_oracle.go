@@ -1,7 +1,5 @@
 //go:build ignore
 
-//go:build tala_cluster_mutation_oracle
-
 package main
 
 import (
