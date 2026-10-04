@@ -15,6 +15,7 @@
     "docs/ADR-001-ELK-CONTRACT.md"
   ],
   "scripts": {
-    "test": "bun test"
+    "test": "bun test",
+    "demo": "bun demo/server.js"
   }
 }
