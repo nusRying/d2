@@ -1,0 +1,144 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/limits",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "constants": {
+    "MaxBinPackWorkUnits": "1000000000",
+    "MaxEngineEdges": 50000,
+    "MaxEngineNodes": 10000,
+    "MaxEngineRoutePoints": 1000000,
+    "MaxEngineTreeDepth": 256,
+    "MaxEngineWorkUnits": "61440000",
+    "MaxGraphSize": 30000,
+    "MaxLabelPlacementWorkUnits": "50000000",
+    "MaxPlaceTreesWorkUnits": "68000000",
+    "MaxTransactionOverlapReferences": "4000000",
+    "MaxTransactionWorkUnits": "1000000000"
+  },
+  "scenarios": {
+    "add_0_canceled_at_exact_boundary": {
+      "kind": "canceled",
+      "message": "addZeroBoundary: context canceled",
+      "used": "0"
+    },
+    "add_0_canceled_away_from_boundary": {
+      "kind": "none",
+      "message": "",
+      "used": "1"
+    },
+    "add_accepted_crossing_cancellation_boundary": {
+      "kind": "canceled",
+      "message": "addAcceptedCross: context canceled",
+      "used": "1025"
+    },
+    "add_accepted_without_crossing_boundary": {
+      "kind": "none",
+      "message": "",
+      "used": "101"
+    },
+    "add_huge_math_max_int64_charge": {
+      "kind": "workLimit",
+      "message": "TALA hugeChargeSmallLimit work exceeds limit 100",
+      "used": "101"
+    },
+    "add_huge_math_max_int64_with_max_limit": {
+      "kind": "workLimit",
+      "message": "TALA hugeChargeMaxLimit work exceeds limit 9223372036854775807",
+      "used": "-9223372036854775808"
+    },
+    "add_negative": {
+      "kind": "validation",
+      "message": "TALA addNegative work charge must not be negative",
+      "used": "1"
+    },
+    "add_overflow_crossing_boundary_cancellation_precedence": {
+      "kind": "canceled",
+      "message": "overflowCancelPrecedence: context canceled",
+      "used": "1025"
+    },
+    "add_overflow_without_accepted_boundary_work_limit_precedence": {
+      "kind": "workLimit",
+      "message": "TALA overflowWorkLimitPrecedence work exceeds limit 1023",
+      "used": "1024"
+    },
+    "already_canceled_constructor": {
+      "kind": "canceled",
+      "message": "alreadyCanceled: context canceled",
+      "used": "0"
+    },
+    "cached_done_stride_retained": {
+      "kind": "canceled",
+      "message": "cachedDoneStride: context canceled",
+      "used": "64"
+    },
+    "check_immediate_cancellation": {
+      "kind": "canceled",
+      "message": "checkImmediate: context canceled",
+      "used": "1"
+    },
+    "empty_location_canceled": {
+      "kind": "canceled",
+      "message": ": context canceled",
+      "used": "0"
+    },
+    "finish_immediate_cancellation": {
+      "kind": "canceled",
+      "message": "finishImmediate: context canceled",
+      "used": "1"
+    },
+    "limit_two_three_steps": {
+      "kind": "workLimit",
+      "message": "TALA limitTwo work exceeds limit 2",
+      "used": "3"
+    },
+    "negative_initial_limit": {
+      "kind": "validation",
+      "message": "TALA negativeLimit work limit must not be negative",
+      "used": "0"
+    },
+    "nil_done_context_step_cancellation_at_64": {
+      "kind": "canceled",
+      "message": "nilDoneStride64: context canceled",
+      "used": "64"
+    },
+    "null_context": {
+      "kind": "validation",
+      "message": "TALA nullContext requires a context",
+      "used": "0"
+    },
+    "set_limit_lower_without_reset": {
+      "kind": "workLimit",
+      "message": "TALA setLimitLower work exceeds limit 2",
+      "used": "4"
+    },
+    "set_limit_negative": {
+      "kind": "workLimit",
+      "message": "TALA setNegative work exceeds limit -5",
+      "used": "1"
+    },
+    "set_limit_raise_without_reset": {
+      "kind": "none",
+      "message": "",
+      "used": "3"
+    },
+    "standard_context_step_cancellation_at_1024": {
+      "kind": "canceled",
+      "message": "stdStride1024: context canceled",
+      "used": "1024"
+    },
+    "step_int64_wrap": {
+      "kind": "none",
+      "message": "",
+      "used": "-9223372036854775808"
+    },
+    "zero_limit_first_step": {
+      "kind": "workLimit",
+      "message": "TALA zeroLimit work exceeds limit 0",
+      "used": "1"
+    }
+  }
+}

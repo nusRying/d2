@@ -1,0 +1,310 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/nodeshape",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "recognizedShapes": [
+    {
+      "input": "",
+      "shapeType": "",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Callout",
+      "shapeType": "Callout",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Circle",
+      "shapeType": "Circle",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": true
+    },
+    {
+      "input": "Cloud",
+      "shapeType": "Cloud",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Cylinder",
+      "shapeType": "Cylinder",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Diamond",
+      "shapeType": "Diamond",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Document",
+      "shapeType": "Document",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Hexagon",
+      "shapeType": "Hexagon",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Image",
+      "shapeType": "Image",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Oval",
+      "shapeType": "Oval",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Package",
+      "shapeType": "Package",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Page",
+      "shapeType": "Page",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Parallelogram",
+      "shapeType": "Parallelogram",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Person",
+      "shapeType": "Person",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "C4Person",
+      "shapeType": "C4Person",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Queue",
+      "shapeType": "Queue",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "RealSquare",
+      "shapeType": "RealSquare",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": true
+    },
+    {
+      "input": "Square",
+      "shapeType": "Square",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Step",
+      "shapeType": "Step",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": true,
+      "aspectRatio1": false
+    },
+    {
+      "input": "StoredData",
+      "shapeType": "StoredData",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Text",
+      "shapeType": "Text",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Class",
+      "shapeType": "Class",
+      "isTable": false,
+      "isClass": true,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Table",
+      "shapeType": "Table",
+      "isTable": true,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "input": "Code",
+      "shapeType": "Code",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    }
+  ],
+  "unsupportedCases": [
+    {
+      "initialShape": "Step",
+      "attemptedShape": "unsupported",
+      "resultShapeType": "Step",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": true,
+      "aspectRatio1": false
+    },
+    {
+      "initialShape": "Step",
+      "attemptedShape": "circle",
+      "resultShapeType": "Step",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": true,
+      "aspectRatio1": false
+    },
+    {
+      "initialShape": "Table",
+      "attemptedShape": "table_invalid",
+      "resultShapeType": "Table",
+      "isTable": true,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    },
+    {
+      "initialShape": "Circle",
+      "attemptedShape": "non_existent",
+      "resultShapeType": "Circle",
+      "isTable": false,
+      "isClass": false,
+      "isSequenceStep": false,
+      "aspectRatio1": true
+    },
+    {
+      "initialShape": "Class",
+      "attemptedShape": "square",
+      "resultShapeType": "Class",
+      "isTable": false,
+      "isClass": true,
+      "isSequenceStep": false,
+      "aspectRatio1": false
+    }
+  ],
+  "sameShapeCases": [
+    {
+      "shapeA": "Table",
+      "shapeB": "Table",
+      "result": true
+    },
+    {
+      "shapeA": "Class",
+      "shapeB": "Class",
+      "result": true
+    },
+    {
+      "shapeA": "Step",
+      "shapeB": "Step",
+      "result": true
+    },
+    {
+      "shapeA": "Circle",
+      "shapeB": "Circle",
+      "result": true
+    },
+    {
+      "shapeA": "RealSquare",
+      "shapeB": "RealSquare",
+      "result": true
+    },
+    {
+      "shapeA": "Square",
+      "shapeB": "Square",
+      "result": true
+    },
+    {
+      "shapeA": "",
+      "shapeB": "",
+      "result": true
+    },
+    {
+      "shapeA": "",
+      "shapeB": "Square",
+      "result": true
+    },
+    {
+      "shapeA": "Table",
+      "shapeB": "Class",
+      "result": false
+    },
+    {
+      "shapeA": "Circle",
+      "shapeB": "RealSquare",
+      "result": false
+    },
+    {
+      "shapeA": "Step",
+      "shapeB": "Square",
+      "result": false
+    },
+    {
+      "shapeA": "Document",
+      "shapeB": "Page",
+      "result": false
+    }
+  ]
+}

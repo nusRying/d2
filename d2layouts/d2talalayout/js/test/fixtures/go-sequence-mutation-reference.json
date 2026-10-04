@@ -1,0 +1,1768 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/grouping",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "scenarios": {
+    "abductSequenceEdges": {
+      "direct_abduction": {
+        "abductions": [
+          {
+            "currentFrom": "999",
+            "currentTo": "3",
+            "edgeID": "201",
+            "originallyFrom": "1",
+            "originallyTo": null
+          },
+          {
+            "currentFrom": "4",
+            "currentTo": "999",
+            "edgeID": "202",
+            "originallyFrom": null,
+            "originallyTo": "2"
+          }
+        ],
+        "eInFrom": "4",
+        "eInTo": "999",
+        "eInternalFrom": "1",
+        "eInternalTo": "2",
+        "eOutFrom": "999",
+        "eOutTo": "3"
+      }
+    },
+    "addSequence": {
+      "direct_add_sequence": {
+        "containerChildren": [
+          "11",
+          "12",
+          "500"
+        ],
+        "s1Container": null,
+        "s1Graph": true,
+        "s1InGraphNodes": false,
+        "s1SequencePointsSeq": true,
+        "s2Container": null,
+        "s2Graph": true,
+        "s2InGraphNodes": false,
+        "s2SequencePointsSeq": true,
+        "seqInMap": true,
+        "vesselContainer": "10",
+        "vesselGraph": true,
+        "vesselInGraphNodes": true
+      }
+    },
+    "addSequences": {
+      "container_step_skipped": {
+        "nodes": [
+          "1",
+          "2"
+        ],
+        "edges": [
+          {
+            "id": "10",
+            "from": "1",
+            "to": "2"
+          }
+        ],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "1",
+              "2"
+            ]
+          }
+        ],
+        "sequences": [],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "5577006791947779410"
+      },
+      "external_edge_abduction": {
+        "nodes": [
+          "3",
+          "4",
+          "7414159922357799360"
+        ],
+        "edges": [
+          {
+            "id": "2",
+            "from": "7414159922357799360",
+            "to": "3"
+          },
+          {
+            "id": "3",
+            "from": "4",
+            "to": "7414159922357799360"
+          }
+        ],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "3",
+              "4",
+              "7414159922357799360"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "7414159922357799360",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": [
+              {
+                "edgeID": "2",
+                "originallyFrom": "2",
+                "originallyTo": null,
+                "currentFrom": "7414159922357799360",
+                "currentTo": "3"
+              },
+              {
+                "edgeID": "3",
+                "originallyFrom": null,
+                "originallyTo": "1",
+                "currentFrom": "4",
+                "currentTo": "7414159922357799360"
+              }
+            ]
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "7414159922357799360",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "7414159922357799360",
+            "inGraph": false
+          },
+          {
+            "id": "3",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "4",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "7414159922357799360",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "4792641634685506511"
+      },
+      "fixed_step_skipped": {
+        "nodes": [
+          "1",
+          "2"
+        ],
+        "edges": [
+          {
+            "id": "10",
+            "from": "1",
+            "to": "2"
+          }
+        ],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "1",
+              "2"
+            ]
+          }
+        ],
+        "sequences": [],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "5577006791947779410"
+      },
+      "multiple_containers_rdfs": {
+        "nodes": [
+          "100",
+          "200",
+          "2431074399724039541",
+          "5864379541603903257"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "100",
+              "200"
+            ]
+          },
+          {
+            "container": "100",
+            "children": [
+              "5864379541603903257"
+            ]
+          },
+          {
+            "container": "200",
+            "children": [
+              "2431074399724039541"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "2431074399724039541",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "200",
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          },
+          {
+            "vesselID": "5864379541603903257",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "100",
+            "members": [
+              "3",
+              "4"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "2431074399724039541",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "2431074399724039541",
+            "inGraph": false
+          },
+          {
+            "id": "3",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5864379541603903257",
+            "inGraph": false
+          },
+          {
+            "id": "4",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5864379541603903257",
+            "inGraph": false
+          },
+          {
+            "id": "100",
+            "width": 100,
+            "height": 100,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "200",
+            "width": 100,
+            "height": 100,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "2431074399724039541",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "200",
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "5864379541603903257",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "100",
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "6196522365232470547"
+      },
+      "narrow_step_geometry": {
+        "nodes": [
+          "4151935814835861840"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "4151935814835861840"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "4151935814835861840",
+            "width": 105,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 70,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "4151935814835861840",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 70,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "4151935814835861840",
+            "inGraph": false
+          },
+          {
+            "id": "4151935814835861840",
+            "width": 105,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "6286009118143945807"
+      },
+      "nested_containers": {
+        "nodes": [
+          "10",
+          "20",
+          "5361704182646325489"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "10"
+            ]
+          },
+          {
+            "container": "10",
+            "children": [
+              "20"
+            ]
+          },
+          {
+            "container": "20",
+            "children": [
+              "5361704182646325489"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "5361704182646325489",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "20",
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5361704182646325489",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5361704182646325489",
+            "inGraph": false
+          },
+          {
+            "id": "10",
+            "width": 100,
+            "height": 100,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "20",
+            "width": 80,
+            "height": 80,
+            "topLeft": null,
+            "container": "10",
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "5361704182646325489",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": "20",
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "241876450138978746"
+      },
+      "no_sequence_candidates": {
+        "nodes": [
+          "1",
+          "2"
+        ],
+        "edges": [
+          {
+            "id": "10",
+            "from": "1",
+            "to": "2"
+          }
+        ],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "1",
+              "2"
+            ]
+          }
+        ],
+        "sequences": [],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "5577006791947779410"
+      },
+      "ordinary_id_collision_seed_19": {
+        "expectedVessel": "5674494734864815534",
+        "fingerprint": {
+          "nodes": [
+            "5674494734864815533",
+            "5674494734864815534"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "5674494734864815533",
+                "5674494734864815534"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "5674494734864815534",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "members": [
+                "100",
+                "101"
+              ],
+              "edgeAbductions": null
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "100",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "5674494734864815534",
+              "inGraph": false
+            },
+            {
+              "id": "101",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "5674494734864815534",
+              "inGraph": false
+            },
+            {
+              "id": "5674494734864815533",
+              "width": 10,
+              "height": 10,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "5674494734864815534",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "6065253122432684137"
+        },
+        "firstDraw": "5674494734864815533",
+        "nextDraw": "8867122987932565385",
+        "probeNextDraw": "8867122987932565385",
+        "resolvedVessel": "5674494734864815534",
+        "streamParity": true
+      },
+      "positioned_step_geometry": {
+        "nodes": [
+          "8475284246537043955"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "8475284246537043955"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "8475284246537043955",
+            "width": 45,
+            "height": 30,
+            "topLeft": {
+              "x": 25,
+              "y": 15
+            },
+            "container": null,
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": {
+              "x": 25,
+              "y": 40
+            },
+            "container": null,
+            "sequence": "8475284246537043955",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": {
+              "x": 60,
+              "y": 15
+            },
+            "container": null,
+            "sequence": "8475284246537043955",
+            "inGraph": false
+          },
+          {
+            "id": "8475284246537043955",
+            "width": 45,
+            "height": 30,
+            "topLeft": {
+              "x": 25,
+              "y": 15
+            },
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "2135276795452531224"
+      },
+      "remembered_ids_reserved_across_containers_seed_73": {
+        "allVesselIDs": [
+          "2606010580454958934",
+          "2606010580454958935",
+          "6968770674466368454"
+        ],
+        "fingerprint": {
+          "nodes": [
+            "100",
+            "200",
+            "6968770674466368454",
+            "2606010580454958935",
+            "2606010580454958934"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "100",
+                "200"
+              ]
+            },
+            {
+              "container": "100",
+              "children": [
+                "2606010580454958934"
+              ]
+            },
+            {
+              "container": "200",
+              "children": [
+                "6968770674466368454",
+                "2606010580454958935"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "2606010580454958934",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "100",
+              "members": [
+                "3",
+                "4"
+              ],
+              "edgeAbductions": null
+            },
+            {
+              "vesselID": "2606010580454958935",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "200",
+              "members": [
+                "5",
+                "6"
+              ],
+              "edgeAbductions": null
+            },
+            {
+              "vesselID": "6968770674466368454",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "200",
+              "members": [
+                "1",
+                "2"
+              ],
+              "edgeAbductions": null
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "6968770674466368454",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "6968770674466368454",
+              "inGraph": false
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "2606010580454958934",
+              "inGraph": false
+            },
+            {
+              "id": "4",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "2606010580454958934",
+              "inGraph": false
+            },
+            {
+              "id": "5",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "2606010580454958935",
+              "inGraph": false
+            },
+            {
+              "id": "6",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "2606010580454958935",
+              "inGraph": false
+            },
+            {
+              "id": "100",
+              "width": 100,
+              "height": 100,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "200",
+              "width": 100,
+              "height": 100,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2606010580454958934",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "100",
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2606010580454958935",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "200",
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "6968770674466368454",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": "200",
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "3196298685220924445"
+        },
+        "newADidNotReuseB": true,
+        "newAVesselID": "2606010580454958935",
+        "oldAID": "6968770674466368454",
+        "oldBID": "2606010580454958934",
+        "sequenceCount": 3
+      },
+      "removed_remembered_member": {
+        "fingerprint": {
+          "nodes": [
+            "1"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": false
+            }
+          ],
+          "nextInt63": "2244708090865615074"
+        },
+        "s2InNodes": false,
+        "seqCount": 0
+      },
+      "repeated_deterministic_reconstruction": {
+        "areEqual": true,
+        "fingerprintA": {
+          "nodes": [
+            "99",
+            "3440579354231278675"
+          ],
+          "edges": [
+            {
+              "id": "12",
+              "from": "3440579354231278675",
+              "to": "99"
+            }
+          ],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "99",
+                "3440579354231278675"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "members": [
+                "1",
+                "2",
+                "3"
+              ],
+              "edgeAbductions": [
+                {
+                  "edgeID": "12",
+                  "originallyFrom": "3",
+                  "originallyTo": null,
+                  "currentFrom": "3440579354231278675",
+                  "currentTo": "99"
+                }
+              ]
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 15,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 20,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "99",
+              "width": 50,
+              "height": 50,
+              "topLeft": {
+                "x": 200,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "608747136543856411"
+        },
+        "fingerprintB": {
+          "nodes": [
+            "99",
+            "3440579354231278675"
+          ],
+          "edges": [
+            {
+              "id": "12",
+              "from": "3440579354231278675",
+              "to": "99"
+            }
+          ],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "99",
+                "3440579354231278675"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "members": [
+                "1",
+                "2",
+                "3"
+              ],
+              "edgeAbductions": [
+                {
+                  "edgeID": "12",
+                  "originallyFrom": "3",
+                  "originallyTo": null,
+                  "currentFrom": "3440579354231278675",
+                  "currentTo": "99"
+                }
+              ]
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 15,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": {
+                "x": 20,
+                "y": 20
+              },
+              "container": null,
+              "sequence": "3440579354231278675",
+              "inGraph": false
+            },
+            {
+              "id": "99",
+              "width": 50,
+              "height": 50,
+              "topLeft": {
+                "x": 200,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "3440579354231278675",
+              "width": 50,
+              "height": 30,
+              "topLeft": {
+                "x": 10,
+                "y": 20
+              },
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "608747136543856411"
+        }
+      },
+      "simple_two_step": {
+        "nodes": [
+          "5577006791947779410"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "5577006791947779410"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "5577006791947779410",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5577006791947779410",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "5577006791947779410",
+            "inGraph": false
+          },
+          {
+            "id": "5577006791947779410",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "8674665223082153551"
+      },
+      "stale_remembered_container": {
+        "fingerprint": {
+          "nodes": [
+            "10",
+            "20",
+            "1",
+            "2",
+            "2"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "10",
+                "20"
+              ]
+            },
+            {
+              "container": "10",
+              "children": [
+                "1"
+              ]
+            },
+            {
+              "container": "20",
+              "children": [
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": "10",
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": "20",
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "10",
+              "width": 100,
+              "height": 100,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "20",
+              "width": 100,
+              "height": 100,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "1543039099823358511"
+        },
+        "seqCount": 0
+      },
+      "stale_remembered_membership": {
+        "fingerprint": {
+          "nodes": [
+            "1",
+            "2"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "7414159922357799360"
+        },
+        "s1Seq": true,
+        "s2Seq": true,
+        "seqCount": 0
+      },
+      "stale_remembered_noncontiguous": {
+        "fingerprint": {
+          "nodes": [
+            "1",
+            "2"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "1",
+                "3",
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "3",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": false
+            }
+          ],
+          "nextInt63": "6640668014774057861"
+        },
+        "seqCount": 0
+      },
+      "stale_remembered_shape": {
+        "fingerprint": {
+          "nodes": [
+            "1",
+            "2"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "1",
+                "2"
+              ]
+            }
+          ],
+          "sequences": [],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "1543039099823358511"
+        },
+        "s1Seq": true,
+        "s2Seq": true,
+        "seqCount": 0
+      },
+      "three_step_chain": {
+        "nodes": [
+          "3440579354231278675"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "3440579354231278675"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "3440579354231278675",
+            "width": 50,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "1",
+              "2",
+              "3"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "3440579354231278675",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "3440579354231278675",
+            "inGraph": false
+          },
+          {
+            "id": "3",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "3440579354231278675",
+            "inGraph": false
+          },
+          {
+            "id": "3440579354231278675",
+            "width": 50,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "608747136543856411"
+      },
+      "two_separate_runs": {
+        "nodes": [
+          "8870694286263313460",
+          "8017762786214767318"
+        ],
+        "edges": [],
+        "containers": [
+          {
+            "container": null,
+            "children": [
+              "8870694286263313460",
+              "8017762786214767318"
+            ]
+          }
+        ],
+        "sequences": [
+          {
+            "vesselID": "8017762786214767318",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "3",
+              "4"
+            ],
+            "edgeAbductions": null
+          },
+          {
+            "vesselID": "8870694286263313460",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "members": [
+              "1",
+              "2"
+            ],
+            "edgeAbductions": null
+          }
+        ],
+        "allNodes": [
+          {
+            "id": "1",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "8870694286263313460",
+            "inGraph": false
+          },
+          {
+            "id": "2",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "8870694286263313460",
+            "inGraph": false
+          },
+          {
+            "id": "3",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "8017762786214767318",
+            "inGraph": false
+          },
+          {
+            "id": "4",
+            "width": 40,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": "8017762786214767318",
+            "inGraph": false
+          },
+          {
+            "id": "8017762786214767318",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          },
+          {
+            "id": "8870694286263313460",
+            "width": 45,
+            "height": 30,
+            "topLeft": null,
+            "container": null,
+            "sequence": null,
+            "inGraph": true
+          }
+        ],
+        "nextInt63": "1284141128648234027"
+      },
+      "valid_remembered_rebuild": {
+        "fingerprint": {
+          "nodes": [
+            "5577006791947779410"
+          ],
+          "edges": [],
+          "containers": [
+            {
+              "container": null,
+              "children": [
+                "5577006791947779410"
+              ]
+            }
+          ],
+          "sequences": [
+            {
+              "vesselID": "5577006791947779410",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "members": [
+                "1",
+                "2"
+              ],
+              "edgeAbductions": null
+            }
+          ],
+          "allNodes": [
+            {
+              "id": "1",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "5577006791947779410",
+              "inGraph": false
+            },
+            {
+              "id": "2",
+              "width": 40,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": "5577006791947779410",
+              "inGraph": false
+            },
+            {
+              "id": "5577006791947779410",
+              "width": 45,
+              "height": 30,
+              "topLeft": null,
+              "container": null,
+              "sequence": null,
+              "inGraph": true
+            }
+          ],
+          "nextInt63": "8900428526077522931"
+        },
+        "idsMatch": true,
+        "newVesselID": "5577006791947779410",
+        "oldVesselID": "5577006791947779410"
+      }
+    },
+    "buildSequence": {
+      "all_negative_heights": {
+        "height1": 0,
+        "height2": 0
+      },
+      "external_and_internal_edges": {
+        "abductionsCount": 2,
+        "incomingCurrentFrom": "5",
+        "incomingCurrentTo": "800",
+        "internalFrom": "1",
+        "internalTo": "3",
+        "outgoingCurrentFrom": "800",
+        "outgoingCurrentTo": "4"
+      },
+      "narrow_width": {
+        "sNormWidth": 50,
+        "snWidth": 70
+      },
+      "parallel_defining_edges": {
+        "disconnectedEdgeID": "101",
+        "remainingEdges": 1,
+        "survivingEdgeID": "102",
+        "survivingMatchesSecond": true
+      },
+      "remembered_rebuild_no_edge": {
+        "nodesCount": 2,
+        "vesselID": "600"
+      },
+      "three_step_positioned": {
+        "stepHeights": [
+          50,
+          50,
+          50
+        ],
+        "vesselHeight": 50,
+        "vesselID": "200",
+        "vesselTLX": 10,
+        "vesselTLY": 15,
+        "vesselWidth": 50
+      },
+      "two_step_unpositioned": {
+        "definingEdgeRemoved": true,
+        "originalEdgeID": "10",
+        "s1Height": 30,
+        "s1Width": 40,
+        "s2Height": 30,
+        "s2Width": 40,
+        "vesselHeight": 30,
+        "vesselID": "100",
+        "vesselTopLeft": true,
+        "vesselWidth": 45
+      },
+      "width_exactly_wedge": {
+        "sWedgeWidth": 70
+      }
+    },
+    "clearRememberedSequenceMembership": {
+      "duplicate_member": {
+        "err": true,
+        "guardUsed": 2,
+        "n7SeqCleared": true
+      },
+      "empty_nodes": {
+        "err": true,
+        "guardUsed": 0
+      },
+      "member_other_sequence": {
+        "err": true,
+        "guardUsed": 2,
+        "n5SeqCleared": true,
+        "n6SeqUntouched": true
+      },
+      "nil_member": {
+        "err": true,
+        "guardUsed": 3,
+        "n3SeqCleared": true,
+        "n4SeqCleared": true
+      },
+      "nil_sequence": {
+        "err": true,
+        "guardUsed": 0
+      },
+      "normal_two_node": {
+        "err": true,
+        "guardUsed": 2,
+        "n1SeqCleared": true,
+        "n2SeqCleared": true
+      },
+      "work_guard_limit_partial": {
+        "errOccurred": true,
+        "guardUsed": 2,
+        "n8SeqCleared": true,
+        "n9SeqRetained": true
+      }
+    }
+  }
+}

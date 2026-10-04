@@ -1,0 +1,1399 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGoVersion": "go1.27.0",
+    "slice": "Slice 19 — Shape Inner Geometry \u0026 Node InsidePlacement"
+  },
+  "insidePlacement": [
+    {
+      "name": "default_square_zero_padding",
+      "shape": "",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      },
+      "contentWidth": 40,
+      "contentHeight": 30,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 10,
+        "y": 20
+      }
+    },
+    {
+      "name": "square_uniform_padding",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      },
+      "contentWidth": 40,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 20,
+        "y": 30
+      }
+    },
+    {
+      "name": "square_asymmetric_padding",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": 100,
+          "y": 150
+        },
+        "width": 200,
+        "height": 160
+      },
+      "contentWidth": 60,
+      "contentHeight": 40,
+      "padding": {
+        "top": 11,
+        "bottom": 29,
+        "left": 7,
+        "right": 21
+      },
+      "point": {
+        "x": 107,
+        "y": 161
+      }
+    },
+    {
+      "name": "square_fractional",
+      "shape": "RealSquare",
+      "outerBox": {
+        "topLeft": {
+          "x": 10.25,
+          "y": 20.75
+        },
+        "width": 100.5,
+        "height": 80.5
+      },
+      "contentWidth": 40.2,
+      "contentHeight": 30.8,
+      "padding": {
+        "top": 5.5,
+        "bottom": 4.5,
+        "left": 3.5,
+        "right": 2.5
+      },
+      "point": {
+        "x": 13.5,
+        "y": 26.5
+      }
+    },
+    {
+      "name": "negative_coordinates",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": -100,
+          "y": -200
+        },
+        "width": 150,
+        "height": 120
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": -90,
+        "y": -190
+      }
+    },
+    {
+      "name": "circle_content_smaller_than_inner",
+      "shape": "Circle",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 200
+      },
+      "contentWidth": 40,
+      "contentHeight": 40,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 80,
+        "y": 80
+      }
+    },
+    {
+      "name": "circle_content_fills_inner",
+      "shape": "Circle",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 200
+      },
+      "contentWidth": 140,
+      "contentHeight": 140,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 30,
+        "y": 30
+      }
+    },
+    {
+      "name": "oval",
+      "shape": "Oval",
+      "outerBox": {
+        "topLeft": {
+          "x": 50,
+          "y": 50
+        },
+        "width": 300,
+        "height": 150
+      },
+      "contentWidth": 80,
+      "contentHeight": 40,
+      "padding": {
+        "top": 12,
+        "bottom": 12,
+        "left": 12,
+        "right": 12
+      },
+      "point": {
+        "x": 105,
+        "y": 78
+      }
+    },
+    {
+      "name": "oval_float32_regression",
+      "shape": "Oval",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 15
+        },
+        "width": 333,
+        "height": 217
+      },
+      "contentWidth": 77,
+      "contentHeight": 55,
+      "padding": {
+        "top": 7,
+        "bottom": 13,
+        "left": 9,
+        "right": 17
+      },
+      "point": {
+        "x": 66,
+        "y": 50
+      }
+    },
+    {
+      "name": "cloud_wide",
+      "shape": "Cloud",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 400,
+        "height": 200
+      },
+      "contentWidth": 200,
+      "contentHeight": 50,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 44,
+        "y": 92
+      }
+    },
+    {
+      "name": "cloud_tall",
+      "shape": "Cloud",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 400
+      },
+      "contentWidth": 50,
+      "contentHeight": 200,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 56,
+        "y": 82
+      }
+    },
+    {
+      "name": "cloud_square",
+      "shape": "Cloud",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 300,
+        "height": 300
+      },
+      "contentWidth": 100,
+      "contentHeight": 100,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 61,
+        "y": 111
+      }
+    },
+    {
+      "name": "page",
+      "shape": "Page",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 120,
+        "height": 50
+      },
+      "contentWidth": 40,
+      "contentHeight": 20,
+      "padding": {
+        "top": 8,
+        "bottom": 8,
+        "left": 8,
+        "right": 8
+      },
+      "point": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "name": "page_tall",
+      "shape": "Page",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 120,
+        "height": 200
+      },
+      "contentWidth": 40,
+      "contentHeight": 20,
+      "padding": {
+        "top": 8,
+        "bottom": 8,
+        "left": 8,
+        "right": 8
+      },
+      "point": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "name": "step",
+      "shape": "Step",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 100
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 6,
+        "bottom": 6,
+        "left": 6,
+        "right": 6
+      },
+      "point": {
+        "x": 41,
+        "y": 6
+      }
+    },
+    {
+      "name": "step_narrow",
+      "shape": "Step",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 50,
+        "height": 100
+      },
+      "contentWidth": 20,
+      "contentHeight": 30,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 35,
+        "y": 0
+      }
+    },
+    {
+      "name": "queue",
+      "shape": "Queue",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 250,
+        "height": 100
+      },
+      "contentWidth": 60,
+      "contentHeight": 40,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 34,
+        "y": 10
+      }
+    },
+    {
+      "name": "queue_narrow",
+      "shape": "Queue",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 30,
+        "height": 50
+      },
+      "contentWidth": 10,
+      "contentHeight": 20,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 15,
+        "y": 0
+      }
+    },
+    {
+      "name": "hexagon",
+      "shape": "Hexagon",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 180,
+        "height": 120
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 40,
+        "y": 30
+      }
+    },
+    {
+      "name": "diamond",
+      "shape": "Diamond",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 200
+      },
+      "contentWidth": 40,
+      "contentHeight": 40,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 60,
+        "y": 60
+      }
+    },
+    {
+      "name": "document",
+      "shape": "Document",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 100
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 8,
+        "bottom": 8,
+        "left": 8,
+        "right": 8
+      },
+      "point": {
+        "x": 8,
+        "y": 8
+      }
+    },
+    {
+      "name": "cylinder",
+      "shape": "Cylinder",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 160,
+        "height": 200
+      },
+      "contentWidth": 60,
+      "contentHeight": 40,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 10,
+        "y": 58
+      }
+    },
+    {
+      "name": "cylinder_short",
+      "shape": "Cylinder",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 100,
+        "height": 30
+      },
+      "contentWidth": 20,
+      "contentHeight": 10,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 0,
+        "y": 30
+      }
+    },
+    {
+      "name": "stored_data",
+      "shape": "StoredData",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 180,
+        "height": 100
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 8,
+        "bottom": 8,
+        "left": 8,
+        "right": 8
+      },
+      "point": {
+        "x": 23,
+        "y": 8
+      }
+    },
+    {
+      "name": "parallelogram",
+      "shape": "Parallelogram",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 220,
+        "height": 110
+      },
+      "contentWidth": 60,
+      "contentHeight": 40,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 36,
+        "y": 10
+      }
+    },
+    {
+      "name": "callout",
+      "shape": "Callout",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 150
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 10,
+        "y": 10
+      }
+    },
+    {
+      "name": "callout_short",
+      "shape": "Callout",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 60
+      },
+      "contentWidth": 40,
+      "contentHeight": 20,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "name": "person",
+      "shape": "Person",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 200
+      },
+      "contentWidth": 40,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 54,
+        "y": 10
+      }
+    },
+    {
+      "name": "c4_person",
+      "shape": "C4Person",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 200
+      },
+      "contentWidth": 40,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 18,
+        "y": 75
+      }
+    },
+    {
+      "name": "package",
+      "shape": "Package",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 150
+      },
+      "contentWidth": 50,
+      "contentHeight": 30,
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "point": {
+        "x": 10,
+        "y": 40
+      }
+    },
+    {
+      "name": "rounding_half_negative_x",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": -10.5,
+          "y": -20.5
+        },
+        "width": 100,
+        "height": 80
+      },
+      "contentWidth": 30,
+      "contentHeight": 20,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": -11,
+        "y": -21
+      }
+    },
+    {
+      "name": "rounding_half_positive",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": 10.5,
+          "y": 20.5
+        },
+        "width": 100,
+        "height": 80
+      },
+      "contentWidth": 30,
+      "contentHeight": 20,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "point": {
+        "x": 11,
+        "y": 21
+      }
+    }
+  ],
+  "innerBox": [
+    {
+      "name": "default",
+      "shape": "",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      }
+    },
+    {
+      "name": "Square",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 100,
+        "height": 80
+      }
+    },
+    {
+      "name": "RealSquare",
+      "shape": "RealSquare",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 80,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 80,
+        "height": 80
+      }
+    },
+    {
+      "name": "Circle",
+      "shape": "Circle",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 30,
+          "y": 30
+        },
+        "width": 140,
+        "height": 140
+      }
+    },
+    {
+      "name": "Oval",
+      "shape": "Oval",
+      "outerBox": {
+        "topLeft": {
+          "x": 50,
+          "y": 50
+        },
+        "width": 300,
+        "height": 150
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 94,
+          "y": 72
+        },
+        "width": 212,
+        "height": 106
+      }
+    },
+    {
+      "name": "Cloud",
+      "shape": "Cloud",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 400,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 34,
+          "y": 82
+        },
+        "width": 328,
+        "height": 110
+      }
+    },
+    {
+      "name": "Page",
+      "shape": "Page",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 120,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 120,
+        "height": 200
+      }
+    },
+    {
+      "name": "Page_short",
+      "shape": "Page",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 120,
+        "height": 50
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 99,
+        "height": 50
+      }
+    },
+    {
+      "name": "Step",
+      "shape": "Step",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 100
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 35,
+          "y": 0
+        },
+        "width": 130,
+        "height": 100
+      }
+    },
+    {
+      "name": "Step_narrow",
+      "shape": "Step",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 50,
+        "height": 100
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 35,
+          "y": 0
+        },
+        "width": -20,
+        "height": 100
+      }
+    },
+    {
+      "name": "Queue",
+      "shape": "Queue",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 250,
+        "height": 100
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 24,
+          "y": 0
+        },
+        "width": 178,
+        "height": 100
+      }
+    },
+    {
+      "name": "Queue_narrow",
+      "shape": "Queue",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 30,
+        "height": 50
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 15,
+          "y": 0
+        },
+        "width": -15,
+        "height": 50
+      }
+    },
+    {
+      "name": "Hexagon",
+      "shape": "Hexagon",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 180,
+        "height": 120
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 30,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Diamond",
+      "shape": "Diamond",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 50,
+          "y": 50
+        },
+        "width": 100,
+        "height": 100
+      }
+    },
+    {
+      "name": "Document",
+      "shape": "Document",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 100
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 74
+      }
+    },
+    {
+      "name": "Cylinder",
+      "shape": "Cylinder",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 160,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 48
+        },
+        "width": 160,
+        "height": 128
+      }
+    },
+    {
+      "name": "Cylinder_short",
+      "shape": "Cylinder",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 100,
+        "height": 30
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 30
+        },
+        "width": 100,
+        "height": -15
+      }
+    },
+    {
+      "name": "StoredData",
+      "shape": "StoredData",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 180,
+        "height": 100
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 15,
+          "y": 0
+        },
+        "width": 150,
+        "height": 100
+      }
+    },
+    {
+      "name": "Parallelogram",
+      "shape": "Parallelogram",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 220,
+        "height": 110
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 26,
+          "y": 0
+        },
+        "width": 168,
+        "height": 110
+      }
+    },
+    {
+      "name": "Callout",
+      "shape": "Callout",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 150
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 105
+      }
+    },
+    {
+      "name": "Callout_short",
+      "shape": "Callout",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 60
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 30
+      }
+    },
+    {
+      "name": "Person",
+      "shape": "Person",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 44,
+          "y": 0
+        },
+        "width": 61,
+        "height": 200
+      }
+    },
+    {
+      "name": "C4Person",
+      "shape": "C4Person",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 150,
+        "height": 200
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 8,
+          "y": 65
+        },
+        "width": 135,
+        "height": 129
+      }
+    },
+    {
+      "name": "Package",
+      "shape": "Package",
+      "outerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 0
+        },
+        "width": 200,
+        "height": 150
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 0,
+          "y": 30
+        },
+        "width": 200,
+        "height": 120
+      }
+    },
+    {
+      "name": "Image",
+      "shape": "Image",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Table",
+      "shape": "Table",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Class",
+      "shape": "Class",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Text",
+      "shape": "Text",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Code",
+      "shape": "Code",
+      "outerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 10,
+          "y": 20
+        },
+        "width": 120,
+        "height": 80
+      }
+    },
+    {
+      "name": "Rounding_half_negative",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": -10.5,
+          "y": -20.5
+        },
+        "width": 99.5,
+        "height": 89.5
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": -11,
+          "y": -21
+        },
+        "width": 100,
+        "height": 90
+      }
+    },
+    {
+      "name": "Rounding_half_positive",
+      "shape": "Square",
+      "outerBox": {
+        "topLeft": {
+          "x": 10.5,
+          "y": 20.5
+        },
+        "width": 99.5,
+        "height": 89.5
+      },
+      "innerBox": {
+        "topLeft": {
+          "x": 11,
+          "y": 21
+        },
+        "width": 100,
+        "height": 90
+      }
+    }
+  ]
+}

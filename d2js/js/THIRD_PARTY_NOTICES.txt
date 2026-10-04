@@ -935,3 +935,18 @@ Developed at SunSoft, a Sun Microsystems, Inc. business.
 Permission to use, copy, modify, and distribute this
 software is freely granted, provided that this notice
 is preserved.
+
+Go math/rand (JavaScript port)
+https://github.com/golang/go/tree/go1.27.0/src/math/rand
+
+D2's TALA layout engine uses a JavaScript port of Go's math/rand to maintain
+exact deterministic random number parity with the original Go implementation.
+The translated JavaScript port is based on:
+
+  Go 1.27.0 (src/math/rand/rng.go, src/math/rand/rand.go)
+  Copyright 2009 The Go Authors. All rights reserved.
+  
+The JavaScript port is made available under the same BSD-style license used by
+the Go project. See the "Go image" section above for the complete BSD-style
+license text and conditions, which also govern this derived material.
+

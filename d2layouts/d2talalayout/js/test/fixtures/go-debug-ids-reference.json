@@ -1,0 +1,156 @@
+{
+  "scenarios": {
+    "AA_member_is_sequence_vessel": {
+      "success": true,
+      "output": "[Sequence vessel of: [51, 52], 99]; Arrangement: Row"
+    },
+    "AB_nil_cluster_receiver": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AC_empty_sequence": {
+      "success": true,
+      "output": "[]"
+    },
+    "AD_one_member": {
+      "success": true,
+      "output": "[1]"
+    },
+    "AE_ordered_members": {
+      "success": true,
+      "output": "[30, 10, 20]"
+    },
+    "AF_nil_member": {
+      "success": true,
+      "output": "[1, nil, 2]"
+    },
+    "AG_d2id_member": {
+      "success": true,
+      "output": "[a.b, 2]"
+    },
+    "AH_member_is_cluster_vessel": {
+      "success": true,
+      "output": "[Cluster vessel of: [61, 62]; Arrangement: Row, 77]"
+    },
+    "AI_nil_sequence_receiver": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AJ_cluster_nil_nodes_slice": {
+      "success": true,
+      "output": "[]; Arrangement: Row"
+    },
+    "AK_sequence_nil_nodes_slice": {
+      "success": true,
+      "output": "[]"
+    },
+    "AL_nested_cluster_in_sequence_in_cluster": {
+      "success": true,
+      "output": "[Cluster vessel of: [Sequence vessel of: [deep.leaf]]; Arrangement: Column]"
+    },
+    "A_nil_node": {
+      "success": true,
+      "output": "nil"
+    },
+    "B_zero_id": {
+      "success": true,
+      "output": "0"
+    },
+    "C_positive_id": {
+      "success": true,
+      "output": "42"
+    },
+    "D_negative_id": {
+      "success": true,
+      "output": "-42"
+    },
+    "E_int64_max": {
+      "success": true,
+      "output": "9223372036854775807"
+    },
+    "F_int64_min": {
+      "success": true,
+      "output": "-9223372036854775808"
+    },
+    "G_d2id_ordinary_string": {
+      "success": true,
+      "output": "alpha.beta"
+    },
+    "H_d2id_empty_string": {
+      "success": true,
+      "output": ""
+    },
+    "I_d2id_overrides_cluster_vessel": {
+      "success": true,
+      "output": "d2.wins"
+    },
+    "J_d2id_overrides_sequence_vessel": {
+      "success": true,
+      "output": "d2.seq.wins"
+    },
+    "K_cluster_vessel_canonical": {
+      "success": true,
+      "output": "Cluster vessel of: [10, 20]; Arrangement: Row"
+    },
+    "L_cluster_vessel_nil_graph": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "M_cluster_vessel_missing_cluster_entry": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "N_cluster_vessel_and_sequence_vessel": {
+      "success": true,
+      "output": "Cluster vessel of: [11]; Arrangement: Column"
+    },
+    "O_graph_nil_non_cluster_node": {
+      "success": true,
+      "output": "9"
+    },
+    "P_graph_sequences_empty": {
+      "success": true,
+      "output": "10"
+    },
+    "Q_graph_sequences_node_absent": {
+      "success": true,
+      "output": "11"
+    },
+    "R_graph_sequences_contains_node": {
+      "success": true,
+      "output": "Sequence vessel of: [301, 302]"
+    },
+    "S_graph_sequences_contains_node_mapped_to_nil": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "T_empty_cluster_default_arrangement": {
+      "success": true,
+      "output": "[]; Arrangement: "
+    },
+    "U_empty_row_cluster": {
+      "success": true,
+      "output": "[]; Arrangement: Row"
+    },
+    "V_empty_column_cluster": {
+      "success": true,
+      "output": "[]; Arrangement: Column"
+    },
+    "W_one_numeric_member": {
+      "success": true,
+      "output": "[1]; Arrangement: Row"
+    },
+    "X_members_preserve_order": {
+      "success": true,
+      "output": "[30, 10, 20]; Arrangement: Row"
+    },
+    "Y_nil_member": {
+      "success": true,
+      "output": "[1, nil, 2]; Arrangement: Column"
+    },
+    "Z_d2id_member": {
+      "success": true,
+      "output": "[a.b, 2]; Arrangement: Row"
+    }
+  }
+}

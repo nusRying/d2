@@ -1,0 +1,928 @@
+{
+  "scenarios": {
+    "AA_cousin_identity_preserved": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "AB_same_side_pair": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        }
+      }
+    },
+    "AC_opposite_side_pair": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "AD_duplicate_cousin_pair_set_uniqueness": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "AE_assign_herd_virality": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "b": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "c": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "placedCousin": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "x": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "y": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "AF_random_herd_virality": {
+      "success": true,
+      "nodeStates": {
+        "a1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "a2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "b1": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "b2": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "c1": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "c2": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "AG_partial_mutation_before_error": {
+      "success": false,
+      "error": "layout invariant violated: cousin 201 has an invalid herd orientation",
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s3": {
+          "id": 3,
+          "hasAssignment": false
+        },
+        "s4": {
+          "id": 4,
+          "hasAssignment": false
+        }
+      }
+    },
+    "AH_partial_mutation_before_cancellation": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": false
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": false
+        },
+        "s3": {
+          "id": 3,
+          "hasAssignment": false
+        },
+        "s4": {
+          "id": 4,
+          "hasAssignment": false
+        }
+      }
+    },
+    "AI_apply_virally_cancellation": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": false
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": false
+        }
+      }
+    },
+    "AJ_cluster_column_to_row_on_top": {
+      "success": true,
+      "nodeStates": {
+        "sheep2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "vessel": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      },
+      "clusterStates": {
+        "cluster": {
+          "arrangement": "Row"
+        }
+      }
+    },
+    "AK_cluster_row_to_column_on_left": {
+      "success": true,
+      "nodeStates": {
+        "sheep2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "vessel": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      },
+      "clusterStates": {
+        "cluster": {
+          "arrangement": "Column"
+        }
+      }
+    },
+    "AL_cluster_noop": {
+      "success": true,
+      "nodeStates": {
+        "sheep2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "vessel": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      },
+      "clusterStates": {
+        "cluster": {
+          "arrangement": "Row"
+        }
+      }
+    },
+    "AM_malformed_cluster_vessel": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "AN_repeated_invocation": {
+      "success": true,
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "A_empty_graph": {
+      "success": true
+    },
+    "B_precancelled_empty_graph": {
+      "success": false,
+      "error": "AssignHerds: context canceled"
+    },
+    "C_nil_context": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "D_nil_graph": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "E_nil_containers_map": {
+      "success": true
+    },
+    "F_nil_abduction_no_children": {
+      "success": true
+    },
+    "G_nil_abduction_with_child": {
+      "success": false,
+      "error": "layout invariant violated: herding has a nil edge abduction",
+      "nodeStates": {
+        "child": {
+          "id": 1,
+          "hasAssignment": false
+        }
+      }
+    },
+    "H_singleton_group_removed": {
+      "success": true,
+      "nodeStates": {
+        "sheep": {
+          "id": 1,
+          "hasAssignment": false
+        }
+      }
+    },
+    "I_singleton_plus_retained": {
+      "success": true,
+      "nodeStates": {
+        "sheep1": {
+          "id": 1,
+          "hasAssignment": false
+        },
+        "sheep2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "sheep3": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "J_sorted_uncle_ids": {
+      "success": true,
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "s3": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s4": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s5": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s6": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s7": {
+          "id": 7,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "s8": {
+          "id": 8,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "K_negative_uncle_ids": {
+      "success": true,
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s3": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s4": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s5": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "s6": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "s7": {
+          "id": 7,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "s8": {
+          "id": 8,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        }
+      }
+    },
+    "L_five_unconstrained_cycling": {
+      "success": true,
+      "nodeStates": {
+        "sheep0": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "sheep1": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "sheep2": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "sheep3": {
+          "id": 4,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "sheep4": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "sheep5": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        },
+        "sheep6": {
+          "id": 7,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "sheep7": {
+          "id": 8,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7
+        },
+        "sheep8": {
+          "id": 9,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "sheep9": {
+          "id": 10,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "M_placed_right_non_tall_uncle": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "N_tall_right_opposite_gt_same": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        }
+      }
+    },
+    "O_tall_right_equal_counts": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "P_wide_top_cousin_bias": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1
+        }
+      }
+    },
+    "Q_invalid_diagonal_cousin": {
+      "success": false,
+      "error": "layout invariant violated: cousin 11 has an invalid herd orientation",
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": false
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": false
+        }
+      }
+    },
+    "R_none_cousin_orientation": {
+      "success": false,
+      "error": "layout invariant violated: cousin 11 has an invalid herd orientation",
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": false
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": false
+        }
+      }
+    },
+    "S_unplaced_uncle_skips_invalid_cousin": {
+      "success": true,
+      "nodeStates": {
+        "cousin": {
+          "id": 11,
+          "hasAssignment": true,
+          "orientation": "TopLeft"
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "T_first_child_nil_topleft": {
+      "success": true,
+      "nodeStates": {
+        "child0": {
+          "id": 11,
+          "hasAssignment": false
+        },
+        "child1": {
+          "id": 12,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    },
+    "U_unindexed_uncle": {
+      "success": false,
+      "error": "layout invariant violated: herding uncle 4 has no children",
+      "nodeStates": {
+        "a": {
+          "id": 2,
+          "hasAssignment": false
+        },
+        "b": {
+          "id": 3,
+          "hasAssignment": false
+        }
+      }
+    },
+    "V_overlapping_compatible": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1
+        },
+        "b": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "c": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "oppositeSidePairCount": 1
+        },
+        "firstCousin": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "lastCousin": {
+          "id": 7,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6,
+          "oppositeSidePairCount": 2
+        }
+      }
+    },
+    "W_preferred_removed_sides_remain": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        },
+        "b": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1,
+          "oppositeSidePairCount": 1
+        },
+        "c": {
+          "id": 3,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "oppositeSidePairCount": 1
+        },
+        "firstCousin": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5,
+          "sameSidePairCount": 1
+        },
+        "lastCousin": {
+          "id": 7,
+          "hasAssignment": true,
+          "orientation": "Left",
+          "orientationInt": 7,
+          "oppositeSidePairCount": 1
+        }
+      }
+    },
+    "X_incompatible_clears_assignments": {
+      "success": true,
+      "nodeStates": {
+        "a": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "b": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Bottom",
+          "orientationInt": 6
+        }
+      }
+    },
+    "Y_incompatible_no_unbiased_advance": {
+      "success": true,
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s3": {
+          "id": 3,
+          "hasAssignment": false
+        },
+        "s4": {
+          "id": 4,
+          "hasAssignment": false
+        },
+        "s5": {
+          "id": 5,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        },
+        "s6": {
+          "id": 6,
+          "hasAssignment": true,
+          "orientation": "Right",
+          "orientationInt": 5
+        }
+      }
+    },
+    "Z_fresh_sheep_assignment": {
+      "success": true,
+      "nodeStates": {
+        "s1": {
+          "id": 1,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        },
+        "s2": {
+          "id": 2,
+          "hasAssignment": true,
+          "orientation": "Top",
+          "orientationInt": 4
+        }
+      }
+    }
+  }
+}

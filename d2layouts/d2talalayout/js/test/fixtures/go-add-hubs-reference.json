@@ -1,0 +1,546 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGoVersion": "go1.27.0",
+    "slice": "Slice 28 — Proximity Hub Discovery (AddHubs)"
+  },
+  "scenarios": {
+    "active_grouping_owning_container": {
+      "name": "active_grouping_owning_container",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "4"
+          ]
+        }
+      ],
+      "nodes": [
+        "100",
+        "10",
+        "3",
+        "4",
+        "1",
+        "2"
+      ]
+    },
+    "canonical_hub": {
+      "name": "canonical_hub",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "4"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "cross_container_leaf_plus_same_container_non_leaf": {
+      "name": "cross_container_leaf_plus_same_container_non_leaf",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "2",
+          "spokes": [
+            "3"
+          ]
+        }
+      ],
+      "nodes": [
+        "10",
+        "20",
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "edge_to_different_direct_container": {
+      "name": "edge_to_different_direct_container",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "10",
+        "20",
+        "1",
+        "2"
+      ]
+    },
+    "empty_graph": {
+      "name": "empty_graph",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": []
+    },
+    "existing_non_empty_hubs_replaced": {
+      "name": "existing_non_empty_hubs_replaced",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "4"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "99"
+      ]
+    },
+    "leaf_spokes_only": {
+      "name": "leaf_spokes_only",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "1",
+        "2",
+        "3"
+      ]
+    },
+    "mid_operation_cancellation": {
+      "name": "mid_operation_cancellation",
+      "success": false,
+      "errorMessage": "AddHubs: context canceled",
+      "panicked": false,
+      "sameHubsMap": true,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "35",
+        "36",
+        "37",
+        "38",
+        "39",
+        "40",
+        "41",
+        "42",
+        "43",
+        "44",
+        "45",
+        "46",
+        "47",
+        "48",
+        "49",
+        "50",
+        "51",
+        "52",
+        "53",
+        "54",
+        "55",
+        "56",
+        "57",
+        "58",
+        "59",
+        "60",
+        "61",
+        "62",
+        "63",
+        "64",
+        "65",
+        "66",
+        "67",
+        "68",
+        "69",
+        "70",
+        "71",
+        "72",
+        "73",
+        "74",
+        "75",
+        "76",
+        "77",
+        "78",
+        "79",
+        "80",
+        "81",
+        "82",
+        "83",
+        "84",
+        "85",
+        "86",
+        "87",
+        "88",
+        "89",
+        "90",
+        "91",
+        "92",
+        "93",
+        "94",
+        "95",
+        "96",
+        "97",
+        "98",
+        "99",
+        "100",
+        "101",
+        "102",
+        "103",
+        "104",
+        "105",
+        "106",
+        "107",
+        "108",
+        "109",
+        "110",
+        "111",
+        "112",
+        "113",
+        "114",
+        "115",
+        "116",
+        "117",
+        "118",
+        "119",
+        "120",
+        "121",
+        "122",
+        "123",
+        "124",
+        "125",
+        "126",
+        "127",
+        "128",
+        "129",
+        "130"
+      ],
+      "oldHubPreserved": true
+    },
+    "minimal_valid_hub": {
+      "name": "minimal_valid_hub",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "4"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "multiple_spokes": {
+      "name": "multiple_spokes",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2",
+            "3",
+            "4"
+          ]
+        },
+        {
+          "hubId": "5",
+          "spokes": [
+            "6"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ]
+    },
+    "nil_graph_nodes": {
+      "name": "nil_graph_nodes",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": []
+    },
+    "nil_node_edges": {
+      "name": "nil_node_edges",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "1"
+      ]
+    },
+    "non_leaf_connections_only": {
+      "name": "non_leaf_connections_only",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "2",
+          "spokes": [
+            "4"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "5"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5"
+      ]
+    },
+    "parallel_multiple_incident_edges": {
+      "name": "parallel_multiple_incident_edges",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "1",
+        "2"
+      ]
+    },
+    "pre_cancelled_context": {
+      "name": "pre_cancelled_context",
+      "success": false,
+      "errorMessage": "AddHubs: context canceled",
+      "panicked": false,
+      "sameHubsMap": true,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ],
+      "oldHubPreserved": true
+    },
+    "root_level_nodes": {
+      "name": "root_level_nodes",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        },
+        {
+          "hubId": "3",
+          "spokes": [
+            "4"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "same_container_leaf_plus_cross_container_non_leaf": {
+      "name": "same_container_leaf_plus_cross_container_non_leaf",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "10",
+        "20",
+        "1",
+        "2",
+        "3",
+        "4"
+      ]
+    },
+    "self_loop": {
+      "name": "self_loop",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2"
+      ]
+    },
+    "spoke_order_differs_from_id": {
+      "name": "spoke_order_differs_from_id",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "30",
+            "10",
+            "20"
+          ]
+        },
+        {
+          "hubId": "2",
+          "spokes": [
+            "3"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "30",
+        "2",
+        "3",
+        "10",
+        "20"
+      ]
+    },
+    "successful_empty_result_replaces_old_map": {
+      "name": "successful_empty_result_replaces_old_map",
+      "success": true,
+      "panicked": false,
+      "sameHubsMap": false,
+      "hubs": [],
+      "nodes": [
+        "1"
+      ]
+    },
+    "validation_failure_atomicity": {
+      "name": "validation_failure_atomicity",
+      "success": false,
+      "errorMessage": "TALA engine container parent cycle detected at node 2",
+      "panicked": false,
+      "sameHubsMap": true,
+      "hubs": [
+        {
+          "hubId": "1",
+          "spokes": [
+            "2"
+          ]
+        }
+      ],
+      "nodes": [
+        "1",
+        "2"
+      ],
+      "oldHubPreserved": true
+    }
+  }
+}

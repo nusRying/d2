@@ -1,0 +1,1161 @@
+{
+  "metadata": {
+    "oracleBuildTag": "tala_cluster_mutation_oracle",
+    "pinnedD2SHA": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "scenarios": {
+    "abductClusterEdges": {
+      "multiple_supplied_edges": {
+        "abductions": [
+          {
+            "edgeID": "302",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "3"
+          },
+          {
+            "edgeID": "303",
+            "originallyFrom": null,
+            "originallyTo": "2",
+            "currentFrom": "4",
+            "currentTo": "500"
+          },
+          {
+            "edgeID": "304",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "2"
+          },
+          {
+            "edgeID": "304",
+            "originallyFrom": null,
+            "originallyTo": "2",
+            "currentFrom": "500",
+            "currentTo": "500"
+          }
+        ],
+        "eInFrom": "4",
+        "eInTo": "500",
+        "eInternalFrom": "500",
+        "eInternalTo": "500",
+        "eIrrelevantFrom": "3",
+        "eIrrelevantTo": "4",
+        "eOutFrom": "500",
+        "eOutTo": "3",
+        "err": false,
+        "used": 16,
+        "vesselEdgesLen": 4
+      },
+      "no_supplied_edges": {
+        "abductionsCount": 0,
+        "err": false,
+        "used": 0
+      },
+      "one_incoming_edge": {
+        "abductions": [
+          {
+            "edgeID": "203",
+            "originallyFrom": null,
+            "originallyTo": "1",
+            "currentFrom": "2",
+            "currentTo": "500"
+          }
+        ],
+        "edgeFrom": "2",
+        "edgeTo": "500",
+        "err": false,
+        "n1EdgesLen": 0,
+        "used": 2,
+        "vesselEdgesLen": 1
+      },
+      "one_internal_edge": {
+        "abductions": [
+          {
+            "edgeID": "204",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "2"
+          },
+          {
+            "edgeID": "204",
+            "originallyFrom": null,
+            "originallyTo": "2",
+            "currentFrom": "500",
+            "currentTo": "500"
+          }
+        ],
+        "edgeFrom": "500",
+        "edgeTo": "500",
+        "err": false,
+        "n1EdgesLen": 0,
+        "n2EdgesLen": 0,
+        "used": 4,
+        "vesselEdgesLen": 2
+      },
+      "one_irrelevant_edge": {
+        "abductionsCount": 0,
+        "edgeFrom": "2",
+        "edgeTo": "3",
+        "err": false,
+        "used": 1
+      },
+      "one_outgoing_edge": {
+        "abductions": [
+          {
+            "edgeID": "202",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "2"
+          }
+        ],
+        "edgeFrom": "500",
+        "edgeTo": "2",
+        "err": false,
+        "n1EdgesLen": 0,
+        "used": 2,
+        "vesselEdgesLen": 1
+      },
+      "one_self_loop": {
+        "abductions": [
+          {
+            "edgeID": "205",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "1"
+          },
+          {
+            "edgeID": "205",
+            "originallyFrom": null,
+            "originallyTo": "1",
+            "currentFrom": "500",
+            "currentTo": "500"
+          }
+        ],
+        "edgeFrom": "500",
+        "edgeTo": "500",
+        "err": false,
+        "n1EdgesLen": 0,
+        "used": 3,
+        "vesselEdgesLen": 2
+      },
+      "route_preservation": {
+        "edgeFrom": "500",
+        "edgeTo": "2",
+        "points": [
+          {
+            "x": 10,
+            "y": 20
+          },
+          {
+            "x": 30,
+            "y": 20
+          },
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 50,
+            "y": 40
+          }
+        ],
+        "pointsCount": 4
+      },
+      "vessel_preexisting_edges": {
+        "abductions": [
+          {
+            "edgeID": "403",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "2"
+          }
+        ],
+        "err": false,
+        "used": 4,
+        "vesselEdgesLen": 3
+      }
+    },
+    "addCluster": {
+      "duplicate_member_in_cluster_nodes": {
+        "clusterInMap": true,
+        "node1InGraph": false,
+        "node2InGraph": false,
+        "rootChildren": [
+          "502"
+        ],
+        "vesselInGraph": true
+      },
+      "duplicate_member_in_graph_nodes": {
+        "graphNodes": [
+          "3",
+          "503"
+        ],
+        "node1Count": 0,
+        "vesselInGraph": true
+      },
+      "extra_child_with_same_cluster": {
+        "rogueInContainer": false,
+        "rogueInGraph": true,
+        "rootChildren": [
+          "504"
+        ]
+      },
+      "members_with_incident_edges": {
+        "e1From": "1",
+        "e1To": "3",
+        "e2From": "3",
+        "e2To": "2",
+        "eInternalFrom": "1",
+        "eInternalTo": "2",
+        "n1EdgesLen": 2,
+        "n2EdgesLen": 2,
+        "vesselEdgesLen": 0
+      },
+      "nested_container_cluster": {
+        "clusterInMap": true,
+        "node1InGraph": false,
+        "node2InGraph": false,
+        "parentChildren": [
+          "10",
+          "20",
+          "501"
+        ],
+        "vesselContainer": "100",
+        "vesselInGraph": true
+      },
+      "preexisting_unrelated_cluster": {
+        "clusterCount": 2,
+        "hasNewCluster": true,
+        "hasUnrelatedCluster": true
+      },
+      "root_level_cluster": {
+        "clusterInMap": true,
+        "graphNodes": [
+          "10",
+          "20",
+          "500"
+        ],
+        "node1Cluster": true,
+        "node1Container": null,
+        "node1HasGraph": true,
+        "node2Cluster": true,
+        "node2Container": null,
+        "node2HasGraph": true,
+        "rootChildren": [
+          "10",
+          "20",
+          "500"
+        ],
+        "vesselContainer": null,
+        "vesselHasGraph": true,
+        "vesselInGraph": true
+      }
+    },
+    "boundaries": {
+      "exact_limit_success": {
+        "err": false,
+        "limit": 16,
+        "used": 16
+      },
+      "limit_minus_1_failure": {
+        "err": true,
+        "limit": 15,
+        "used": 16
+      },
+      "partial_mutation_failure": {
+        "e1From": "500",
+        "e1To": "3",
+        "e2From": "2",
+        "e2To": "3",
+        "err": true,
+        "n1EdgesLen": 0,
+        "n2EdgesLen": 1,
+        "sentinelRetained": true,
+        "used": 3,
+        "vesselEdgesLen": 1
+      }
+    },
+    "cancellation": {
+      "final_finish_cancellation": {
+        "abductions": [
+          {
+            "edgeID": "901",
+            "originallyFrom": "1",
+            "originallyTo": null,
+            "currentFrom": "500",
+            "currentTo": "2"
+          }
+        ],
+        "e1From": "500",
+        "e1To": "2",
+        "err": true,
+        "errorText": "test: context canceled",
+        "expectedLocation": "test",
+        "isCanceled": true,
+        "n1EdgesLen": 0,
+        "publishedAbductionsLen": 1,
+        "used": 2,
+        "vesselEdgesLen": 1
+      },
+      "mid_operation_cancellation": {
+        "e1From": "500",
+        "e2From": "2",
+        "err": true,
+        "errorText": "test: context canceled",
+        "expectedLocation": "test",
+        "isCanceled": true,
+        "sentinelRetained": true,
+        "used": 1024,
+        "vesselEdgesLen": 1
+      }
+    },
+    "createVessel": {
+      "col_large_tie_13": {
+        "coordinates": [
+          50,
+          50,
+          20,
+          50,
+          30,
+          30,
+          50,
+          20,
+          40,
+          50,
+          30,
+          20,
+          50
+        ],
+        "inputMemberIDs": [
+          "200",
+          "201",
+          "202",
+          "203",
+          "204",
+          "205",
+          "206",
+          "207",
+          "208",
+          "209",
+          "210",
+          "211",
+          "212"
+        ],
+        "outputMemberIDs": [
+          "207",
+          "211",
+          "202",
+          "210",
+          "204",
+          "205",
+          "208",
+          "206",
+          "200",
+          "209",
+          "203",
+          "201",
+          "212"
+        ],
+        "vessel": {
+          "id": "1200",
+          "width": 40,
+          "height": 510,
+          "topLeft": {
+            "x": 10,
+            "y": 20
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "col_large_tie_20": {
+        "coordinates": [
+          50,
+          20,
+          30,
+          50,
+          20,
+          40,
+          30,
+          50,
+          20,
+          30,
+          40,
+          50,
+          20,
+          30,
+          50,
+          40,
+          20,
+          30,
+          50,
+          20
+        ],
+        "inputMemberIDs": [
+          "400",
+          "401",
+          "402",
+          "403",
+          "404",
+          "405",
+          "406",
+          "407",
+          "408",
+          "409",
+          "410",
+          "411",
+          "412",
+          "413",
+          "414",
+          "415",
+          "416",
+          "417",
+          "418",
+          "419"
+        ],
+        "outputMemberIDs": [
+          "412",
+          "401",
+          "419",
+          "404",
+          "416",
+          "408",
+          "402",
+          "417",
+          "406",
+          "409",
+          "413",
+          "410",
+          "415",
+          "405",
+          "411",
+          "400",
+          "414",
+          "407",
+          "418",
+          "403"
+        ],
+        "vessel": {
+          "id": "1400",
+          "width": 40,
+          "height": 790,
+          "topLeft": {
+            "x": 10,
+            "y": 20
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "col_large_tie_32": {
+        "coordinates": [
+          50,
+          20,
+          30,
+          50,
+          20,
+          40,
+          30,
+          50,
+          20,
+          30,
+          40,
+          50,
+          20,
+          30,
+          50,
+          40,
+          20,
+          30,
+          50,
+          20,
+          10,
+          60,
+          30,
+          20,
+          50,
+          40,
+          30,
+          20,
+          50,
+          60,
+          10,
+          30
+        ],
+        "inputMemberIDs": [
+          "600",
+          "601",
+          "602",
+          "603",
+          "604",
+          "605",
+          "606",
+          "607",
+          "608",
+          "609",
+          "610",
+          "611",
+          "612",
+          "613",
+          "614",
+          "615",
+          "616",
+          "617",
+          "618",
+          "619",
+          "620",
+          "621",
+          "622",
+          "623",
+          "624",
+          "625",
+          "626",
+          "627",
+          "628",
+          "629",
+          "630",
+          "631"
+        ],
+        "outputMemberIDs": [
+          "620",
+          "630",
+          "616",
+          "627",
+          "604",
+          "623",
+          "619",
+          "601",
+          "608",
+          "612",
+          "606",
+          "626",
+          "609",
+          "613",
+          "631",
+          "617",
+          "602",
+          "622",
+          "610",
+          "625",
+          "605",
+          "615",
+          "614",
+          "618",
+          "624",
+          "611",
+          "600",
+          "628",
+          "607",
+          "603",
+          "621",
+          "629"
+        ],
+        "vessel": {
+          "id": "1600",
+          "width": 40,
+          "height": 1270,
+          "topLeft": {
+            "x": 10,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "col_min_y_neg_inf": {
+        "enteredSorting": true,
+        "finalMemberIDs": [
+          "712",
+          "711"
+        ],
+        "hasTopLeft": true,
+        "topLeftXKind": "finite",
+        "topLeftYKind": "negative_inf",
+        "vesselHeight": 70,
+        "vesselID": "1711",
+        "vesselWidth": 40
+      },
+      "col_nan_y": {
+        "enteredSorting": true,
+        "finalMemberIDs": [
+          "731",
+          "732"
+        ],
+        "hasTopLeft": true,
+        "topLeftXKind": "finite",
+        "topLeftYKind": "nan",
+        "vesselHeight": 70,
+        "vesselID": "1731",
+        "vesselWidth": 40
+      },
+      "column_unsorted_positioned": {
+        "clusterVessel": null,
+        "nodeOrder": [
+          "2",
+          "3",
+          "1"
+        ],
+        "vessel": {
+          "id": "501",
+          "width": 40,
+          "height": 120,
+          "topLeft": {
+            "x": 10,
+            "y": 20
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "equal_x_row_tie": {
+        "nodeOrder": [
+          "3",
+          "1",
+          "2",
+          "4"
+        ],
+        "vessel": {
+          "id": "507",
+          "width": 190,
+          "height": 30,
+          "topLeft": {
+            "x": 20,
+            "y": 5
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "equal_y_column_tie": {
+        "nodeOrder": [
+          "3",
+          "1",
+          "2",
+          "4"
+        ],
+        "vessel": {
+          "id": "508",
+          "width": 40,
+          "height": 150,
+          "topLeft": {
+            "x": 5,
+            "y": 20
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "fixed_size_false_resize": {
+        "node1Height": 40,
+        "node1Width": 60,
+        "node2Height": 40,
+        "node2Width": 60,
+        "vessel": {
+          "id": "504",
+          "width": 130,
+          "height": 40,
+          "topLeft": {
+            "x": 10,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "fixed_size_true": {
+        "node1Height": 40,
+        "node1Width": 30,
+        "node2Height": 25,
+        "node2Width": 60,
+        "vessel": {
+          "id": "505",
+          "width": 130,
+          "height": 40,
+          "topLeft": {
+            "x": 10,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "independent_min_x_min_y": {
+        "vessel": {
+          "id": "502",
+          "width": 90,
+          "height": 30,
+          "topLeft": {
+            "x": 15,
+            "y": 25
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "mixed_positioned_unpositioned": {
+        "panicMsg": "runtime error: invalid memory address or nil pointer dereference",
+        "panicked": true
+      },
+      "negative_dimensions_resize": {
+        "node1Height": 30,
+        "node1Width": 0,
+        "node2Height": 30,
+        "node2Width": 0,
+        "vessel": {
+          "id": "506",
+          "width": 0,
+          "height": 65,
+          "topLeft": {
+            "x": 5,
+            "y": 5
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "no_positioned_members": {
+        "nodeOrder": [
+          "1",
+          "2"
+        ],
+        "vessel": {
+          "id": "503",
+          "width": 110,
+          "height": 30,
+          "topLeft": null,
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "row_large_tie_13": {
+        "coordinates": [
+          50,
+          50,
+          20,
+          50,
+          30,
+          30,
+          50,
+          20,
+          40,
+          50,
+          30,
+          20,
+          50
+        ],
+        "inputMemberIDs": [
+          "100",
+          "101",
+          "102",
+          "103",
+          "104",
+          "105",
+          "106",
+          "107",
+          "108",
+          "109",
+          "110",
+          "111",
+          "112"
+        ],
+        "outputMemberIDs": [
+          "107",
+          "111",
+          "102",
+          "110",
+          "104",
+          "105",
+          "108",
+          "106",
+          "100",
+          "109",
+          "103",
+          "101",
+          "112"
+        ],
+        "vessel": {
+          "id": "1100",
+          "width": 640,
+          "height": 30,
+          "topLeft": {
+            "x": 20,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "row_large_tie_20": {
+        "coordinates": [
+          50,
+          20,
+          30,
+          50,
+          20,
+          40,
+          30,
+          50,
+          20,
+          30,
+          40,
+          50,
+          20,
+          30,
+          50,
+          40,
+          20,
+          30,
+          50,
+          20
+        ],
+        "inputMemberIDs": [
+          "300",
+          "301",
+          "302",
+          "303",
+          "304",
+          "305",
+          "306",
+          "307",
+          "308",
+          "309",
+          "310",
+          "311",
+          "312",
+          "313",
+          "314",
+          "315",
+          "316",
+          "317",
+          "318",
+          "319"
+        ],
+        "outputMemberIDs": [
+          "312",
+          "301",
+          "319",
+          "304",
+          "316",
+          "308",
+          "302",
+          "317",
+          "306",
+          "309",
+          "313",
+          "310",
+          "315",
+          "305",
+          "311",
+          "300",
+          "314",
+          "307",
+          "318",
+          "303"
+        ],
+        "vessel": {
+          "id": "1300",
+          "width": 990,
+          "height": 30,
+          "topLeft": {
+            "x": 20,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "row_large_tie_32": {
+        "coordinates": [
+          50,
+          20,
+          30,
+          50,
+          20,
+          40,
+          30,
+          50,
+          20,
+          30,
+          40,
+          50,
+          20,
+          30,
+          50,
+          40,
+          20,
+          30,
+          50,
+          20,
+          10,
+          60,
+          30,
+          20,
+          50,
+          40,
+          30,
+          20,
+          50,
+          60,
+          10,
+          30
+        ],
+        "inputMemberIDs": [
+          "500",
+          "501",
+          "502",
+          "503",
+          "504",
+          "505",
+          "506",
+          "507",
+          "508",
+          "509",
+          "510",
+          "511",
+          "512",
+          "513",
+          "514",
+          "515",
+          "516",
+          "517",
+          "518",
+          "519",
+          "520",
+          "521",
+          "522",
+          "523",
+          "524",
+          "525",
+          "526",
+          "527",
+          "528",
+          "529",
+          "530",
+          "531"
+        ],
+        "outputMemberIDs": [
+          "520",
+          "530",
+          "516",
+          "527",
+          "504",
+          "523",
+          "519",
+          "501",
+          "508",
+          "512",
+          "506",
+          "526",
+          "509",
+          "513",
+          "531",
+          "517",
+          "502",
+          "522",
+          "510",
+          "525",
+          "505",
+          "515",
+          "514",
+          "518",
+          "524",
+          "511",
+          "500",
+          "528",
+          "507",
+          "503",
+          "521",
+          "529"
+        ],
+        "vessel": {
+          "id": "1500",
+          "width": 1590,
+          "height": 30,
+          "topLeft": {
+            "x": 10,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      },
+      "row_min_x_neg_inf": {
+        "enteredSorting": true,
+        "finalMemberIDs": [
+          "701",
+          "702"
+        ],
+        "hasTopLeft": true,
+        "topLeftXKind": "negative_inf",
+        "topLeftYKind": "finite",
+        "vesselHeight": 30,
+        "vesselID": "1701",
+        "vesselWidth": 90
+      },
+      "row_nan_x": {
+        "enteredSorting": true,
+        "finalMemberIDs": [
+          "721",
+          "722"
+        ],
+        "hasTopLeft": true,
+        "topLeftXKind": "nan",
+        "topLeftYKind": "finite",
+        "vesselHeight": 30,
+        "vesselID": "1721",
+        "vesselWidth": 90
+      },
+      "row_unsorted_positioned": {
+        "allSameHeight": true,
+        "allSameWidth": true,
+        "clusterVessel": null,
+        "nodeOrder": [
+          "2",
+          "3",
+          "1"
+        ],
+        "vessel": {
+          "id": "500",
+          "width": 140,
+          "height": 30,
+          "topLeft": {
+            "x": 20,
+            "y": 10
+          },
+          "isClusterVessel": true,
+          "container": null,
+          "hasGraph": false,
+          "edges": null
+        }
+      }
+    },
+    "resize": {
+      "column_fixed_size": {
+        "node1Height": 40,
+        "node1Width": 30,
+        "node2Height": 20,
+        "node2Width": 50,
+        "vesselHeight": 95,
+        "vesselWidth": 50
+      },
+      "column_unequal_dimensions": {
+        "node1Height": 40,
+        "node1Width": 50,
+        "node2Height": 40,
+        "node2Width": 50,
+        "vesselHeight": 95,
+        "vesselWidth": 50
+      },
+      "duplicate_member_reference": {
+        "node1Height": 35,
+        "node1Width": 25,
+        "vesselHeight": 35,
+        "vesselWidth": 62
+      },
+      "empty_column": {
+        "vesselHeight": -15,
+        "vesselWidth": 0
+      },
+      "empty_row": {
+        "vesselHeight": 0,
+        "vesselWidth": -10
+      },
+      "negative_dimensions": {
+        "node1Height": 15,
+        "node1Width": 0,
+        "node2Height": 15,
+        "node2Width": 0,
+        "vesselHeight": 15,
+        "vesselWidth": 5
+      },
+      "nil_member_failure": {
+        "node1Height": 10,
+        "node1Width": 10,
+        "node2Height": 20,
+        "node2Width": 20,
+        "panicMsg": "layout invariant violated: cluster contains a nil node",
+        "panicked": true
+      },
+      "nil_vessel_failure": {
+        "panicMsg": "layout invariant violated: cluster is missing its vessel",
+        "panicked": true
+      },
+      "row_fixed_size": {
+        "node1Height": 30,
+        "node1Width": 50,
+        "node2Height": 20,
+        "node2Width": 80,
+        "node3Height": 60,
+        "node3Width": 40,
+        "vesselHeight": 60,
+        "vesselWidth": 260
+      },
+      "row_unequal_dimensions": {
+        "allSameHeight": true,
+        "allSameWidth": true,
+        "node1Height": 60,
+        "node1Width": 80,
+        "node2Height": 60,
+        "node2Width": 80,
+        "node3Height": 60,
+        "node3Width": 80,
+        "nodesMutated": true,
+        "vesselHeight": 60,
+        "vesselWidth": 260
+      },
+      "unknown_arrangement": {
+        "node1Height": 30,
+        "node1Width": 50,
+        "node2Height": 30,
+        "node2Width": 50,
+        "vesselHeight": 888,
+        "vesselWidth": 999
+      },
+      "zero_dimensions": {
+        "node1Height": 0,
+        "node1Width": 0,
+        "node2Height": 0,
+        "node2Width": 0,
+        "vesselHeight": 8,
+        "vesselWidth": 0
+      }
+    }
+  }
+}

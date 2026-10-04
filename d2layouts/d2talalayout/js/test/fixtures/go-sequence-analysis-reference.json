@@ -1,0 +1,387 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/grouping",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "scenarios": {
+    "accessors": {
+      "connection_ab_exists": true,
+      "connection_ac_nil": true,
+      "container_is_container": true,
+      "ordinary_is_container": false,
+      "sequence_order_vessel_ids": [
+        100,
+        200,
+        300
+      ],
+      "square_is_sequence_step": false,
+      "step_is_sequence_step": true
+    },
+    "has_node_id": {
+      "absent_id": false,
+      "cluster_node_id": true,
+      "cluster_vessel_id": true,
+      "container_child_not_in_graph_nodes": false,
+      "graph_nodes_id": true,
+      "nested_tree_child_id": true,
+      "sequence_node_id": true,
+      "sequence_vessel_id": true,
+      "tree_node_id": true,
+      "tree_sentinel_id": true
+    },
+    "id_occupancy": {
+      "cluster_vessel_collision": {
+        "collidingID": 7490268378518980123,
+        "collidingIDStr": "7490268378518980123",
+        "expectedVesselID": 7490268378518980124,
+        "expectedVesselIDStr": "7490268378518980124",
+        "resolvedVesselID": 7490268378518980124,
+        "resolvedVesselIDStr": "7490268378518980124",
+        "seed": 23
+      },
+      "max_int64_wraps_to_zero": {
+        "candidate": 9223372036854775807,
+        "candidateStr": "9223372036854775807",
+        "expected": 0,
+        "resolved": 0
+      },
+      "multiple_consecutive_collisions": {
+        "candidate": 100,
+        "expected": 103,
+        "resolved": 103
+      },
+      "seed_19_rng_continuation": {
+        "candidateID": 5674494734864815533,
+        "candidateIDStr": "5674494734864815533",
+        "collidingID": 5674494734864815533,
+        "collidingIDStr": "5674494734864815533",
+        "continuationMatches": true,
+        "expectedID": 5674494734864815534,
+        "expectedIDStr": "5674494734864815534",
+        "nextDraw": 8867122987932565385,
+        "nextDrawStr": "8867122987932565385",
+        "probeNextDraw": 8867122987932565385,
+        "probeNextDrawStr": "8867122987932565385",
+        "resolvedID": 5674494734864815534,
+        "resolvedIDStr": "5674494734864815534",
+        "seed": 19
+      },
+      "tree_node_collision": {
+        "collidingID": 2131792501560531351,
+        "collidingIDStr": "2131792501560531351",
+        "expectedVesselID": 2131792501560531352,
+        "expectedVesselIDStr": "2131792501560531352",
+        "resolvedVesselID": 2131792501560531352,
+        "resolvedVesselIDStr": "2131792501560531352",
+        "seed": 47
+      },
+      "tree_sentinel_collision": {
+        "collidingID": 3096034203233537903,
+        "collidingIDStr": "3096034203233537903",
+        "expectedVesselID": 3096034203233537904,
+        "expectedVesselIDStr": "3096034203233537904",
+        "resolvedVesselID": 3096034203233537904,
+        "resolvedVesselIDStr": "3096034203233537904",
+        "seed": 31
+      },
+      "unavailable_set_collision": {
+        "candidate": 100,
+        "expected": 101,
+        "resolved": 101
+      },
+      "zero_to_one": {
+        "candidate": 0,
+        "expected": 1,
+        "resolved": 1
+      }
+    },
+    "identify_sequences": {
+      "active_sequence_membership": {
+        "sequenceCount": 1,
+        "sequences": [
+          [
+            1,
+            2
+          ]
+        ],
+        "workUsed": 6
+      },
+      "connected_pair": {
+        "sequenceCount": 1,
+        "sequences": [
+          [
+            1,
+            2
+          ]
+        ],
+        "workUsed": 6
+      },
+      "disconnected_pair": {
+        "sequenceCount": 0,
+        "sequences": null,
+        "workUsed": 5
+      },
+      "duplicate_supplied_node_refs": {
+        "sequenceCount": 1,
+        "sequences": [
+          [
+            1,
+            2
+          ]
+        ],
+        "workUsed": 9
+      },
+      "empty": {
+        "sequenceCount": 0,
+        "sequences": null,
+        "workUsed": 0
+      },
+      "fixed_top_left": {
+        "sequenceCount": 0,
+        "sequences": null,
+        "workUsed": 4
+      },
+      "inactive_remembered_steps": {
+        "sequenceCount": 0,
+        "sequences": null,
+        "workUsed": 4
+      },
+      "late_edge_match": {
+        "sequenceCount": 1,
+        "sequences": [
+          [
+            1,
+            2
+          ]
+        ],
+        "workUsed": 10
+      },
+      "one_step": {
+        "sequenceCount": 0,
+        "sequences": null,
+        "workUsed": 2
+      }
+    },
+    "remembered_validity": {
+      "duplicate_child": {
+        "valid": false,
+        "workUsed": 4
+      },
+      "duplicate_sequence_member": {
+        "valid": false,
+        "workUsed": 4
+      },
+      "fixed_top_left": {
+        "valid": false,
+        "workUsed": 3
+      },
+      "immediate_reject_active_sequence": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_container_key_empty": {
+        "valid": false,
+        "workUsed": 1
+      },
+      "immediate_reject_graph_mismatch": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_less_than_two_nodes": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_missing_containers_key": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_nil_sequence": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_nil_vessel": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "immediate_reject_vessel_mismatch": {
+        "valid": false,
+        "workUsed": 0
+      },
+      "nil_sequence_member": {
+        "valid": false,
+        "workUsed": 4
+      },
+      "node_missing_from_children": {
+        "valid": false,
+        "workUsed": 3
+      },
+      "noncontiguous_sequence": {
+        "valid": false,
+        "workUsed": 5
+      },
+      "valid_contiguous_members_unrelated_neighbors": {
+        "valid": true,
+        "workUsed": 6
+      },
+      "valid_pair": {
+        "valid": true,
+        "workUsed": 4
+      },
+      "wrong_container": {
+        "valid": false,
+        "workUsed": 5
+      },
+      "wrong_node_graph": {
+        "valid": false,
+        "workUsed": 3
+      },
+      "wrong_node_sequence": {
+        "valid": false,
+        "workUsed": 4
+      }
+    },
+    "sequence_defining_edges": {
+      "cluster_container_order": {
+        "definingEdgeIDs": [
+          901,
+          902,
+          903
+        ],
+        "edgeCountAfter": 3,
+        "edgeCountBefore": 3,
+        "nodeCountAfter": 8,
+        "nodeCountBefore": 8,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "container_descendant_order": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 4,
+        "nodeCountBefore": 4,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "container_nodes_ignored": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "cycle_connected_steps": {
+        "definingEdgeIDs": [
+          601
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "disconnected_steps_no_edges": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 0,
+        "edgeCountBefore": 0,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "middle_non_step_disconnects": {
+        "definingEdgeIDs": [
+          701
+        ],
+        "edgeCountAfter": 3,
+        "edgeCountBefore": 3,
+        "nodeCountAfter": 4,
+        "nodeCountBefore": 4,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "non_step_nodes_ignored": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "reverse_directed_edge": {
+        "definingEdgeIDs": [
+          101
+        ],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "single_step_no_defining_edges": {
+        "definingEdgeIDs": [],
+        "edgeCountAfter": 0,
+        "edgeCountBefore": 0,
+        "nodeCountAfter": 1,
+        "nodeCountBefore": 1,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "three_step_chain": {
+        "definingEdgeIDs": [
+          201,
+          202
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 3,
+        "nodeCountBefore": 3,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "two_connected_steps": {
+        "definingEdgeIDs": [
+          100
+        ],
+        "edgeCountAfter": 1,
+        "edgeCountBefore": 1,
+        "nodeCountAfter": 2,
+        "nodeCountBefore": 2,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      },
+      "two_separate_sequences": {
+        "definingEdgeIDs": [
+          301,
+          302
+        ],
+        "edgeCountAfter": 2,
+        "edgeCountBefore": 2,
+        "nodeCountAfter": 4,
+        "nodeCountBefore": 4,
+        "seqCountAfter": 0,
+        "seqCountBefore": 0,
+        "success": true
+      }
+    }
+  }
+}

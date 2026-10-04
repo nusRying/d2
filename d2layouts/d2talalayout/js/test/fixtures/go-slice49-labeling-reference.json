@@ -1,0 +1,1245 @@
+{
+  "maxWork": 50000000,
+  "scenarios": [
+    {
+      "name": "simple-movable-node-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 100,
+            "h": 60,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "A",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "node-label-blocked-by-sibling",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 60,
+            "h": 60,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "A",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          },
+          {
+            "id": 2,
+            "w": 60,
+            "h": 60,
+            "x": 120,
+            "y": 50
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "node-label-blocked-by-edge",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 60,
+            "h": 60,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "A",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 200,
+            "y": 50
+          },
+          {
+            "id": 3,
+            "w": 40,
+            "h": 40,
+            "x": 200,
+            "y": 150
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 2,
+            "to": 3,
+            "points": [
+              [
+                220,
+                90
+              ],
+              [
+                220,
+                130
+              ],
+              [
+                80,
+                130
+              ],
+              [
+                80,
+                150
+              ]
+            ]
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 3,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "pct": 0
+        }
+      ]
+    },
+    {
+      "name": "inside-label-fit-rejection",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "Large",
+              "w": 50,
+              "h": 30,
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "outside-label-placement",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 50,
+            "h": 50,
+            "x": 100,
+            "y": 100,
+            "label": {
+              "text": "Outside",
+              "w": 40,
+              "h": 20,
+              "pos": 11
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "container-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 200,
+            "h": 150,
+            "x": 20,
+            "y": 20,
+            "label": {
+              "text": "Container",
+              "w": 60,
+              "h": 16,
+              "pos": 0
+            }
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 40,
+            "y": 50,
+            "container": 1
+          },
+          {
+            "id": 3,
+            "w": 40,
+            "h": 40,
+            "x": 110,
+            "y": 50,
+            "container": 1
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 14,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 3,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "shape-specific-diamond",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "shape": "Diamond",
+            "label": {
+              "text": "Cond",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "shape-specific-circle",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "shape": "Circle",
+            "label": {
+              "text": "Round",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "shape-specific-hexagon",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 90,
+            "h": 60,
+            "x": 50,
+            "y": 50,
+            "shape": "Hexagon",
+            "label": {
+              "text": "Hex",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "icon-only",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "icon": {
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": 17
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "icon-competing-with-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "Competitor",
+              "w": 40,
+              "h": 16,
+              "pos": 0
+            },
+            "icon": {
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "iconPos": 17
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "fixed-icon",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "WithFixedIcon",
+              "w": 30,
+              "h": 16,
+              "pos": 0
+            },
+            "icon": {
+              "pos": 13,
+              "fixed": true
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 20,
+          "iconPos": 13
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "fixed-node-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 80,
+            "h": 80,
+            "x": 50,
+            "y": 50,
+            "label": {
+              "text": "FixedNode",
+              "w": 30,
+              "h": 16,
+              "pos": 2,
+              "fixed": true
+            },
+            "icon": {
+              "pos": 0
+            }
+          }
+        ],
+        "edges": null
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "iconPos": 17
+        }
+      ],
+      "edgesAfter": null
+    },
+    {
+      "name": "fixed-edge-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 20,
+            "y": 20
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 150,
+            "y": 20
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 2,
+            "points": [
+              [
+                60,
+                40
+              ],
+              [
+                150,
+                40
+              ]
+            ],
+            "label": {
+              "text": "FixedEdge",
+              "w": 30,
+              "h": 14,
+              "pos": 17,
+              "fixed": true
+            },
+            "pct": 0.5
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "pct": 0.5
+        }
+      ]
+    },
+    {
+      "name": "loop-edge-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 60,
+            "h": 60,
+            "x": 50,
+            "y": 50
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 1,
+            "points": [
+              [
+                110,
+                60
+              ],
+              [
+                140,
+                60
+              ],
+              [
+                140,
+                90
+              ],
+              [
+                110,
+                90
+              ]
+            ],
+            "label": {
+              "text": "Loop",
+              "w": 24,
+              "h": 12,
+              "pos": 17
+            },
+            "pct": 0.5
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 17,
+          "pct": 0.5
+        }
+      ]
+    },
+    {
+      "name": "arrowhead-labels-reserving-space",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 20,
+            "y": 50
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 180,
+            "y": 50
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 2,
+            "points": [
+              [
+                60,
+                70
+              ],
+              [
+                180,
+                70
+              ]
+            ],
+            "label": {
+              "text": "mid",
+              "w": 24,
+              "h": 12,
+              "pos": 0
+            },
+            "src": "arrow",
+            "dst": "arrow",
+            "srcLabel": {
+              "text": "1",
+              "w": 12,
+              "h": 12,
+              "pos": 0
+            },
+            "dstLabel": {
+              "text": "N",
+              "w": 12,
+              "h": 12,
+              "pos": 0
+            }
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "pct": 0
+        }
+      ]
+    },
+    {
+      "name": "ordinary-edge-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 50,
+            "h": 50,
+            "x": 20,
+            "y": 50
+          },
+          {
+            "id": 2,
+            "w": 50,
+            "h": 50,
+            "x": 200,
+            "y": 50
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 2,
+            "points": [
+              [
+                70,
+                75
+              ],
+              [
+                200,
+                75
+              ]
+            ],
+            "label": {
+              "text": "Straight",
+              "w": 36,
+              "h": 14,
+              "pos": 0
+            }
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "pct": 0
+        }
+      ]
+    },
+    {
+      "name": "unlocked-multibend-edge-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 20,
+            "y": 20
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 180,
+            "y": 140
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 2,
+            "points": [
+              [
+                60,
+                40
+              ],
+              [
+                120,
+                40
+              ],
+              [
+                120,
+                160
+              ],
+              [
+                180,
+                160
+              ]
+            ],
+            "label": {
+              "text": "Multibend",
+              "w": 44,
+              "h": 14,
+              "pos": 0
+            }
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "pct": 0
+        }
+      ]
+    },
+    {
+      "name": "shared-edge-segment",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 20,
+            "y": 20
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 20,
+            "y": 120
+          },
+          {
+            "id": 3,
+            "w": 40,
+            "h": 40,
+            "x": 220,
+            "y": 20
+          },
+          {
+            "id": 4,
+            "w": 40,
+            "h": 40,
+            "x": 220,
+            "y": 120
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 3,
+            "points": [
+              [
+                60,
+                40
+              ],
+              [
+                100,
+                40
+              ],
+              [
+                100,
+                70
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                180,
+                40
+              ],
+              [
+                220,
+                40
+              ]
+            ],
+            "label": {
+              "text": "Shared1",
+              "w": 36,
+              "h": 14,
+              "pos": 0
+            }
+          },
+          {
+            "id": 2,
+            "from": 2,
+            "to": 4,
+            "points": [
+              [
+                60,
+                140
+              ],
+              [
+                100,
+                140
+              ],
+              [
+                100,
+                70
+              ],
+              [
+                180,
+                70
+              ],
+              [
+                180,
+                140
+              ],
+              [
+                220,
+                140
+              ]
+            ],
+            "label": {
+              "text": "Shared2",
+              "w": 36,
+              "h": 14,
+              "pos": 0
+            }
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 3,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 4,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 34,
+          "pct": 0.125
+        },
+        {
+          "id": 2,
+          "labelPos": 1,
+          "pct": 0
+        }
+      ]
+    },
+    {
+      "name": "cluster-edge-label",
+      "spec": {
+        "nodes": [
+          {
+            "id": 1,
+            "w": 40,
+            "h": 40,
+            "x": 30,
+            "y": 30
+          },
+          {
+            "id": 2,
+            "w": 40,
+            "h": 40,
+            "x": 160,
+            "y": 30
+          }
+        ],
+        "clusters": [
+          {
+            "vessel": 99,
+            "members": [
+              2
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": 1,
+            "from": 1,
+            "to": 2,
+            "points": [
+              [
+                70,
+                50
+              ],
+              [
+                160,
+                50
+              ]
+            ],
+            "label": {
+              "text": "ToCluster",
+              "w": 40,
+              "h": 14,
+              "pos": 0
+            }
+          }
+        ]
+      },
+      "nodesAfter": [
+        {
+          "id": 1,
+          "labelPos": -1,
+          "iconPos": -1
+        },
+        {
+          "id": 2,
+          "labelPos": -1,
+          "iconPos": -1
+        }
+      ],
+      "edgesAfter": [
+        {
+          "id": 1,
+          "labelPos": 2,
+          "pct": 0
+        }
+      ]
+    }
+  ],
+  "exactWork": {
+    "name": "representative-exact-work",
+    "spec": {
+      "nodes": [
+        {
+          "id": 1,
+          "w": 240,
+          "h": 180,
+          "x": 20,
+          "y": 20,
+          "label": {
+            "text": "Vessel",
+            "w": 48,
+            "h": 14,
+            "pos": 2
+          }
+        },
+        {
+          "id": 2,
+          "w": 50,
+          "h": 50,
+          "x": 40,
+          "y": 50,
+          "container": 1,
+          "label": {
+            "text": "NodeA",
+            "w": 36,
+            "h": 12,
+            "pos": 0
+          },
+          "icon": {
+            "pos": 0
+          }
+        },
+        {
+          "id": 3,
+          "w": 50,
+          "h": 50,
+          "x": 140,
+          "y": 50,
+          "container": 1,
+          "label": {
+            "text": "NodeB",
+            "w": 36,
+            "h": 12,
+            "pos": 0
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": 1,
+          "from": 2,
+          "to": 3,
+          "points": [
+            [
+              90,
+              75
+            ],
+            [
+              140,
+              75
+            ]
+          ],
+          "label": {
+            "text": "EdgeAB",
+            "w": 32,
+            "h": 12,
+            "pos": 0
+          },
+          "src": "arrow",
+          "dst": "arrow",
+          "srcLabel": {
+            "text": "s",
+            "w": 10,
+            "h": 10,
+            "pos": 0
+          },
+          "dstLabel": {
+            "text": "t",
+            "w": 10,
+            "h": 10,
+            "pos": 0
+          }
+        },
+        {
+          "id": 2,
+          "from": 2,
+          "to": 2,
+          "points": [
+            [
+              40,
+              70
+            ],
+            [
+              10,
+              70
+            ],
+            [
+              10,
+              90
+            ],
+            [
+              40,
+              90
+            ]
+          ],
+          "label": {
+            "text": "Self",
+            "w": 20,
+            "h": 10,
+            "pos": 17
+          },
+          "pct": 0.5
+        }
+      ]
+    },
+    "w": 1141,
+    "nodesInitial": [
+      {
+        "id": 1,
+        "labelPos": 2,
+        "iconPos": -1
+      },
+      {
+        "id": 2,
+        "labelPos": 0,
+        "iconPos": 0
+      },
+      {
+        "id": 3,
+        "labelPos": 0,
+        "iconPos": -1
+      }
+    ],
+    "edgesInitial": [
+      {
+        "id": 1,
+        "labelPos": 0,
+        "pct": 0
+      },
+      {
+        "id": 2,
+        "labelPos": 17,
+        "pct": 0.5
+      }
+    ],
+    "nodesAfter": [
+      {
+        "id": 1,
+        "labelPos": 14,
+        "iconPos": -1
+      },
+      {
+        "id": 2,
+        "labelPos": 2,
+        "iconPos": 17
+      },
+      {
+        "id": 3,
+        "labelPos": 17,
+        "iconPos": -1
+      }
+    ],
+    "edgesAfter": [
+      {
+        "id": 1,
+        "labelPos": 11,
+        "pct": 0
+      },
+      {
+        "id": 2,
+        "labelPos": 17,
+        "pct": 0.5
+      }
+    ],
+    "wMinus1Error": "TALA PlaceLabels work exceeds limit 1140",
+    "wMinus1Used": 1141,
+    "nodesAfterRoll": [
+      {
+        "id": 1,
+        "labelPos": 2,
+        "iconPos": -1
+      },
+      {
+        "id": 2,
+        "labelPos": 0,
+        "iconPos": 0
+      },
+      {
+        "id": 3,
+        "labelPos": 0,
+        "iconPos": -1
+      }
+    ],
+    "edgesAfterRoll": [
+      {
+        "id": 1,
+        "labelPos": 0,
+        "pct": 0
+      },
+      {
+        "id": 2,
+        "labelPos": 17,
+        "pct": 0.5
+      }
+    ]
+  }
+}

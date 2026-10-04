@@ -1,0 +1,457 @@
+{
+  "scenarios": {
+    "AA_nil_abduction_error": {
+      "success": false,
+      "errorMessage": "layout invariant violated: nil edge abduction while assigning nears",
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "AB_nil_graph_nonempty_abduction": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "A_empty_abductions": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "100": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "B_canonical_upstream": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "100": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "C_three_siblings": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2",
+            "3"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1",
+            "3"
+          ],
+          "replaced": true
+        },
+        "3": {
+          "nears": [
+            "1",
+            "2"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "D_duplicate_abductions": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "E_different_uncles": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "3": {
+          "nears": [
+            "4"
+          ],
+          "replaced": true
+        },
+        "4": {
+          "nears": [
+            "3"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "F_nested_descendants": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "21": {
+          "nears": [],
+          "replaced": false
+        },
+        "22": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "G_nested_cluster_vessel": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "21": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "H_nested_sequence_vessel": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "21": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "I_cluster_precedence_over_sequence": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "3": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "J_from_and_to_both_descendants": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "K_no_matching_direct_child": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "L_nil_uncle": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "M_hierarchy_on_first": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "N_hierarchy_on_second": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "O_existing_direct_edge": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "P_nil_edge_in_edges": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "Q_existing_near_preservation": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2",
+            "99"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        },
+        "99": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "R_already_symmetric_near": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "S_asymmetric_existing_near": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "T_nil_near_map": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    },
+    "U_precanceled_context": {
+      "success": false,
+      "errorMessage": "AssignNears: context canceled",
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "V_cancellation_during_discovery": {
+      "success": false,
+      "errorMessage": "AssignNears: context canceled",
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "W_cancellation_after_commit": {
+      "success": false,
+      "errorMessage": "AssignNears: context canceled",
+      "nodes": {
+        "1": {
+          "nears": [],
+          "replaced": false
+        },
+        "2": {
+          "nears": [],
+          "replaced": false
+        }
+      }
+    },
+    "Z_unrelated_external_node": {
+      "success": true,
+      "nodes": {
+        "1": {
+          "nears": [
+            "2"
+          ],
+          "replaced": true
+        },
+        "100": {
+          "nears": [
+            "999"
+          ],
+          "replaced": false
+        },
+        "2": {
+          "nears": [
+            "1"
+          ],
+          "replaced": true
+        }
+      }
+    }
+  }
+}

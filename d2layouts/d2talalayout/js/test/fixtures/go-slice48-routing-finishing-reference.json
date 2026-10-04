@@ -1,0 +1,4411 @@
+{
+  "authority": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+  "cases": [
+    {
+      "name": "detour",
+      "stage": "SimplifyEdgeRoutes",
+      "nodes": [
+        {
+          "id": 1,
+          "x": -10,
+          "y": -5,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 2,
+          "x": 40,
+          "y": -25,
+          "w": 10,
+          "h": 10
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 20
+            },
+            {
+              "x": 40,
+              "y": 20
+            },
+            {
+              "x": 40,
+              "y": -20
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": -20
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": 0
+          },
+          {
+            "x": 40,
+            "y": -20
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.6666666666666666,
+        "RouteLength": 10
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "work": 33
+    },
+    {
+      "name": "opposite_vertical",
+      "stage": "SimplifyEdgeRoutes",
+      "nodes": [
+        {
+          "id": 1,
+          "x": -5,
+          "y": -10,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 2,
+          "x": -25,
+          "y": 40,
+          "w": 10,
+          "h": 10
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 0,
+              "y": 10
+            },
+            {
+              "x": 20,
+              "y": 10
+            },
+            {
+              "x": 20,
+              "y": 40
+            },
+            {
+              "x": -20,
+              "y": 40
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 10
+          },
+          {
+            "x": 20,
+            "y": 10
+          },
+          {
+            "x": 20,
+            "y": 40
+          },
+          {
+            "x": -20,
+            "y": 40
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 40
+          },
+          {
+            "x": -20,
+            "y": 40
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.6666666666666666,
+        "RouteLength": 10
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "work": 33
+    },
+    {
+      "name": "second_leg_obstacle",
+      "stage": "SimplifyEdgeRoutes",
+      "nodes": [
+        {
+          "id": 1,
+          "x": -10,
+          "y": -5,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 2,
+          "x": 40,
+          "y": -25,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 3,
+          "x": 35,
+          "y": -15,
+          "w": 10,
+          "h": 10
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 0,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 0
+            },
+            {
+              "x": 10,
+              "y": 20
+            },
+            {
+              "x": 40,
+              "y": 20
+            },
+            {
+              "x": 40,
+              "y": -20
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": -20
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 0
+          },
+          {
+            "x": 10,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": 20
+          },
+          {
+            "x": 40,
+            "y": -20
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 1,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.6666666666666666,
+        "RouteLength": 10
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 1,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.6666666666666666,
+        "RouteLength": 10
+      },
+      "work": 39
+    },
+    {
+      "name": "same_side",
+      "stage": "SwapAllEdgePorts",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 2,
+          "x": 100,
+          "y": 100,
+          "w": 10,
+          "h": 10
+        },
+        {
+          "id": 3,
+          "x": 100,
+          "y": -100,
+          "w": 10,
+          "h": 10
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 10,
+              "y": 2
+            },
+            {
+              "x": 30,
+              "y": 2
+            },
+            {
+              "x": 30,
+              "y": 110
+            },
+            {
+              "x": 100,
+              "y": 110
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 1,
+          "to": 3,
+          "directed": false,
+          "points": [
+            {
+              "x": 10,
+              "y": 8
+            },
+            {
+              "x": 40,
+              "y": 8
+            },
+            {
+              "x": 40,
+              "y": -90
+            },
+            {
+              "x": 100,
+              "y": -90
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 10,
+            "y": 2
+          },
+          {
+            "x": 30,
+            "y": 2
+          },
+          {
+            "x": 30,
+            "y": 110
+          },
+          {
+            "x": 100,
+            "y": 110
+          }
+        ],
+        [
+          {
+            "x": 10,
+            "y": 8
+          },
+          {
+            "x": 40,
+            "y": 8
+          },
+          {
+            "x": 40,
+            "y": -90
+          },
+          {
+            "x": 100,
+            "y": -90
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 10,
+            "y": 8
+          },
+          {
+            "x": 30,
+            "y": 8
+          },
+          {
+            "x": 30,
+            "y": 110
+          },
+          {
+            "x": 100,
+            "y": 110
+          }
+        ],
+        [
+          {
+            "x": 10,
+            "y": 2
+          },
+          {
+            "x": 40,
+            "y": 2
+          },
+          {
+            "x": 40,
+            "y": -90
+          },
+          {
+            "x": 100,
+            "y": -90
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 1,
+        "Detour": 0,
+        "RouteLength": 38.6
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 37.4
+      },
+      "work": 65
+    },
+    {
+      "name": "free_straight",
+      "stage": "StraightEdgesFallback",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 50
+            },
+            {
+              "x": 150,
+              "y": 50
+            },
+            {
+              "x": 150,
+              "y": -100
+            },
+            {
+              "x": 250,
+              "y": -100
+            },
+            {
+              "x": 250,
+              "y": 50
+            },
+            {
+              "x": 300,
+              "y": 50
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 50
+          },
+          {
+            "x": 150,
+            "y": 50
+          },
+          {
+            "x": 150,
+            "y": -100
+          },
+          {
+            "x": 250,
+            "y": -100
+          },
+          {
+            "x": 250,
+            "y": 50
+          },
+          {
+            "x": 300,
+            "y": 50
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 50
+          },
+          {
+            "x": 300,
+            "y": 50
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 1.5,
+        "RouteLength": 5
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      }
+    },
+    {
+      "name": "duplicate_reversal",
+      "stage": "ReorderDuplicates",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 40,
+          "h": 40
+        },
+        {
+          "id": 2,
+          "x": 0,
+          "y": 200,
+          "w": 40,
+          "h": 40
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 10,
+              "y": 40
+            },
+            {
+              "x": 10,
+              "y": 200
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 2,
+          "to": 1,
+          "directed": false,
+          "points": [
+            {
+              "x": 30,
+              "y": 200
+            },
+            {
+              "x": 30,
+              "y": 40
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "label": "labeled",
+          "points": [
+            {
+              "x": 20,
+              "y": 40
+            },
+            {
+              "x": 20,
+              "y": 200
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 10,
+            "y": 40
+          },
+          {
+            "x": 10,
+            "y": 200
+          }
+        ],
+        [
+          {
+            "x": 30,
+            "y": 200
+          },
+          {
+            "x": 30,
+            "y": 40
+          }
+        ],
+        [
+          {
+            "x": 20,
+            "y": 40
+          },
+          {
+            "x": 20,
+            "y": 200
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 10,
+            "y": 40
+          },
+          {
+            "x": 10,
+            "y": 200
+          }
+        ],
+        [
+          {
+            "x": 20,
+            "y": 200
+          },
+          {
+            "x": 20,
+            "y": 40
+          }
+        ],
+        [
+          {
+            "x": 30,
+            "y": 40
+          },
+          {
+            "x": 30,
+            "y": 200
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 12
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 12
+      }
+    },
+    {
+      "name": "cluster_shared",
+      "stage": "Crosshatch",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 0,
+          "y": 200,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 3,
+          "x": 400,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 4,
+          "x": 400,
+          "y": 200,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 3,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 100
+            },
+            {
+              "x": 400,
+              "y": 50
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 2,
+          "to": 4,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 100
+            },
+            {
+              "x": 400,
+              "y": 250
+            }
+          ]
+        }
+      ],
+      "cluster": [
+        1,
+        2
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 100
+          },
+          {
+            "x": 400,
+            "y": 50
+          }
+        ],
+        [
+          {
+            "x": 100,
+            "y": 100
+          },
+          {
+            "x": 400,
+            "y": 250
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 50
+          },
+          {
+            "x": 400,
+            "y": 50
+          }
+        ],
+        [
+          {
+            "x": 100,
+            "y": 250
+          },
+          {
+            "x": 400,
+            "y": 250
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 1,
+        "Detour": 0,
+        "RouteLength": 6.395483231398794
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "work": 78
+    },
+    {
+      "name": "regular_bends",
+      "stage": "BalanceEdgeSegments",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 200,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 500,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 250
+            },
+            {
+              "x": 200,
+              "y": 250
+            },
+            {
+              "x": 200,
+              "y": 150
+            },
+            {
+              "x": 400,
+              "y": 150
+            },
+            {
+              "x": 400,
+              "y": 50
+            },
+            {
+              "x": 500,
+              "y": 50
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 150
+          },
+          {
+            "x": 400,
+            "y": 150
+          },
+          {
+            "x": 400,
+            "y": 50
+          },
+          {
+            "x": 500,
+            "y": 50
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 150
+          },
+          {
+            "x": 350,
+            "y": 150
+          },
+          {
+            "x": 350,
+            "y": 50
+          },
+          {
+            "x": 500,
+            "y": 50
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "work": 210
+    },
+    {
+      "name": "cluster_branch",
+      "stage": "FixClusterEdgeBranching",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 200,
+          "y": 0,
+          "w": 20,
+          "h": 20
+        },
+        {
+          "id": 2,
+          "x": 0,
+          "y": 200,
+          "w": 20,
+          "h": 20
+        },
+        {
+          "id": 3,
+          "x": 400,
+          "y": 200,
+          "w": 20,
+          "h": 20
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 210,
+              "y": 20
+            },
+            {
+              "x": 210,
+              "y": 80
+            },
+            {
+              "x": 10,
+              "y": 80
+            },
+            {
+              "x": 10,
+              "y": 200
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 1,
+          "to": 3,
+          "directed": false,
+          "points": [
+            {
+              "x": 210,
+              "y": 20
+            },
+            {
+              "x": 210,
+              "y": 120
+            },
+            {
+              "x": 410,
+              "y": 120
+            },
+            {
+              "x": 410,
+              "y": 200
+            }
+          ]
+        }
+      ],
+      "cluster": [
+        2,
+        3
+      ],
+      "before": [
+        [
+          {
+            "x": 210,
+            "y": 20
+          },
+          {
+            "x": 210,
+            "y": 80
+          },
+          {
+            "x": 10,
+            "y": 80
+          },
+          {
+            "x": 10,
+            "y": 200
+          }
+        ],
+        [
+          {
+            "x": 210,
+            "y": 20
+          },
+          {
+            "x": 210,
+            "y": 120
+          },
+          {
+            "x": 410,
+            "y": 120
+          },
+          {
+            "x": 410,
+            "y": 200
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 210,
+            "y": 20
+          },
+          {
+            "x": 210,
+            "y": 120
+          },
+          {
+            "x": 10,
+            "y": 120
+          },
+          {
+            "x": 10,
+            "y": 200
+          }
+        ],
+        [
+          {
+            "x": 210,
+            "y": 20
+          },
+          {
+            "x": 210,
+            "y": 120
+          },
+          {
+            "x": 410,
+            "y": 120
+          },
+          {
+            "x": 410,
+            "y": 200
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 1,
+        "Detour": 0,
+        "RouteLength": 38
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 38
+      },
+      "work": 202
+    },
+    {
+      "name": "rectangle",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 50,
+              "y": 50
+            },
+            {
+              "x": 350,
+              "y": 50
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 50,
+            "y": 50
+          },
+          {
+            "x": 350,
+            "y": 50
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 50,
+            "y": 50
+          },
+          {
+            "x": 350,
+            "y": 50
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 3
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 3
+      },
+      "work": 20
+    },
+    {
+      "name": "ellipse",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 93,
+            "y": 25
+          },
+          {
+            "x": 307,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.14
+      },
+      "work": 20
+    },
+    {
+      "name": "diamond",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 76,
+            "y": 25
+          },
+          {
+            "x": 324,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.48
+      },
+      "work": 20
+    },
+    {
+      "name": "channel_wire_shortening",
+      "stage": "NudgeEdgeChannels",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 200,
+          "w": 200,
+          "h": 300
+        },
+        {
+          "id": 2,
+          "x": 50,
+          "y": 300,
+          "w": 50,
+          "h": 50,
+          "container": 1
+        },
+        {
+          "id": 3,
+          "x": 400,
+          "y": 300,
+          "w": 50,
+          "h": 50
+        },
+        {
+          "id": 4,
+          "x": 0,
+          "y": 0,
+          "w": 500,
+          "h": 130
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 2,
+          "to": 3,
+          "directed": false,
+          "points": [
+            {
+              "x": 75,
+              "y": 300
+            },
+            {
+              "x": 75,
+              "y": 140
+            },
+            {
+              "x": 425,
+              "y": 140
+            },
+            {
+              "x": 425,
+              "y": 300
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 75,
+            "y": 300
+          },
+          {
+            "x": 75,
+            "y": 140
+          },
+          {
+            "x": 425,
+            "y": 140
+          },
+          {
+            "x": 425,
+            "y": 300
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 75,
+            "y": 300
+          },
+          {
+            "x": 75,
+            "y": 160
+          },
+          {
+            "x": 425,
+            "y": 160
+          },
+          {
+            "x": 425,
+            "y": 300
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.9142857142857143,
+        "RouteLength": 4.843373493975903
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0.8,
+        "RouteLength": 4.554216867469879
+      },
+      "work": 244
+    },
+    {
+      "name": "staircase",
+      "stage": "ShortcutEdgeRoutes",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 200,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 500,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 250
+            },
+            {
+              "x": 200,
+              "y": 250
+            },
+            {
+              "x": 200,
+              "y": 150
+            },
+            {
+              "x": 400,
+              "y": 150
+            },
+            {
+              "x": 400,
+              "y": 50
+            },
+            {
+              "x": 500,
+              "y": 50
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 250
+          },
+          {
+            "x": 200,
+            "y": 150
+          },
+          {
+            "x": 400,
+            "y": 150
+          },
+          {
+            "x": 400,
+            "y": 50
+          },
+          {
+            "x": 500,
+            "y": 50
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 250
+          },
+          {
+            "x": 400,
+            "y": 250
+          },
+          {
+            "x": 400,
+            "y": 50
+          },
+          {
+            "x": 500,
+            "y": 50
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 6
+      },
+      "work": 195
+    },
+    {
+      "name": "crossing_obstruction_overlap",
+      "stage": "Inspect",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 2,
+          "x": 50,
+          "y": 50,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 3,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 4,
+          "x": 150,
+          "y": -200,
+          "w": 100,
+          "h": 100
+        },
+        {
+          "id": 5,
+          "x": 150,
+          "y": 200,
+          "w": 100,
+          "h": 100
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 3,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 50
+            },
+            {
+              "x": 300,
+              "y": 50
+            }
+          ]
+        },
+        {
+          "id": 0,
+          "from": 4,
+          "to": 5,
+          "directed": false,
+          "points": [
+            {
+              "x": 200,
+              "y": -100
+            },
+            {
+              "x": 200,
+              "y": 200
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 50
+          },
+          {
+            "x": 300,
+            "y": 50
+          }
+        ],
+        [
+          {
+            "x": 200,
+            "y": -100
+          },
+          {
+            "x": 200,
+            "y": 200
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 50
+          },
+          {
+            "x": 300,
+            "y": 50
+          }
+        ],
+        [
+          {
+            "x": 200,
+            "y": -100
+          },
+          {
+            "x": 200,
+            "y": 200
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 1,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 1,
+        "Detour": 0,
+        "RouteLength": 5
+      },
+      "metrics_after": {
+        "NodeOverlaps": 1,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 1,
+        "Detour": 0,
+        "RouteLength": 5
+      }
+    },
+    {
+      "name": "Circle/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Circle"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Circle"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 93,
+            "y": 25
+          },
+          {
+            "x": 307,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.14
+      },
+      "work": 20
+    },
+    {
+      "name": "Circle/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Circle"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Circle"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 92,
+            "y": 23
+          },
+          {
+            "x": 308,
+            "y": 77
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.226477037833537
+      },
+      "work": 20
+    },
+    {
+      "name": "Oval/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 93,
+            "y": 25
+          },
+          {
+            "x": 307,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.14
+      },
+      "work": 20
+    },
+    {
+      "name": "Oval/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Oval"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 92,
+            "y": 23
+          },
+          {
+            "x": 308,
+            "y": 77
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.226477037833537
+      },
+      "work": 20
+    },
+    {
+      "name": "C4Person/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "C4Person"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "C4Person"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 72,
+            "y": 25
+          },
+          {
+            "x": 328,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.56
+      },
+      "work": 20
+    },
+    {
+      "name": "C4Person/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "C4Person"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "C4Person"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 72,
+            "y": 18
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.3501702066020664
+      },
+      "work": 20
+    },
+    {
+      "name": "Callout/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Callout"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Callout"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "work": 20
+    },
+    {
+      "name": "Callout/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Callout"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Callout"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 350,
+            "y": 88
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.5781582573612503
+      },
+      "work": 20
+    },
+    {
+      "name": "Cloud/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cloud"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cloud"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 81,
+            "y": 25
+          },
+          {
+            "x": 319,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.38
+      },
+      "work": 20
+    },
+    {
+      "name": "Cloud/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cloud"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cloud"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 79,
+            "y": 20
+          },
+          {
+            "x": 301,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.2871160880025307
+      },
+      "work": 20
+    },
+    {
+      "name": "Cylinder/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cylinder"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cylinder"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "work": 20
+    },
+    {
+      "name": "Cylinder/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cylinder"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Cylinder"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "work": 20
+    },
+    {
+      "name": "Diamond/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 76,
+            "y": 25
+          },
+          {
+            "x": 324,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.48
+      },
+      "work": 20
+    },
+    {
+      "name": "Diamond/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Diamond"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 68,
+            "y": 17
+          },
+          {
+            "x": 332,
+            "y": 83
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.721249712907656
+      },
+      "work": 20
+    },
+    {
+      "name": "Document/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Document"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Document"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "work": 20
+    },
+    {
+      "name": "Document/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Document"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Document"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "work": 20
+    },
+    {
+      "name": "Hexagon/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Hexagon"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Hexagon"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 87,
+            "y": 25
+          },
+          {
+            "x": 312,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.25
+      },
+      "work": 20
+    },
+    {
+      "name": "Hexagon/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Hexagon"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Hexagon"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 86,
+            "y": 21
+          },
+          {
+            "x": 314,
+            "y": 79
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.3526155657055408
+      },
+      "work": 20
+    },
+    {
+      "name": "Package/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Package"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Package"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "work": 20
+    },
+    {
+      "name": "Package/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Package"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Package"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "work": 20
+    },
+    {
+      "name": "Page/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Page"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Page"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "work": 20
+    },
+    {
+      "name": "Page/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Page"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Page"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "work": 20
+    },
+    {
+      "name": "Parallelogram/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Parallelogram"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Parallelogram"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 93,
+            "y": 25
+          },
+          {
+            "x": 320,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.27
+      },
+      "work": 20
+    },
+    {
+      "name": "Parallelogram/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Parallelogram"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Parallelogram"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 94,
+            "y": 23
+          },
+          {
+            "x": 306,
+            "y": 77
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.187692848642149
+      },
+      "work": 20
+    },
+    {
+      "name": "Person/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Person"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Person"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 86,
+            "y": 25
+          },
+          {
+            "x": 314,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.28
+      },
+      "work": 20
+    },
+    {
+      "name": "Person/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Person"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Person"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 84,
+            "y": 21
+          },
+          {
+            "x": 307,
+            "y": 77
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.299239004540415
+      },
+      "work": 20
+    },
+    {
+      "name": "Queue/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Queue"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Queue"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 97,
+            "y": 25
+          },
+          {
+            "x": 303,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.06
+      },
+      "work": 20
+    },
+    {
+      "name": "Queue/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Queue"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Queue"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 97,
+            "y": 24
+          },
+          {
+            "x": 303,
+            "y": 76
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.124617612654098
+      },
+      "work": 20
+    },
+    {
+      "name": "Step/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Step"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Step"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 83,
+            "y": 25
+          },
+          {
+            "x": 317,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.34
+      },
+      "work": 20
+    },
+    {
+      "name": "Step/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Step"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "Step"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 79,
+            "y": 20
+          },
+          {
+            "x": 315,
+            "y": 79
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.4326323191144197
+      },
+      "work": 20
+    },
+    {
+      "name": "StoredData/horizontal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "StoredData"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "StoredData"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 25
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 25
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 88,
+            "y": 25
+          },
+          {
+            "x": 303,
+            "y": 25
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.15
+      },
+      "work": 20
+    },
+    {
+      "name": "StoredData/diagonal",
+      "stage": "TraceEdgesToShapeBorder",
+      "nodes": [
+        {
+          "id": 1,
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "StoredData"
+        },
+        {
+          "id": 2,
+          "x": 300,
+          "y": 0,
+          "w": 100,
+          "h": 100,
+          "shape": "StoredData"
+        }
+      ],
+      "edges": [
+        {
+          "id": 0,
+          "from": 1,
+          "to": 2,
+          "directed": false,
+          "points": [
+            {
+              "x": 100,
+              "y": 25
+            },
+            {
+              "x": 300,
+              "y": 75
+            }
+          ]
+        }
+      ],
+      "before": [
+        [
+          {
+            "x": 100,
+            "y": 25
+          },
+          {
+            "x": 300,
+            "y": 75
+          }
+        ]
+      ],
+      "after": [
+        [
+          {
+            "x": 89,
+            "y": 22
+          },
+          {
+            "x": 304,
+            "y": 76
+          }
+        ]
+      ],
+      "metrics_before": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.0615528128088303
+      },
+      "metrics_after": {
+        "NodeOverlaps": 0,
+        "RouteObstructions": 0,
+        "TextOcclusions": 0,
+        "Crossings": 0,
+        "Detour": 0,
+        "RouteLength": 2.216776939613005
+      },
+      "work": 20
+    }
+  ]
+}

@@ -1,0 +1,301 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "goArch": "amd64",
+    "goOS": "windows",
+    "goVersion": "go1.27.0"
+  },
+  "scenarios": {
+    "combined_label_modifier_loop": {
+      "topLeft": {
+        "x": 50,
+        "y": 50
+      },
+      "bottomRight": {
+        "x": 208,
+        "y": 225
+      },
+      "labelTopLeft": {
+        "x": 140.75,
+        "y": 130.75
+      }
+    },
+    "empty_nodes": {
+      "topLeft": {
+        "x": "-Inf",
+        "y": "-Inf"
+      },
+      "bottomRight": {
+        "x": "+Inf",
+        "y": "+Inf"
+      }
+    },
+    "fixed_origin_active_cluster": {
+      "topLeft": {
+        "x": 60,
+        "y": 65
+      },
+      "bottomRight": {
+        "x": 130,
+        "y": 120
+      }
+    },
+    "fixed_origin_active_sequence": {
+      "topLeft": {
+        "x": 55,
+        "y": 60
+      },
+      "bottomRight": {
+        "x": 110,
+        "y": 100
+      }
+    },
+    "fixed_origin_first_wins": {
+      "topLeft": {
+        "x": 90,
+        "y": 100
+      },
+      "bottomRight": {
+        "x": 280,
+        "y": 280
+      }
+    },
+    "fixed_origin_nested": {
+      "topLeft": {
+        "x": 85,
+        "y": 95
+      },
+      "bottomRight": {
+        "x": 180,
+        "y": 180
+      }
+    },
+    "fixed_origin_root": {
+      "topLeft": {
+        "x": 100,
+        "y": 100
+      },
+      "bottomRight": {
+        "x": 220,
+        "y": 230
+      }
+    },
+    "fractional_dimensions": {
+      "topLeft": {
+        "x": 12.35,
+        "y": 23.45
+      },
+      "bottomRight": {
+        "x": 160,
+        "y": 222
+      }
+    },
+    "image_icon_excluded": {
+      "topLeft": {
+        "x": 50,
+        "y": 50
+      },
+      "bottomRight": {
+        "x": 150,
+        "y": 130
+      }
+    },
+    "loop_offsets": {
+      "topLeft": {
+        "x": 88,
+        "y": 186
+      },
+      "bottomRight": {
+        "x": 166,
+        "y": 258
+      }
+    },
+    "modifier_3d_beats_multiple": {
+      "topLeft": {
+        "x": 50,
+        "y": 45
+      },
+      "bottomRight": {
+        "x": 165,
+        "y": 140
+      },
+      "modifierAdjustments": {
+        "dx": 15,
+        "dy": 15
+      }
+    },
+    "modifier_3d_hexagon": {
+      "topLeft": {
+        "x": 50,
+        "y": 52.5
+      },
+      "bottomRight": {
+        "x": 165,
+        "y": 140
+      },
+      "modifierAdjustments": {
+        "dx": 15,
+        "dy": 7.5
+      }
+    },
+    "modifier_3d_square": {
+      "topLeft": {
+        "x": 50,
+        "y": 45
+      },
+      "bottomRight": {
+        "x": 165,
+        "y": 140
+      },
+      "modifierAdjustments": {
+        "dx": 15,
+        "dy": 15
+      }
+    },
+    "modifier_multiple": {
+      "topLeft": {
+        "x": 50,
+        "y": 50
+      },
+      "bottomRight": {
+        "x": 160,
+        "y": 140
+      },
+      "modifierAdjustments": {
+        "dx": 10,
+        "dy": 10
+      }
+    },
+    "modifier_plus_loop_offsets": {
+      "topLeft": {
+        "x": 97,
+        "y": 181
+      },
+      "bottomRight": {
+        "x": 171,
+        "y": 227
+      },
+      "modifierAdjustments": {
+        "dx": 15,
+        "dy": 15
+      }
+    },
+    "negative_dimensions": {
+      "topLeft": {
+        "x": 100,
+        "y": 200
+      },
+      "bottomRight": {
+        "x": 85,
+        "y": 175
+      }
+    },
+    "negative_half_rounding": {
+      "topLeft": {
+        "x": -10.5,
+        "y": -20.5
+      },
+      "bottomRight": {
+        "x": -1,
+        "y": -11
+      }
+    },
+    "nil_peer_top_left": {
+      "topLeft": null,
+      "bottomRight": null,
+      "leftmost": true,
+      "topmost": true,
+      "rightmost": false,
+      "bottommost": false
+    },
+    "outside_icon": {
+      "topLeft": {
+        "x": 50,
+        "y": 45
+      },
+      "bottomRight": {
+        "x": 229,
+        "y": 130
+      },
+      "iconTopLeft": {
+        "x": 155,
+        "y": 55
+      }
+    },
+    "outside_label_bottom_right_boundary": {
+      "topLeft": {
+        "x": 50,
+        "y": 50
+      },
+      "bottomRight": {
+        "x": 150,
+        "y": 180
+      }
+    },
+    "outside_label_bottom_right_nonboundary": {
+      "topLeft": {
+        "x": 50,
+        "y": 50
+      },
+      "bottomRight": {
+        "x": 300,
+        "y": 300
+      }
+    },
+    "outside_label_boundary": {
+      "topLeft": {
+        "x": 40,
+        "y": 20
+      },
+      "bottomRight": {
+        "x": 150,
+        "y": 130
+      },
+      "labelTopLeft": {
+        "x": 45,
+        "y": 25
+      }
+    },
+    "outside_label_nonboundary": {
+      "topLeft": {
+        "x": 10,
+        "y": 10
+      },
+      "bottomRight": {
+        "x": 150,
+        "y": 130
+      },
+      "labelTopLeft": {
+        "x": 45,
+        "y": 25
+      }
+    },
+    "partial_null_with_fixed_origin": {
+      "topLeft": {
+        "x": 75,
+        "y": 165
+      },
+      "bottomRight": null
+    },
+    "simple_rounded_bounds": {
+      "topLeft": {
+        "x": 10.2,
+        "y": 20.3
+      },
+      "bottomRight": {
+        "x": 41,
+        "y": 61
+      }
+    },
+    "tied_extremes": {
+      "topLeft": {
+        "x": -20,
+        "y": 20
+      },
+      "bottomRight": {
+        "x": 60,
+        "y": 150
+      }
+    }
+  }
+}

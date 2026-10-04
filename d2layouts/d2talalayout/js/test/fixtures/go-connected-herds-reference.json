@@ -1,0 +1,383 @@
+{
+  "scenarios": {
+    "AA_duplicate_herd_order_alter_by_node": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1",
+            "u2"
+          ]
+        }
+      ]
+    },
+    "AB_cancellation_after_first_uncle_in_multi_uncle": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "components": null
+    },
+    "AC_cancellation_between_disconnected_components": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "components": null
+    },
+    "AD_repeated_call": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "AE_discriminating_fifo_topology": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "x",
+            "y",
+            "b",
+            "c"
+          ],
+          "uncles": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        }
+      ]
+    },
+    "A_nil_herd_order": {
+      "success": true,
+      "components": null
+    },
+    "B_empty_herd_order": {
+      "success": true,
+      "components": null
+    },
+    "C_precanceled_empty_order": {
+      "success": true,
+      "components": null
+    },
+    "D_nil_context_empty_order": {
+      "success": true,
+      "components": null
+    },
+    "E_nil_context_one_uncle": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "components": null
+    },
+    "F_precanceled_one_uncle": {
+      "success": false,
+      "error": "AssignHerds: context canceled",
+      "components": null
+    },
+    "G_one_uncle_one_node": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "H_one_uncle_zero_nodes": {
+      "success": true,
+      "components": [
+        {
+          "nodes": null,
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "I_nil_herds_map_one_uncle": {
+      "success": true,
+      "components": [
+        {
+          "nodes": null,
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "J_missing_map_key": {
+      "success": true,
+      "components": [
+        {
+          "nodes": null,
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "K_two_disconnected_uncles": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        },
+        {
+          "nodes": [
+            "b"
+          ],
+          "uncles": [
+            "u2"
+          ]
+        }
+      ]
+    },
+    "L_two_connected_uncles_shared_node": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "shared",
+            "b"
+          ],
+          "uncles": [
+            "u1",
+            "u2"
+          ]
+        }
+      ]
+    },
+    "M_transitive_three_uncle_connection": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "x",
+            "y",
+            "z"
+          ],
+          "uncles": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        }
+      ]
+    },
+    "N_source_order_vs_id_order": {
+      "success": true,
+      "components": [
+        {
+          "nodes": null,
+          "uncles": [
+            "u30"
+          ]
+        },
+        {
+          "nodes": null,
+          "uncles": [
+            "u10"
+          ]
+        },
+        {
+          "nodes": null,
+          "uncles": [
+            "u20"
+          ]
+        }
+      ]
+    },
+    "O_node_source_order_preserved": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "c",
+            "a",
+            "b"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "P_duplicate_uncle_in_herd_order": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "Q_duplicate_node_in_one_herd": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "b"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "R_duplicate_node_across_connected_herds": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "b"
+          ],
+          "uncles": [
+            "u1",
+            "u2"
+          ]
+        }
+      ]
+    },
+    "S_null_uncle_missing_key": {
+      "success": true,
+      "components": [
+        {
+          "nodes": null,
+          "uncles": [
+            null
+          ]
+        }
+      ]
+    },
+    "T_null_uncle_with_nodes": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "b"
+          ],
+          "uncles": [
+            null
+          ]
+        }
+      ]
+    },
+    "U_nil_node_member": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            null
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "V_nil_node_shared_by_two_uncles": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            null
+          ],
+          "uncles": [
+            "u1",
+            "u2"
+          ]
+        }
+      ]
+    },
+    "W_duplicate_nil_node_within_herd": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            null
+          ],
+          "uncles": [
+            "u1"
+          ]
+        }
+      ]
+    },
+    "X_multiple_disconnected_with_empty_trailing": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a"
+          ],
+          "uncles": [
+            "u1"
+          ]
+        },
+        {
+          "nodes": null,
+          "uncles": [
+            "u2"
+          ]
+        }
+      ]
+    },
+    "Y_first_shared_node_discovers_multiple_uncles": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "shared"
+          ],
+          "uncles": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        }
+      ]
+    },
+    "Z_related_uncle_already_seen": {
+      "success": true,
+      "components": [
+        {
+          "nodes": [
+            "a",
+            "c",
+            "b"
+          ],
+          "uncles": [
+            "u1",
+            "u2",
+            "u3"
+          ]
+        }
+      ]
+    }
+  }
+}

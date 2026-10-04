@@ -1,0 +1,1110 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGoVersion": "go1.27.0",
+    "slice": "Slice 21 — Shape Sizing \u0026 FitToBoundingBox"
+  },
+  "getDimensionsToFit": [
+    {
+      "name": "default",
+      "shape": "",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Square",
+      "shape": "Square",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "RealSquare",
+      "shape": "RealSquare",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 140
+    },
+    {
+      "name": "Circle",
+      "shape": "Circle",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 198,
+      "fitHeight": 198
+    },
+    {
+      "name": "Oval",
+      "shape": "Oval",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 194,
+      "fitHeight": 126
+    },
+    {
+      "name": "Cloud",
+      "shape": "Cloud",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 171,
+      "fitHeight": 176
+    },
+    {
+      "name": "Page",
+      "shape": "Page",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Step",
+      "shape": "Step",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 210,
+      "fitHeight": 96
+    },
+    {
+      "name": "Queue",
+      "shape": "Queue",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 212,
+      "fitHeight": 96
+    },
+    {
+      "name": "Hexagon",
+      "shape": "Hexagon",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 210,
+      "fitHeight": 144
+    },
+    {
+      "name": "Diamond",
+      "shape": "Diamond",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 280,
+      "fitHeight": 192
+    },
+    {
+      "name": "Document",
+      "shape": "Document",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 130
+    },
+    {
+      "name": "Cylinder",
+      "shape": "Cylinder",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 168
+    },
+    {
+      "name": "StoredData",
+      "shape": "StoredData",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 170,
+      "fitHeight": 96
+    },
+    {
+      "name": "Parallelogram",
+      "shape": "Parallelogram",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 192,
+      "fitHeight": 96
+    },
+    {
+      "name": "Callout",
+      "shape": "Callout",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 141
+    },
+    {
+      "name": "Person",
+      "shape": "Person",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 343,
+      "fitHeight": 228
+    },
+    {
+      "name": "C4Person",
+      "shape": "C4Person",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 156,
+      "fitHeight": 167
+    },
+    {
+      "name": "Package",
+      "shape": "Package",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 120
+    },
+    {
+      "name": "Image",
+      "shape": "Image",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Table",
+      "shape": "Table",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Class",
+      "shape": "Class",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Text",
+      "shape": "Text",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "Code",
+      "shape": "Code",
+      "width": 120,
+      "height": 80,
+      "paddingX": 20,
+      "paddingY": 16,
+      "fitWidth": 140,
+      "fitHeight": 96
+    },
+    {
+      "name": "oval_float32_regression",
+      "shape": "Oval",
+      "width": 16.2,
+      "height": 28.3,
+      "paddingX": 6.5,
+      "paddingY": 6.5,
+      "fitWidth": 28,
+      "fitHeight": 49
+    },
+    {
+      "name": "oval_wide_limit",
+      "shape": "Oval",
+      "width": 500,
+      "height": 50,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 722,
+      "fitHeight": 241
+    },
+    {
+      "name": "oval_tall_limit",
+      "shape": "Oval",
+      "width": 50,
+      "height": 500,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 241,
+      "fitHeight": 722
+    },
+    {
+      "name": "cloud_wide",
+      "shape": "Cloud",
+      "width": 300,
+      "height": 100,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 379,
+      "fitHeight": 201
+    },
+    {
+      "name": "cloud_tall",
+      "shape": "Cloud",
+      "width": 100,
+      "height": 300,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 201,
+      "fitHeight": 379
+    },
+    {
+      "name": "cloud_square",
+      "shape": "Cloud",
+      "width": 200,
+      "height": 200,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 317,
+      "fitHeight": 317
+    },
+    {
+      "name": "page_short",
+      "shape": "Page",
+      "width": 100,
+      "height": 30,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 131,
+      "fitHeight": 40
+    },
+    {
+      "name": "page_tall",
+      "shape": "Page",
+      "width": 100,
+      "height": 100,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 110,
+      "fitHeight": 110
+    },
+    {
+      "name": "page_minimum_dimensions",
+      "shape": "Page",
+      "width": 5,
+      "height": 5,
+      "paddingX": 2,
+      "paddingY": 2,
+      "fitWidth": 42,
+      "fitHeight": 21
+    },
+    {
+      "name": "callout_short",
+      "shape": "Callout",
+      "width": 100,
+      "height": 20,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 110,
+      "fitHeight": 60
+    },
+    {
+      "name": "callout_tall",
+      "shape": "Callout",
+      "width": 100,
+      "height": 50,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 110,
+      "fitHeight": 105
+    },
+    {
+      "name": "person_wide_limit",
+      "shape": "Person",
+      "width": 300,
+      "height": 60,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 759,
+      "fitHeight": 506
+    },
+    {
+      "name": "person_tall_limit",
+      "shape": "Person",
+      "width": 60,
+      "height": 300,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 207,
+      "fitHeight": 310
+    },
+    {
+      "name": "c4_person_min_height",
+      "shape": "C4Person",
+      "width": 100,
+      "height": 20,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 123,
+      "fitHeight": 117
+    },
+    {
+      "name": "c4_person_aspect_limit",
+      "shape": "C4Person",
+      "width": 50,
+      "height": 300,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 227,
+      "fitHeight": 341
+    },
+    {
+      "name": "package_uncapped",
+      "shape": "Package",
+      "width": 100,
+      "height": 60,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 110,
+      "fitHeight": 88
+    },
+    {
+      "name": "package_top_cap",
+      "shape": "Package",
+      "width": 100,
+      "height": 300,
+      "paddingX": 10,
+      "paddingY": 10,
+      "fitWidth": 110,
+      "fitHeight": 365
+    },
+    {
+      "name": "queue_small_content",
+      "shape": "Queue",
+      "width": 5,
+      "height": 5,
+      "paddingX": 2,
+      "paddingY": 2,
+      "fitWidth": 79,
+      "fitHeight": 7
+    },
+    {
+      "name": "cylinder_small_content",
+      "shape": "Cylinder",
+      "width": 5,
+      "height": 5,
+      "paddingX": 2,
+      "paddingY": 2,
+      "fitWidth": 7,
+      "fitHeight": 79
+    },
+    {
+      "name": "fractional_dimensions",
+      "shape": "Square",
+      "width": 123.45,
+      "height": 67.89,
+      "paddingX": 11.11,
+      "paddingY": 22.22,
+      "fitWidth": 135,
+      "fitHeight": 91
+    },
+    {
+      "name": "negative_dimensions",
+      "shape": "Square",
+      "width": -20,
+      "height": -10,
+      "paddingX": 5,
+      "paddingY": 5,
+      "fitWidth": -15,
+      "fitHeight": -5
+    },
+    {
+      "name": "zero_dimensions",
+      "shape": "Square",
+      "width": 0,
+      "height": 0,
+      "paddingX": 0,
+      "paddingY": 0,
+      "fitWidth": 0,
+      "fitHeight": 0
+    }
+  ],
+  "fitToBoundingBox": [
+    {
+      "name": "square_no_label",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 100,
+      "afterHeight": 100
+    },
+    {
+      "name": "square_uniform_padding",
+      "shape": "Square",
+      "tl": {
+        "x": 10,
+        "y": 10
+      },
+      "br": {
+        "x": 110,
+        "y": 110
+      },
+      "padding": {
+        "top": 20,
+        "bottom": 20,
+        "left": 20,
+        "right": 20
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 140,
+      "afterHeight": 140
+    },
+    {
+      "name": "square_asymmetric_padding",
+      "shape": "Square",
+      "tl": {
+        "x": 10,
+        "y": 20
+      },
+      "br": {
+        "x": 150,
+        "y": 120
+      },
+      "padding": {
+        "top": 5,
+        "bottom": 15,
+        "left": 10,
+        "right": 25
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 175,
+      "afterHeight": 120
+    },
+    {
+      "name": "inside_label_expands_both",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 120,
+        "height": 80,
+        "position": 17
+      },
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 140,
+      "afterHeight": 100
+    },
+    {
+      "name": "unset_label_expands",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 100,
+        "height": 70,
+        "position": 0
+      },
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 120,
+      "afterHeight": 90
+    },
+    {
+      "name": "outside_label_ignored",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 200,
+        "height": 150,
+        "position": 1
+      },
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 50,
+      "afterHeight": 50
+    },
+    {
+      "name": "desired_width_suppresses_label_min",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 300,
+        "height": 50,
+        "position": 13
+      },
+      "desiredWidth": 60,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 60,
+      "afterHeight": 70
+    },
+    {
+      "name": "desired_height_suppresses_label_min",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 50,
+        "height": 300,
+        "position": 13
+      },
+      "desiredWidth": null,
+      "desiredHeight": 60,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 70,
+      "afterHeight": 60
+    },
+    {
+      "name": "desired_width_larger_wins",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": 500,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 500,
+      "afterHeight": 100
+    },
+    {
+      "name": "desired_height_larger_wins",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": 400,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 100,
+      "afterHeight": 400
+    },
+    {
+      "name": "desired_width_smaller_loses_to_fit",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": 20,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 100,
+      "afterHeight": 100
+    },
+    {
+      "name": "desired_height_smaller_loses_to_fit",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": 30,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 100,
+      "afterHeight": 100
+    },
+    {
+      "name": "desired_width_zero_is_non_nil",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 50,
+        "y": 50
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": {
+        "width": 200,
+        "height": 50,
+        "position": 13
+      },
+      "desiredWidth": 0,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 50,
+      "afterHeight": 70
+    },
+    {
+      "name": "real_square_fit",
+      "shape": "RealSquare",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 120,
+        "y": 80
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 140,
+      "afterHeight": 140
+    },
+    {
+      "name": "circle_fit",
+      "shape": "Circle",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 60
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 170,
+      "afterHeight": 170
+    },
+    {
+      "name": "oval_fit",
+      "shape": "Oval",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 120,
+        "y": 80
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 194,
+      "afterHeight": 129
+    },
+    {
+      "name": "cloud_fit",
+      "shape": "Cloud",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 150,
+        "y": 80
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 208,
+      "afterHeight": 183
+    },
+    {
+      "name": "page_fit",
+      "shape": "Page",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 80,
+        "y": 40
+      },
+      "padding": {
+        "top": 5,
+        "bottom": 5,
+        "left": 5,
+        "right": 5
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 111,
+      "afterHeight": 50
+    },
+    {
+      "name": "fractional_bounds",
+      "shape": "Square",
+      "tl": {
+        "x": 10.5,
+        "y": 20.25
+      },
+      "br": {
+        "x": 115.75,
+        "y": 85.5
+      },
+      "padding": {
+        "top": 3.3,
+        "bottom": 4.4,
+        "left": 5.5,
+        "right": 6.6
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 118,
+      "afterHeight": 73
+    },
+    {
+      "name": "inverted_bounds",
+      "shape": "Square",
+      "tl": {
+        "x": 150,
+        "y": 200
+      },
+      "br": {
+        "x": 50,
+        "y": 80
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": -80,
+      "afterHeight": -100
+    },
+    {
+      "name": "null_node_top_left_still_succeeds",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 80
+      },
+      "padding": {
+        "top": 10,
+        "bottom": 10,
+        "left": 10,
+        "right": 10
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": false,
+      "panicked": false,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 120,
+      "afterHeight": 100
+    },
+    {
+      "name": "nil_tl_panics",
+      "shape": "Square",
+      "tl": null,
+      "br": {
+        "x": 100,
+        "y": 100
+      },
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": true,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 40,
+      "afterHeight": 30
+    },
+    {
+      "name": "nil_br_panics",
+      "shape": "Square",
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": null,
+      "padding": {
+        "top": 0,
+        "bottom": 0,
+        "left": 0,
+        "right": 0
+      },
+      "label": null,
+      "desiredWidth": null,
+      "desiredHeight": null,
+      "hasTopLeft": true,
+      "panicked": true,
+      "beforeWidth": 40,
+      "beforeHeight": 30,
+      "afterWidth": 40,
+      "afterHeight": 30
+    }
+  ]
+}

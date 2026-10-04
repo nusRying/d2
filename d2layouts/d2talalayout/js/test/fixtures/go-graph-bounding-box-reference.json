@@ -1,0 +1,595 @@
+{
+  "graphScenarios": {
+    "A_empty_graph": {
+      "success": true,
+      "tl": {
+        "x": "-Infinity",
+        "y": "-Infinity"
+      },
+      "br": {
+        "x": "Infinity",
+        "y": "Infinity"
+      }
+    },
+    "B_one_placed_node": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 20
+      },
+      "br": {
+        "x": 110,
+        "y": 70
+      }
+    },
+    "C_multiple_placed_nodes": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 20
+      },
+      "br": {
+        "x": 260,
+        "y": 190
+      }
+    },
+    "D_fractional_node_dimensions": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 21
+      },
+      "br": {
+        "x": 111,
+        "y": 71
+      }
+    },
+    "E_negative_coordinates": {
+      "success": true,
+      "tl": {
+        "x": -100,
+        "y": -80
+      },
+      "br": {
+        "x": 60,
+        "y": 60
+      }
+    },
+    "F_fixed_origin_adjustment": {
+      "success": true,
+      "tl": {
+        "x": 25,
+        "y": 20
+      },
+      "br": {
+        "x": 150,
+        "y": 150
+      }
+    },
+    "G_one_unplaced_node": {
+      "success": true,
+      "tl": null,
+      "br": null
+    },
+    "H_placed_plus_unplaced_node": {
+      "success": true,
+      "tl": null,
+      "br": null
+    },
+    "I_no_nodes_finite_edge": {
+      "success": true,
+      "tl": {
+        "x": "-Infinity",
+        "y": "-Infinity"
+      },
+      "br": {
+        "x": "Infinity",
+        "y": "Infinity"
+      }
+    },
+    "J_node_edge_no_points": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 20
+      },
+      "br": {
+        "x": 110,
+        "y": 70
+      }
+    },
+    "K_edge_extends_left_top": {
+      "success": true,
+      "tl": {
+        "x": 50,
+        "y": 40
+      },
+      "br": {
+        "x": 200,
+        "y": 150
+      }
+    },
+    "L_edge_extends_right_bottom": {
+      "success": true,
+      "tl": {
+        "x": 100,
+        "y": 100
+      },
+      "br": {
+        "x": 350,
+        "y": 400
+      }
+    },
+    "M_fractional_edge_points_rounding": {
+      "success": true,
+      "tl": {
+        "x": -10,
+        "y": -11
+      },
+      "br": {
+        "x": 150,
+        "y": 151
+      }
+    },
+    "N_negative_half_edge_point_rounding": {
+      "success": true,
+      "tl": {
+        "x": -1,
+        "y": -2
+      },
+      "br": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    "O_multiple_edges_order_independent": {
+      "success": true,
+      "tl": {
+        "x": -50,
+        "y": -30
+      },
+      "br": {
+        "x": 200,
+        "y": 300
+      }
+    },
+    "P_null_edge_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "tl": null,
+      "br": null
+    },
+    "Q_null_node_panic": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "tl": null,
+      "br": null
+    }
+  },
+  "edgeScenarios": {
+    "AA_main_label_OutsideTopLeft": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 74
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    "AB_main_label_OutsideTopCenter": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 74
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    "AC_main_label_OutsideTopRight": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 74
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    "AD_main_label_OutsideBottomLeft": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 100
+      },
+      "br": {
+        "x": 100,
+        "y": 127
+      }
+    },
+    "AE_main_label_OutsideBottomCenter": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 100
+      },
+      "br": {
+        "x": 100,
+        "y": 127
+      }
+    },
+    "AF_main_label_OutsideBottomRight": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 100
+      },
+      "br": {
+        "x": 100,
+        "y": 127
+      }
+    },
+    "AG_main_label_UnlockedTop": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 74
+      },
+      "br": {
+        "x": 100,
+        "y": 100
+      }
+    },
+    "AH_main_label_UnlockedMiddle": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 90
+      },
+      "br": {
+        "x": 100,
+        "y": 110
+      }
+    },
+    "AI_main_label_UnlockedBottom": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 100
+      },
+      "br": {
+        "x": 100,
+        "y": 127
+      }
+    },
+    "AJ_non_edge_label_position": {
+      "success": false,
+      "panic": "runtime error: invalid memory address or nil pointer dereference",
+      "tl": null,
+      "br": null
+    },
+    "AK_label_percentage_zero": {
+      "success": true,
+      "tl": {
+        "x": -20,
+        "y": 90
+      },
+      "br": {
+        "x": 100,
+        "y": 110
+      }
+    },
+    "AL_label_percentage_half": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 90
+      },
+      "br": {
+        "x": 100,
+        "y": 110
+      }
+    },
+    "AM_label_percentage_extrapolation_positive": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 90
+      },
+      "br": {
+        "x": 170,
+        "y": 110
+      }
+    },
+    "AN_label_percentage_extrapolation_negative": {
+      "success": true,
+      "tl": {
+        "x": -70,
+        "y": 90
+      },
+      "br": {
+        "x": 100,
+        "y": 110
+      }
+    },
+    "AO_duplicate_zero_length_route_segment": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 5
+      },
+      "br": {
+        "x": 100,
+        "y": 15
+      }
+    },
+    "AP_source_label_no_arrowheads": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -18
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AQ_target_label_no_arrowheads": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -20
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AR_source_triangle_arrow": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -20
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AS_target_triangle_arrow": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -22
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AT_target_label_source_arrow_fallback": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -22
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AU_fractional_label_dimensions_truncation": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -20
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "AV_horizontal_route_arrowhead_label": {
+      "success": true,
+      "tl": {
+        "x": 50,
+        "y": 30
+      },
+      "br": {
+        "x": 200,
+        "y": 50
+      }
+    },
+    "AW_vertical_route_arrowhead_label": {
+      "success": true,
+      "tl": {
+        "x": 50,
+        "y": 50
+      },
+      "br": {
+        "x": 88,
+        "y": 250
+      }
+    },
+    "AX_diagonal_route_arrowhead_label": {
+      "success": true,
+      "tl": {
+        "x": 50,
+        "y": 50
+      },
+      "br": {
+        "x": 200,
+        "y": 200
+      }
+    },
+    "AY_multisegment_source_endpoint": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    "AZ_multisegment_target_endpoint": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 50
+      }
+    },
+    "BA_line_arrowhead": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -22
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "BB_diamond_arrowhead": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -23
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "BC_filled_circle_arrowhead": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -23
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "BD_crowfoot_arrowhead": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -23
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "R_edge_zero_points": {
+      "success": true,
+      "tl": {
+        "x": "Infinity",
+        "y": "Infinity"
+      },
+      "br": {
+        "x": "-Infinity",
+        "y": "-Infinity"
+      }
+    },
+    "S_edge_one_point": {
+      "success": true,
+      "tl": {
+        "x": 42,
+        "y": 99
+      },
+      "br": {
+        "x": 42,
+        "y": 99
+      }
+    },
+    "T_edge_two_point_route": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 20
+      },
+      "br": {
+        "x": 100,
+        "y": 200
+      }
+    },
+    "U_edge_multi_segment_route": {
+      "success": true,
+      "tl": {
+        "x": 10,
+        "y": 10
+      },
+      "br": {
+        "x": 120,
+        "y": 80
+      }
+    },
+    "V_raw_fractional_point_rounding": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 1
+      },
+      "br": {
+        "x": 100,
+        "y": 99
+      }
+    },
+    "W_main_label_unset": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": 0
+      },
+      "br": {
+        "x": 100,
+        "y": 0
+      }
+    },
+    "X_main_label_InsideMiddleLeft": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -10
+      },
+      "br": {
+        "x": 100,
+        "y": 10
+      }
+    },
+    "Y_main_label_InsideMiddleCenter": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -10
+      },
+      "br": {
+        "x": 100,
+        "y": 10
+      }
+    },
+    "Z_main_label_InsideMiddleRight": {
+      "success": true,
+      "tl": {
+        "x": 0,
+        "y": -10
+      },
+      "br": {
+        "x": 100,
+        "y": 10
+      }
+    }
+  }
+}

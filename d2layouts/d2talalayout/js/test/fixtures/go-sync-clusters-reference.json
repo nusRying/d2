@@ -1,0 +1,676 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "runtimeGoVersion": "go1.27.0",
+    "slice": "Slice 25 — RDFS Traversal Parity \u0026 Graph SyncClusters"
+  },
+  "rdfsScenarios": {
+    "cluster_member_postorder": {
+      "name": "cluster_member_postorder",
+      "visited": [
+        "2",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    },
+    "cluster_overrides_sequence": {
+      "name": "cluster_overrides_sequence",
+      "visited": [
+        "2",
+        "1"
+      ],
+      "panicked": false
+    },
+    "cluster_vessel_missing_cluster_entry_panics": {
+      "name": "cluster_vessel_missing_cluster_entry_panics",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "container_missing_children_key_succeeds": {
+      "name": "container_missing_children_key_succeeds",
+      "visited": [
+        "1"
+      ],
+      "panicked": false
+    },
+    "container_postorder": {
+      "name": "container_postorder",
+      "visited": [
+        "2",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    },
+    "container_then_cluster_then_self": {
+      "name": "container_then_cluster_then_self",
+      "visited": [
+        "2",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    },
+    "container_then_sequence_then_self": {
+      "name": "container_then_sequence_then_self",
+      "visited": [
+        "2",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    },
+    "duplicate_container_child_occurrence": {
+      "name": "duplicate_container_child_occurrence",
+      "visited": [
+        "2",
+        "2",
+        "1"
+      ],
+      "panicked": false
+    },
+    "nested_container_postorder": {
+      "name": "nested_container_postorder",
+      "visited": [
+        "3",
+        "2",
+        "1"
+      ],
+      "panicked": false
+    },
+    "nil_cluster_member_panics_before_vessel_callback": {
+      "name": "nil_cluster_member_panics_before_vessel_callback",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "nil_container_child_panics_before_parent_callback": {
+      "name": "nil_container_child_panics_before_parent_callback",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "nil_sequence_step_panics_before_owner_callback": {
+      "name": "nil_sequence_step_panics_before_owner_callback",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "null_sequence_entry_panics": {
+      "name": "null_sequence_entry_panics",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "ordinary_leaf": {
+      "name": "ordinary_leaf",
+      "visited": [
+        "1"
+      ],
+      "panicked": false
+    },
+    "ordinary_nil_graph_panics_before_callback": {
+      "name": "ordinary_nil_graph_panics_before_callback",
+      "visited": [],
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "sequence_step_postorder": {
+      "name": "sequence_step_postorder",
+      "visited": [
+        "2",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    },
+    "shared_node_alias_visited_twice": {
+      "name": "shared_node_alias_visited_twice",
+      "visited": [
+        "4",
+        "2",
+        "4",
+        "3",
+        "1"
+      ],
+      "panicked": false
+    }
+  },
+  "syncClusterScenarios": {
+    "cluster_reached_through_sequence_step": {
+      "name": "cluster_reached_through_sequence_step",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "100",
+          "height": "100"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "100",
+          "height": "100"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "empty_clusters_map_noop": {
+      "name": "empty_clusters_map_noop",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "10",
+            "y": "10"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      }
+    },
+    "empty_clusters_map_skips_malformed_nodes": {
+      "name": "empty_clusters_map_skips_malformed_nodes",
+      "panicked": false
+    },
+    "graph_nodes_source_order": {
+      "name": "graph_nodes_source_order",
+      "panicked": false,
+      "nodesBefore": {
+        "10": {
+          "id": "10",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "11": {
+          "id": "11",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "30",
+          "height": "30"
+        },
+        "5": {
+          "id": "5",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "6": {
+          "id": "6",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "10": {
+          "id": "10",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "30",
+          "height": "30"
+        },
+        "11": {
+          "id": "11",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "30",
+          "height": "30"
+        },
+        "5": {
+          "id": "5",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "6": {
+          "id": "6",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "later_root_failure_preserves_earlier_cluster_sync": {
+      "name": "later_root_failure_preserves_earlier_cluster_sync",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "map_entry_without_vessel_flag_not_synced": {
+      "name": "map_entry_without_vessel_flag_not_synced",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "5",
+            "y": "5"
+          },
+          "width": "20",
+          "height": "20"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "5",
+            "y": "5"
+          },
+          "width": "20",
+          "height": "20"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "marked_vessel_missing_outer_cluster_entry_panics": {
+      "name": "marked_vessel_missing_outer_cluster_entry_panics",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference",
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "width": "10",
+          "height": "10"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "width": "10",
+          "height": "10"
+        }
+      }
+    },
+    "nested_cluster_inner_before_outer": {
+      "name": "nested_cluster_inner_before_outer",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "50",
+          "height": "50"
+        }
+      }
+    },
+    "nested_container_cluster_order": {
+      "name": "nested_container_cluster_order",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "100",
+          "height": "100"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "100",
+          "height": "100"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "nil_root_panics_when_clusters_nonempty": {
+      "name": "nil_root_panics_when_clusters_nonempty",
+      "panicked": true,
+      "panicMessage": "runtime error: invalid memory address or nil pointer dereference"
+    },
+    "outer_graph_cluster_lookup_vs_node_graph_traversal": {
+      "name": "outer_graph_cluster_lookup_vs_node_graph_traversal",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    },
+    "simple_cluster_sync": {
+      "name": "simple_cluster_sync",
+      "panicked": false,
+      "nodesBefore": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "10",
+          "height": "10"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      },
+      "nodesAfter": {
+        "1": {
+          "id": "1",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "90",
+          "height": "40"
+        },
+        "2": {
+          "id": "2",
+          "topLeft": {
+            "x": "0",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        },
+        "3": {
+          "id": "3",
+          "topLeft": {
+            "x": "50",
+            "y": "0"
+          },
+          "width": "40",
+          "height": "40"
+        }
+      }
+    }
+  }
+}

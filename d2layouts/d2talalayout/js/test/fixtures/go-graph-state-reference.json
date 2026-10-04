@@ -1,0 +1,116 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referencePackage": "github.com/d2lang/d2/d2layouts/d2talalayout/internal/layoutgraph",
+    "runtimeGOARCH": "amd64",
+    "runtimeGOOS": "windows",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "constants": {
+    "MaxEngineEdges": 50000,
+    "MaxEngineNodes": 10000,
+    "MaxEngineWorkUnits": 61440000
+  },
+  "scenarios": {
+    "error_messages": {
+      "nil_edge_geometry": "TALA geometry snapshot contains a nil edge",
+      "nil_graph": "TALA transaction graph is nil",
+      "nil_guard": "TALA transaction requires a work guard"
+    },
+    "exact_slice_backing": {
+      "clusterAbductionsBackingRestored": true,
+      "clusterAbductionsLen": 1,
+      "clusterNodesBackingRestored": true,
+      "clusterNodesLen": 1,
+      "commonBackingRestored": true,
+      "commonLen": 1,
+      "hubsBackingRestored": true,
+      "hubsLen": 1,
+      "routeBackingRestored": true,
+      "routeLen": 1,
+      "routePointValueRestored": true,
+      "sequenceAbductionsLen": 1,
+      "sequenceAbductionsRestored": true,
+      "sequenceNodesBackingRestored": true,
+      "sequenceNodesLen": 1,
+      "treeChildrenBackingRestored": true,
+      "treeChildrenLen": 1,
+      "treeRootsBackingRestored": true,
+      "treeRootsLen": 1
+    },
+    "geometry_only": {
+      "clusterArrangementRestored": true,
+      "clusterPaddingRestored": true,
+      "edgeRouteMutationKept": true,
+      "extraClusterMembershipKept": true,
+      "n1TopLeftXRestored": true,
+      "n1WidthRestored": true,
+      "treeOrientationRestored": true
+    },
+    "geometry_with_routes": {
+      "edgePointsLen": 2,
+      "edgeRouteRestored": true
+    },
+    "hidden_runtime_objects": {
+      "hiddenNodeTopLeftX": 15,
+      "hiddenNodeWidth": 50
+    },
+    "nil_hierarchy_levels": {
+      "hierarchyLevelNilAfterRestore": true,
+      "hierarchyLevelNilAfterSnapshot": true,
+      "hierarchyLevelNilBefore": true
+    },
+    "state_reuse": {
+      "reusedStateRestoredWidth": 200
+    },
+    "topology_full_rollback": {
+      "boxStorageIdentityRestored": true,
+      "clustersCount": 1,
+      "clustersMapIdentityRestored": true,
+      "containersMapIdentityRestored": true,
+      "directionsMapIdentityRestored": true,
+      "edgeFirstPointIdentityRestored": true,
+      "edgeFirstPointX": 110,
+      "edgePointsBackingRestored": true,
+      "edgePointsLength": 2,
+      "graphNodesCount": 2,
+      "herdSameSidePairCount": true,
+      "herdVal": 42.5,
+      "hierarchyLevelCount": 3,
+      "hierarchyLevelsMapIdentityRestored": true,
+      "n1FixedTopLeftIdentityRestored": true,
+      "n1FixedTopLeftX": 10,
+      "n1Height": 80,
+      "n1IconIdentityRestored": true,
+      "n1IconPositionFixed": true,
+      "n1LabelIdentityRestored": true,
+      "n1LabelPositionFixed": true,
+      "n1LabelText": "N1",
+      "n1LoopOffsetsIdentityRestored": true,
+      "n1NearsIdentityRestored": true,
+      "n1RequirementEdgeCount": 2,
+      "n1RequirementsCount": 1,
+      "n1RequirementsIdentityRestored": true,
+      "n1TopLeftIdentityRestored": true,
+      "n1TopLeftX": 10,
+      "n1TopLeftY": 20,
+      "n1Width": 100,
+      "nodeToTreeMapIdentityRestored": true,
+      "sequencesCount": 1,
+      "sequencesMapIdentityRestored": true,
+      "styleStrokeFinalValue": "green",
+      "styleStrokeIdentityRestored": true
+    },
+    "topology_without_routes_option": {
+      "edgeRouteRestoredInTopology": true
+    },
+    "work_accounting_neighbor": {
+      "baselineUsed": "17",
+      "exactSuccessNoError": true,
+      "exactSuccessUsed": "18",
+      "failErrorMessage": "TALA GraphStateNeighborWork work exceeds limit 17",
+      "withNeighborUsed": "18",
+      "workDifference": "1"
+    }
+  }
+}

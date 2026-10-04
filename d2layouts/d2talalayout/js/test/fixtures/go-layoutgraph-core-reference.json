@@ -1,0 +1,94 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "referenceAlgorithm": "TALA layoutgraph core operations",
+    "runtimeGoVersion": "go1.27.0"
+  },
+  "cases": {
+    "AddEdgeExactObject": {
+      "CountAfterDistinct": 2,
+      "CountAfterDuplicate": 1
+    },
+    "Clone": {
+      "E7FromID": "17",
+      "E7PointerDiff": true,
+      "E7Points0X": 5,
+      "E7ToID": "18",
+      "N17IsContainer": false,
+      "N17NearsCount": 1,
+      "N17PointerDiff": true,
+      "N17TopLeftX": 1,
+      "N18ContainerID": "0",
+      "N18HasContainer": false
+    },
+    "ComputeCellSize": 23,
+    "ConnectionTo": {
+      "HasEToA": true,
+      "HasEToB": true,
+      "HasEToC": true,
+      "HasEToD": false
+    },
+    "Directions": {
+      "N10Direction": 7,
+      "N11Direction": 5
+    },
+    "Disconnect": {
+      "GraphEdgesCount": 1,
+      "N8EdgesCount": 1,
+      "N9EdgesCount": 0
+    },
+    "DisconnectLoop": {
+      "BEdgesCount": 0,
+      "GraphEdgesCount": 0
+    },
+    "Edges": {
+      "E1From": "8",
+      "E1To": "9",
+      "N8EdgesCount": 2,
+      "N9EdgesCount": 1
+    },
+    "Nears": {
+      "N4HasN5": true,
+      "N4HasN6": true,
+      "N5HasN4": true,
+      "N6HasN4": true,
+      "OrderedIDs": [
+        "2",
+        "5",
+        "6"
+      ]
+    },
+    "NewGraphDefaults": {
+      "CellSize": 0,
+      "ContainerMapLength": 0,
+      "IsRootHierarchy": false
+    },
+    "NodeHierarchy": {
+      "N1ChildrenCount": 2,
+      "N1Container": true,
+      "N1Graph": true,
+      "N2Container": true,
+      "N2Graph": true,
+      "N3Container": true,
+      "N3Graph": false,
+      "RootNodesCount": 0
+    },
+    "NodeLevel": {
+      "Child": 2,
+      "Grandchild": 3,
+      "TopLevel": 1
+    },
+    "Ports": {
+      "SourcePortX": 1,
+      "TargetPortX": 3
+    },
+    "Reconnect": {
+      "E6FromID": "15",
+      "E6ToID": "16",
+      "N15EdgesCount": 1,
+      "N16EdgesCount": 1,
+      "N8EdgesCount": 1,
+      "N9EdgesCount": 0
+    }
+  }
+}

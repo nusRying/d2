@@ -5,3 +5,4 @@ go.sum linguist-generated
 d2renderers/d2svg/github-markdown.css linguist-vendored
 # Preserve Markdown hard line breaks in the upstream Spyre fixture.
 e2etests/testdata/files/spyre_encoder.d2 whitespace=-blank-at-eol
+THIRD_PARTY_NOTICES.txt -whitespace

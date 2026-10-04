@@ -1,0 +1,57 @@
+export {
+  SequenceDefiningEdges,
+  // Internal migration / parity testing helpers
+  identifySequences,
+  isValidRememberedSequence,
+  hasNodeID,
+  nextAvailableNodeID,
+} from "./sequences-analysis.js";
+
+export {
+  clearRememberedSequenceMembership,
+  buildSequence,
+  addSequence,
+  abductSequenceEdges,
+  addSequences,
+  AddSequences,
+} from "./sequences-mutation.js";
+
+export {
+  // Slice 13 – cluster discovery
+  ClusterEdgeSignature,
+  ClusterDiscoveryInfo,
+  ClusterDiscoveryIndex,
+  buildClusterDiscoveryIndex,
+  clusterIsDescendantOfGuarded,
+  clusterHasLeakyEdgeGuarded,
+  clusterIncidentEdges,
+} from "./cluster-discovery.js";
+
+export {
+  // Slice 14 – cluster mutation
+  createVessel,
+  CreateVessel,
+  addCluster,
+  AddCluster,
+  abductClusterEdges,
+} from "./clusters-mutation.js";
+
+export {
+  // Slice 15 – atomic AddClusters orchestration
+  averageClusterDimensions,
+  assignArrangement,
+  AssignArrangement,
+  paddingBetween,
+  PaddingBetween,
+  addClusters,
+  AddClusters,
+} from "./clusters-orchestration.js";
+
+export {
+  // Slice 16 – cluster lifecycle retirement
+  resetClusters,
+  ResetClusters,
+  // Slice 27 – grouping cleanup
+  cleanup,
+  Cleanup,
+} from "./lifecycle.js";

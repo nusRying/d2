@@ -1,0 +1,1529 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "goArch": "amd64",
+    "goOS": "windows",
+    "goVersion": "go1.27.0"
+  },
+  "helpers": {
+    "nilGraphPanics": true
+  },
+  "scenarios": {
+    "bulk_matrix_1": {
+      "nodes": [
+        "3",
+        "2"
+      ],
+      "containers": {
+        "4": [
+          "3",
+          "2"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "bulk_matrix_10": {
+      "nodes": [
+        "201",
+        "101",
+        "202",
+        "102",
+        "203",
+        "103",
+        "204",
+        "104",
+        "205",
+        "105",
+        "206",
+        "106",
+        "207",
+        "107",
+        "208",
+        "108",
+        "209",
+        "109",
+        "210",
+        "110"
+      ],
+      "containers": {
+        "1000": [
+          "201",
+          "101",
+          "202",
+          "102",
+          "203",
+          "103",
+          "204",
+          "104",
+          "205",
+          "105",
+          "206",
+          "106",
+          "207",
+          "107",
+          "208",
+          "108",
+          "209",
+          "109",
+          "210",
+          "110"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "10": {
+          "id": "10",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1000": {
+          "id": "1000",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "101": {
+          "id": "101",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "102": {
+          "id": "102",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "103": {
+          "id": "103",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "104": {
+          "id": "104",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "105": {
+          "id": "105",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "106": {
+          "id": "106",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "107": {
+          "id": "107",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "108": {
+          "id": "108",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "109": {
+          "id": "109",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "110": {
+          "id": "110",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "201": {
+          "id": "201",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "202": {
+          "id": "202",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "203": {
+          "id": "203",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "204": {
+          "id": "204",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "205": {
+          "id": "205",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "206": {
+          "id": "206",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "207": {
+          "id": "207",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "208": {
+          "id": "208",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "209": {
+          "id": "209",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "210": {
+          "id": "210",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "5": {
+          "id": "5",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "6": {
+          "id": "6",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "7": {
+          "id": "7",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "8": {
+          "id": "8",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "9": {
+          "id": "9",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "bulk_matrix_100": {
+      "nodes": [
+        "1001",
+        "1002",
+        "1003",
+        "1004",
+        "1005",
+        "1006",
+        "1007",
+        "1008",
+        "1009",
+        "1010",
+        "1011",
+        "1012",
+        "1013",
+        "1014",
+        "1015",
+        "1016",
+        "1017",
+        "1018",
+        "1019",
+        "1020",
+        "1021",
+        "1022",
+        "1023",
+        "1024",
+        "1025",
+        "1026",
+        "1027",
+        "1028",
+        "1029",
+        "1030",
+        "1031",
+        "1032",
+        "1033",
+        "1034",
+        "1035",
+        "1036",
+        "1037",
+        "1038",
+        "1039",
+        "1040",
+        "1041",
+        "1042",
+        "1043",
+        "1044",
+        "1045",
+        "1046",
+        "1047",
+        "1048",
+        "1049",
+        "1050",
+        "1051",
+        "1052",
+        "1053",
+        "1054",
+        "1055",
+        "1056",
+        "1057",
+        "1058",
+        "1059",
+        "1060",
+        "1061",
+        "1062",
+        "1063",
+        "1064",
+        "1065",
+        "1066",
+        "1067",
+        "1068",
+        "1069",
+        "1070",
+        "1071",
+        "1072",
+        "1073",
+        "1074",
+        "1075",
+        "1076",
+        "1077",
+        "1078",
+        "1079",
+        "1080",
+        "1081",
+        "1082",
+        "1083",
+        "1084",
+        "1085",
+        "1086",
+        "1087",
+        "1088",
+        "1089",
+        "1090",
+        "1091",
+        "1092",
+        "1093",
+        "1094",
+        "1095",
+        "1096",
+        "1097",
+        "1098",
+        "1099",
+        "1100"
+      ],
+      "containers": {
+        "10000": [
+          "1001",
+          "1002",
+          "1003",
+          "1004",
+          "1005",
+          "1006",
+          "1007",
+          "1008",
+          "1009",
+          "1010",
+          "1011",
+          "1012",
+          "1013",
+          "1014",
+          "1015",
+          "1016",
+          "1017",
+          "1018",
+          "1019",
+          "1020",
+          "1021",
+          "1022",
+          "1023",
+          "1024",
+          "1025",
+          "1026",
+          "1027",
+          "1028",
+          "1029",
+          "1030",
+          "1031",
+          "1032",
+          "1033",
+          "1034",
+          "1035",
+          "1036",
+          "1037",
+          "1038",
+          "1039",
+          "1040",
+          "1041",
+          "1042",
+          "1043",
+          "1044",
+          "1045",
+          "1046",
+          "1047",
+          "1048",
+          "1049",
+          "1050",
+          "1051",
+          "1052",
+          "1053",
+          "1054",
+          "1055",
+          "1056",
+          "1057",
+          "1058",
+          "1059",
+          "1060",
+          "1061",
+          "1062",
+          "1063",
+          "1064",
+          "1065",
+          "1066",
+          "1067",
+          "1068",
+          "1069",
+          "1070",
+          "1071",
+          "1072",
+          "1073",
+          "1074",
+          "1075",
+          "1076",
+          "1077",
+          "1078",
+          "1079",
+          "1080",
+          "1081",
+          "1082",
+          "1083",
+          "1084",
+          "1085",
+          "1086",
+          "1087",
+          "1088",
+          "1089",
+          "1090",
+          "1091",
+          "1092",
+          "1093",
+          "1094",
+          "1095",
+          "1096",
+          "1097",
+          "1098",
+          "1099",
+          "1100"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "100": {
+          "id": "100",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "10000": {
+          "id": "10000",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1001": {
+          "id": "1001",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1002": {
+          "id": "1002",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1003": {
+          "id": "1003",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1004": {
+          "id": "1004",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1005": {
+          "id": "1005",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1096": {
+          "id": "1096",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1097": {
+          "id": "1097",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1098": {
+          "id": "1098",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1099": {
+          "id": "1099",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "1100": {
+          "id": "1100",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "5": {
+          "id": "5",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "96": {
+          "id": "96",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "97": {
+          "id": "97",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "98": {
+          "id": "98",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "99": {
+          "id": "99",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "bulk_matrix_2": {
+      "nodes": [
+        "5",
+        "3"
+      ],
+      "containers": {
+        "6": [
+          "5",
+          "4"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "5": {
+          "id": "5",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "6": {
+          "id": "6",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "bulk_one_retired_among_multiple_entries": {
+      "nodes": [
+        "1",
+        "3"
+      ],
+      "containers": {
+        "4": [
+          "1",
+          "3"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "bulk_zero_retired": {
+      "nodes": [
+        "1",
+        null,
+        "4",
+        "2",
+        "3"
+      ],
+      "containers": {
+        "5": [
+          null,
+          "4",
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      "edges": [
+        {
+          "id": "101",
+          "from": "2",
+          "to": "3",
+          "points": null
+        }
+      ],
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "101"
+          ]
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "101"
+          ]
+        },
+        "4": {
+          "id": "4",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "5": {
+          "id": "5",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "empty_clusters": {
+      "nodes": [
+        "1",
+        "2",
+        "1",
+        "2"
+      ],
+      "containers": {
+        "null": [
+          "1",
+          "2"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "legacy_edge_cases": {
+      "nodes": [
+        "1",
+        null,
+        "2",
+        "3"
+      ],
+      "containers": {
+        "10": null,
+        "11": [],
+        "8": [
+          "1",
+          null,
+          "2",
+          "3"
+        ],
+        "9": [
+          "1"
+        ]
+      },
+      "edges": [
+        {
+          "id": "201",
+          "from": "4",
+          "to": "1",
+          "points": null
+        },
+        {
+          "id": "202",
+          "from": "1",
+          "to": "4",
+          "points": null
+        }
+      ],
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "201",
+            "202"
+          ]
+        },
+        "10": {
+          "id": "10",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "11": {
+          "id": "11",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": true,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "4": {
+          "id": "4",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "201",
+            "202"
+          ]
+        },
+        "5": {
+          "id": "5",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": true,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "6": {
+          "id": "6",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "7": {
+          "id": "7",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "8": {
+          "id": "8",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        },
+        "9": {
+          "id": "9",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "reconnect_ordering_regression": {
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "1",
+        "2",
+        "3"
+      ],
+      "containers": {
+        "null": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      "edges": [
+        {
+          "id": "101",
+          "from": "1",
+          "to": "2",
+          "points": [
+            {
+              "x": 10,
+              "y": 20
+            },
+            {
+              "x": 30,
+              "y": 40
+            }
+          ]
+        },
+        {
+          "id": "102",
+          "from": "1",
+          "to": "3",
+          "points": null
+        }
+      ],
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "102",
+            "101"
+          ]
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "101"
+          ]
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "102"
+          ]
+        },
+        "4": {
+          "id": "4",
+          "inGraph": false,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "single_nil_key": {
+      "nodes": [
+        "1",
+        "2",
+        "3",
+        "1",
+        "2",
+        "3"
+      ],
+      "containers": {
+        "null": [
+          "1",
+          "2",
+          "3"
+        ]
+      },
+      "edges": [
+        {
+          "id": "101",
+          "from": "1",
+          "to": "2",
+          "points": null
+        }
+      ],
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "101"
+          ]
+        },
+        "2": {
+          "id": "2",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": [
+            "101"
+          ]
+        },
+        "3": {
+          "id": "3",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": false,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    },
+    "single_nil_value": {
+      "nodes": [
+        "1",
+        "1"
+      ],
+      "containers": {
+        "null": [
+          "1"
+        ]
+      },
+      "edges": null,
+      "clusters": {},
+      "trackedNodes": {
+        "1": {
+          "id": "1",
+          "inGraph": true,
+          "container": null,
+          "isClusterVessel": true,
+          "hasCluster": false,
+          "clusterVesselID": null,
+          "nearsNull": false,
+          "nears": [],
+          "edges": null
+        }
+      }
+    }
+  }
+}

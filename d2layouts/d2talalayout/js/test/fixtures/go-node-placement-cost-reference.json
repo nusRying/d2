@@ -1,0 +1,1521 @@
+{
+  "layoutgraphAccessors": [
+    {
+      "name": "center_normal",
+      "accessor": "Center",
+      "center": {
+        "x": 140,
+        "y": 220
+      }
+    },
+    {
+      "name": "center_negative",
+      "accessor": "Center",
+      "center": {
+        "x": -45,
+        "y": -20
+      }
+    },
+    {
+      "name": "orientation_top_left",
+      "accessor": "Orientation"
+    },
+    {
+      "name": "orientation_top",
+      "accessor": "Orientation",
+      "orientation": 4
+    },
+    {
+      "name": "orientation_top_right",
+      "accessor": "Orientation",
+      "orientation": 1
+    },
+    {
+      "name": "orientation_left",
+      "accessor": "Orientation",
+      "orientation": 7
+    },
+    {
+      "name": "orientation_right",
+      "accessor": "Orientation",
+      "orientation": 5
+    },
+    {
+      "name": "orientation_bottom_left",
+      "accessor": "Orientation",
+      "orientation": 2
+    },
+    {
+      "name": "orientation_bottom",
+      "accessor": "Orientation",
+      "orientation": 6
+    },
+    {
+      "name": "orientation_bottom_right",
+      "accessor": "Orientation",
+      "orientation": 3
+    },
+    {
+      "name": "orientation_overlap",
+      "accessor": "Orientation",
+      "orientation": 8
+    },
+    {
+      "name": "orientation_unpositioned",
+      "accessor": "Orientation",
+      "orientation": 8
+    },
+    {
+      "name": "overlaps_line_cross_through",
+      "accessor": "OverlapsLine",
+      "overlapsLine": true
+    },
+    {
+      "name": "overlaps_line_touch_border",
+      "accessor": "OverlapsLine",
+      "overlapsLine": false
+    },
+    {
+      "name": "overlaps_line_outside",
+      "accessor": "OverlapsLine",
+      "overlapsLine": false
+    },
+    {
+      "name": "overlaps_line_endpoint_inside",
+      "accessor": "OverlapsLine",
+      "overlapsLine": true
+    },
+    {
+      "name": "overlaps_line_padded_delta_hit",
+      "accessor": "OverlapsLine",
+      "overlapsLine": true
+    },
+    {
+      "name": "overlaps_line_padded_delta_miss",
+      "accessor": "OverlapsLine",
+      "overlapsLine": false
+    },
+    {
+      "name": "passes_through_cross_straight",
+      "accessor": "PassesThrough",
+      "passesThrough": true
+    },
+    {
+      "name": "passes_through_cross_diagonal",
+      "accessor": "PassesThrough",
+      "passesThrough": true
+    },
+    {
+      "name": "passes_through_miss_above",
+      "accessor": "PassesThrough",
+      "passesThrough": false
+    },
+    {
+      "name": "passes_through_touch_corner",
+      "accessor": "PassesThrough",
+      "passesThrough": false
+    },
+    {
+      "name": "area_normal",
+      "accessor": "Area",
+      "area": 2400
+    },
+    {
+      "name": "overlaps_dim_h_with_sizes",
+      "accessor": "OverlapsAlongDimension",
+      "overlapsDim": true
+    },
+    {
+      "name": "overlaps_dim_h_without_sizes",
+      "accessor": "OverlapsAlongDimension",
+      "overlapsDim": false
+    },
+    {
+      "name": "overlaps_dim_v_with_sizes",
+      "accessor": "OverlapsAlongDimension",
+      "overlapsDim": true
+    },
+    {
+      "name": "overlaps_dim_v_without_sizes",
+      "accessor": "OverlapsAlongDimension",
+      "overlapsDim": false
+    },
+    {
+      "name": "edge_table_columns_facing_ports",
+      "accessor": "FacingTablePortValues",
+      "facingFromPort": {
+        "x": 220,
+        "y": 160
+      },
+      "facingToPort": {
+        "x": 400,
+        "y": 240
+      },
+      "hasFacingFrom": true,
+      "hasFacingTo": true,
+      "facingOrient": 7,
+      "hasTableCol": true,
+      "betweenTableCol": true
+    },
+    {
+      "name": "edge_directed_endpoints_source_arrow",
+      "accessor": "DirectedEndpoints",
+      "largeArrowhead": false,
+      "directedFrom": "19",
+      "directedTo": "18",
+      "isDirected": true
+    }
+  ],
+  "geometry": [
+    {
+      "name": "placement_distance_no_sizes",
+      "operation": "placementDistance",
+      "value": 174
+    },
+    {
+      "name": "placement_distance_with_sizes",
+      "operation": "placementDistance",
+      "value": 98.53580024018326
+    },
+    {
+      "name": "distance_to_point_no_sizes",
+      "operation": "distanceToPoint",
+      "value": 111.80339887498948
+    },
+    {
+      "name": "distance_to_point_with_sizes",
+      "operation": "distanceToPoint",
+      "value": 41.23105625617661
+    },
+    {
+      "name": "sizeless_orientation",
+      "operation": "sizelessOrientation"
+    },
+    {
+      "name": "depth_nil",
+      "operation": "depth",
+      "depthValue": 0
+    },
+    {
+      "name": "depth_root",
+      "operation": "depth",
+      "depthValue": 1
+    },
+    {
+      "name": "depth_nested",
+      "operation": "depth",
+      "depthValue": 3
+    },
+    {
+      "name": "node_orientation_nil",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "node_container_direction_nil_graph",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "node_nearest_shared_ancestor_nil",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "sizeless_orientation_nil_valid",
+      "operation": "",
+      "panic": "true"
+    },
+    {
+      "name": "sizeless_orientation_valid_nil",
+      "operation": "",
+      "panic": "true"
+    }
+  ],
+  "compass": [
+    {
+      "name": "direction_compass_2",
+      "operation": "directionCompass",
+      "arg1": 2,
+      "result": -3
+    },
+    {
+      "name": "direction_compass_7",
+      "operation": "directionCompass",
+      "arg1": 7,
+      "result": -2
+    },
+    {
+      "name": "direction_compass_0",
+      "operation": "directionCompass",
+      "arg1": 0,
+      "result": -1
+    },
+    {
+      "name": "direction_compass_4",
+      "operation": "directionCompass",
+      "arg1": 4,
+      "result": 0
+    },
+    {
+      "name": "direction_compass_1",
+      "operation": "directionCompass",
+      "arg1": 1,
+      "result": 1
+    },
+    {
+      "name": "direction_compass_5",
+      "operation": "directionCompass",
+      "arg1": 5,
+      "result": 2
+    },
+    {
+      "name": "direction_compass_3",
+      "operation": "directionCompass",
+      "arg1": 3,
+      "result": 3
+    },
+    {
+      "name": "direction_compass_6",
+      "operation": "directionCompass",
+      "arg1": 6,
+      "result": 4
+    },
+    {
+      "name": "direction_compass_8",
+      "operation": "directionCompass",
+      "arg1": 8,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-3_-3",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": -3,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_-3_-3",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": -3,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-3_-2",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": -2,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_-3_-2",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": -2,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_-3_-1",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": -1,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_-3_-1",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": -1,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_-3_0",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_-3_0",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-3_1",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": 1,
+      "result": 4
+    },
+    {
+      "name": "compass_axis_delta_-3_1",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": 1,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-3_2",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": 2,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_-3_2",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": 2,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_-3_3",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": 3,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_-3_3",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": 3,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_-3_4",
+      "operation": "compassDelta",
+      "arg1": -3,
+      "arg2": 4,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_-3_4",
+      "operation": "compassAxisDelta",
+      "arg1": -3,
+      "arg2": 4,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-2_-3",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": -3,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_-2_-3",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": -3,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-2_-2",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": -2,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_-2_-2",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": -2,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-2_-1",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": -1,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_-2_-1",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": -1,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_-2_0",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_-2_0",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_-2_1",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": 1,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_-2_1",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": 1,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-2_2",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": 2,
+      "result": 4
+    },
+    {
+      "name": "compass_axis_delta_-2_2",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": 2,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-2_3",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": 3,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_-2_3",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": 3,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_-2_4",
+      "operation": "compassDelta",
+      "arg1": -2,
+      "arg2": 4,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_-2_4",
+      "operation": "compassAxisDelta",
+      "arg1": -2,
+      "arg2": 4,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_-1_-3",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": -3,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_-1_-3",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": -3,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_-1_-2",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": -2,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_-1_-2",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": -2,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-1_-1",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": -1,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_-1_-1",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": -1,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-1_0",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_-1_0",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "result": -3
+    },
+    {
+      "name": "compass_delta_-1_1",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": 1,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_-1_1",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": 1,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_-1_2",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": 2,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_-1_2",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": 2,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_-1_3",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": 3,
+      "result": 4
+    },
+    {
+      "name": "compass_axis_delta_-1_3",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": 3,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_-1_4",
+      "operation": "compassDelta",
+      "arg1": -1,
+      "arg2": 4,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_-1_4",
+      "operation": "compassAxisDelta",
+      "arg1": -1,
+      "arg2": 4,
+      "result": -3
+    },
+    {
+      "name": "compass_delta_0_-3",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": -3,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_0_-3",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": -3,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_0_-2",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": -2,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_0_-2",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": -2,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_0_-1",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": -1,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_0_-1",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": -1,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_0_0",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_0_0",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_0_1",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": 1,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_0_1",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": 1,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_0_2",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": 2,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_0_2",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": 2,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_0_3",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": 3,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_0_3",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": 3,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_0_4",
+      "operation": "compassDelta",
+      "arg1": 0,
+      "arg2": 4,
+      "result": 4
+    },
+    {
+      "name": "compass_axis_delta_0_4",
+      "operation": "compassAxisDelta",
+      "arg1": 0,
+      "arg2": 4,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_1_-3",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": -3,
+      "result": -4
+    },
+    {
+      "name": "compass_axis_delta_1_-3",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": -3,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_1_-2",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": -2,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_1_-2",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": -2,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_1_-1",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": -1,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_1_-1",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": -1,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_1_0",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_1_0",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_1_1",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": 1,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_1_1",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": 1,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_1_2",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": 2,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_1_2",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": 2,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_1_3",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": 3,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_1_3",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": 3,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_1_4",
+      "operation": "compassDelta",
+      "arg1": 1,
+      "arg2": 4,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_1_4",
+      "operation": "compassAxisDelta",
+      "arg1": 1,
+      "arg2": 4,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_2_-3",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": -3,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_2_-3",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": -3,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_2_-2",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": -2,
+      "result": -4
+    },
+    {
+      "name": "compass_axis_delta_2_-2",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": -2,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_2_-1",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": -1,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_2_-1",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": -1,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_2_0",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_2_0",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_2_1",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": 1,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_2_1",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": 1,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_2_2",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": 2,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_2_2",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": 2,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_2_3",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": 3,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_2_3",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": 3,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_2_4",
+      "operation": "compassDelta",
+      "arg1": 2,
+      "arg2": 4,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_2_4",
+      "operation": "compassAxisDelta",
+      "arg1": 2,
+      "arg2": 4,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_3_-3",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": -3,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_3_-3",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": -3,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_3_-2",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": -2,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_3_-2",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": -2,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_3_-1",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": -1,
+      "result": -4
+    },
+    {
+      "name": "compass_axis_delta_3_-1",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": -1,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_3_0",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_3_0",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "result": -3
+    },
+    {
+      "name": "compass_delta_3_1",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": 1,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_3_1",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": 1,
+      "result": -2
+    },
+    {
+      "name": "compass_delta_3_2",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": 2,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_3_2",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": 2,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_3_3",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": 3,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_3_3",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": 3,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_3_4",
+      "operation": "compassDelta",
+      "arg1": 3,
+      "arg2": 4,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_3_4",
+      "operation": "compassAxisDelta",
+      "arg1": 3,
+      "arg2": 4,
+      "result": -3
+    },
+    {
+      "name": "compass_delta_4_-3",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": -3,
+      "result": 1
+    },
+    {
+      "name": "compass_axis_delta_4_-3",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": -3,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_4_-2",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": -2,
+      "result": 2
+    },
+    {
+      "name": "compass_axis_delta_4_-2",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": -2,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_4_-1",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": -1,
+      "result": 3
+    },
+    {
+      "name": "compass_axis_delta_4_-1",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": -1,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_4_0",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "result": -4
+    },
+    {
+      "name": "compass_axis_delta_4_0",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "result": 0
+    },
+    {
+      "name": "compass_delta_4_1",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": 1,
+      "result": -3
+    },
+    {
+      "name": "compass_axis_delta_4_1",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": 1,
+      "result": 1
+    },
+    {
+      "name": "compass_delta_4_2",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": 2,
+      "result": -2
+    },
+    {
+      "name": "compass_axis_delta_4_2",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": 2,
+      "result": 2
+    },
+    {
+      "name": "compass_delta_4_3",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": 3,
+      "result": -1
+    },
+    {
+      "name": "compass_axis_delta_4_3",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": 3,
+      "result": -1
+    },
+    {
+      "name": "compass_delta_4_4",
+      "operation": "compassDelta",
+      "arg1": 4,
+      "arg2": 4,
+      "result": 0
+    },
+    {
+      "name": "compass_axis_delta_4_4",
+      "operation": "compassAxisDelta",
+      "arg1": 4,
+      "arg2": 4,
+      "result": 0
+    }
+  ],
+  "axisScore": [
+    {
+      "name": "zero_nodes",
+      "score": 1
+    },
+    {
+      "name": "one_node",
+      "score": 1
+    },
+    {
+      "name": "two_horizontal",
+      "score": 1
+    },
+    {
+      "name": "two_vertical",
+      "score": 1
+    },
+    {
+      "name": "two_diagonal",
+      "score": 0
+    },
+    {
+      "name": "three_perfect_vertical_aligned",
+      "score": 1
+    },
+    {
+      "name": "ties_largest_size",
+      "score": 1
+    },
+    {
+      "name": "small_node_multipliers",
+      "score": 0.66
+    }
+  ],
+  "clusterExternalPair": [
+    {
+      "name": "zero_external",
+      "exactlyTwo": false
+    },
+    {
+      "name": "one_external",
+      "firstId": "40",
+      "exactlyTwo": false
+    },
+    {
+      "name": "two_external",
+      "firstId": "40",
+      "secondId": "41",
+      "exactlyTwo": true
+    },
+    {
+      "name": "three_external",
+      "firstId": "40",
+      "secondId": "41",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_cluster",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "empty_nodes",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_first_node",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "nil_edge_abduction",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "case_a_nil_current_from",
+      "exactlyTwo": false
+    },
+    {
+      "panic": true,
+      "name": "case_b_nil_current_to",
+      "exactlyTwo": false
+    },
+    {
+      "name": "nil_edge_abductions",
+      "exactlyTwo": false
+    },
+    {
+      "name": "both_originals_nil",
+      "exactlyTwo": false
+    },
+    {
+      "name": "both_originals_nonnil",
+      "exactlyTwo": false
+    },
+    {
+      "name": "unpositioned_candidate",
+      "exactlyTwo": false
+    },
+    {
+      "name": "wrong_graph_candidate",
+      "exactlyTwo": false
+    },
+    {
+      "name": "distinct_same_id",
+      "firstId": "999",
+      "secondId": "999",
+      "exactlyTwo": true
+    },
+    {
+      "name": "duplicate_external_identity",
+      "firstId": "40",
+      "exactlyTwo": false
+    },
+    {
+      "name": "first_seen_order",
+      "firstId": "41",
+      "secondId": "40",
+      "exactlyTwo": true
+    },
+    {
+      "name": "third_distinct_external",
+      "firstId": "40",
+      "secondId": "41",
+      "exactlyTwo": false
+    }
+  ],
+  "obstructionBounds": [
+    {
+      "name": "scoring_bounds_normal",
+      "usable": true,
+      "left": 50,
+      "top": 60,
+      "right": 150,
+      "bottom": 140
+    },
+    {
+      "name": "including_bounds",
+      "usable": true,
+      "left": 50,
+      "top": 60,
+      "right": 250,
+      "bottom": 190
+    },
+    {
+      "name": "excludes_check",
+      "usable": true,
+      "left": 50,
+      "top": 60,
+      "right": 250,
+      "bottom": 190,
+      "excludes": [
+        "false",
+        "true"
+      ]
+    }
+  ],
+  "flowContinuity": [
+    {
+      "name": "degree_zero",
+      "cost": 0
+    },
+    {
+      "name": "straight_flow",
+      "cost": 0
+    },
+    {
+      "name": "turn_flow",
+      "cost": 15
+    },
+    {
+      "name": "reciprocal_pair",
+      "cost": 0
+    }
+  ],
+  "symmetry": [
+    {
+      "name": "perfect_pair_symmetry",
+      "symmetry": 1
+    },
+    {
+      "name": "single_neighbor_symmetry",
+      "symmetry": 0
+    },
+    {
+      "name": "table_column_crossing_cost",
+      "crossingCost": 2.21184
+    }
+  ],
+  "nodeEdgeLength": [
+    {
+      "name": "horizontal_edge_sizeless_default",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 200
+    },
+    {
+      "name": "horizontal_edge_sizeless_dir",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": true,
+      "hasAbductions": false,
+      "score": 200.075
+    },
+    {
+      "name": "horizontal_edge_sized_default",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 120
+    },
+    {
+      "name": "horizontal_edge_sized_gap",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": true,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 120
+    },
+    {
+      "name": "horizontal_edge_sized_dir",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": false,
+      "penalizeDirection": true,
+      "hasAbductions": false,
+      "score": 121.5
+    },
+    {
+      "name": "horizontal_edge_sized_gap_dir",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": true,
+      "penalizeDirection": true,
+      "hasAbductions": false,
+      "score": 121.5
+    },
+    {
+      "name": "three_parallel_edges",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 270
+    },
+    {
+      "name": "parallel_127",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11430
+    },
+    {
+      "name": "parallel_128",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11520
+    },
+    {
+      "name": "parallel_129",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 11610
+    },
+    {
+      "name": "min_gap_false",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 0
+    },
+    {
+      "name": "min_gap_true",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 0
+    },
+    {
+      "name": "source_abduction",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
+    },
+    {
+      "name": "target_abduction",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
+    },
+    {
+      "name": "label_contribution",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 150
+    },
+    {
+      "name": "common_uncle_siblings_axis_penalty",
+      "includeNodeSizes": false,
+      "enforceMinimumGap": false,
+      "penalizeDirection": false,
+      "hasAbductions": false,
+      "score": 1
+    }
+  ],
+  "nodeEdgeLengthScorer": [
+    {
+      "name": "live_geometry_mutation",
+      "includeNodeSizes": true,
+      "enforceMinimumGap": false,
+      "penalizeDirection": true,
+      "score1": 90,
+      "mutatedX": 350,
+      "score2": 190,
+      "closedScoreError": "EdgeLength: scorer is closed"
+    }
+  ],
+  "cancellation": [
+    {
+      "name": "immediate_entry_cancellation",
+      "target": "NodeEdgeLength",
+      "cancelAt": 0,
+      "expectedError": "EdgeLength: context canceled",
+      "checkCount": 0
+    },
+    {
+      "name": "counting_context_cancellation",
+      "target": "NodeEdgeLength",
+      "cancelAt": 2,
+      "expectedError": "EdgeLength: context canceled",
+      "checkCount": 2
+    }
+  ]
+}

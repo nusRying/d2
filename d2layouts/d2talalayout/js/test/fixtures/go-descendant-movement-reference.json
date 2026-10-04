@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "d2BaseCommit": "01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579",
+    "goArch": "amd64",
+    "goOS": "windows",
+    "goVersion": "go1.27.0"
+  },
+  "traversalScenarios": {
+    "containers_preorder": {
+      "descendantIDs": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6"
+      ],
+      "used": 10
+    },
+    "duplicate_membership": {
+      "descendantIDs": [
+        "2",
+        "2"
+      ],
+      "used": 8
+    },
+    "include_structured_false": {
+      "descendantIDs": [
+        "2",
+        "4",
+        "6"
+      ],
+      "used": 10
+    },
+    "mixed_ownership_order": {
+      "descendantIDs": [
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7"
+      ],
+      "used": 12
+    },
+    "nil_and_cycle": {
+      "descendantIDs": [
+        "2",
+        "3"
+      ],
+      "used": 14
+    },
+    "null_root": {
+      "descendantIDs": [
+        "1",
+        "2",
+        "3"
+      ],
+      "used": 6
+    }
+  },
+  "movementScenarios": {
+    "absolute_equal_noop": {
+      "before": {
+        "1": {
+          "x": 20.5,
+          "y": 10.25
+        },
+        "2": {
+          "x": 26,
+          "y": 17.25
+        }
+      },
+      "after": {
+        "1": {
+          "x": 20.5,
+          "y": 10.25
+        },
+        "2": {
+          "x": 26,
+          "y": 17.25
+        }
+      }
+    },
+    "absolute_move": {
+      "before": {
+        "1": {
+          "x": 10.25,
+          "y": -2.5
+        },
+        "2": {
+          "x": 15.75,
+          "y": 4.5
+        }
+      },
+      "after": {
+        "1": {
+          "x": 20.5,
+          "y": 10.25
+        },
+        "2": {
+          "x": 26,
+          "y": 17.25
+        }
+      }
+    },
+    "duplicate_membership_moves_once": {
+      "before": {
+        "1": {
+          "x": 0,
+          "y": 0
+        },
+        "2": {
+          "x": 5,
+          "y": 5
+        }
+      },
+      "after": {
+        "1": {
+          "x": 10,
+          "y": 10
+        },
+        "2": {
+          "x": 15,
+          "y": 15
+        }
+      }
+    },
+    "fixed_descendant_moves": {
+      "before": {
+        "1": {
+          "x": 0,
+          "y": 0
+        },
+        "2": {
+          "x": 10,
+          "y": 10
+        }
+      },
+      "after": {
+        "1": {
+          "x": 5,
+          "y": 5
+        },
+        "2": {
+          "x": 15,
+          "y": 15
+        }
+      }
+    },
+    "fractional_container_move": {
+      "before": {
+        "1": {
+          "x": 10,
+          "y": 10
+        },
+        "2": {
+          "x": 15,
+          "y": 15
+        }
+      },
+      "after": {
+        "1": {
+          "x": 10.5,
+          "y": 11.25
+        },
+        "2": {
+          "x": 15.5,
+          "y": 16.25
+        }
+      }
+    },
+    "mixed_structured_descendants_move": {
+      "before": {
+        "1": {
+          "x": 0,
+          "y": 0
+        },
+        "2": {
+          "x": 10,
+          "y": 10
+        },
+        "3": {
+          "x": 20,
+          "y": 20
+        },
+        "4": {
+          "x": 30,
+          "y": 30
+        }
+      },
+      "after": {
+        "1": {
+          "x": 100.5,
+          "y": 200.75
+        },
+        "2": {
+          "x": 110.5,
+          "y": 210.75
+        },
+        "3": {
+          "x": 120.5,
+          "y": 220.75
+        },
+        "4": {
+          "x": 130.5,
+          "y": 230.75
+        }
+      }
+    }
+  },
+  "panicFacts": {
+    "detached_nonzero_partial_mutation": {
+      "panicked": true,
+      "finalTopLeft": {
+        "x": 15,
+        "y": 25
+      }
+    },
+    "null_top_left_absolute_move": {
+      "panicked": true
+    }
+  }
+}
