@@ -1,7 +1,8 @@
 import { Graph } from "./graph.js";
-import { Node } from "./node.js";
+import { Node, sortNodesByID } from "./node.js";
 import { Edge } from "./edge.js";
 import { Point } from "../geometry/point.js";
+import { Orientation } from "../geometry/orientation.js";
 import { Cluster } from "./cluster.js";
 import { Sequence } from "./sequence.js";
 import { Tree } from "./tree.js";
@@ -9,6 +10,18 @@ import { EdgeAbduction } from "./edge-abduction.js";
 import { Label } from "./label.js";
 import { Icon } from "./icon.js";
 import { Hierarchy } from "./hierarchy.js";
+import { validateEngineGraph } from "./topology-preflight.js";
+import { WorkGuard } from "../limits/work-guard.js";
+import { MAX_ENGINE_WORK_UNITS } from "../limits/constants.js";
+
+// Pinned reference: d2layouts/d2talalayout/internal/layoutgraph/clone.go
+
+const noopCloneStepper = Object.freeze({
+  Step() {},
+  step() {},
+  Finish() {},
+  finish() {},
+});
 
 function copyLabelRecord(source) {
   if (source == null) return null;
@@ -38,13 +51,65 @@ function copyValue(val) {
   return structuredClone(val);
 }
 
+// canonicalDirection mirrors Go canonicalDirection: only the four axis
+// directions survive a clone; every other value becomes geo.NONE.
+function canonicalDirection(direction) {
+  switch (direction) {
+    case Orientation.Top:
+    case Orientation.Bottom:
+    case Orientation.Left:
+    case Orientation.Right:
+      return direction;
+    default:
+      return Orientation.NONE;
+  }
+}
+
+/**
+ * Clone returns the layout graph projection used for an independent layout
+ * attempt. It deliberately copies the stable graph state, not transient
+ * optimizer state: derived caches, herd assignments, long-distance placement
+ * requirements, route diagnostics, and fixed-label bookkeeping are reset.
+ *
+ * The returned graph is published only after the complete bounded copy has
+ * succeeded; any failure throws and nothing is returned. The source is never
+ * mutated.
+ *
+ * Pinned Go: layoutgraph.Clone / cloneInto (clone.go).
+ *
+ * @param {any} ctx work context (required)
+ * @param {Graph} source
+ * @returns {Graph}
+ */
+export function Clone(ctx, source) {
+  if (ctx == null) {
+    throw new Error("TALA CloneGraph requires a context");
+  }
+  if (source == null) {
+    throw new Error("cannot clone a nil graph");
+  }
+  validateEngineGraph(ctx, "CloneGraph", source);
+  const guard = new WorkGuard(ctx, "CloneGraph", MAX_ENGINE_WORK_UNITS);
+  const staged = copyGraph(source, guard, false);
+  guard.Finish();
+  return staged;
+}
+
+export const cloneGraphWithContext = Clone;
+
+/**
+ * cloneGraph is the legacy context-free clone used by existing JS callers. It
+ * shares Clone's copy with an unbounded, non-polling stepper and skips the
+ * engine-topology preflight.
+ */
 export function cloneGraph(source) {
   if (!source) throw new Error("cannot clone a nil graph");
+  return copyGraph(source, noopCloneStepper, true);
+}
 
+function copyGraph(source, guard, legacy) {
   const cloned = new Graph();
   cloned.ID = source.ID;
-  cloned.CellSize = source.CellSize;
-  cloned.IsRootHierarchy = source.IsRootHierarchy;
   cloned.elkData = structuredClone(source.elkData);
 
   const nodesByID = new Map();
@@ -77,7 +142,6 @@ export function cloneGraph(source) {
     node.Is3D = srcNode.Is3D;
     node.IsMultiple = srcNode.IsMultiple;
     node.IsInvisible = srcNode.IsInvisible;
-    node.isClusterVessel = srcNode.isClusterVessel;
     node.setShape(srcNode.shapeType());
     node.setNumColumns(srcNode.numColumns());
     node.elkData = structuredClone(srcNode.elkData);
@@ -85,6 +149,7 @@ export function cloneGraph(source) {
   }
 
   function addNodeRecord(srcNode) {
+    guard.Step();
     if (srcNode == null) throw new Error("cannot clone a nil node");
     if (srcNode.ID === 0n) throw new Error("cannot clone reserved node ID 0");
     if (nodesByID.has(srcNode.ID)) {
@@ -122,7 +187,15 @@ export function cloneGraph(source) {
     return [clonedNode, true];
   }
 
-  function resolveNode(srcNode, relation = "node") {
+  function resolveNode(srcNode, relation) {
+    if (srcNode == null) return null;
+    guard.Step();
+    return lookupNode(srcNode, relation);
+  }
+
+  // lookupNode resolves without charging work. It is used only for the
+  // JS-only ELK index maps, which have no Go counterpart.
+  function lookupNode(srcNode, relation) {
     if (srcNode == null) return null;
     const clonedNode = nodesByID.get(srcNode.ID);
     if (!clonedNode) {
@@ -161,6 +234,7 @@ export function cloneGraph(source) {
     clonedEdge.elkData = structuredClone(sourceEdge.elkData);
 
     for (const pt of sourceEdge.Points) {
+      guard.Step();
       clonedEdge.Points.push(pt.copy());
     }
     return clonedEdge;
@@ -197,6 +271,7 @@ export function cloneGraph(source) {
 
   // 2. Copy Edges
   for (const edge of source.Edges) {
+    guard.Step();
     if (edge === null || edge === undefined) {
       throw new Error("cannot clone a nil edge");
     }
@@ -214,20 +289,20 @@ export function cloneGraph(source) {
     if (edge.ID !== 0n) {
       edgesByID.set(edge.ID, clonedEdge);
     }
-    cloned.Edges.push(clonedEdge);
-
     clonedEdge.From.addEdge(clonedEdge);
     if (!clonedEdge.isLoop()) {
       clonedEdge.To.addEdge(clonedEdge);
     }
+    cloned.Edges.push(clonedEdge);
   }
 
   // 3. Copy Containers using group-aware containerRDFSOrder
   cloned.Containers = new Map();
   if (source.Containers.size > 0) {
-    const rdfsOrder = source.containerRDFSOrder(null);
+    const rdfsOrder = source.containerRDFSOrderContext(null, guard);
     if (source.Containers.size !== rdfsOrder.length + 1) {
-      throw new Error(`cannot clone containers: map length ${source.Containers.size} does not match hierarchy length ${rdfsOrder.length + 1} (unreachable containers exist in source)`);
+      const suffix = legacy ? " (unreachable containers exist in source)" : "";
+      throw new Error(`cannot clone containers: map length ${source.Containers.size} does not match hierarchy length ${rdfsOrder.length + 1}${suffix}`);
     }
     rdfsOrder.push(null);
 
@@ -256,6 +331,7 @@ export function cloneGraph(source) {
   // 4. Copy Clusters
   cloned.Clusters = new Map();
   for (const sourceVessel of source.clusterOrder()) {
+    guard.Step();
     const sourceCluster = source.Clusters.get(sourceVessel);
     if (!sourceCluster) {
       throw new Error(`cannot clone nil cluster for vessel ${sourceVessel.ID}`);
@@ -294,6 +370,7 @@ export function cloneGraph(source) {
     cloned.Clusters.set(vessel, cluster);
     clustersBySource.set(sourceCluster, cluster);
     for (const member of members) {
+      guard.Step();
       if (member) member.Cluster = cluster;
     }
   }
@@ -301,6 +378,7 @@ export function cloneGraph(source) {
   // 5. Copy Sequences
   cloned.Sequences = new Map();
   for (const sourceVessel of source.sequenceOrder()) {
+    guard.Step();
     const sourceSequence = source.Sequences.get(sourceVessel);
     if (!sourceSequence) {
       throw new Error(`cannot clone nil sequence for vessel ${sourceVessel.ID}`);
@@ -337,15 +415,36 @@ export function cloneGraph(source) {
     cloned.Sequences.set(vessel, sequence);
     sequencesBySource.set(sourceSequence, sequence);
     for (const member of members) {
+      guard.Step();
       if (member) member.Sequence = sequence;
     }
   }
 
-  // 6. Copy EdgeAbductions
+  // 6. Copy Hubs (Go copyHubs; HubOrder sorts hub keys by node ID)
+  cloned.Hubs = new Map();
+  if (source.Hubs != null) {
+    const hubOrder = sortNodesByID(Array.from(source.Hubs.keys()).filter((hub) => hub != null));
+    if (source.Hubs.has(null)) hubOrder.unshift(null);
+    for (const sourceHub of hubOrder) {
+      const hub = resolveNode(sourceHub, "hub");
+      const sourceSpokes = source.Hubs.get(sourceHub) || [];
+      const spokes = [];
+      for (const sourceSpoke of sourceSpokes) {
+        if (sourceSpoke == null || nodeRecordsByID.get(sourceSpoke.ID) !== sourceSpoke) {
+          throw new Error("cannot clone hub spoke: exact node record is not included in the graph");
+        }
+        spokes.push(resolveNode(sourceSpoke, "hub spoke"));
+      }
+      cloned.Hubs.set(hub, spokes);
+    }
+  }
+
+  // 7. Copy EdgeAbductions
   function copyAbductionsFor(sourceAbductions) {
     if (!sourceAbductions) return [];
     const clonedList = [];
     for (const sourceAbduction of sourceAbductions) {
+      guard.Step();
       let edge = edgesBySource.get(sourceAbduction.Edge);
       if (!edge && sourceAbduction.Edge && sourceAbduction.Edge.ID !== 0n) {
         edge = edgesByID.get(sourceAbduction.Edge.ID);
@@ -378,12 +477,13 @@ export function cloneGraph(source) {
     sequencesBySource.get(sourceSequence).EdgeAbductions = copyAbductionsFor(sourceSequence.EdgeAbductions);
   }
 
-  // 7. Copy Trees
+  // 8. Copy Trees
   cloned.Trees = new Map();
   cloned.NodeToTree = new Map();
   const treeOwnersByNodeID = new Set();
 
   function copyTree(sourceTree, parent = null) {
+    guard.Step();
     if (!sourceTree) return null;
     if (sourceTree.SentinelEdge == null) {
       throw new Error("cannot clone a tree with a nil sentinel edge");
@@ -434,9 +534,8 @@ export function cloneGraph(source) {
   }
 
   for (const sourceSentinel of source.treeOrder()) {
-    const sourceRoots = source.Trees.get(sourceSentinel);
-    if (!sourceRoots) continue;
     const sentinel = resolveNode(sourceSentinel, "tree root sentinel");
+    const sourceRoots = source.Trees.get(sourceSentinel) || [];
     const roots = [];
     for (const sourceRoot of sourceRoots) {
       const root = copyTree(sourceRoot, null);
@@ -447,19 +546,20 @@ export function cloneGraph(source) {
     }
   }
 
-  // 8. Copy Nears
+  // 9. Copy Nears
   for (const srcNode of [...nodeRecords, ...treeNodeRecords]) {
     const node = nodesBySource.get(srcNode);
-    if (node) {
-      for (const srcNear of srcNode.orderedNears()) {
-        node.addNear(resolveNode(srcNear, "near relation"));
-      }
+    for (const srcNear of srcNode.orderedNears()) {
+      guard.Step();
+      const near = resolveNode(srcNear, "near relation");
+      if (node) node.addNear(near);
     }
   }
 
-  // 9. Copy Hierarchies
+  // 10. Copy Hierarchies
   const seenHierarchies = new Set();
   for (const srcNode of source.Nodes) {
+    guard.Step();
     const srcHierarchy = srcNode.Hierarchy;
     if (!srcHierarchy || seenHierarchies.has(srcHierarchy)) continue;
     seenHierarchies.add(srcHierarchy);
@@ -477,9 +577,17 @@ export function cloneGraph(source) {
     }
   }
 
-  // 10. Filter Graph.Nodes for active cluster and sequence members
+  // 11. Copy Directions (Go copyDirections; the root key is null)
+  cloned.Directions = new Map();
+  for (const [sourceContainer, sourceDirection] of source.Directions.entries()) {
+    const container = resolveNode(sourceContainer, "direction container");
+    cloned.Directions.set(container, canonicalDirection(sourceDirection));
+  }
+
+  // 12. Filter Graph.Nodes for active cluster and sequence members
   const filtered = [];
   for (const sourceNode of nodeRecords) {
+    guard.Step();
     const node = nodesBySource.get(sourceNode);
     if (node.Cluster && node.Cluster.isActive()) {
       continue;
@@ -490,25 +598,27 @@ export function cloneGraph(source) {
     filtered.push(node);
   }
   cloned.Nodes = filtered;
+  cloned.CellSize = source.CellSize;
+  cloned.IsRootHierarchy = source.IsRootHierarchy;
   cloned.CommonUncleSiblings = null;
+  cloned.edgeLengthCache = new Map();
 
-  // 11. Copy Indexes and Directions
-  for (const [k, v] of source.Directions.entries()) {
-    if (k === null) {
-      cloned.Directions.set(null, v);
-    } else {
-      cloned.Directions.set(resolveNode(k, "direction container"), v);
-    }
-  }
+  // Go copies the cached cost fields directly (no lazy recomputation), so the
+  // source is never mutated by reading them.
+  cloned.crossingCost = source.crossingCost;
+  cloned.turnCost = source.turnCost;
+  cloned.nonCenterPortCost = source.nonCenterPortCost;
 
+  // 13. JS-only ELK index maps and endpoint metadata (ADR-001). These have no
+  // Go counterpart and charge no work units.
   for (const [k, v] of source.nodesByExternalId.entries()) {
-    cloned.nodesByExternalId.set(k, resolveNode(v, "nodesByExternalId"));
+    cloned.nodesByExternalId.set(k, lookupNode(v, "nodesByExternalId"));
   }
   for (const [k, v] of source.edgesByExternalId.entries()) {
     cloned.edgesByExternalId.set(k, edgesBySource.get(v));
   }
   for (const [k, v] of source.nodesByEntityId.entries()) {
-    cloned.nodesByEntityId.set(k, resolveNode(v, "nodesByEntityId"));
+    cloned.nodesByEntityId.set(k, lookupNode(v, "nodesByEntityId"));
   }
   for (const [k, v] of source.edgesByEntityId.entries()) {
     cloned.edgesByEntityId.set(k, edgesBySource.get(v));
@@ -518,12 +628,12 @@ export function cloneGraph(source) {
     if (v.kind === "node") {
       cloned.endpoints.set(k, {
         kind: "node",
-        node: resolveNode(v.node, "endpoint node")
+        node: lookupNode(v.node, "endpoint node")
       });
     } else if (v.kind === "port") {
       cloned.endpoints.set(k, {
         kind: "port",
-        node: resolveNode(v.node, "endpoint port node"),
+        node: lookupNode(v.node, "endpoint port node"),
         port: structuredClone(v.port)
       });
     }
