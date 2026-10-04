@@ -34,7 +34,7 @@ describe('Direct Context Error Tests', () => {
     it(`NodeEdgeLengthScorer - ${tc.name}`, () => {
       const ctx = { Err: () => tc.err };
       let caught = null;
-      try { 
+      try {
         const scorer = NodeEdgeLengthScorer(src, {});
         try { scorer.Score(ctx); } catch (e) { caught = e.message; }
       } catch (e) { caught = e.message; }

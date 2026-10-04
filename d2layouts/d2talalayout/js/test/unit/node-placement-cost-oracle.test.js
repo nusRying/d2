@@ -924,4 +924,3 @@ describe('Slice 41 Node Placement-Cost Kernel — Go Oracle', () => {
     });
   });
 });
-

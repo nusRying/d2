@@ -64,7 +64,7 @@ describe("Slice 26 — SyncNestedGeometry Unit Tests", () => {
     const memberContainer = new Node(2, 10, 10);
     memberContainer.Graph = g;
     memberContainer.isContainer = true;
-    
+
     // Add child to member container so padding correction does something
     const child = new Node(3, 10, 10);
     child.Graph = g;

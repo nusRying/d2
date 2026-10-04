@@ -11,7 +11,7 @@ describe("LayoutGraph Structure", () => {
     const n1 = new Node(1n);
     const n2 = new Node(2n);
     const n3 = new Node(3n);
-    
+
     g.addNodeUnchecked(n1);
     g.addNodeUnchecked(n2);
     g.addNodeUnchecked(n3);
@@ -30,13 +30,13 @@ describe("LayoutGraph Structure", () => {
     expect(e2.To).toBe(n1);
 
     const e3 = g.connect(n2, n3);
-    
+
     // Disconnect e1
     g.disconnect(e1);
     expect(g.Edges.length).toBe(2);
     expect(n1.Edges.length).toBe(1); // e2 remains
     expect(n2.Edges.length).toBe(1); // e3 remains
-    
+
     // Edge reconnect
     e3.reconnect(n1, false);
     expect(e3.From).toBe(n1);
@@ -105,7 +105,7 @@ describe("LayoutGraph Structure", () => {
     expect(parent.isContainer).toBe(true);
     expect(child1.Container).toBe(parent);
     expect(child2.Container).toBe(parent);
-    
+
     const children = g.Containers.get(parent);
     expect(children.length).toBe(2);
     expect(children.includes(child1)).toBe(true);
@@ -217,16 +217,16 @@ describe("LayoutGraph Structure", () => {
   it("should clone cleanly isolating references and boundary fields", () => {
     const g = new Graph();
     g.ID = "test-graph";
-    
+
     const n1 = new Node(1n);
     n1.D2ID = "table";
     n1.TopLeft = new Point(10, 20);
     n1.elkData = { id: "table", label: "Table Node", customMeta: { flag: true } };
-    
+
     const n2 = new Node(2n);
     n2.D2ID = "b";
     n2.elkData = { id: "b" };
-    
+
     g.addNodeUnchecked(n1);
     g.addNewNodeToContainer(n1, n2);
     n1.addNear(n2);
@@ -260,11 +260,11 @@ describe("LayoutGraph Structure", () => {
     });
 
     const cloned = cloneGraph(g);
-    
+
     expect(cloned.ID).toBe("test-graph");
     expect(cloned.Nodes.length).toBe(2);
     expect(cloned.Edges.length).toBe(1);
-    
+
     const cN1 = cloned.Nodes.find(n => n.ID === 1n);
     const cN2 = cloned.Nodes.find(n => n.ID === 2n);
     const cE1 = cloned.Edges[0];
@@ -273,7 +273,7 @@ describe("LayoutGraph Structure", () => {
     expect(cN1).not.toBe(n1);
     expect(cN1.TopLeft).not.toBe(n1.TopLeft);
     expect(cN1.TopLeft.X).toBe(10);
-    
+
     // Node elkData clone isolation
     expect(cN1.elkData).toEqual(n1.elkData);
     expect(cN1.elkData).not.toBe(n1.elkData);

@@ -118,7 +118,7 @@ describe('NodeEdgeLengthScorer Checkpoints', () => {
     // Retry with uncancelled
     const retryCtx = new CountingContext(0);
     const retryScore = scorer.Score(retryCtx);
-    
+
     assert.equal(retryScore, directScore, 'Score after retry should match direct score');
     assert.equal(retryCtx.count, checks, 'Context counts after retry should match direct counts');
 
