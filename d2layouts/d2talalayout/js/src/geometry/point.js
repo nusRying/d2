@@ -11,7 +11,7 @@ export class Point {
   equals(other) {
     if (!this) return !other;
     if (!other) return false;
-    // Object.is correctly handles +0 and -0 differences if they ever matter, 
+    // Object.is correctly handles +0 and -0 differences if they ever matter,
     // but standard == parity dictates using strict equality unless it explicitly needs IEEE exactly
     // Go's == treats -0.0 and 0.0 as equal. So we use `===`.
     return this.X === other.X && this.Y === other.Y;
@@ -160,8 +160,8 @@ export function intersectionPoint(u0, u1, v0, v1) {
   const intersection = new Point(0, 0);
   intersection.X = u0.X + goRound(s * udx);
   intersection.Y = u0.Y + goRound(s * udy);
-  
-  // Need to make sure -0 is represented just as Go would if needed, but in JS 
+
+  // Need to make sure -0 is represented just as Go would if needed, but in JS
   // -0 is fine and we'll check it in test. goRound handles -0.
 
   return intersection;
@@ -172,7 +172,7 @@ export function getMedianPoint(ps) {
     // Defensive JS contract around a Go precondition (Go assumes non-empty slice and indexes it)
     throw new Error("getMedianPoint requires at least one point");
   }
-  
+
   const xs = [];
   const ys = [];
 

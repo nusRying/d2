@@ -1,7 +1,7 @@
 # Slice 26: Nested Geometry Synchronization
 
 ## Objective
-Implement `Graph.syncNestedGeometry` and its public wrapper `SyncNestedGeometry` in `graph.js` matching Go TALA semantics, orchestrating already-approved lower-level primitives. 
+Implement `Graph.syncNestedGeometry` and its public wrapper `SyncNestedGeometry` in `graph.js` matching Go TALA semantics, orchestrating already-approved lower-level primitives.
 
 ## Scope
 - `Graph.syncNestedGeometry()`
@@ -10,7 +10,7 @@ Implement `Graph.syncNestedGeometry` and its public wrapper `SyncNestedGeometry`
 
 ## Progress
 - [x] Create Go Oracle script for Nested Geometry scenarios.
-- [x] Implement JS nested geometry synchronization. 
+- [x] Implement JS nested geometry synchronization.
 - [x] Ensure strict array order processing and independent conditionals.
 - [x] Pass all JS test coverage and Go test bounds.
 - [x] Clean static boundaries (No `Cleanup`, `Join`, `AddHubs`).

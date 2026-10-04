@@ -78,7 +78,7 @@ export class Graph {
 
   addNodeToContainer(container, node) {
     node.Container = container;
-    
+
     let children = this.Containers.get(container);
     if (!children) {
       children = [];
@@ -175,7 +175,7 @@ export class Graph {
 
   disconnect(edge) {
     if (!edge) return;
-    
+
     if (edge.From) edge.From.removeEdge(edge);
     if (edge.To) edge.To.removeEdge(edge);
 
@@ -218,7 +218,7 @@ export class Graph {
     } else {
       this.CellSize = Math.ceil((3 * minLength) / 2);
     }
-    
+
     this.CellSize = Math.max(this.CellSize, 10);
   }
 

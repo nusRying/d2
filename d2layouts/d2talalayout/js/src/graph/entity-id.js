@@ -11,7 +11,7 @@ export function compareGoStringsUTF8(a, b) {
   const encoder = new TextEncoder();
   const bytesA = encoder.encode(a);
   const bytesB = encoder.encode(b);
-  
+
   const minLen = Math.min(bytesA.length, bytesB.length);
   for (let i = 0; i < minLen; i++) {
     if (bytesA[i] !== bytesB[i]) {
@@ -31,13 +31,13 @@ export function d2FNV32(id) {
   let hash = 0x811c9dc5;
   const encoder = new TextEncoder();
   const bytes = encoder.encode(id);
-  
+
   for (let i = 0; i < bytes.length; i++) {
     hash ^= bytes[i];
     // Math.imul preserves 32-bit integer multiplication semantics
     hash = Math.imul(hash, 0x01000193);
   }
-  
+
   // Convert to unsigned 32-bit integer
   return hash >>> 0;
 }
@@ -59,23 +59,23 @@ export function allocateD2EntityIDs(identities) {
   const seenAbsIDs = new Set();
   const bucketSizes = new Map();
   const hashed = [];
-  
+
   for (let i = 0; i < identities.length; i++) {
     const identity = identities[i];
     if (seenAbsIDs.has(identity.absID)) {
       throw new Error(`D2 ID "${identity.absID}" is repeated`);
     }
     seenAbsIDs.add(identity.absID);
-    
+
     const hash = d2FNV32(identity.absID);
     hashed.push({ ...identity, hash });
-    
+
     bucketSizes.set(hash, (bucketSizes.get(hash) || 0) + 1);
   }
-  
+
   const allocated = new Map();
   const ambiguous = [];
-  
+
   for (let i = 0; i < hashed.length; i++) {
     const identity = hashed[i];
     if (identity.hash !== 0 && bucketSizes.get(identity.hash) === 1) {
@@ -84,7 +84,7 @@ export function allocateD2EntityIDs(identities) {
       ambiguous.push(identity);
     }
   }
-  
+
 
   ambiguous.sort((a, b) => {
     if (a.hash !== b.hash) {
@@ -92,11 +92,11 @@ export function allocateD2EntityIDs(identities) {
     }
     return compareGoStringsUTF8(a.absID, b.absID);
   });
-  
+
   for (let i = 0; i < ambiguous.length; i++) {
     const identity = ambiguous[i];
     allocated.set(identity.entity, firstD2SpillEntityID + BigInt(i));
   }
-  
+
   return allocated;
 }

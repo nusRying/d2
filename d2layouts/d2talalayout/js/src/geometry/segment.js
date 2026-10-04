@@ -43,13 +43,13 @@ export class Segment {
   getBounds(segments, buffer) {
     let ceil = Infinity;
     let floor = -Infinity;
-    
+
     if (this.Start.X === this.End.X && this.Start.Y === this.End.Y) {
       return [floor, ceil];
     }
 
     const isHorizontal = this.Start.X === this.End.X;
-    
+
     for (const otherSegment of segments) {
       if (isHorizontal) {
         if (otherSegment.End.Y < this.Start.Y - buffer) {

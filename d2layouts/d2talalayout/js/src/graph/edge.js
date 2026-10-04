@@ -170,10 +170,10 @@ export class Edge {
     this.TargetArrowhead = "";
     this.SourceArrowheadLabel = null;
     this.TargetArrowheadLabel = null;
-    
+
     this.Label = null;
     this.LabelPercentage = 0;
-    
+
     this.FromTableColumnIndex = null;
     this.ToTableColumnIndex = null;
     this.IsInvisible = false;
