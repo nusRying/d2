@@ -1,7 +1,7 @@
 // Development-only static server for the TALA JS showcase.
 // Run from the package root with: bun run demo
 
-import { resolve, extname } from "node:path";
+import { resolve, extname, sep } from "node:path";
 
 const packageRoot = resolve(import.meta.dir, "..");
 const port = Number(Bun.env.PORT || 4173);
@@ -23,7 +23,7 @@ Bun.serve({
 
     const relative = pathname.replace(/^\/+/, "");
     const filePath = resolve(packageRoot, relative);
-    if (!filePath.startsWith(packageRoot + "/") && filePath !== packageRoot) {
+    if (!filePath.startsWith(packageRoot + sep) && filePath !== packageRoot) {
       return new Response("Forbidden", { status: 403 });
     }
 
