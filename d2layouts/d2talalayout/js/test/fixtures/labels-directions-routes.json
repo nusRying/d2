@@ -1,0 +1,103 @@
+{
+  "id": "root",
+  "layoutOptions": {
+    "elk.direction": "down",
+    "elk.spacing.nodeNode": "20"
+  },
+  "rootMetadata": { "owner": "fixture" },
+  "children": [
+    {
+      "id": "group",
+      "x": 10,
+      "y": 20,
+      "width": 300,
+      "height": 200,
+      "layoutOptions": {
+        "org.eclipse.elk.direction": "Left"
+      },
+      "labels": [
+        { "id": "group.label", "text": "Group", "width": 50, "height": 15, "custom": "keep" }
+      ],
+      "children": [
+        {
+          "id": "a",
+          "x": 20,
+          "y": 30,
+          "width": 60,
+          "height": 40,
+          "labels": [
+            { "id": "a.label", "text": "A", "width": 10, "height": 12, "x": 999, "y": 999 }
+          ]
+        },
+        {
+          "id": "b",
+          "x": 150,
+          "y": 30,
+          "width": 60,
+          "height": 40,
+          "layoutOptions": { "elk.direction": "sideways" }
+        }
+      ],
+      "edges": [
+        {
+          "id": "inner",
+          "sources": ["a"],
+          "targets": ["b"],
+          "labels": [
+            { "id": "inner.label", "text": "inner label", "width": 40, "height": 10, "meta": { "k": 1 } }
+          ],
+          "sections": [
+            {
+              "id": "inner_s0",
+              "startPoint": { "x": 0, "y": 0 },
+              "endPoint": { "x": 1, "y": 1 },
+              "stale": true
+            }
+          ],
+          "customEdge": "inner-meta"
+        }
+      ]
+    },
+    {
+      "id": "c",
+      "x": 400,
+      "y": 0,
+      "width": 50,
+      "height": 50,
+      "ports": [
+        { "id": "c.p", "x": 0, "y": 10, "width": 2, "height": 2, "portMeta": "keep" }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "outer",
+      "sources": ["group"],
+      "targets": ["c.p"],
+      "labels": [{ "id": "outer.label", "text": "outer", "width": 30, "height": 8 }],
+      "sections": [
+        {
+          "id": "outer_s0",
+          "startPoint": { "x": 5, "y": 5 },
+          "bendPoints": [{ "x": 6, "y": 6 }],
+          "endPoint": { "x": 7, "y": 7 }
+        }
+      ],
+      "layoutOptions": { "elk.edgeRouting": "ORTHOGONAL" }
+    },
+    {
+      "id": "untouched",
+      "sources": ["b"],
+      "targets": ["c"],
+      "sections": [
+        {
+          "id": "untouched_s0",
+          "startPoint": { "x": 1, "y": 2 },
+          "bendPoints": [{ "x": 3, "y": 4 }],
+          "endPoint": { "x": 5, "y": 6 },
+          "sectionMeta": "kept"
+        }
+      ]
+    }
+  ]
+}
