@@ -3,56 +3,80 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>TALA JS Playground</title>
+  <title>TALA JS — layout engine showcase</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <header class="topbar">
-    <div>
-      <div class="eyebrow">TRIAL TASK SHOWCASE</div>
-      <h1>TALA JS Playground</h1>
-      <p>Browser-safe JavaScript port of the TALA layout engine with an ELK-compatible JSON API.</p>
+    <div class="topbar-copy">
+      <div class="eyebrow">TRIAL TASK SHOWCASE · TALA GO → JAVASCRIPT</div>
+      <h1>TALA JS</h1>
+      <p>
+        The TALA graph layout engine, migrated from Go to browser-safe JavaScript.
+        Edit ELK-compatible JSON, run the real engine in this page, and inspect the
+        laid-out graph it returns.
+      </p>
+      <div class="badges">
+        <span>50 migration slices</span>
+        <span>Browser-safe ESM</span>
+        <span>ELK-compatible JSON</span>
+        <span>Deterministic Go RNG parity</span>
+      </div>
     </div>
-    <div class="badges">
-      <span>ELK JSON</span>
-      <span>Deterministic seeds</span>
-      <span>Browser ESM</span>
-    </div>
+    <figure class="api-card">
+      <figcaption>Public API used by this page</figcaption>
+<pre><code><span class="tok-kw">import</span> { layout } <span class="tok-kw">from</span> <span class="tok-str">"@syntroper/tala-js"</span>;
+
+<span class="tok-kw">const</span> result = <span class="tok-kw">await</span> layout(graph, {
+  seed: <span class="tok-num">1</span>
+});</code></pre>
+    </figure>
   </header>
 
   <main class="shell">
-    <section class="toolbar card">
+    <section class="toolbar card" aria-label="Layout controls">
       <label>
         Example
         <select id="exampleSelect"></select>
       </label>
       <label>
         Seed
-        <input id="seedInput" value="1" inputmode="numeric" />
+        <input id="seedInput" value="1" inputmode="numeric" spellcheck="false" />
       </label>
       <label>
         Direction
         <select id="directionSelect">
-          <option value="">Use JSON</option>
+          <option value="">From JSON</option>
           <option value="RIGHT">RIGHT</option>
           <option value="DOWN">DOWN</option>
           <option value="LEFT">LEFT</option>
           <option value="UP">UP</option>
         </select>
       </label>
-      <button id="runButton" class="primary">Run TALA</button>
-      <button id="resetButton">Reset</button>
-      <button id="copyButton">Copy output</button>
+      <div class="toolbar-actions">
+        <button id="runButton" class="primary" title="Run TALA (Ctrl/⌘ + Enter)">
+          Run TALA <kbd>Ctrl ↵</kbd>
+        </button>
+        <button id="formatButton" title="Pretty-print the input JSON">Format JSON</button>
+        <button id="resetButton" title="Restore the selected example">Reset example</button>
+        <button id="copyButton" title="Copy the returned ELK JSON">Copy output</button>
+      </div>
     </section>
 
-    <section class="stats">
+    <section class="stats" aria-live="polite">
+      <article class="stat-status"><strong id="statStatus">Ready</strong><span>Status</span></article>
+      <article><strong id="statSeed">–</strong><span>Seed</span></article>
       <article><strong id="statNodes">–</strong><span>Nodes</span></article>
       <article><strong id="statEdges">–</strong><span>Edges</span></article>
       <article><strong id="statBends">–</strong><span>Bends</span></article>
-      <article><strong id="statTime">–</strong><span>Layout time</span></article>
+      <article><strong id="statTime">–</strong><span>Run time</span></article>
     </section>
 
-    <section id="errorPanel" class="error-panel hidden" role="alert"></section>
+    <section id="errorPanel" class="error-panel hidden" role="alert">
+      <div class="error-title">Layout failed</div>
+      <pre id="errorText"></pre>
+      <div class="error-hint">Edit the JSON or options and run again.</div>
+    </section>
 
     <section class="workspace">
       <article class="card editor-card">
@@ -61,42 +85,98 @@
             <div class="eyebrow">INPUT</div>
             <h2>ELK JSON</h2>
           </div>
-          <span id="inputState" class="status-chip">Ready</span>
+          <span id="inputState" class="status-chip">Valid JSON</span>
         </div>
-        <textarea id="jsonEditor" spellcheck="false"></textarea>
+        <textarea id="jsonEditor" spellcheck="false" aria-label="ELK JSON input"></textarea>
+        <div class="panel-foot">
+          <span><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> runs · <kbd>Tab</kbd> indents</span>
+          <span>Demo examples are intentionally small.</span>
+        </div>
       </article>
 
       <article class="card preview-card">
         <div class="panel-title">
           <div>
             <div class="eyebrow">OUTPUT</div>
-            <h2>Rendered layout</h2>
+            <h2>Laid-out graph</h2>
           </div>
-          <div class="view-switch">
-            <button class="view-button active" data-view="preview">Preview</button>
-            <button class="view-button" data-view="json">JSON</button>
+          <div class="panel-tools">
+            <span id="preservedBadge" class="preserved-badge hidden" title="The input object was deep-equal before and after layout()">Input preserved</span>
+            <label class="toggle" title="Mark route bend points">
+              <input id="bendToggle" type="checkbox" checked /> Bends
+            </label>
+            <button id="fitButton" class="ghost" title="Fit the layout to the view">Fit</button>
+            <div class="view-switch" role="tablist">
+              <button class="view-button active" data-view="preview" role="tab">Preview</button>
+              <button class="view-button" data-view="json" role="tab">Output JSON</button>
+            </div>
           </div>
         </div>
 
         <div id="previewView" class="preview-surface">
           <svg id="graphSvg" aria-label="TALA layout result"></svg>
           <div id="emptyPreview" class="empty-preview">Run a graph to see the layout.</div>
+          <div class="preview-hint">Scroll to zoom · drag to pan</div>
         </div>
         <pre id="outputJson" class="output-json hidden"></pre>
       </article>
     </section>
 
-    <section class="card about">
-      <div>
+    <section class="lower">
+      <article class="card about">
         <div class="eyebrow">WHAT THIS DEMO PROVES</div>
-        <h2>Real public API, not a mock</h2>
-      </div>
-      <p>
-        The interface imports <code>layout()</code> from the final package surface,
-        passes ELK-compatible JSON into the migrated engine, then renders the returned
-        node geometry, routed edge sections and label positions.
-      </p>
-      <code class="api-sample">await layout(elkGraph, { seed: 1 })</code>
+        <h2>The real engine, not a mock</h2>
+        <p>
+          This page imports <code>layout()</code> from the package entry point
+          (<code>src/index.js</code>), passes your ELK JSON to the migrated engine and
+          draws exactly what it returns: node <code>x/y</code>, routed edge
+          <code>sections</code> and label positions. No coordinates are computed by the
+          page, and no other layout library is loaded.
+        </p>
+        <ul class="facts">
+          <li>Placement &amp; packing</li>
+          <li>Orthogonal edge routing</li>
+          <li>Node &amp; edge labels</li>
+          <li>Quality scoring</li>
+          <li>Multi-seed selection</li>
+          <li>Checked against real-Go reference fixtures</li>
+        </ul>
+        <dl class="numbers">
+          <div><dt>50</dt><dd>migration slices, Go → JS</dd></div>
+          <div><dt>5,600+</dt><dd>automated JS tests</dd></div>
+          <div><dt>0</dt><dd>runtime dependencies</dd></div>
+        </dl>
+      </article>
+
+      <article class="card pipeline-card">
+        <div class="eyebrow">ENGINE PIPELINE</div>
+        <h2>From ELK JSON to ELK output</h2>
+        <svg class="pipeline" viewBox="0 0 420 330" role="img" aria-label="TALA pipeline: ELK JSON, placement, routing and labels, quality, multi-seed, ELK output">
+          <defs>
+            <marker id="pipeArrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" class="pipe-arrow" />
+            </marker>
+          </defs>
+          <g class="pipe-edges">
+            <path d="M210 38 V64" marker-end="url(#pipeArrow)" />
+            <path d="M188 94 L136 122" marker-end="url(#pipeArrow)" />
+            <path d="M232 94 L284 122" marker-end="url(#pipeArrow)" />
+            <path d="M136 152 L188 180" marker-end="url(#pipeArrow)" />
+            <path d="M284 152 L232 180" marker-end="url(#pipeArrow)" />
+            <path d="M210 210 V236" marker-end="url(#pipeArrow)" />
+            <path d="M210 266 V292" marker-end="url(#pipeArrow)" />
+          </g>
+          <g class="pipe-nodes">
+            <rect x="150" y="10" width="120" height="28" rx="7" class="io" /><text x="210" y="24">ELK JSON</text>
+            <rect x="150" y="66" width="120" height="28" rx="7" /><text x="210" y="80">Placement</text>
+            <rect x="56" y="124" width="120" height="28" rx="7" /><text x="116" y="138">Routing</text>
+            <rect x="244" y="124" width="120" height="28" rx="7" /><text x="304" y="138">Labels</text>
+            <rect x="150" y="182" width="120" height="28" rx="7" /><text x="210" y="196">Quality</text>
+            <rect x="150" y="238" width="120" height="28" rx="7" /><text x="210" y="252">Multi-seed</text>
+            <rect x="150" y="294" width="120" height="28" rx="7" class="io" /><text x="210" y="308">ELK output</text>
+          </g>
+        </svg>
+      </article>
     </section>
   </main>
 

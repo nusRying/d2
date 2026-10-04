@@ -1,6 +1,57 @@
+// TALA JS showcase. Everything drawn here comes from the real public API:
+// the page builds ELK JSON, calls layout(), and renders the returned geometry.
 import { layout } from '../src/index.js';
 
+const label = (text, width, height = 16) => ({ text, width, height });
+
 const examples = {
+  "Layout engine showcase": {
+    id: "root",
+    layoutOptions: { "elk.direction": "DOWN" },
+    children: [
+      { id: "input", width: 120, height: 56, labels: [{ id: "input-label", ...label("ELK JSON", 58) }] },
+      {
+        id: "placement",
+        width: 300,
+        height: 220,
+        labels: [{ id: "placement-label", ...label("Placement", 66, 18) }],
+        children: [
+          { id: "hierarchy", width: 112, height: 50, labels: [label("Hierarchy", 62)] },
+          { id: "trees", width: 112, height: 50, labels: [label("Trees", 36)] },
+          { id: "packing", width: 112, height: 50, labels: [label("Packing", 50)] }
+        ],
+        edges: [
+          { id: "hierarchy-packing", sources: ["hierarchy"], targets: ["packing"] },
+          { id: "trees-packing", sources: ["trees"], targets: ["packing"] }
+        ]
+      },
+      {
+        id: "routing",
+        width: 260,
+        height: 160,
+        labels: [{ id: "routing-label", ...label("Routing", 52, 18) }],
+        children: [
+          { id: "ovg", width: 120, height: 50, labels: [label("Visibility graph", 98)] },
+          { id: "search", width: 112, height: 50, labels: [label("Route search", 80)] }
+        ],
+        edges: [{ id: "ovg-search", sources: ["ovg"], targets: ["search"] }]
+      },
+      { id: "labels", width: 112, height: 50, labels: [label("Labels", 42)] },
+      { id: "quality", width: 112, height: 50, labels: [label("Quality", 46)] },
+      { id: "multiseed", width: 120, height: 50, labels: [label("Multi-seed", 66)] },
+      { id: "output", width: 120, height: 56, labels: [{ id: "output-label", ...label("ELK output", 68) }] }
+    ],
+    edges: [
+      { id: "input-hierarchy", sources: ["input"], targets: ["hierarchy"] },
+      { id: "input-trees", sources: ["input"], targets: ["trees"] },
+      { id: "packing-ovg", sources: ["packing"], targets: ["ovg"], labels: [{ id: "placed-label", ...label("placed", 40, 14) }] },
+      { id: "packing-labels", sources: ["packing"], targets: ["labels"] },
+      { id: "search-quality", sources: ["search"], targets: ["quality"] },
+      { id: "labels-quality", sources: ["labels"], targets: ["quality"] },
+      { id: "quality-multiseed", sources: ["quality"], targets: ["multiseed"] },
+      { id: "multiseed-output", sources: ["multiseed"], targets: ["output"], labels: [{ id: "best-label", ...label("best", 30, 14) }] }
+    ]
+  },
   "Simple chain": {
     id: "root",
     layoutOptions: { "elk.direction": "RIGHT" },
@@ -77,17 +128,23 @@ const exampleSelect = $("exampleSelect");
 const seedInput = $("seedInput");
 const directionSelect = $("directionSelect");
 const runButton = $("runButton");
+const formatButton = $("formatButton");
 const resetButton = $("resetButton");
 const copyButton = $("copyButton");
+const fitButton = $("fitButton");
+const bendToggle = $("bendToggle");
 const svg = $("graphSvg");
 const outputJson = $("outputJson");
 const previewView = $("previewView");
 const emptyPreview = $("emptyPreview");
 const errorPanel = $("errorPanel");
+const errorText = $("errorText");
 const inputState = $("inputState");
+const preservedBadge = $("preservedBadge");
 
 let selectedExample = Object.keys(examples)[0];
 let lastOutput = null;
+let fittedViewBox = null;
 
 for (const name of Object.keys(examples)) {
   const option = document.createElement("option");
@@ -96,52 +153,116 @@ for (const name of Object.keys(examples)) {
   exampleSelect.append(option);
 }
 
-function pretty(value) {
-  return JSON.stringify(value, null, 2);
+const pretty = (value) => JSON.stringify(value, null, 2);
+
+// ── Editor state ────────────────────────────────────────────────────────────
+
+/** Converts a JSON.parse error into "line L, column C" when the engine reports a position. */
+function parseErrorLocation(error, text) {
+  const lineCol = /line (\d+) column (\d+)/i.exec(error.message);
+  if (lineCol) return `line ${lineCol[1]}, column ${lineCol[2]}`;
+  const position = /position (\d+)/i.exec(error.message);
+  if (!position) return "";
+  const before = text.slice(0, Number(position[1]));
+  const line = before.split("\n").length;
+  const column = before.length - before.lastIndexOf("\n");
+  return `line ${line}, column ${column}`;
+}
+
+function parseEditor() {
+  try {
+    return { value: JSON.parse(editor.value), error: null };
+  } catch (error) {
+    return { value: null, error };
+  }
+}
+
+function updateValidity() {
+  const { error } = parseEditor();
+  if (error) {
+    const where = parseErrorLocation(error, editor.value);
+    setChip(`Invalid JSON${where ? " · " + where : ""}`, "error");
+  } else {
+    setChip("Valid JSON", "valid");
+  }
+  return !error;
+}
+
+function setChip(text, className) {
+  inputState.textContent = text;
+  inputState.className = "status-chip" + (className ? " " + className : "");
+}
+
+function setStatus(text, className = "") {
+  const el = $("statStatus");
+  el.textContent = text;
+  el.parentElement.className = "stat-status" + (className ? " " + className : "");
 }
 
 function loadExample(name) {
   selectedExample = name;
+  exampleSelect.value = name;
   editor.value = pretty(examples[name]);
   directionSelect.value = "";
   lastOutput = null;
   clearError();
   resetStats();
   clearPreview();
-  setState("Ready", "");
+  updateValidity();
 }
 
-function setState(text, className) {
-  inputState.textContent = text;
-  inputState.className = "status-chip" + (className ? " " + className : "");
+function formatEditor() {
+  const { value, error } = parseEditor();
+  if (error) {
+    showError(error, "Invalid JSON");
+    updateValidity();
+    return;
+  }
+  editor.value = pretty(value);
+  clearError();
+  updateValidity();
 }
+
+// ── Errors and stats ────────────────────────────────────────────────────────
 
 function clearError() {
   errorPanel.classList.add("hidden");
-  errorPanel.textContent = "";
+  errorText.textContent = "";
 }
 
-function showError(error) {
-  errorPanel.textContent = error instanceof Error ? error.stack || error.message : String(error);
+/** Shows the thrown error's message and its cause chain (not a stack trace). */
+function showError(error, title = "Layout failed") {
+  const lines = [];
+  let current = error;
+  for (let depth = 0; current != null && depth < 6; depth++) {
+    const message = current instanceof Error ? `${current.name}: ${current.message}` : String(current);
+    lines.push(depth === 0 ? message : `caused by ${message}`);
+    current = current instanceof Error ? current.cause : null;
+  }
+  if (error instanceof SyntaxError && !/line \d+/i.test(error.message)) {
+    const where = parseErrorLocation(error, editor.value);
+    if (where) lines.push(`at ${where} of the input`);
+  }
+  errorPanel.querySelector(".error-title").textContent = title;
+  errorText.textContent = lines.join("\n");
   errorPanel.classList.remove("hidden");
 }
 
 function resetStats() {
-  $("statNodes").textContent = "–";
-  $("statEdges").textContent = "–";
-  $("statBends").textContent = "–";
-  $("statTime").textContent = "–";
+  setStatus("Ready");
+  for (const id of ["statSeed", "statNodes", "statEdges", "statBends", "statTime"]) $(id).textContent = "–";
+  preservedBadge.classList.add("hidden");
 }
 
 function clearPreview() {
   svg.replaceChildren();
+  svg.removeAttribute("viewBox");
+  fittedViewBox = null;
   emptyPreview.classList.remove("hidden");
   outputJson.textContent = "";
 }
 
-function ownerOffset(graph, parentX = 0, parentY = 0) {
-  return { x: parentX, y: parentY, graph };
-}
+// ── Rendering (geometry is read from the returned ELK JSON only) ────────────
 
 function collectLayout(graph, parentX = 0, parentY = 0, result = { nodes: [], edges: [], labels: [] }) {
   const children = Array.isArray(graph.children) ? graph.children : [];
@@ -151,21 +272,22 @@ function collectLayout(graph, parentX = 0, parentY = 0, result = { nodes: [], ed
     const width = Number(node.width || 0);
     const height = Number(node.height || 0);
     const hasChildren = Array.isArray(node.children) && node.children.length > 0;
-    result.nodes.push({ ...node, absX: x, absY: y, width, height, hasChildren });
+    result.nodes.push({ id: node.id, labels: node.labels, absX: x, absY: y, width, height, hasChildren });
 
     if (Array.isArray(node.labels)) {
-      for (const label of node.labels) {
+      for (const lbl of node.labels) {
         result.labels.push({
-          kind: "node",
-          text: label.text || label.id || "",
-          x: x + Number(label.x || 0) + Number(label.width || 0) / 2,
-          y: y + Number(label.y || 0) + Number(label.height || 0) / 2
+          kind: hasChildren ? "container" : "node",
+          text: lbl.text || lbl.id || "",
+          x: x + Number(lbl.x || 0) + Number(lbl.width || 0) / 2,
+          y: y + Number(lbl.y || 0) + Number(lbl.height || 0) / 2
         });
       }
     }
     collectLayout(node, x, y, result);
   }
 
+  // Edge sections are relative to the node that owns the edge (ELK convention).
   const edges = Array.isArray(graph.edges) ? graph.edges : [];
   for (const edge of edges) {
     const sections = Array.isArray(edge.sections) ? edge.sections : [];
@@ -176,21 +298,19 @@ function collectLayout(graph, parentX = 0, parentY = 0, result = { nodes: [], ed
       if (Array.isArray(section.bendPoints)) pts.push(...section.bendPoints);
       if (section.endPoint) pts.push(section.endPoint);
       if (pts.length >= 2) {
-        polylines.push(pts.map((p) => ({
-          x: parentX + Number(p.x || 0),
-          y: parentY + Number(p.y || 0)
-        })));
+        polylines.push(pts.map((p) => ({ x: parentX + Number(p.x || 0), y: parentY + Number(p.y || 0) })));
       }
     }
-    result.edges.push({ ...edge, polylines, ownerX: parentX, ownerY: parentY });
+    result.edges.push({ id: edge.id, polylines });
 
     if (Array.isArray(edge.labels)) {
-      for (const label of edge.labels) {
+      for (const lbl of edge.labels) {
+        if (lbl.x == null || lbl.y == null) continue;
         result.labels.push({
           kind: "edge",
-          text: label.text || label.id || "",
-          x: parentX + Number(label.x || 0) + Number(label.width || 0) / 2,
-          y: parentY + Number(label.y || 0) + Number(label.height || 0) / 2
+          text: lbl.text || lbl.id || "",
+          x: parentX + Number(lbl.x) + Number(lbl.width || 0) / 2,
+          y: parentY + Number(lbl.y) + Number(lbl.height || 0) / 2
         });
       }
     }
@@ -211,39 +331,33 @@ function renderGraph(graph) {
   const defs = svgElement("defs");
   const marker = svgElement("marker", {
     id: "arrow",
-    markerWidth: 7,
-    markerHeight: 7,
-    refX: 6,
-    refY: 3.5,
+    markerWidth: 8,
+    markerHeight: 8,
+    refX: 7,
+    refY: 4,
     orient: "auto",
-    markerUnits: "strokeWidth"
+    markerUnits: "userSpaceOnUse"
   });
-  marker.append(svgElement("path", { d: "M0,0 L7,3.5 L0,7 z", fill: "#7d87a0" }));
+  marker.append(svgElement("path", { d: "M0,0 L8,4 L0,8 z", class: "arrow-head" }));
   defs.append(marker);
   svg.append(defs);
 
-  for (const edge of model.edges) {
-    for (const points of edge.polylines) {
-      const polyline = svgElement("polyline", {
-        class: "edge-path",
-        points: points.map((p) => `${p.x},${p.y}`).join(" "),
-        "marker-end": "url(#arrow)"
-      });
-      svg.append(polyline);
-    }
-  }
-
-  for (const node of model.nodes) {
-    const rect = svgElement("rect", {
+  // Containers first (back), then edges, then leaf nodes, then labels on top.
+  const containers = model.nodes.filter((n) => n.hasChildren);
+  const leaves = model.nodes.filter((n) => !n.hasChildren);
+  const drawNode = (node) => {
+    const group = svgElement("g", { class: node.hasChildren ? "node-group container" : "node-group" });
+    const title = svgElement("title");
+    title.textContent = `${node.id}  x=${node.absX} y=${node.absY}  ${node.width}×${node.height}`;
+    group.append(title);
+    group.append(svgElement("rect", {
       class: node.hasChildren ? "node container-node" : "node",
       x: node.absX,
       y: node.absY,
       width: Math.max(node.width, 1),
       height: Math.max(node.height, 1),
-      rx: node.hasChildren ? 12 : 8
-    });
-    svg.append(rect);
-
+      rx: node.hasChildren ? 10 : 7
+    }));
     if (!Array.isArray(node.labels) || node.labels.length === 0) {
       const text = svgElement("text", {
         class: "node-id",
@@ -252,96 +366,224 @@ function renderGraph(graph) {
         "text-anchor": "middle"
       });
       text.textContent = node.id || "";
-      svg.append(text);
+      group.append(text);
+    }
+    svg.append(group);
+  };
+  containers.forEach(drawNode);
+
+  let bendCount = 0;
+  for (const edge of model.edges) {
+    for (const points of edge.polylines) {
+      const group = svgElement("g", { class: "edge-group" });
+      const title = svgElement("title");
+      title.textContent = `${edge.id}: ${points.map((p) => `(${p.x}, ${p.y})`).join(" → ")}`;
+      group.append(title);
+      const pointList = points.map((p) => `${p.x},${p.y}`).join(" ");
+      group.append(svgElement("polyline", { class: "edge-hit", points: pointList }));
+      group.append(svgElement("polyline", { class: "edge-path", points: pointList, "marker-end": "url(#arrow)" }));
+      for (const bend of points.slice(1, -1)) {
+        bendCount++;
+        group.append(svgElement("circle", { class: "bend-point", cx: bend.x, cy: bend.y, r: 3 }));
+      }
+      svg.append(group);
     }
   }
 
-  for (const label of model.labels) {
+  leaves.forEach(drawNode);
+
+  for (const lbl of model.labels) {
     const text = svgElement("text", {
-      class: label.kind === "edge" ? "edge-label" : "node-label",
-      x: label.x,
-      y: label.y,
+      class: `${lbl.kind}-label`,
+      x: lbl.x,
+      y: lbl.y,
       "text-anchor": "middle"
     });
-    text.textContent = label.text;
+    text.textContent = lbl.text;
     svg.append(text);
   }
 
-  const bounds = [];
+  const xs = [];
+  const ys = [];
   for (const node of model.nodes) {
-    bounds.push([node.absX, node.absY], [node.absX + node.width, node.absY + node.height]);
+    xs.push(node.absX, node.absX + node.width);
+    ys.push(node.absY, node.absY + node.height);
   }
   for (const edge of model.edges) {
     for (const line of edge.polylines) {
-      for (const p of line) bounds.push([p.x, p.y]);
+      for (const p of line) {
+        xs.push(p.x);
+        ys.push(p.y);
+      }
     }
   }
-
-  if (bounds.length) {
-    const xs = bounds.map((p) => p[0]);
-    const ys = bounds.map((p) => p[1]);
-    const minX = Math.min(...xs);
-    const maxX = Math.max(...xs);
-    const minY = Math.min(...ys);
-    const maxY = Math.max(...ys);
-    const margin = 50;
-    svg.setAttribute("viewBox", `${minX - margin} ${minY - margin} ${Math.max(1, maxX - minX + margin * 2)} ${Math.max(1, maxY - minY + margin * 2)}`);
+  if (xs.length) {
+    const margin = 48;
+    const minX = Math.min(...xs) - margin;
+    const minY = Math.min(...ys) - margin;
+    fittedViewBox = {
+      x: minX,
+      y: minY,
+      w: Math.max(1, Math.max(...xs) + margin - minX),
+      h: Math.max(1, Math.max(...ys) + margin - minY)
+    };
+    applyViewBox(fittedViewBox);
     svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
   }
 
   emptyPreview.classList.toggle("hidden", model.nodes.length > 0 || model.edges.length > 0);
-  const bendCount = model.edges.reduce((sum, edge) =>
-    sum + edge.polylines.reduce((s, line) => s + Math.max(0, line.length - 2), 0), 0);
-
   $("statNodes").textContent = String(model.nodes.length);
   $("statEdges").textContent = String(model.edges.length);
   $("statBends").textContent = String(bendCount);
 }
 
+// ── View box: fit, wheel zoom, drag pan (view only; geometry is untouched) ──
+
+function currentViewBox() {
+  const vb = svg.viewBox.baseVal;
+  return vb && vb.width ? { x: vb.x, y: vb.y, w: vb.width, h: vb.height } : null;
+}
+
+function applyViewBox(vb) {
+  svg.setAttribute("viewBox", `${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+}
+
+function clientToSvg(event) {
+  const point = svg.createSVGPoint();
+  point.x = event.clientX;
+  point.y = event.clientY;
+  const matrix = svg.getScreenCTM();
+  return matrix ? point.matrixTransform(matrix.inverse()) : { x: 0, y: 0 };
+}
+
+svg.addEventListener("wheel", (event) => {
+  const vb = currentViewBox();
+  if (!vb || !fittedViewBox) return;
+  event.preventDefault();
+  const factor = Math.exp(Math.sign(event.deltaY) * 0.12);
+  const minW = fittedViewBox.w / 12;
+  const maxW = fittedViewBox.w * 4;
+  const nextW = Math.min(maxW, Math.max(minW, vb.w * factor));
+  const scale = nextW / vb.w;
+  const anchor = clientToSvg(event);
+  applyViewBox({
+    x: anchor.x - (anchor.x - vb.x) * scale,
+    y: anchor.y - (anchor.y - vb.y) * scale,
+    w: vb.w * scale,
+    h: vb.h * scale
+  });
+}, { passive: false });
+
+let drag = null;
+svg.addEventListener("pointerdown", (event) => {
+  const vb = currentViewBox();
+  if (!vb || event.button !== 0) return;
+  drag = { start: clientToSvg(event), vb };
+  svg.setPointerCapture(event.pointerId);
+  svg.classList.add("panning");
+});
+svg.addEventListener("pointermove", (event) => {
+  if (!drag) return;
+  const now = clientToSvg(event);
+  const vb = currentViewBox();
+  applyViewBox({ x: vb.x - (now.x - drag.start.x), y: vb.y - (now.y - drag.start.y), w: vb.w, h: vb.h });
+});
+const endDrag = () => {
+  drag = null;
+  svg.classList.remove("panning");
+};
+svg.addEventListener("pointerup", endDrag);
+svg.addEventListener("pointercancel", endDrag);
+
+fitButton.addEventListener("click", () => {
+  if (fittedViewBox) applyViewBox(fittedViewBox);
+});
+
+bendToggle.addEventListener("change", () => {
+  svg.classList.toggle("hide-bends", !bendToggle.checked);
+});
+
+// ── Run ─────────────────────────────────────────────────────────────────────
+
+/** Integer text becomes a Number when safe; anything else is passed through so TALA reports it. */
+function seedOption(text) {
+  const trimmed = text.trim();
+  if (/^[+-]?\d+$/.test(trimmed)) {
+    const value = Number(trimmed);
+    return Number.isSafeInteger(value) ? value : trimmed;
+  }
+  return trimmed === "" ? undefined : trimmed;
+}
+
 async function run() {
   clearError();
-  setState("Running…", "running");
+  const { value: graph, error: parseError } = parseEditor();
+  if (parseError) {
+    updateValidity();
+    setStatus("Invalid JSON", "error");
+    showError(parseError, "Invalid JSON");
+    return;
+  }
+
+  const direction = directionSelect.value;
+  if (direction && graph && typeof graph === "object") {
+    graph.layoutOptions = { ...(graph.layoutOptions || {}), "elk.direction": direction };
+  }
+  const seed = seedOption(seedInput.value);
+
+  setStatus("Running…", "running");
   runButton.disabled = true;
+  // Yield once so the browser can paint the running state before the
+  // synchronous engine starts (setTimeout also fires in background tabs).
+  await new Promise((resolve) => setTimeout(resolve, 30));
 
   try {
-    const graph = JSON.parse(editor.value);
-    const direction = directionSelect.value;
-    if (direction) {
-      graph.layoutOptions = { ...(graph.layoutOptions || {}), "elk.direction": direction };
-    }
-
-    const seedText = seedInput.value.trim();
-    if (!/^[+-]?\d+$/.test(seedText)) throw new Error("Seed must be an integer.");
-    const seed = Number(seedText);
-    const seedOption = Number.isSafeInteger(seed) ? seed : seedText;
-
+    const original = structuredClone(graph);
     const started = performance.now();
-    const output = await layout(graph, { seed: seedOption });
+    const output = await layout(graph, { seed });
     const elapsed = performance.now() - started;
 
     lastOutput = output;
     outputJson.textContent = pretty(output);
     renderGraph(output);
+    $("statSeed").textContent = seed === undefined ? "1, 2, 3" : String(seed);
     $("statTime").textContent = elapsed < 1000 ? `${elapsed.toFixed(0)} ms` : `${(elapsed / 1000).toFixed(2)} s`;
-    setState("Success", "success");
+    setStatus("Layout complete", "success");
+    let preserved = false;
+    try {
+      preserved = JSON.stringify(original) === JSON.stringify(graph) && output !== graph;
+    } catch {
+      preserved = false;
+    }
+    preservedBadge.classList.toggle("hidden", !preserved);
   } catch (error) {
-    setState("Error", "error");
+    setStatus("Error", "error");
     showError(error);
   } finally {
     runButton.disabled = false;
   }
 }
 
-exampleSelect.addEventListener("change", () => loadExample(exampleSelect.value));
+// ── Wiring ──────────────────────────────────────────────────────────────────
+
+exampleSelect.addEventListener("change", () => {
+  loadExample(exampleSelect.value);
+  run();
+});
 resetButton.addEventListener("click", () => loadExample(selectedExample));
+formatButton.addEventListener("click", formatEditor);
 runButton.addEventListener("click", run);
 
 copyButton.addEventListener("click", async () => {
   if (!lastOutput) return;
-  await navigator.clipboard.writeText(pretty(lastOutput));
   const original = copyButton.textContent;
-  copyButton.textContent = "Copied";
-  setTimeout(() => { copyButton.textContent = original; }, 900);
+  try {
+    await navigator.clipboard.writeText(pretty(lastOutput));
+    copyButton.textContent = "Copied";
+  } catch {
+    copyButton.textContent = "Copy blocked";
+  }
+  setTimeout(() => { copyButton.textContent = original; }, 1100);
 });
 
 for (const button of document.querySelectorAll(".view-button")) {
@@ -354,8 +596,27 @@ for (const button of document.querySelectorAll(".view-button")) {
   });
 }
 
-editor.addEventListener("input", () => {
-  setState("Edited", "");
+editor.addEventListener("input", updateValidity);
+
+editor.addEventListener("keydown", (event) => {
+  if (event.key === "Tab" && !event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    const { selectionStart, selectionEnd } = editor;
+    editor.setRangeText("  ", selectionStart, selectionEnd, "end");
+    updateValidity();
+  }
 });
 
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    if (!runButton.disabled) run();
+  }
+});
+
+if (/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+  runButton.querySelector("kbd").textContent = "⌘ ↵";
+}
+
 loadExample(selectedExample);
+run();

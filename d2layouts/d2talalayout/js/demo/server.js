@@ -19,7 +19,12 @@ Bun.serve({
   async fetch(request) {
     const url = new URL(request.url);
     let pathname = decodeURIComponent(url.pathname);
-    if (pathname === "/") pathname = "/demo/index.html";
+    // Serve the page from /demo/ so its relative ./app.js and ./styles.css
+    // resolve inside demo/, and ../src/index.js resolves to the package source.
+    if (pathname === "/" || pathname === "/demo") {
+      return Response.redirect(new URL("/demo/", url), 302);
+    }
+    if (pathname.endsWith("/")) pathname += "index.html";
 
     const relative = pathname.replace(/^\/+/, "");
     const filePath = resolve(packageRoot, relative);
