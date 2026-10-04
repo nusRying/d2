@@ -95,6 +95,25 @@ export class RouteWorkGuard {
     this.parallel = true;
   }
 
+  /**
+   * reserveSort (standalone_route_guard.go): reserve worst-case comparison
+   * work before an uninterruptible standard-library sort.
+   */
+  reserveSort(length) {
+    if (length < 2) {
+      this.step();
+      return;
+    }
+    for (let width = 1; width < length;) {
+      this.add(length);
+      if (width > Math.floor(length / 2)) {
+        break;
+      }
+      width *= 2;
+    }
+    this.check();
+  }
+
   check() {
     const err = cachedContextErr(this.ctx, this.done);
     if (err != null) throw wrapPrefix(this.location, err);
