@@ -1,0 +1,3 @@
+# Verbatim copies of the repository-root legal files; keep byte-exact.
+LICENSE.txt -whitespace -text
+THIRD_PARTY_NOTICES.txt -whitespace -text
