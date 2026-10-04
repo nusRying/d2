@@ -301,6 +301,11 @@ export function elkToTalaGraph(elkGraph) {
     const label = readLabel(elkEdge, "edge", elkEdge.id);
 
     const edge = graph.connect(sourceEndpoint.node, targetEndpoint.node);
+    // ELK edges are directed (sources → targets). Mirror the D2 adapter's
+    // translation of `a -> b`: no source arrowhead, triangle target arrowhead,
+    // so TALA's direction-aware hierarchy and tree logic sees the edge as directed.
+    edge.SourceArrowhead = "none";
+    edge.TargetArrowhead = "triangle";
     edge.ID = edgeIDs.get(elkEdge);
     edge.D2ID = elkEdge.id;
     edge.sourceEndpointId = sourceEndpointId;

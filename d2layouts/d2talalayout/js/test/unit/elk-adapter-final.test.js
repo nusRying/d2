@@ -526,3 +526,21 @@ describe("ELK adapter final: bounds and errors", () => {
     );
   });
 });
+
+describe('ELK adapter — edge direction', () => {
+  it('maps every ELK edge to a directed TALA edge (sources → targets), as D2 maps `a -> b`', () => {
+    const graph = elkToTalaGraph({
+      id: 'root',
+      children: [{ id: 'a', width: 10, height: 10 }, { id: 'b', width: 10, height: 10 }],
+      edges: [{ id: 'e', sources: ['a'], targets: ['b'] }],
+    });
+    const [edge] = graph.Edges;
+    expect(edge.From.D2ID).toBe('a');
+    expect(edge.To.D2ID).toBe('b');
+    expect(edge.SourceArrowhead).toBe('none');
+    expect(edge.TargetArrowhead).toBe('triangle');
+    expect(edge.isDirected()).toBe(true);
+    expect(edge.hasTargetArrow()).toBe(true);
+    expect(edge.hasSourceArrow()).toBe(false);
+  });
+});

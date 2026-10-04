@@ -36,6 +36,8 @@ const result = await layout(
   `sources`/`targets`, label ids/text and any unknown/custom properties. Only
   layout-owned fields (node geometry, the managed label's geometry and edge
   sections) are written.
+- **Edges:** each ELK edge is directed from its source to its target (like a
+  D2 `a -> b` connection), so `elk.direction` steers the flow of the layout.
 - **Labels:** at most **one** layout-managed label per node and per edge
   (`labels[0]`); more than one is rejected with an explicit error.
 - **Direction:** `layoutOptions["elk.direction"]` (`UP`, `DOWN`, `LEFT`,

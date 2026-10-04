@@ -156,6 +156,10 @@ A partial clone is never published and the source is never mutated.
 - **Labels.** At most one layout-managed label per node and per edge, mapped
   to the internal Label. Its position stays Unset on input; more than one
   label is an explicit error.
+- **Edge direction.** Every ELK edge becomes a directed TALA edge from its
+  source to its target, with no source arrowhead and a triangle target
+  arrowhead. This matches the Go D2 adapter's translation of `a -> b` and lets
+  TALA's direction-aware hierarchy and tree placement act on ELK input.
 - **Direction.** `layoutOptions["elk.direction"]` (or the
   `org.eclipse.elk.direction` key) maps UP, DOWN, LEFT and RIGHT,
   case-insensitively, to Top, Bottom, Left and Right on the root or a
