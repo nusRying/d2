@@ -20,7 +20,7 @@ describe('Slice 49 malformed-input parity corrections', () => {
     expect(() => newEvaluationWorkGuard(backgroundWorkContext(), -1))
       .toThrow('TALA Evaluate work limit must not be negative');
     expect(() => newEvaluationWorkGuard(cancelled, 10))
-      .toThrow('TALA Evaluate context canceled');
+      .toThrow('Evaluate: context canceled');
     expect(() => newEvaluationWorkGuard(cancelled, -1))
       .toThrow('TALA Evaluate work limit must not be negative');
   });
