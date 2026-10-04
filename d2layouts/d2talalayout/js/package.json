@@ -10,6 +10,8 @@
   "files": [
     "src/",
     "README.md",
+    "LICENSE.txt",
+    "THIRD_PARTY_NOTICES.txt",
     "docs/ADR-001-ELK-CONTRACT.md"
   ],
   "scripts": {

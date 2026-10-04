@@ -181,7 +181,9 @@ A partial clone is never published and the source is never mutated.
   7. Consider the optional compound candidate and refinement.
   8. Validate the final graph.
   9. Convert the result to ELK.
-  10. Check for cancellation (`TALA layout canceled before apply: …`).
+  10. Check for cancellation (`TALA layout canceled before apply: …`). See
+      "Cancellation and the single-thread runtime" for what a signal can
+      observe.
 
   It returns a new plain JSON-serializable object and never mutates the
   input. Internal runtime faults become `TALA layout failed due to an
@@ -194,6 +196,26 @@ A partial clone is never published and the source is never mutated.
 - **Browser safety.** The runtime is browser-only: no Node built-ins,
   `process`, `Buffer`, `crypto`, workers or `Math.random`. CI bundles the
   root with `bun build --target browser` and greps the bundle.
+
+### Cancellation and the single-thread runtime
+- **No Workers.** No Workers are used internally. The engine, seed attempts
+  and adapters run synchronously on the calling JavaScript thread; `layout()`
+  is `async` only for API ergonomics.
+- **Go parity inside the engine.** The internal `WorkContext` machinery keeps
+  Go's cancellation parity whenever the context's state can be observed
+  synchronously: polling points, stage boundaries, error messages and
+  rollback all match pinned Go. That covers a context or signal that is
+  already aborted, or one aborted by code running inside the layout.
+- **Event-loop limitation.** Browser `AbortSignal` delivery runs through the
+  event loop. An abort triggered by a timer or other event-loop callback
+  cannot preempt a blocking synchronous stage, because that callback cannot
+  run until the layout returns control. Such a mid-run abort is not observed.
+  A signal already aborted before `layout()` begins is honored immediately,
+  before any work.
+- **Consumer guidance.** Applications that need responsive cancellation
+  during long layouts should host the package in their own Worker or a
+  similar isolated execution boundary. This is an acknowledged public-runtime
+  constraint, not a gap in the migration.
 
 ### Real-Go oracles
 All oracles are generated only when `TALA_SLICE50_ORACLE=1` is set; normal

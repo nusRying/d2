@@ -50,10 +50,25 @@ const result = await layout(
 | `seed` | One deterministic seed (safe-integer `number`, `bigint`, or integer string; signed 64-bit). |
 | `seeds` | Several seeds; each runs once and the best-scoring layout wins (an exact score tie goes to the later seed). Default `[1, 2, 3]`. At most 64 entries / 16 unique. |
 | `maxConcurrency` | 1–16 (0 or omitted = default). Accepted for API parity; the engine runs attempts sequentially in one thread. |
-| `signal` | An `AbortSignal`; aborting rejects the promise. A pre-aborted signal fails before any work. |
+| `signal` | An `AbortSignal`. A signal that is already aborted when `layout` is called is honored immediately (before any work). See *Cancellation* below. |
 
 `seed` and `seeds` are mutually exclusive; unknown options are rejected.
 `defaultOptions()` returns a fresh copy of the defaults.
+
+## Cancellation
+
+- A signal already aborted before `layout` begins is honored immediately: the
+  promise rejects with a cancellation error before any conversion or layout
+  work.
+- The engine runs synchronously on the calling JavaScript thread; the package
+  uses no Workers.
+- An `AbortSignal` aborted later by a timer or other event-loop callback cannot
+  preempt a layout that is already executing: that callback cannot run until
+  the synchronous layout returns control to the event loop. Such an abort is
+  therefore not observed mid-run.
+- Applications that need responsive cancellation during long layouts should
+  host the package in their own Worker (or similar isolated execution
+  boundary) and terminate or ignore that worker to cancel.
 
 The same input and seed always produce the same output. The library has no
 runtime dependencies and uses no Node.js APIs; it runs in browsers and in

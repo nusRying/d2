@@ -182,6 +182,22 @@ jobs:
             JSON.stringify(result);
           '
 
+      - name: Package ships license and third-party notices
+        run: |
+          test -f LICENSE.txt
+          test -f THIRD_PARTY_NOTICES.txt
+          grep -q "Go math/rand (JavaScript port)" THIRD_PARTY_NOTICES.txt
+          grep -q "Mozilla Public License Version 2.0" LICENSE.txt
+          bun -e '
+            const pkg = JSON.parse(await Bun.file("package.json").text());
+            for (const name of ["LICENSE.txt", "THIRD_PARTY_NOTICES.txt"]) {
+              if (!pkg.files?.includes(name)) { console.error(`package.json files is missing ${name}`); process.exit(1); }
+            }
+          '
+          packed="$(bun pm pack --dry-run)"
+          echo "$packed" | grep -q "LICENSE.txt"
+          echo "$packed" | grep -q "THIRD_PARTY_NOTICES.txt"
+
       - name: Bundle for the browser without Node polyfills
         run: bun build ./src/index.js --target browser --outfile "$RUNNER_TEMP/tala-js-browser.js"
 
