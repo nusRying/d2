@@ -989,10 +989,7 @@ export class Node {
 
   pad(padding) {
     const pad = Number(padding);
-    if (this.TopLeft != null) {
-      this.TopLeft.X -= pad;
-      this.TopLeft.Y -= pad;
-    }
+    this.translate(-pad, -pad);
     this.Width += 2 * pad;
     this.Height += 2 * pad;
   }

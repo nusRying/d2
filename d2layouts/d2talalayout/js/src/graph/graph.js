@@ -815,9 +815,6 @@ export class Graph {
       return 0;
     }
     const [tl, br] = this.boundingBox(false);
-    if (tl == null || br == null) {
-      return 0;
-    }
     return Math.abs(tl.X - br.X) * Math.abs(tl.Y - br.Y);
   }
 

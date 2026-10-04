@@ -9,11 +9,9 @@ export const calibratedPublicEvaluationCorpusFloor = 50_000;
 export const calibratedPublicEvaluationCorpusCeil = 75_000;
 
 export function newEvaluationWorkGuard(ctx, limit = maxEvaluationWorkUnits) {
-  const normLimit = typeof limit === 'bigint' ? limit : BigInt(limit);
-  if (normLimit < 0n) {
-    throw new Error('TALA Evaluate work limit must not be negative');
-  }
-  return newWorkGuard(ctx, 'Evaluate', normLimit);
+  // Preserve limits.NewWorkGuard ordering exactly:
+  // context validation -> limit validation -> initial cancellation check.
+  return newWorkGuard(ctx, 'Evaluate', limit);
 }
 
 export function chargeEvaluationWork(guard, amount) {

@@ -261,11 +261,28 @@ export function boxCovers(outer, inner) {
   );
 }
 
+// Go cmp.Less for float64: NaN sorts before every non-NaN value.
+function goFloatLess(x, y) {
+  return (Number.isNaN(x) && !Number.isNaN(y)) || x < y;
+}
+
+// slices.Sort uses insertion sort for four values. Preserve equal-value order,
+// including -0/+0, while matching Go's NaN ordering.
+function sortFourFloats(values) {
+  for (let i = 1; i < values.length; i++) {
+    for (let j = i; j > 0 && goFloatLess(values[j], values[j - 1]); j--) {
+      const tmp = values[j];
+      values[j] = values[j - 1];
+      values[j - 1] = tmp;
+    }
+  }
+}
+
 export function boxOverlapArea(first, second) {
   const xs = [first.TopLeft.X, first.TopLeft.X + first.Width, second.TopLeft.X, second.TopLeft.X + second.Width];
   const ys = [first.TopLeft.Y, first.TopLeft.Y + first.Height, second.TopLeft.Y, second.TopLeft.Y + second.Height];
-  xs.sort((a, b) => a - b);
-  ys.sort((a, b) => a - b);
+  sortFourFloats(xs);
+  sortFourFloats(ys);
   return (xs[2] - xs[1]) * (ys[2] - ys[1]);
 }
 

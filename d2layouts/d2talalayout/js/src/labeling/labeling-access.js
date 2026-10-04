@@ -132,9 +132,6 @@ export function loopOffset(node, orientation) {
  * LabelBoxFits reports whether outer completely contains inner.
  */
 export function LabelBoxFits(outer, inner) {
-  if (outer == null || inner == null || outer.TopLeft == null || inner.TopLeft == null) {
-    return false;
-  }
   return (
     inner.TopLeft.X >= outer.TopLeft.X &&
     inner.TopLeft.Y >= outer.TopLeft.Y &&
@@ -149,11 +146,5 @@ export function LabelBoxFits(outer, inner) {
  * Mutates the existing TopLeft Point without replacing the object reference.
  */
 export function PadLabelCandidate(node, padding) {
-  const pad = Number(padding);
-  if (node.TopLeft != null) {
-    node.TopLeft.X -= pad;
-    node.TopLeft.Y -= pad;
-  }
-  node.Width += 2 * pad;
-  node.Height += 2 * pad;
+  node.PadLabelCandidate(padding);
 }
