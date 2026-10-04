@@ -1,0 +1,487 @@
+{
+  "sweeps": [
+    {
+      "name": "empty",
+      "errCalls": 6,
+      "summary": {
+        "nodeIds": [],
+        "edges": [],
+        "containers": [],
+        "clusters": [],
+        "sequences": [],
+        "hubs": [],
+        "trees": [],
+        "directions": [],
+        "nears": [],
+        "cellSize": 0,
+        "rootHierarchy": false
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    },
+    {
+      "name": "layout state",
+      "errCalls": 27,
+      "summary": {
+        "nodeIds": [
+          1,
+          6,
+          9,
+          10,
+          7
+        ],
+        "edges": [
+          {
+            "id": 0,
+            "from": 2,
+            "to": 6,
+            "points": 2
+          },
+          {
+            "id": 0,
+            "from": 4,
+            "to": 6,
+            "points": 2
+          },
+          {
+            "id": 0,
+            "from": 6,
+            "to": 7,
+            "points": 2
+          }
+        ],
+        "containers": [
+          {
+            "key": -1,
+            "values": [
+              1,
+              6,
+              7
+            ]
+          },
+          {
+            "key": 1,
+            "values": [
+              9,
+              10
+            ]
+          }
+        ],
+        "clusters": [
+          {
+            "vessel": 9,
+            "members": [
+              2,
+              3
+            ],
+            "container": 1,
+            "abductions": 1,
+            "attached": true
+          }
+        ],
+        "sequences": [
+          {
+            "vessel": 10,
+            "members": [
+              4,
+              5
+            ],
+            "container": 1,
+            "abductions": 1,
+            "attached": true
+          }
+        ],
+        "hubs": [
+          {
+            "key": 6,
+            "values": [
+              9,
+              10
+            ]
+          }
+        ],
+        "trees": [
+          {
+            "key": 6,
+            "values": [
+              7
+            ]
+          }
+        ],
+        "directions": [
+          {
+            "key": -1,
+            "direction": 6
+          },
+          {
+            "key": 1,
+            "direction": 5
+          }
+        ],
+        "nears": [],
+        "cellSize": 40,
+        "rootHierarchy": true
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    },
+    {
+      "name": "detached tree records",
+      "errCalls": 10,
+      "summary": {
+        "nodeIds": [
+          1
+        ],
+        "edges": [],
+        "containers": [],
+        "clusters": [],
+        "sequences": [],
+        "hubs": [],
+        "trees": [
+          {
+            "key": 1,
+            "values": [
+              2
+            ]
+          }
+        ],
+        "directions": [],
+        "nears": [],
+        "cellSize": 0,
+        "rootHierarchy": false
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    },
+    {
+      "name": "inactive grouping vessels",
+      "errCalls": 19,
+      "summary": {
+        "nodeIds": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "edges": [
+          {
+            "id": 0,
+            "from": 1,
+            "to": 5,
+            "points": 0
+          },
+          {
+            "id": 0,
+            "from": 3,
+            "to": 5,
+            "points": 0
+          }
+        ],
+        "containers": [],
+        "clusters": [
+          {
+            "vessel": 9,
+            "members": [
+              1,
+              2
+            ],
+            "container": -1,
+            "abductions": 1,
+            "attached": false
+          }
+        ],
+        "sequences": [
+          {
+            "vessel": 10,
+            "members": [
+              3,
+              4
+            ],
+            "container": -1,
+            "abductions": 1,
+            "attached": false
+          }
+        ],
+        "hubs": [
+          {
+            "key": 5,
+            "values": [
+              9,
+              10
+            ]
+          }
+        ],
+        "trees": [],
+        "directions": [],
+        "nears": [],
+        "cellSize": 0,
+        "rootHierarchy": false
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    },
+    {
+      "name": "shared inactive grouping vessel",
+      "errCalls": 15,
+      "summary": {
+        "nodeIds": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "edges": [],
+        "containers": [],
+        "clusters": [
+          {
+            "vessel": 9,
+            "members": [
+              1,
+              2
+            ],
+            "container": -1,
+            "abductions": 0,
+            "attached": false
+          }
+        ],
+        "sequences": [
+          {
+            "vessel": 9,
+            "members": [
+              3,
+              4
+            ],
+            "container": -1,
+            "abductions": 0,
+            "attached": false
+          }
+        ],
+        "hubs": [],
+        "trees": [],
+        "directions": [],
+        "nears": [],
+        "cellSize": 0,
+        "rootHierarchy": false
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    },
+    {
+      "name": "long route",
+      "errCalls": 21,
+      "summary": {
+        "nodeIds": [
+          1,
+          2,
+          3
+        ],
+        "edges": [
+          {
+            "id": 7,
+            "from": 2,
+            "to": 3,
+            "points": 300
+          },
+          {
+            "id": 8,
+            "from": 3,
+            "to": 3,
+            "points": 2
+          }
+        ],
+        "containers": [
+          {
+            "key": -1,
+            "values": [
+              1,
+              3
+            ]
+          },
+          {
+            "key": 1,
+            "values": [
+              2
+            ]
+          }
+        ],
+        "clusters": [],
+        "sequences": [],
+        "hubs": [],
+        "trees": [],
+        "directions": [
+          {
+            "key": -1,
+            "direction": 6
+          },
+          {
+            "key": 1,
+            "direction": 8
+          }
+        ],
+        "nears": [
+          {
+            "key": 2,
+            "values": [
+              3
+            ]
+          },
+          {
+            "key": 3,
+            "values": [
+              2
+            ]
+          }
+        ],
+        "cellSize": 20,
+        "rootHierarchy": false
+      },
+      "cancelErrors": [
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled",
+        "CloneGraph: context canceled"
+      ]
+    }
+  ],
+  "failures": [
+    {
+      "name": "cluster vessel id collision",
+      "error": "cannot clone cluster vessel: distinct node record reuses ID 1"
+    },
+    {
+      "name": "sequence vessel id collision",
+      "error": "cannot clone sequence vessel: distinct node record reuses ID 1"
+    },
+    {
+      "name": "cluster contains itself",
+      "error": "cannot clone cluster 1 because it cannot contain itself"
+    },
+    {
+      "name": "sequence contains itself",
+      "error": "cannot clone sequence 1 because it cannot contain itself"
+    },
+    {
+      "name": "tree node id collision",
+      "error": "cannot clone tree node: distinct node record reuses ID 2"
+    },
+    {
+      "name": "tree sentinel edge id collision",
+      "error": "cannot clone tree sentinel edge: distinct edge record reuses ID 3"
+    },
+    {
+      "name": "tree node repeats grouping vessel",
+      "error": "cannot clone tree node 2 because it repeats a non-top-level node record"
+    },
+    {
+      "name": "duplicate tree ownership",
+      "error": "cannot clone tree node 3 with more than one tree owner"
+    },
+    {
+      "name": "container child alias",
+      "error": "cannot clone container child: exact node record is not available"
+    },
+    {
+      "name": "container child inactive vessel",
+      "error": "cannot clone container child: exact node record is not available"
+    },
+    {
+      "name": "hub spoke alias",
+      "error": "cannot clone hub spoke: exact node record is not included in the graph"
+    }
+  ]
+}
