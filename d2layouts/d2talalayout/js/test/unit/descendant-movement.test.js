@@ -6,7 +6,7 @@ import { Cluster } from "../../src/graph/cluster.js";
 import { Sequence } from "../../src/graph/sequence.js";
 import { WorkGuard, WorkLimitError, WorkCanceledError } from "../../src/limits/work-guard.js";
 import { abortSignalWorkContext } from "../../src/limits/work-context.js";
-import * as rootExports from "../../src/index.js";
+import * as rootExports from "../../src/internal.js";
 
 describe("Slice 17 Direct Unit Tests - Descendant Traversal & Node Movement", () => {
   describe("API and Scope Boundaries", () => {

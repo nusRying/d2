@@ -10,7 +10,7 @@ import { Orientation } from '../../src/geometry/orientation.js';
 import { Point } from '../../src/geometry/point.js';
 import { assignHerds, AssignHerds, canUseBothSides } from '../../src/proximity/herding.js';
 import * as proximityExports from '../../src/proximity/index.js';
-import * as rootExports from '../../src/index.js';
+import * as rootExports from '../../src/internal.js';
 import { WorkCanceledError } from '../../src/limits/work-guard.js';
 
 function makeAbduction(from, to, currentTo) {

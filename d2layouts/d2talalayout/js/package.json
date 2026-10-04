@@ -1,10 +1,18 @@
 {
-  "name": "tala-js",
+  "name": "@syntroper/tala-js",
   "version": "0.1.0",
-  "description": "JavaScript migration of the TALA layout engine",
+  "description": "Browser-safe JavaScript port of the TALA layout engine with an ELK-compatible JSON API",
   "license": "MPL-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src/",
+    "README.md",
+    "docs/ADR-001-ELK-CONTRACT.md"
+  ],
   "scripts": {
     "test": "bun test"
-  },
-  "type": "module"
+  }
 }

@@ -19,7 +19,7 @@ import {
   MAX_TOPOLOGY_DEPTH,
   MAX_ENGINE_WORK_UNITS,
   backgroundWorkContext,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 const fixturePath = resolve(
   import.meta.dir,

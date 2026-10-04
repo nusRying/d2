@@ -11,7 +11,7 @@ import {
   PollingWorkContext,
   WorkGuard,
   WorkCanceledError,
-} from '../../src/index.js'
+} from '../../src/internal.js'
 import { groupSheep, GroupSheep } from '../../src/proximity/index.js'
 
 describe('GroupSheep Direct Semantics', () => {

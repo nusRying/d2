@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import * as placementCostIndex from '../../src/placementcost/index.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import { NodeEdgeLength } from '../../src/placementcost/edge-length.js';
 import { AxisScore } from '../../src/placementcost/axis.js';
 import { NodeEdgeLengthScorer } from '../../src/placementcost/edge-length-scorer.js';

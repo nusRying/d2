@@ -7,7 +7,7 @@ import {
   ClusterExternalConnectedNodes,
 } from "../../src/placement/cluster-connections.js";
 import * as placementBarrel from "../../src/placement/index.js";
-import * as rootBarrel from "../../src/index.js";
+import * as rootBarrel from "../../src/internal.js";
 
 describe("clusterExternalConnectedNodes Direct Tests", () => {
   it("discovers external nodes via edge abductions", () => {

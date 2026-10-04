@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import * as placementIndex from '../../src/placement/index.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import { SizelessOptimizer, newSizelessOptimizer } from '../../src/placement/sizeless-optimizer.js';
 import { initializeNodes, nodeCandidatePositions } from '../../src/placement/initialize.js';
 import {

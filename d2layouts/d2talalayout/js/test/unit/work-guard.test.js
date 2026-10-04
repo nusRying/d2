@@ -17,7 +17,7 @@ import {
   Node,
   Sequence,
   Point,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 describe("Slice 08 WorkGuard Unit Tests", () => {
   describe("Construction and validation", () => {

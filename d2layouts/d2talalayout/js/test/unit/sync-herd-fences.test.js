@@ -11,7 +11,7 @@ import { Orientation } from '../../src/geometry/orientation.js';
 import { HerdAssignment } from '../../src/graph/herd-assignment.js';
 import { syncHerdFences, SyncHerdFences } from '../../src/proximity/herding.js';
 import * as proximityExports from '../../src/proximity/index.js';
-import * as rootExports from '../../src/index.js';
+import * as rootExports from '../../src/internal.js';
 
 describe('Slice 38 — Direct SyncHerdFences Unit Tests', () => {
   it('1. Alias identity: SyncHerdFences === syncHerdFences', () => {

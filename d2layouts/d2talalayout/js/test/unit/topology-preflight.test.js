@@ -25,7 +25,7 @@ import {
   MAX_TOPOLOGY_DEPTH,
   MAX_ENGINE_WORK_UNITS,
   MAX_PREFLIGHT_WORK,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 describe("Slice 10 Topology Preflight Unit Tests", () => {
   const ctx = backgroundWorkContext();

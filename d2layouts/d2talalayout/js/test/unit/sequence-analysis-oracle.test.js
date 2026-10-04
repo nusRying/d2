@@ -15,7 +15,7 @@ import {
   INT64_MIN,
   INT64_MAX,
   backgroundWorkContext,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   SequenceDefiningEdges,

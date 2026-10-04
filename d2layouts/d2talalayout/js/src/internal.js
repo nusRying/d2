@@ -1,0 +1,25 @@
+// Internal module barrel for tests and tooling. NOT the public package API
+// (see src/index.js); kept so early-slice tests can import internals in one place.
+
+export * from "./elk/adapter.js";
+export * from "./graph/graph.js";
+export * from "./graph/node.js";
+export * from "./graph/edge.js";
+export * from "./graph/clone.js";
+export * from "./graph/edge-abduction.js";
+export * from "./graph/sequence.js";
+export * from "./graph/cluster.js";
+export * from "./graph/tree.js";
+export * from "./graph/label.js";
+export * from "./graph/icon.js";
+export * from "./graph/hierarchy.js";
+export * from "./graph/herd-assignment.js";
+export * from "./graph/neighbor-requirements.js";
+export * from "./graph/graph-state.js";
+export * from "./graph/group-geometry.js";
+export * from "./graph/topology-preflight.js";
+export * from "./shape/index.js";
+export * from "./geometry/index.js";
+export * from "./placementcost/index.js";
+export * from "./placement/index.js";
+export * from "./limits/index.js";

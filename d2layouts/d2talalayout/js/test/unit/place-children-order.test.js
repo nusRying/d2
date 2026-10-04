@@ -8,7 +8,7 @@ import {
   PlaceChildrenOrder,
 } from '../../src/placement/node-placement.js';
 import * as placementIndex from '../../src/placement/index.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import { WorkCanceledError } from '../../src/limits/work-guard.js';
 
 // ---------------------------------------------------------------------------

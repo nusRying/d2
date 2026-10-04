@@ -12,7 +12,7 @@ import {
   MAX_ENGINE_WORK_UNITS,
   backgroundWorkContext,
   WorkLimitError,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   clearRememberedSequenceMembership,

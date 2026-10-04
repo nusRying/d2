@@ -2,7 +2,7 @@ import { expect, describe, it } from 'bun:test'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
-import { Graph, Node, Edge } from '../../src/index.js'
+import { Graph, Node, Edge } from '../../src/internal.js'
 import { Sequence } from '../../src/graph/sequence.js'
 import { CommonUncleSiblings } from '../../src/proximity/index.js'
 

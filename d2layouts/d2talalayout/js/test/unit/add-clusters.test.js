@@ -17,9 +17,9 @@ import {
   existingTransactionWorkGuard,
   ensureTransactionWorkGuard,
   MAX_TRANSACTION_WORK_UNITS,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
-import * as rootExports from "../../src/index.js";
+import * as rootExports from "../../src/internal.js";
 
 import {
   averageClusterDimensions,

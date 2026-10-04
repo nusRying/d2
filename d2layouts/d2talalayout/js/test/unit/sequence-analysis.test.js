@@ -16,7 +16,7 @@ import {
   backgroundWorkContext,
   WorkLimitError,
   WorkCanceledError,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   SequenceDefiningEdges,

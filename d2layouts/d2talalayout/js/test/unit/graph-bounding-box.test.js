@@ -9,7 +9,7 @@ import { LabelPosition, getPointOnRoute, routeLength, routeGetPointAtDistance, g
 import { Point } from '../../src/geometry/point.js';
 import { goRound, chopPrecision } from '../../src/geometry/math.js';
 import { nodesFixedBounds, nodesUnroundedFixedBounds } from '../../src/graph/node-bounds.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import * as geometryIndex from '../../src/geometry/index.js';
 
 describe('Slice 37 Direct Graph & Edge BoundingBox Tests', () => {

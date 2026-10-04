@@ -3,10 +3,10 @@ import { Graph } from "../../src/graph/graph.js";
 import { Node } from "../../src/graph/node.js";
 import { Edge } from "../../src/graph/edge.js";
 import { Point } from "../../src/geometry/point.js";
-import { BackgroundWorkContext } from "../../src/index.js";
+import { BackgroundWorkContext } from "../../src/internal.js";
 import { initializeByGraphDistance } from "../../src/placement/stress-initialize.js";
 import * as placementBarrel from "../../src/placement/index.js";
-import * as rootBarrel from "../../src/index.js";
+import * as rootBarrel from "../../src/internal.js";
 
 function buildPathGraph(n) {
   const g = new Graph();

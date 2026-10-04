@@ -23,7 +23,7 @@ import {
   MAX_ENGINE_NODES,
   MAX_ENGINE_EDGES,
   MAX_ENGINE_WORK_UNITS,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 describe("Slice 09 GraphState Go Oracle Parity", () => {
   it("asserts fixture metadata and constants", () => {

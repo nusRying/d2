@@ -20,7 +20,7 @@ import {
   pollingWorkContext,
   isWorkCanceledError,
   isWorkLimitError,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

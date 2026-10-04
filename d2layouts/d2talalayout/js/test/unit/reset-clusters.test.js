@@ -6,7 +6,7 @@ import { Cluster } from "../../src/graph/cluster.js";
 import { Point } from "../../src/geometry/point.js";
 import { resetClusters, ResetClusters } from "../../src/grouping/index.js";
 import * as groupingExports from "../../src/grouping/index.js";
-import * as rootExports from "../../src/index.js";
+import * as rootExports from "../../src/internal.js";
 
 describe("Slice 16 Direct Unit Tests - ResetClusters Lifecycle Retirement", () => {
   describe("API and Export Boundaries", () => {

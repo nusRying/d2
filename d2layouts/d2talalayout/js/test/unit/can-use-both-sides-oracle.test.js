@@ -2,7 +2,7 @@ import { expect, describe, it } from 'bun:test'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { fileURLToPath } from 'url'
-import { Node } from '../../src/index.js'
+import { Node } from '../../src/internal.js'
 import { Orientation } from '../../src/geometry/orientation.js'
 import { CanUseBothSides } from '../../src/proximity/index.js'
 

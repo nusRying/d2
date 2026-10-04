@@ -11,7 +11,7 @@ import {
   placementPadding,
 } from "../../src/placement/stage-geometry.js";
 import * as placementBarrel from "../../src/placement/index.js";
-import * as rootBarrel from "../../src/index.js";
+import * as rootBarrel from "../../src/internal.js";
 
 describe("Placement Stage Geometry Direct Tests", () => {
   it("defines placementPadding as 1000", () => {

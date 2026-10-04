@@ -10,7 +10,7 @@ import {
   Edge,
   EdgeAbduction,
   Point,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 describe("Sequence Geometry Go Parity Oracle Tests", () => {
   it("should match metadata and constants from Go reference", () => {

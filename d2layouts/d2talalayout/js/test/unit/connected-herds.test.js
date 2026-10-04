@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { Node } from '../../src/graph/node.js';
 import * as herdingModule from '../../src/proximity/herding.js';
 import * as proximityIndex from '../../src/proximity/index.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import { connectedHerds } from '../../src/proximity/herding.js';
 
 class CountingContext {

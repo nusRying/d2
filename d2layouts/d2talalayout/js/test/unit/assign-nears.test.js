@@ -12,7 +12,7 @@ import {
   WorkGuard,
   MAX_ENGINE_WORK_UNITS,
   MAX_TOPOLOGY_REFERENCES,
-} from '../../src/index.js'
+} from '../../src/internal.js'
 import { assignNears, AssignNears, assignNearsWithWorkLimit } from '../../src/proximity/nears.js'
 
 describe('AssignNears Direct Semantics', () => {

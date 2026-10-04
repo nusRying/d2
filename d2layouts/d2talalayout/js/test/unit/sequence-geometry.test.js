@@ -10,7 +10,7 @@ import {
   EdgeAbduction,
   Point,
   cloneGraph,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 class CountingWork {
   constructor() {

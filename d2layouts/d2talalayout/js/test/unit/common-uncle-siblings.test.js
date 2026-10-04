@@ -1,5 +1,5 @@
 import { expect, spyOn, describe, it } from 'bun:test'
-import { Graph, Node, Edge } from '../../src/index.js'
+import { Graph, Node, Edge } from '../../src/internal.js'
 import { Sequence } from '../../src/graph/sequence.js'
 import { commonUncleSiblings, CommonUncleSiblings } from '../../src/proximity/index.js'
 

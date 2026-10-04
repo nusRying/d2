@@ -14,7 +14,7 @@ import {
   WorkCanceledError,
   STEP_WEDGE_WIDTH,
   Validate,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   clearRememberedSequenceMembership,

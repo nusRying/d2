@@ -10,7 +10,7 @@ import {
   Cluster,
   BackgroundWorkContext,
   PollingWorkContext,
-} from '../../src/index.js'
+} from '../../src/internal.js'
 import { GroupSheep } from '../../src/proximity/index.js'
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url))

@@ -8,7 +8,7 @@ import {
   validateGridAlignment,
 } from "../../src/placement/validation.js";
 import * as placementBarrel from "../../src/placement/index.js";
-import * as rootBarrel from "../../src/index.js";
+import * as rootBarrel from "../../src/internal.js";
 
 describe("Placement Validation Direct Tests", () => {
   describe("validateCellSize", () => {

@@ -22,7 +22,7 @@ import {
   WorkGuard,
   backgroundWorkContext,
   MAX_ENGINE_WORK_UNITS,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   ClusterEdgeSignature,

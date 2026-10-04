@@ -1,5 +1,5 @@
 import { expect, describe, it } from 'bun:test'
-import { Node } from '../../src/index.js'
+import { Node } from '../../src/internal.js'
 import { Orientation } from '../../src/geometry/orientation.js'
 import { canUseBothSides, CanUseBothSides } from '../../src/proximity/index.js'
 

@@ -13,7 +13,7 @@ import {
   oppositeDirection,
 } from '../../src/placement/axis.js';
 import * as placementIndex from '../../src/placement/index.js';
-import * as rootIndex from '../../src/index.js';
+import * as rootIndex from '../../src/internal.js';
 import { ClusterArrangement } from '../../src/graph/cluster.js';
 
 describe('Placement Axis and Direction Primitives', () => {

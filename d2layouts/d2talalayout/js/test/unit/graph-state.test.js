@@ -27,7 +27,7 @@ import {
   captureExactSlice,
   captureExactSliceMap,
   captureEdgeStyle,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 describe("Slice 09 GraphState Focused Unit Tests", () => {
   describe("Exact Array Snapshot and Rollback Helpers", () => {

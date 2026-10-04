@@ -12,9 +12,9 @@ import {
   abortSignalWorkContext,
   WorkLimitError,
   WorkCanceledError,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
-import * as rootExports from "../../src/index.js";
+import * as rootExports from "../../src/internal.js";
 
 import {
   createVessel,

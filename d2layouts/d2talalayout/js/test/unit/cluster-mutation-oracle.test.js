@@ -13,7 +13,7 @@ import {
   WorkLimitError,
   WorkCanceledError,
   abortSignalWorkContext,
-} from "../../src/index.js";
+} from "../../src/internal.js";
 
 import {
   createVessel,
