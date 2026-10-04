@@ -1,4 +1,4 @@
-//go:build tala_inside_geometry_oracle
+//go:build ignore
 
 package main
 
