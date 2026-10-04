@@ -1,3 +1,5 @@
+//go:build ignore
+
 //go:build tala_add_clusters_oracle
 
 package main
