@@ -148,7 +148,9 @@ jobs:
           cache: true
 
       - name: Test d2talalayout tree
-        run: go test -count=1 ./d2layouts/d2talalayout/...
+        # Every Go package under d2layouts/d2talalayout. js/test/reference holds
+        # standalone Go reference generators (mixed package names, not a package).
+        run: go test -count=1 $(go list -e ./d2layouts/d2talalayout/... | grep -v '/js/')
 
       - name: Normal tests leave fixtures untouched
         run: test -z "$(git status --porcelain)"
