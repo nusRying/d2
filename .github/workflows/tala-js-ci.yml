@@ -109,6 +109,9 @@ jobs:
       - name: Test routing
         run: go test -count=1 ./d2layouts/d2talalayout/internal/routing/...
 
+      - name: Test quality
+        run: go test -count=1 ./d2layouts/d2talalayout/internal/quality/...
+
   hygiene:
     name: Diff hygiene
     runs-on: ubuntu-latest

@@ -4,12 +4,11 @@
 //   d2layouts/d2talalayout/internal/routing/trace.go
 //   lib/shape/shape.go TraceToShapeBorder
 //
-// Rectangular shapes ("" and Square, RealSquare, Image, Text, Code, Class,
-// Table) keep the rectangular border point exactly as D2 does. Tracing a
-// non-rectangular shape needs D2's per-shape perimeter geometry
-// (Shape.Perimeter, SVG path intersection), which is not ported yet; that
-// path throws a descriptive error instead of guessing.
+// Rendered shape borders reuse the exact pinned perimeter and intersection kernel.
 
+import { shapePerimeter } from '../shape/perimeter.js';
+import { Segment } from '../geometry/segment.js';
+import { goRound, euclideanDistance } from '../geometry/math.js';
 import { Point, intersectionPoint } from '../geometry/point.js';
 import { Orientation } from '../geometry/orientation.js';
 import { MAX_ROUTE_STAGE_WORK_UNITS } from './route-guards.js';
@@ -25,7 +24,18 @@ export function shapeTraceToShapeBorder(node, rectBorderPoint, prevPoint) {
   if (RECTANGULAR_SHAPES.has(shapeType)) {
     return rectBorderPoint;
   }
-  throw new Error(`TALA JS: tracing to the border of shape ${JSON.stringify(shapeType)} requires D2 shape perimeters, which are not ported yet`);
+  const scaleSize=prevPoint.X===rectBorderPoint.X?node.Height:node.Width;
+  const vector=prevPoint.vectorTo(rectBorderPoint).addLength(scaleSize);
+  const segment=new Segment(prevPoint,prevPoint.addVector(vector));
+  let closestDistance=Infinity,closestPoint=rectBorderPoint;
+  for(const perimeter of shapePerimeter(node)) {
+    for(const point of perimeter.intersections(segment)??[]) {
+      const distance=euclideanDistance(rectBorderPoint.X,rectBorderPoint.Y,point.X,point.Y);
+      if(distance<closestDistance){closestDistance=distance;closestPoint=point;}
+    }
+  }
+  closestPoint.truncateFloat32();
+  return new Point(goRound(closestPoint.X),goRound(closestPoint.Y));
 }
 
 /** TraceEdgesToShapeBorder trims every route endpoint to the rendered shape. */

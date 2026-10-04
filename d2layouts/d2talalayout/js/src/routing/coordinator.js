@@ -13,8 +13,15 @@ import { Orientation, getOpposite, isVertical } from '../geometry/orientation.js
 import { Edge } from '../graph/edge.js';
 import { precisionCompare, PRECISION } from '../geometry/math.js';
 import { PositionArrowheadLabel } from '../labeling/arrowhead.js';
-import { MIN_STRAIGHT_EDGE_ANGLE, NON_ORTHOGONAL_FACTOR } from './tuning.js';
-import { ErrInvalidCandidate } from '../graph/transaction.js';
+import { MIN_STRAIGHT_EDGE_ANGLE, NON_ORTHOGONAL_FACTOR, LOWER_JITTER_THRESHOLD } from './tuning.js';
+import { ErrInvalidCandidate, IsCandidateRejection } from '../graph/transaction.js';
+import { Point } from '../geometry/point.js';
+import { getContextError } from '../limits/work-context.js';
+import { captureRouteMutations, runAtomicRouteStage } from './route-stage.js';
+import { MAX_ROUTE_STAGE_WORK_UNITS, newRouteWorkGuard } from './route-guards.js';
+import { reorderDuplicatesInEdgesGuarded } from './standalone-route-guard.js';
+import { estimateRouteCost } from './cost.js';
+import { isDescendantOfWithRouteGuard } from './tunnel.js';
 import { goSortSlice } from '../packing/go-support.js';
 import { invariantNew } from '../hierarchy/layoutgraph-support.js';
 import { Route } from './route.js';
@@ -47,6 +54,150 @@ import {
 import { positionedArrowheadLabelCost } from './slingshot.js';
 
 export const AxisAlignmentTolerance = 1.0;
+
+// Finishing entry points from pinned coordinator.go. Legacy fallback and
+// duplicate stages retain their cancellation boundary, using the shared
+// mutation snapshot for exact array/point restoration on throws.
+function checkFinishingCanceled(ctx, location) {
+  if (ctx == null) throw new Error(`TALA ${location} requires a context`);
+  const err = getContextError(ctx);
+  if (err != null) throw new Error(`${location}: ${err.message ?? String(err)}`, { cause: err });
+}
+function snapshotLegacyRoutes(g, edges) {
+  return captureRouteMutations(g, edges, { step() {}, finish() {} });
+}
+export function isStraightEdgeFallbackCandidate(edge, clusterNodes, isTreeEdge) {
+  return !clusterNodes.has(edge.From) && !clusterNodes.has(edge.To) &&
+    !isTreeEdge.has(edge) && edge.From.Hierarchy == null && !edge.HasTableColumn();
+}
+export function StraightEdgesFallback(ctx, g) {
+  const check = () => checkFinishingCanceled(ctx, 'EdgeRouting');
+  check();
+  const clusterNodes = new Set();
+  for (const cluster of g.Clusters.values()) {
+    check();
+    for (const node of cluster.Nodes) { check(); clusterNodes.add(node); }
+  }
+  const isTreeEdge = g.TreeEdgeMap();
+  g.AddIsolatedTreeEdges(isTreeEdge);
+  check();
+  for (let index = 0; index < g.Edges.length; index++) {
+    check();
+    if (isStraightEdgeFallbackCandidate(g.Edges[index], clusterNodes, isTreeEdge)) {
+      return straightEdgesFallbackFrom(ctx, g, clusterNodes, isTreeEdge, index);
+    }
+  }
+}
+export function straightEdgesFallbackFrom(ctx, g, clusterNodes, isTreeEdge, firstIndex) {
+  const snapshot = snapshotLegacyRoutes(g, null);
+  try {
+    for (let index = firstIndex; index < g.Edges.length; index++) {
+      const edge = g.Edges[index];
+      if (index !== firstIndex) {
+        checkFinishingCanceled(ctx, 'EdgeRouting');
+        if (!isStraightEdgeFallbackCandidate(edge, clusterNodes, isTreeEdge)) continue;
+      }
+      tryStraightEdgeFallback(ctx, g, edge);
+    }
+    checkFinishingCanceled(ctx, 'EdgeRouting');
+  } catch (err) { snapshot.restore(); throw err; }
+}
+export function tryStraightEdgeFallback(ctx, g, edge) {
+  checkFinishingCanceled(ctx, 'EdgeRouting');
+  const originalCost = estimateRouteCost(g.Edges, edge);
+  let fromPort, toPort, lineCost;
+  try { [fromPort, toPort, lineCost] = routeLine(ctx, g, edge, g.Edges, null); }
+  catch (err) { if (IsCandidateRejection(err)) return false; throw err; }
+  if (edge.Points.length === 4 && Math.hypot(edge.Points[1].X-edge.Points[2].X, edge.Points[1].Y-edge.Points[2].Y) <= LOWER_JITTER_THRESHOLD) lineCost /= NON_ORTHOGONAL_FACTOR;
+  checkFinishingCanceled(ctx, 'EdgeRouting');
+  if (lineCost < originalCost) { edge.Points = [fromPort, toPort]; return true; }
+  return false;
+}
+export function ReorderDuplicates(ctx, g) { return reorderDuplicatesInEdges(ctx, g.Edges); }
+export function reorderDuplicatesInEdges(ctx, edges) {
+  const check = () => checkFinishingCanceled(ctx, 'ReorderDuplicates');
+  check();
+  const snapshot = snapshotLegacyRoutes(null, edges);
+  const guard = { step: check, add: check, finish: check, reserveSort: check };
+  try { reorderDuplicatesInEdgesGuarded(edges, guard); check(); }
+  catch (err) { snapshot.restore(); throw err; }
+}
+export function Crosshatch(ctx, g) { return crosshatchWithWorkLimit(ctx, g, MAX_ROUTE_STAGE_WORK_UNITS); }
+export function crosshatchWithWorkLimit(ctx, g, workLimit) {
+  runAtomicRouteStage(ctx, 'Crosshatch', g, null, workLimit, guard => {
+    const vessels = [];
+    for (const vessel of g.Clusters.keys()) { guard.step(); vessels.push(vessel); }
+    vessels.sort((a,b) => a.ID < b.ID ? -1 : a.ID > b.ID ? 1 : 0);
+    for (const vessel of vessels) {
+      guard.step(); const cluster = g.Clusters.get(vessel);
+      if (cluster == null) throw invariantNew('nil cluster while crosshatching routes');
+      const externalEdges = externalEdgesForClusterGuarded(cluster, guard);
+      if (externalEdges.length < 2) continue;
+      const groups = groupEdgesByClusterPortGuarded(cluster, externalEdges, guard), ports = [];
+      for (const [port] of groups) { guard.step(); ports.push(port); }
+      ports.sort((a,b) => a.X !== b.X ? a.X-b.X : a.Y-b.Y);
+      for (const port of ports) {
+        const edges = groups.get(port);
+        if (edges.length < 2) continue;
+        for (const edge of edges) convertToStraightLineGuarded(g, edge, guard);
+      }
+    }
+  });
+}
+export function externalEdgesForClusterGuarded(cluster, guard) {
+  const edges = [];
+  for (const abduction of cluster.EdgeAbductions) {
+    guard.step();
+    if (abduction == null || abduction.Edge == null) throw invariantNew('nil cluster edge abduction while crosshatching routes');
+    edges.push(abduction.Edge);
+  }
+  return edges;
+}
+export function groupEdgesByClusterPortGuarded(cluster, edges, guard) {
+  const groups = new PointValueMap();
+  for (const edge of edges) {
+    guard.step(); if (edge == null) throw invariantNew('nil edge while grouping cluster ports');
+    let port = null;
+    for (const node of cluster.Nodes) {
+      guard.step();
+      if (edge.From === node) { port = edge.Points[0] ?? null; break; }
+      if (edge.To === node) { port = edge.Points.at(-1) ?? null; break; }
+    }
+    if (port != null) { const group = groups.get(port) ?? []; group.push(edge); groups.set(port, group); }
+  }
+  return groups;
+}
+export function convertToStraightLineGuarded(g, edge, guard) {
+  guard.step();
+  if (edge == null || edge.From == null || edge.To == null || edge.From.TopLeft == null || edge.To.TopLeft == null) throw invariantNew('invalid edge while crosshatching routes');
+  const fromCenter = new Point(edge.From.TopLeft.X+edge.From.Width/2, edge.From.TopLeft.Y+edge.From.Height/2);
+  const toCenter = new Point(edge.To.TopLeft.X+edge.To.Width/2, edge.To.TopLeft.Y+edge.To.Height/2);
+  const fromBorder = findLineBorderIntersection(fromCenter,toCenter,edge.From), toBorder = findLineBorderIntersection(toCenter,fromCenter,edge.To);
+  if (fromBorder != null && toBorder != null) {
+    if (straightLineIntersectsNonAncestorNodesGuarded(g,edge,fromBorder,toBorder,guard)) return;
+    guard.finish(); edge.Points = [fromBorder,toBorder]; guard.finish();
+  }
+}
+export function findLineBorderIntersection(center,target,node) {
+  const dx=target.X-center.X, dy=target.Y-center.Y;
+  if (dx === 0 && dy === 0) return center;
+  let t=Infinity;
+  if (dx>0) t=Math.min(t,(node.TopLeft.X+node.Width-center.X)/dx);
+  else if (dx<0) t=Math.min(t,(node.TopLeft.X-center.X)/dx);
+  if (dy>0) t=Math.min(t,(node.TopLeft.Y+node.Height-center.Y)/dy);
+  else if (dy<0) t=Math.min(t,(node.TopLeft.Y-center.Y)/dy);
+  if (t===Infinity || t<=0) return center;
+  return new Point(center.X+t*dx,center.Y+t*dy);
+}
+export function straightLineIntersectsNonAncestorNodesGuarded(g,edge,p1,p2,guard) {
+  for (const node of g.Nodes) {
+    guard.step();
+    const fromDescendant=isDescendantOfWithRouteGuard(edge.From,node,guard),toDescendant=isDescendantOfWithRouteGuard(edge.To,node,guard);
+    if (fromDescendant || toDescendant || node===edge.From || node===edge.To) continue;
+    if (node.PassesThrough(p1,p2)) return true;
+  }
+  return false;
+}
 
 export const RouteGenerationFlavor = Object.freeze({
   ShortestToLongest: 'ShortestToLongest',

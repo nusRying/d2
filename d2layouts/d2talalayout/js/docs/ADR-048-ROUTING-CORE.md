@@ -1,7 +1,7 @@
 # ADR-048: Routing Core Architecture and Parity
 
 ## Status
-Implemented — awaiting Slice 47 review
+Accepted
 
 ## Context
 Slice 47 ports the core edge-routing pipeline from `internal/routing` of TALA layout engine. It establishes orthogonal visibility graph (OVG) construction, A* search routing, slingshot heuristic routing, flavor coordination (ShortestToLongest, LongestToShortest, Default), standalone routing stage (`RouteEdges`), whole-graph routing stage (`RouteGraph`), resource guards, cancellation propagation, and atomic multi-subgraph rollback invariants.
@@ -36,8 +36,8 @@ Pinned Go behavioral authority: `01bc7ecdbdd04c13d6fe5df1967d2d9aa14ae579`.
 - Isolated tree edges and member nodes are restored cleanly.
 - Intermediate routing progress is broadcast via optional observer callbacks. If an observer throws an error, the pipeline catches it, completely rolls back node ownership and edge points, and rethrows the exact error object.
 
-### 4. Zero Slice 48 Scope Leakage
-Postprocessing passes (`postprocess-balance.js`, `edge-simplify.js`, `swap-ports.js`, `labeling/placement.js`) remain deferred and are strictly excluded from Slice 47.
+### 4. Finishing dependencies and Slice 48 boundary
+Slice 47 included small finishing dependencies needed by standalone `RouteEdges`, including guarded balancing, duplicate ordering, and shape-border tracing. Slice 48 completes and audits the whole routing subsystem. Full labeling and quality candidate ranking remain deferred to Slice 49.
 
 ## Verification
 - Comprehensive Go oracle fixture validation in `d2layouts/d2talalayout/internal/routing/go_slice47_routing_core_oracle_test.go`.

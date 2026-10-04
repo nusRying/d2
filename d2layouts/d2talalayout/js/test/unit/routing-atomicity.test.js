@@ -268,7 +268,11 @@ describe('guarded helpers', () => {
     edge.Points = [new Point(100, 50), new Point(300, 50)];
     const fromTopLeft = from.TopLeft;
     const guard = newRouteWorkGuard(ctx(), 'trace', MAX_ROUTE_STAGE_WORK_UNITS);
-    expect(() => traceToShapeBorderGuarded(edge, guard)).toThrow('requires D2 shape perimeters');
+    const sentinel = new Error('tracing sentinel');
+    to.ModifierElementAdjustments = () => { throw sentinel; };
+    let caught;
+    try { traceToShapeBorderGuarded(edge, guard); } catch (error) { caught = error; }
+    expect(caught).toBe(sentinel);
     expect(from.TopLeft === fromTopLeft).toBe(true);
     expect([from.TopLeft.X, from.TopLeft.Y]).toEqual([0, 0]);
   });
