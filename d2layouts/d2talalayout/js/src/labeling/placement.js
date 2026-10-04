@@ -969,4 +969,3 @@ export function isClusterPathSharedChecked(e, checkWork) {
   }
   return false;
 }
-

@@ -5,7 +5,7 @@ export function commonUncleSiblings(graph) {
 
   for (const container of graph.ContainerRDFSOrderUnbounded(null)) {
     const children = graph.Containers.get(container) ?? []
-    
+
     for (const node of children) {
       const edges = node.Edges ?? []
       for (const edge of edges) {
@@ -22,13 +22,13 @@ export function commonUncleSiblings(graph) {
         }
       }
     }
-    
+
     for (const uncle of orderedUncles) {
       const siblings = uncleToCousins.get(uncle)
       if (!siblings || siblings.length < 2) {
         continue
       }
-      
+
       for (const sibling of siblings) {
         const existing = common.get(sibling)
         if (!existing || existing.length < siblings.length) {
@@ -36,10 +36,10 @@ export function commonUncleSiblings(graph) {
         }
       }
     }
-    
+
     uncleToCousins = new Map()
   }
-  
+
   return common
 }
 

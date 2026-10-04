@@ -10,25 +10,25 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 test("EntityID allocation parity with Go oracle", () => {
   const fixturePath = join(__dirname, "..", "fixtures", "go-entity-id-reference.json");
   const fixtureData = JSON.parse(readFileSync(fixturePath, "utf8"));
-  
+
   for (const [testName, oracleData] of Object.entries(fixtureData.cases)) {
     // 1. Verify FNV32
     for (const [id, expectedHash] of Object.entries(oracleData.hash_oracle)) {
       expect(d2FNV32(id)).toBe(expectedHash);
     }
-    
+
     // 2. Verify Allocation
     const identities = Object.keys(oracleData.hash_oracle).map(id => ({
       entity: id,
       absID: id
     }));
-    
+
     const allocated = allocateD2EntityIDs(identities);
-    
+
     for (const [id, expectedId] of Object.entries(oracleData.allocated_oracle)) {
       expect(allocated.get(id)).toBe(BigInt(expectedId));
     }
-    
+
     // 3. Verify UTF-8 Comparison
     if (oracleData.comparisons) {
       for (const comp of oracleData.comparisons) {

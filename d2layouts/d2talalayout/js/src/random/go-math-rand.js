@@ -196,7 +196,7 @@ export class GoRand {
 		} else if (typeof seed !== "bigint") {
 			throw new Error("GoRand seed must be a BigInt or Number");
 		}
-		
+
 		if (seed < minInt64 || seed > maxInt64) {
 			throw new Error("GoRand seed is out of int64 bounds");
 		}

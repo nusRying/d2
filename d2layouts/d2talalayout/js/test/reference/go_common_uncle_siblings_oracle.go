@@ -34,7 +34,7 @@ func main() {
 		}()
 		graph, _ := setup()
 		commonMap := proximity.CommonUncleSiblings(graph)
-		
+
 		res := ScenarioResult{
 			Common: make(map[string][]string),
 		}
@@ -62,16 +62,16 @@ func main() {
 		c1 := &layoutgraph.Node{ID: 1, Container: container}
 		c2 := &layoutgraph.Node{ID: 2, Container: container}
 		c3 := &layoutgraph.Node{ID: 3, Container: container}
-		
+
 		g.AddNodeToContainer(nil, container)
 		g.AddNodeToContainer(container, c1)
 		g.AddNodeToContainer(container, c2)
 		g.AddNodeToContainer(container, c3)
-		
+
 		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle}}
 		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle}}
 		c3.Edges = []*layoutgraph.Edge{{From: c3, To: uncle}}
-		
+
 		return g, nil
 	})
 
@@ -170,7 +170,7 @@ func main() {
 		g.AddNodeToContainer(container, c1)
 		g.AddNodeToContainer(container, c2)
 		g.AddNodeToContainer(container, c3)
-		
+
 		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle2}, {From: c1, To: uncle3}}
 		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle2}}
 		c3.Edges = []*layoutgraph.Edge{{From: c3, To: uncle3}}
@@ -193,7 +193,7 @@ func main() {
 		g.AddNodeToContainer(container, c1)
 		g.AddNodeToContainer(container, c2)
 		g.AddNodeToContainer(container, c3)
-		
+
 		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle1}, {From: c1, To: uncle2}}
 		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle1}} // size 2 for uncle1
 		c3.Edges = []*layoutgraph.Edge{{From: c3, To: uncle2}} // size 2 for uncle2
@@ -251,19 +251,19 @@ func main() {
 		c1 := &layoutgraph.Node{ID: 10, Container: nil}
 		c2 := &layoutgraph.Node{ID: 20, Container: c1}
 		uncle := &layoutgraph.Node{ID: 100, Container: c1}
-		
+
 		child1 := &layoutgraph.Node{ID: 1, Container: c2}
 		child2 := &layoutgraph.Node{ID: 2, Container: c2}
-		
+
 		g.AddNodeToContainer(nil, c1)
 		g.AddNodeToContainer(c1, c2)
 		g.AddNodeToContainer(c1, uncle)
 		g.AddNodeToContainer(c2, child1)
 		g.AddNodeToContainer(c2, child2)
-		
+
 		child1.Edges = []*layoutgraph.Edge{{From: child1, To: uncle}}
 		child2.Edges = []*layoutgraph.Edge{{From: child2, To: uncle}}
-		
+
 		return g, nil
 	})
 
@@ -273,20 +273,20 @@ func main() {
 		cont1 := &layoutgraph.Node{ID: 10}
 		cont2 := &layoutgraph.Node{ID: 20}
 		uncle := &layoutgraph.Node{ID: 100}
-		
+
 		c1 := &layoutgraph.Node{ID: 1, Container: cont1}
 		c2 := &layoutgraph.Node{ID: 2, Container: cont1}
-		
+
 		c3 := &layoutgraph.Node{ID: 3, Container: cont2}
 		c4 := &layoutgraph.Node{ID: 4, Container: cont2}
-		
+
 		g.AddNodeToContainer(nil, cont1)
 		g.AddNodeToContainer(cont1, c1)
 		g.AddNodeToContainer(cont1, c2)
 		g.AddNodeToContainer(nil, cont2)
 		g.AddNodeToContainer(cont2, c3)
 		g.AddNodeToContainer(cont2, c4)
-		
+
 		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle}}
 		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle}}
 		c3.Edges = []*layoutgraph.Edge{{From: c3, To: uncle}}
@@ -318,7 +318,7 @@ func main() {
 		c1.Edges = append(c1.Edges, nil)
 		return g, nil
 	})
-	
+
 	// R. preexisting graph.CommonUncleSiblings
 	runScenario("R_preexisting_common", func() (*layoutgraph.Graph, func()) {
 		g := layoutgraph.NewGraph()
@@ -326,16 +326,16 @@ func main() {
 		uncle := &layoutgraph.Node{ID: 100}
 		c1 := &layoutgraph.Node{ID: 1, Container: container}
 		c2 := &layoutgraph.Node{ID: 2, Container: container}
-		
+
 		g.AddNodeToContainer(nil, container)
 		g.AddNodeToContainer(container, c1)
 		g.AddNodeToContainer(container, c2)
 		c1.Edges = []*layoutgraph.Edge{{From: c1, To: uncle}}
 		c2.Edges = []*layoutgraph.Edge{{From: c2, To: uncle}}
-		
+
 		preMap := make(map[*layoutgraph.Node]layoutgraph.Nodes)
 		g.CommonUncleSiblings = preMap
-		
+
 		return g, func() {
 			// To check mutation, we would need external state, but JS oracle covers that.
 		}
