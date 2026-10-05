@@ -52,17 +52,305 @@ const examples = {
       { id: "multiseed-output", sources: ["multiseed"], targets: ["output"], labels: [{ id: "best-label", ...label("best", 30, 14) }] }
     ]
   },
-  "Simple chain": {
+  "Microservices Cloud Platform (26 nodes, 4 tiers)": {
     id: "root",
     layoutOptions: { "elk.direction": "RIGHT" },
     children: [
-      { id: "api", width: 120, height: 64, labels: [{ id: "api-label", text: "API", width: 28, height: 18 }] },
-      { id: "engine", width: 150, height: 72, labels: [{ id: "engine-label", text: "TALA Engine", width: 78, height: 18 }] },
-      { id: "result", width: 120, height: 64, labels: [{ id: "result-label", text: "ELK JSON", width: 58, height: 18 }] }
+      { id: "dns", width: 120, height: 50, labels: [label("Cloudflare DNS", 90)] },
+      { id: "cdn", width: 120, height: 50, labels: [label("Edge CDN", 60)] },
+      {
+        id: "ingress-tier",
+        width: 320,
+        height: 220,
+        labels: [label("Ingress & Gateway Tier", 140, 18)],
+        children: [
+          { id: "waf", width: 110, height: 48, labels: [label("WAF Shield", 70)] },
+          { id: "api-gw", width: 120, height: 54, labels: [label("API Gateway", 78)] },
+          { id: "auth-srv", width: 120, height: 54, labels: [label("OAuth2 Auth", 80)] }
+        ],
+        edges: [
+          { id: "waf-gw", sources: ["waf"], targets: ["api-gw"] },
+          { id: "gw-auth", sources: ["api-gw"], targets: ["auth-srv"], labels: [label("verify", 36, 14)] }
+        ]
+      },
+      {
+        id: "service-mesh",
+        width: 440,
+        height: 300,
+        labels: [label("Application Service Mesh", 160, 18)],
+        children: [
+          { id: "user-svc", width: 120, height: 52, labels: [label("User Service", 80)] },
+          { id: "order-svc", width: 120, height: 52, labels: [label("Order Service", 84)] },
+          { id: "pay-svc", width: 120, height: 52, labels: [label("Payment Service", 96)] },
+          { id: "inv-svc", width: 120, height: 52, labels: [label("Inventory Service", 102)] },
+          { id: "notify-svc", width: 120, height: 52, labels: [label("Notification Service", 120)] }
+        ],
+        edges: [
+          { id: "order-user", sources: ["order-svc"], targets: ["user-svc"] },
+          { id: "order-pay", sources: ["order-svc"], targets: ["pay-svc"], labels: [label("charge", 42, 14)] },
+          { id: "order-inv", sources: ["order-svc"], targets: ["inv-svc"], labels: [label("reserve", 46, 14)] },
+          { id: "order-notify", sources: ["order-svc"], targets: ["notify-svc"] }
+        ]
+      },
+      {
+        id: "async-tier",
+        width: 320,
+        height: 180,
+        labels: [label("Event Streaming & Workers", 160, 18)],
+        children: [
+          { id: "kafka", width: 120, height: 54, labels: [label("Kafka Event Bus", 100)] },
+          { id: "worker-email", width: 120, height: 48, labels: [label("Email Worker", 80)] },
+          { id: "worker-audit", width: 120, height: 48, labels: [label("Audit Worker", 80)] }
+        ],
+        edges: [
+          { id: "k-email", sources: ["kafka"], targets: ["worker-email"] },
+          { id: "k-audit", sources: ["kafka"], targets: ["worker-audit"] }
+        ]
+      },
+      {
+        id: "data-tier",
+        width: 360,
+        height: 240,
+        labels: [label("Persistence Tier", 100, 18)],
+        children: [
+          { id: "redis", width: 120, height: 50, labels: [label("Redis Cache", 76)] },
+          { id: "pg-primary", width: 130, height: 54, labels: [label("Postgres Primary", 104)] },
+          { id: "pg-replica", width: 130, height: 54, labels: [label("Postgres Replica", 104)] },
+          { id: "s3-bucket", width: 120, height: 50, labels: [label("S3 Object Store", 94)] }
+        ],
+        edges: [
+          { id: "pg-sync", sources: ["pg-primary"], targets: ["pg-replica"], labels: [label("wal sync", 52, 14)] }
+        ]
+      }
     ],
     edges: [
-      { id: "e1", sources: ["api"], targets: ["engine"] },
-      { id: "e2", sources: ["engine"], targets: ["result"], labels: [{ id: "edge-label", text: "layout()", width: 50, height: 16 }] }
+      { id: "dns-cdn", sources: ["dns"], targets: ["cdn"] },
+      { id: "cdn-waf", sources: ["cdn"], targets: ["waf"] },
+      { id: "gw-order", sources: ["api-gw"], targets: ["order-svc"] },
+      { id: "gw-user", sources: ["api-gw"], targets: ["user-svc"] },
+      { id: "user-redis", sources: ["user-svc"], targets: ["redis"] },
+      { id: "user-pg", sources: ["user-svc"], targets: ["pg-replica"] },
+      { id: "order-pg", sources: ["order-svc"], targets: ["pg-primary"] },
+      { id: "pay-pg", sources: ["pay-svc"], targets: ["pg-primary"] },
+      { id: "inv-pg", sources: ["inv-svc"], targets: ["pg-primary"] },
+      { id: "order-kafka", sources: ["order-svc"], targets: ["kafka"], labels: [label("events", 40, 14)] },
+      { id: "notify-s3", sources: ["notify-svc"], targets: ["s3-bucket"] }
+    ]
+  },
+  "Kubernetes Cluster Hierarchy (22 nodes, 3 levels)": {
+    id: "root",
+    layoutOptions: { "elk.direction": "DOWN" },
+    children: [
+      { id: "ingress-ctrl", width: 140, height: 54, labels: [label("NGINX Ingress", 88)] },
+      {
+        id: "control-plane",
+        width: 320,
+        height: 200,
+        labels: [label("Control Plane Nodes", 130, 18)],
+        children: [
+          { id: "api-server", width: 120, height: 50, labels: [label("kube-apiserver", 92)] },
+          { id: "etcd", width: 100, height: 48, labels: [label("etcd v3", 50)] },
+          { id: "sched", width: 120, height: 48, labels: [label("kube-scheduler", 98)] }
+        ],
+        edges: [
+          { id: "api-etcd", sources: ["api-server"], targets: ["etcd"] },
+          { id: "sched-api", sources: ["sched"], targets: ["api-server"] }
+        ]
+      },
+      {
+        id: "worker-pool-a",
+        width: 340,
+        height: 220,
+        labels: [label("Worker Pool A (Compute)", 160, 18)],
+        children: [
+          { id: "kubelet-a", width: 100, height: 46, labels: [label("kubelet-a", 62)] },
+          {
+            id: "pod-web",
+            width: 180,
+            height: 120,
+            labels: [label("Pod: web-front", 92, 16)],
+            children: [
+              { id: "c-web", width: 90, height: 40, labels: [label("web:v2", 48)] },
+              { id: "c-mesh", width: 90, height: 40, labels: [label("envoy", 40)] }
+            ],
+            edges: [{ id: "mesh-web", sources: ["c-mesh"], targets: ["c-web"] }]
+          }
+        ],
+        edges: [{ id: "k-pod-a", sources: ["kubelet-a"], targets: ["pod-web"] }]
+      },
+      {
+        id: "worker-pool-b",
+        width: 340,
+        height: 220,
+        labels: [label("Worker Pool B (Data)", 150, 18)],
+        children: [
+          { id: "kubelet-b", width: 100, height: 46, labels: [label("kubelet-b", 62)] },
+          {
+            id: "pod-db",
+            width: 180,
+            height: 120,
+            labels: [label("Pod: stateful-db", 100, 16)],
+            children: [
+              { id: "c-db", width: 90, height: 40, labels: [label("mariadb", 52)] },
+              { id: "c-backup", width: 90, height: 40, labels: [label("sidecar", 46)] }
+            ],
+            edges: [{ id: "db-backup", sources: ["c-db"], targets: ["c-backup"] }]
+          }
+        ],
+        edges: [{ id: "k-pod-b", sources: ["kubelet-b"], targets: ["pod-db"] }]
+      },
+      { id: "pv-storage", width: 130, height: 50, labels: [label("CSI PersistentVol", 112)] }
+    ],
+    edges: [
+      { id: "ing-web", sources: ["ingress-ctrl"], targets: ["c-mesh"], labels: [label("http traffic", 68, 14)] },
+      { id: "api-k-a", sources: ["api-server"], targets: ["kubelet-a"] },
+      { id: "api-k-b", sources: ["api-server"], targets: ["kubelet-b"] },
+      { id: "web-db", sources: ["c-web"], targets: ["c-db"], labels: [label("sql query", 60, 14)] },
+      { id: "db-pv", sources: ["c-db"], targets: ["pv-storage"], labels: [label("read/write", 62, 14)] }
+    ]
+  },
+  "Compiler & Optimization Pipeline (18 nodes)": {
+    id: "root",
+    layoutOptions: { "elk.direction": "RIGHT" },
+    children: [
+      { id: "src-code", width: 110, height: 50, labels: [label("Source .src", 70)] },
+      { id: "lexer", width: 100, height: 48, labels: [label("Lexer", 40)] },
+      { id: "parser", width: 100, height: 48, labels: [label("Parser", 44)] },
+      { id: "ast", width: 110, height: 50, labels: [label("Typed AST", 64)] },
+      { id: "typecheck", width: 110, height: 48, labels: [label("Type Checker", 78)] },
+      { id: "ir-gen", width: 110, height: 48, labels: [label("IR Lowering", 72)] },
+      { id: "ssa", width: 110, height: 50, labels: [label("SSA Form", 60)] },
+      { id: "dce", width: 110, height: 46, labels: [label("Dead Code Elim", 94)] },
+      { id: "inline", width: 110, height: 46, labels: [label("Function Inline", 90)] },
+      { id: "licm", width: 110, height: 46, labels: [label("Loop Invariant", 88)] },
+      { id: "regalloc", width: 120, height: 50, labels: [label("Reg Allocation", 92)] },
+      { id: "codegen", width: 110, height: 48, labels: [label("CodeGen", 54)] },
+      { id: "asm-x86", width: 100, height: 46, labels: [label("x86-64 Asm", 68)] },
+      { id: "asm-arm", width: 100, height: 46, labels: [label("ARM64 Asm", 68)] },
+      { id: "wasm", width: 100, height: 46, labels: [label("Wasm Output", 76)] },
+      { id: "linker", width: 100, height: 50, labels: [label("LLD Linker", 68)] },
+      { id: "bin-native", width: 110, height: 50, labels: [label("Native Exec", 74)] },
+      { id: "bin-wasm", width: 110, height: 50, labels: [label("WebAssembly", 80)] }
+    ],
+    edges: [
+      { id: "e-lex", sources: ["src-code"], targets: ["lexer"] },
+      { id: "e-parse", sources: ["lexer"], targets: ["parser"], labels: [label("tokens", 42, 14)] },
+      { id: "e-ast", sources: ["parser"], targets: ["ast"] },
+      { id: "e-check", sources: ["ast"], targets: ["typecheck"] },
+      { id: "e-ir", sources: ["typecheck"], targets: ["ir-gen"] },
+      { id: "e-ssa", sources: ["ir-gen"], targets: ["ssa"] },
+      { id: "e-dce", sources: ["ssa"], targets: ["dce"] },
+      { id: "e-inline", sources: ["dce"], targets: ["inline"] },
+      { id: "e-licm", sources: ["inline"], targets: ["licm"] },
+      { id: "e-reg", sources: ["licm"], targets: ["regalloc"] },
+      { id: "e-gen", sources: ["regalloc"], targets: ["codegen"] },
+      { id: "e-x86", sources: ["codegen"], targets: ["asm-x86"] },
+      { id: "e-arm", sources: ["codegen"], targets: ["asm-arm"] },
+      { id: "e-wasm", sources: ["codegen"], targets: ["wasm"] },
+      { id: "e-link-x86", sources: ["asm-x86"], targets: ["linker"] },
+      { id: "e-link-arm", sources: ["asm-arm"], targets: ["linker"] },
+      { id: "e-bin", sources: ["linker"], targets: ["bin-native"] },
+      { id: "e-wbin", sources: ["wasm"], targets: ["bin-wasm"] }
+    ]
+  },
+  "E-Commerce Order State Machine (17 states, cycles)": {
+    id: "root",
+    layoutOptions: { "elk.direction": "DOWN" },
+    children: [
+      { id: "cart", width: 120, height: 50, labels: [label("Cart Open", 66)] },
+      { id: "checkout", width: 120, height: 50, labels: [label("Checkout", 60)] },
+      { id: "fraud-check", width: 130, height: 52, labels: [label("Fraud Analysis", 86)] },
+      { id: "flagged", width: 120, height: 50, labels: [label("Manual Review", 86)] },
+      { id: "inv-hold", width: 130, height: 50, labels: [label("Stock Reserved", 88)] },
+      { id: "payment-auth", width: 130, height: 52, labels: [label("Payment Auth", 82)] },
+      { id: "payment-failed", width: 120, height: 50, labels: [label("Payment Failed", 90)] },
+      { id: "captured", width: 120, height: 50, labels: [label("Captured", 58)] },
+      { id: "packing", width: 120, height: 50, labels: [label("Warehouse Pick", 94)] },
+      { id: "shipped", width: 120, height: 50, labels: [label("In Transit", 62)] },
+      { id: "out-for-del", width: 130, height: 50, labels: [label("Out for Delivery", 98)] },
+      { id: "delivered", width: 120, height: 52, labels: [label("Delivered", 60)] },
+      { id: "refund-req", width: 130, height: 50, labels: [label("Return Requested", 104)] },
+      { id: "inspection", width: 120, height: 50, labels: [label("Inspecting Item", 94)] },
+      { id: "refunded", width: 120, height: 52, labels: [label("Refund Closed", 86)] },
+      { id: "cancelled", width: 120, height: 52, labels: [label("Order Cancelled", 96)] },
+      { id: "completed", width: 120, height: 52, labels: [label("Order Completed", 100)] }
+    ],
+    edges: [
+      { id: "e1", sources: ["cart"], targets: ["checkout"] },
+      { id: "e2", sources: ["checkout"], targets: ["fraud-check"] },
+      { id: "e3", sources: ["fraud-check"], targets: ["flagged"], labels: [label("suspicious", 64, 14)] },
+      { id: "e4", sources: ["flagged"], targets: ["inv-hold"], labels: [label("approved", 56, 14)] },
+      { id: "e5", sources: ["flagged"], targets: ["cancelled"], labels: [label("rejected", 52, 14)] },
+      { id: "e6", sources: ["fraud-check"], targets: ["inv-hold"], labels: [label("pass", 32, 14)] },
+      { id: "e7", sources: ["inv-hold"], targets: ["payment-auth"] },
+      { id: "e8", sources: ["payment-auth"], targets: ["payment-failed"], labels: [label("decline", 44, 14)] },
+      { id: "e9", sources: ["payment-failed"], targets: ["checkout"], labels: [label("retry card", 58, 14)] },
+      { id: "e10", sources: ["payment-auth"], targets: ["captured"], labels: [label("success", 46, 14)] },
+      { id: "e11", sources: ["captured"], targets: ["packing"] },
+      { id: "e12", sources: ["packing"], targets: ["shipped"] },
+      { id: "e13", sources: ["shipped"], targets: ["out-for-del"] },
+      { id: "e14", sources: ["out-for-del"], targets: ["delivered"] },
+      { id: "e15", sources: ["delivered"], targets: ["completed"], labels: [label("30 days", 48, 14)] },
+      { id: "e16", sources: ["delivered"], targets: ["refund-req"], labels: [label("return", 40, 14)] },
+      { id: "e17", sources: ["refund-req"], targets: ["inspection"] },
+      { id: "e18", sources: ["inspection"], targets: ["refunded"], labels: [label("passed", 42, 14)] }
+    ]
+  },
+  "Dense Network Topology (24 nodes, 32 edges)": {
+    id: "root",
+    layoutOptions: { "elk.direction": "RIGHT" },
+    children: [
+      { id: "core1", width: 100, height: 48, labels: [label("Core Router 1", 86)] },
+      { id: "core2", width: 100, height: 48, labels: [label("Core Router 2", 86)] },
+      { id: "dist1", width: 95, height: 46, labels: [label("Dist A1", 50)] },
+      { id: "dist2", width: 95, height: 46, labels: [label("Dist A2", 50)] },
+      { id: "dist3", width: 95, height: 46, labels: [label("Dist B1", 50)] },
+      { id: "dist4", width: 95, height: 46, labels: [label("Dist B2", 50)] },
+      { id: "leaf1", width: 85, height: 44, labels: [label("Leaf 1", 42)] },
+      { id: "leaf2", width: 85, height: 44, labels: [label("Leaf 2", 42)] },
+      { id: "leaf3", width: 85, height: 44, labels: [label("Leaf 3", 42)] },
+      { id: "leaf4", width: 85, height: 44, labels: [label("Leaf 4", 42)] },
+      { id: "leaf5", width: 85, height: 44, labels: [label("Leaf 5", 42)] },
+      { id: "leaf6", width: 85, height: 44, labels: [label("Leaf 6", 42)] },
+      { id: "srv1", width: 80, height: 40, labels: [label("Srv 01", 38)] },
+      { id: "srv2", width: 80, height: 40, labels: [label("Srv 02", 38)] },
+      { id: "srv3", width: 80, height: 40, labels: [label("Srv 03", 38)] },
+      { id: "srv4", width: 80, height: 40, labels: [label("Srv 04", 38)] },
+      { id: "srv5", width: 80, height: 40, labels: [label("Srv 05", 38)] },
+      { id: "srv6", width: 80, height: 40, labels: [label("Srv 06", 38)] },
+      { id: "srv7", width: 80, height: 40, labels: [label("Srv 07", 38)] },
+      { id: "srv8", width: 80, height: 40, labels: [label("Srv 08", 38)] },
+      { id: "srv9", width: 80, height: 40, labels: [label("Srv 09", 38)] },
+      { id: "srv10", width: 80, height: 40, labels: [label("Srv 10", 42)] },
+      { id: "srv11", width: 80, height: 40, labels: [label("Srv 11", 42)] },
+      { id: "srv12", width: 80, height: 40, labels: [label("Srv 12", 42)] }
+    ],
+    edges: [
+      { id: "c1-c2", sources: ["core1"], targets: ["core2"] },
+      { id: "c1-d1", sources: ["core1"], targets: ["dist1"] },
+      { id: "c1-d2", sources: ["core1"], targets: ["dist2"] },
+      { id: "c2-d3", sources: ["core2"], targets: ["dist3"] },
+      { id: "c2-d4", sources: ["core2"], targets: ["dist4"] },
+      { id: "d1-l1", sources: ["dist1"], targets: ["leaf1"] },
+      { id: "d1-l2", sources: ["dist1"], targets: ["leaf2"] },
+      { id: "d2-l2", sources: ["dist2"], targets: ["leaf2"] },
+      { id: "d2-l3", sources: ["dist2"], targets: ["leaf3"] },
+      { id: "d3-l4", sources: ["dist3"], targets: ["leaf4"] },
+      { id: "d3-l5", sources: ["dist3"], targets: ["leaf5"] },
+      { id: "d4-l5", sources: ["dist4"], targets: ["leaf5"] },
+      { id: "d4-l6", sources: ["dist4"], targets: ["leaf6"] },
+      { id: "l1-s1", sources: ["leaf1"], targets: ["srv1"] },
+      { id: "l1-s2", sources: ["leaf1"], targets: ["srv2"] },
+      { id: "l2-s3", sources: ["leaf2"], targets: ["srv3"] },
+      { id: "l2-s4", sources: ["leaf2"], targets: ["srv4"] },
+      { id: "l3-s5", sources: ["leaf3"], targets: ["srv5"] },
+      { id: "l3-s6", sources: ["leaf3"], targets: ["srv6"] },
+      { id: "l4-s7", sources: ["leaf4"], targets: ["srv7"] },
+      { id: "l4-s8", sources: ["leaf4"], targets: ["srv8"] },
+      { id: "l5-s9", sources: ["leaf5"], targets: ["srv9"] },
+      { id: "l5-s10", sources: ["leaf5"], targets: ["srv10"] },
+      { id: "l6-s11", sources: ["leaf6"], targets: ["srv11"] },
+      { id: "l6-s12", sources: ["leaf6"], targets: ["srv12"] }
     ]
   },
   "Nested containers": {
@@ -100,24 +388,17 @@ const examples = {
       { id: "outer", sources: ["frontend"], targets: ["core"], labels: [{ text: "ELK JSON", width: 54, height: 16 }] }
     ]
   },
-  "Branching graph": {
+  "Simple chain": {
     id: "root",
-    layoutOptions: { "elk.direction": "DOWN" },
+    layoutOptions: { "elk.direction": "RIGHT" },
     children: [
-      { id: "input", width: 120, height: 58, labels: [{ text: "Input graph", width: 66, height: 16 }] },
-      { id: "placement", width: 130, height: 58, labels: [{ text: "Placement", width: 62, height: 16 }] },
-      { id: "routing", width: 130, height: 58, labels: [{ text: "Routing", width: 48, height: 16 }] },
-      { id: "labels", width: 130, height: 58, labels: [{ text: "Labels", width: 42, height: 16 }] },
-      { id: "quality", width: 130, height: 58, labels: [{ text: "Quality", width: 46, height: 16 }] },
-      { id: "output", width: 120, height: 58, labels: [{ text: "Best result", width: 68, height: 16 }] }
+      { id: "api", width: 120, height: 64, labels: [{ id: "api-label", text: "API", width: 28, height: 18 }] },
+      { id: "engine", width: 150, height: 72, labels: [{ id: "engine-label", text: "TALA Engine", width: 78, height: 18 }] },
+      { id: "result", width: 120, height: 64, labels: [{ id: "result-label", text: "ELK JSON", width: 58, height: 18 }] }
     ],
     edges: [
-      { id: "a", sources: ["input"], targets: ["placement"] },
-      { id: "b", sources: ["placement"], targets: ["routing"] },
-      { id: "c", sources: ["placement"], targets: ["labels"] },
-      { id: "d", sources: ["routing"], targets: ["quality"] },
-      { id: "e", sources: ["labels"], targets: ["quality"] },
-      { id: "f", sources: ["quality"], targets: ["output"] }
+      { id: "e1", sources: ["api"], targets: ["engine"] },
+      { id: "e2", sources: ["engine"], targets: ["result"], labels: [{ id: "edge-label", text: "layout()", width: 50, height: 16 }] }
     ]
   }
 };
